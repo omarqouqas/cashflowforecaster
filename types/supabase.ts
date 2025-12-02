@@ -1,211 +1,648 @@
-/**
- * Database type definitions for Supabase
- * 
- * NOTE: These are currently manual placeholder types.
- * Once the database schema is created, regenerate with:
- * npx supabase gen types typescript --project-id YOUR_PROJECT_ID > types/supabase.ts
- */
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
-      users: {
-        Row: {
-          id: string
-          email: string
-          full_name: string | null
-          created_at: string
-          updated_at: string
-          onboarded: boolean
-          subscription_tier: 'free' | 'pro' | 'premium'
-          subscription_status: 'active' | 'inactive' | 'trialing' | 'past_due'
-        }
-        Insert: {
-          id?: string
-          email: string
-          full_name?: string | null
-          created_at?: string
-          updated_at?: string
-          onboarded?: boolean
-          subscription_tier?: 'free' | 'pro' | 'premium'
-          subscription_status?: 'active' | 'inactive' | 'trialing' | 'past_due'
-        }
-        Update: {
-          id?: string
-          email?: string
-          full_name?: string | null
-          created_at?: string
-          updated_at?: string
-          onboarded?: boolean
-          subscription_tier?: 'free' | 'pro' | 'premium'
-          subscription_status?: 'active' | 'inactive' | 'trialing' | 'past_due'
-        }
-      }
       accounts: {
         Row: {
-          id: string
-          user_id: string
-          name: string
-          account_type: 'checking' | 'savings'
+          account_type: string | null
+          created_at: string | null
+          currency: string | null
           current_balance: number
-          currency: string
-          is_spendable: boolean
-          created_at: string
-          updated_at: string
+          id: string
+          is_spendable: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          name: string
-          account_type: 'checking' | 'savings'
+          account_type?: string | null
+          created_at?: string | null
+          currency?: string | null
           current_balance: number
-          currency: string
-          is_spendable?: boolean
-          created_at?: string
-          updated_at?: string
+          id?: string
+          is_spendable?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          account_type?: 'checking' | 'savings'
+          account_type?: string | null
+          created_at?: string | null
+          currency?: string | null
           current_balance?: number
-          currency?: string
-          is_spendable?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      income: {
-        Row: {
-          id: string
-          user_id: string
-          account_id: string | null
-          name: string
-          amount: number
-          frequency: 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'irregular'
-          next_date: string
-          is_active: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
           id?: string
-          user_id: string
-          account_id?: string | null
-          name: string
-          amount: number
-          frequency: 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'irregular'
-          next_date: string
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          account_id?: string | null
+          is_spendable?: boolean | null
           name?: string
-          amount?: number
-          frequency?: 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'irregular'
-          next_date?: string
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          updated_at?: string | null
+          user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bills: {
         Row: {
-          id: string
-          user_id: string
           account_id: string | null
-          name: string
           amount: number
+          auto_pay: boolean | null
+          category: string | null
+          created_at: string | null
           due_date: string
-          frequency: 'one-time' | 'monthly' | 'quarterly' | 'annually'
-          is_active: boolean
-          created_at: string
-          updated_at: string
+          frequency: string
+          id: string
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          recurrence_day: number | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
           account_id?: string | null
-          name: string
           amount: number
+          auto_pay?: boolean | null
+          category?: string | null
+          created_at?: string | null
           due_date: string
-          frequency: 'one-time' | 'monthly' | 'quarterly' | 'annually'
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          recurrence_day?: number | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
           account_id?: string | null
-          name?: string
           amount?: number
+          auto_pay?: boolean | null
+          category?: string | null
+          created_at?: string | null
           due_date?: string
-          frequency?: 'one-time' | 'monthly' | 'quarterly' | 'annually'
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          recurrence_day?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "bills_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bills_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      income: {
+        Row: {
+          account_id: string | null
+          amount: number
+          created_at: string | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          last_date: string | null
+          name: string
+          next_date: string
+          notes: string | null
+          recurrence_day: number | null
+          recurrence_weekday: number | null
+          status: string | null
+          status_updated_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          amount: number
+          created_at?: string | null
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          last_date?: string | null
+          name: string
+          next_date: string
+          notes?: string | null
+          recurrence_day?: number | null
+          recurrence_weekday?: number | null
+          status?: string | null
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          amount?: number
+          created_at?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          last_date?: string | null
+          name?: string
+          next_date?: string
+          notes?: string | null
+          recurrence_day?: number | null
+          recurrence_weekday?: number | null
+          status?: string | null
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "income_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "income_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          channel: string
+          clicked_at: string | null
+          id: string
+          metadata: Json | null
+          opened_at: string | null
+          sent_at: string | null
+          subject: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          channel: string
+          clicked_at?: string | null
+          id?: string
+          metadata?: Json | null
+          opened_at?: string | null
+          sent_at?: string | null
+          subject?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          clicked_at?: string | null
+          id?: string
+          metadata?: Json | null
+          opened_at?: string | null
+          sent_at?: string | null
+          subject?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parsed_emails: {
+        Row: {
+          amount: number | null
+          bill_id: string | null
+          confidence_score: number | null
+          created_at: string | null
+          due_date: string | null
+          frequency: string | null
+          id: string
+          merchant: string | null
+          parsing_model: string | null
+          parsing_prompt_version: string | null
+          raw_email_data: Json | null
+          received_at: string | null
+          reviewed_at: string | null
+          sender: string
+          status: string | null
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          bill_id?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          due_date?: string | null
+          frequency?: string | null
+          id?: string
+          merchant?: string | null
+          parsing_model?: string | null
+          parsing_prompt_version?: string | null
+          raw_email_data?: Json | null
+          received_at?: string | null
+          reviewed_at?: string | null
+          sender: string
+          status?: string | null
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          bill_id?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          due_date?: string | null
+          frequency?: string | null
+          id?: string
+          merchant?: string | null
+          parsing_model?: string | null
+          parsing_prompt_version?: string | null
+          raw_email_data?: Json | null
+          received_at?: string | null
+          reviewed_at?: string | null
+          sender?: string
+          status?: string | null
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parsed_emails_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parsed_emails_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenarios: {
+        Row: {
+          amount: number
+          created_at: string | null
+          date: string
+          id: string
+          name: string
+          result: Json | null
+          saved: boolean | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          date: string
+          id?: string
+          name: string
+          result?: Json | null
+          saved?: boolean | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          name?: string
+          result?: Json | null
+          saved?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenarios_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_settings: {
         Row: {
+          created_at: string | null
+          currency: string | null
+          daily_burn_rate: number | null
+          date_format: string | null
+          default_account_id: string | null
+          notification_preferences: Json | null
+          safety_buffer: number | null
+          safety_mode: boolean | null
+          timezone: string | null
+          updated_at: string | null
           user_id: string
-          daily_burn_rate: number
-          safety_buffer: number
-          safety_mode: boolean
-          timezone: string
-          currency: string
-          created_at: string
-          updated_at: string
         }
         Insert: {
+          created_at?: string | null
+          currency?: string | null
+          daily_burn_rate?: number | null
+          date_format?: string | null
+          default_account_id?: string | null
+          notification_preferences?: Json | null
+          safety_buffer?: number | null
+          safety_mode?: boolean | null
+          timezone?: string | null
+          updated_at?: string | null
           user_id: string
-          daily_burn_rate: number
-          safety_buffer: number
-          safety_mode?: boolean
-          timezone: string
-          currency: string
-          created_at?: string
-          updated_at?: string
         }
         Update: {
+          created_at?: string | null
+          currency?: string | null
+          daily_burn_rate?: number | null
+          date_format?: string | null
+          default_account_id?: string | null
+          notification_preferences?: Json | null
+          safety_buffer?: number | null
+          safety_mode?: boolean | null
+          timezone?: string | null
+          updated_at?: string | null
           user_id?: string
-          daily_burn_rate?: number
-          safety_buffer?: number
-          safety_mode?: boolean
-          timezone?: string
-          currency?: string
-          created_at?: string
-          updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_default_account_id_fkey"
+            columns: ["default_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          onboarded: boolean | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_ends_at: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
+          trial_ends_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          onboarded?: boolean | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_ends_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          onboarded?: boolean | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_ends_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      weekly_checkins: {
+        Row: {
+          actual_spending: number | null
+          created_at: string | null
+          current_burn_rate: number | null
+          id: string
+          new_burn_rate: number | null
+          suggested_burn_rate: number | null
+          user_id: string
+          user_updated: boolean | null
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          actual_spending?: number | null
+          created_at?: string | null
+          current_burn_rate?: number | null
+          id?: string
+          new_burn_rate?: number | null
+          suggested_burn_rate?: number | null
+          user_id: string
+          user_updated?: boolean | null
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          actual_spending?: number | null
+          created_at?: string | null
+          current_burn_rate?: number | null
+          id?: string
+          new_burn_rate?: number | null
+          suggested_burn_rate?: number | null
+          user_id?: string
+          user_updated?: boolean | null
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
-      // We don't have views yet
+      [_ in never]: never
     }
     Functions: {
-      // We don't have functions yet
+      [_ in never]: never
     }
     Enums: {
-      // We don't have enums yet
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
 
-// Helper types for easier usage
-export type Tables<T extends keyof Database['public']['Tables']> = 
-  Database['public']['Tables'][T]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type Row<T extends keyof Database['public']['Tables']> = 
-  Tables<T>['Row']
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type Insert<T extends keyof Database['public']['Tables']> = 
-  Tables<T>['Insert']
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-export type Update<T extends keyof Database['public']['Tables']> = 
-  Tables<T>['Update']
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
