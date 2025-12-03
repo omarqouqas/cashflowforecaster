@@ -24,6 +24,13 @@ export default function Home() {
           </Link>
 
           <p className="text-sm text-slate-500 dark:text-slate-500">No credit card required</p>
+
+          <p className="mt-4 text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-blue-600 hover:underline">
+              Log in
+            </Link>
+          </p>
         </div>
       </div>
     </main>
