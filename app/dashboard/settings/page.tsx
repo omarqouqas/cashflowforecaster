@@ -1,5 +1,4 @@
 import { requireAuth } from '@/lib/auth/session';
-import { UserMenu } from '@/components/dashboard/user-menu';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -13,21 +12,7 @@ export default async function SettingsPage() {
     : 'N/A';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-      {/* Header/Nav - same as dashboard */}
-      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-              Cash Flow Forecaster
-            </h1>
-            <UserMenu user={user} />
-          </div>
-        </div>
-      </header>
-
-      {/* Main content */}
-      <main className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto">
         {/* Breadcrumb */}
         <nav className="mb-6">
           <Link
@@ -121,7 +106,6 @@ export default async function SettingsPage() {
             </div>
           </div>
         </div>
-      </main>
     </div>
   );
 }
