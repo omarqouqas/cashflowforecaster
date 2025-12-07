@@ -1,13 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Tables } from '@/types/supabase'
 import { Button } from '@/components/ui/button'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import { DeleteIncomeButton } from './delete-income-button'
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format'
+import { ActiveToggleButton } from '@/components/ui/active-toggle-button'
 import Link from 'next/link'
 
 type Income = Tables<'income'>['Row']
@@ -17,29 +15,7 @@ interface IncomeCardProps {
 }
 
 export function IncomeCard({ income }: IncomeCardProps) {
-  const [isActive, setIsActive] = useState(income.is_active ?? true)
-  const [isToggling, setIsToggling] = useState(false)
-  const router = useRouter()
-  const supabase = createClient()
-
-  const handleToggleActive = async () => {
-    setIsToggling(true)
-    
-    const { error } = await supabase
-      .from('income')
-      .update({ 
-        is_active: !isActive,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', income.id)
-    
-    if (!error) {
-      setIsActive(!isActive)
-      router.refresh() // Refresh to update monthly total
-    }
-    
-    setIsToggling(false)
-  }
+  const isActive = income.is_active ?? true
 
   const frequencyColors: Record<string, string> = {
     weekly: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
@@ -67,21 +43,13 @@ export function IncomeCard({ income }: IncomeCardProps) {
               {income.frequency}
             </span>
             
-            {/* Active/Inactive badge with toggle */}
-            <button
-              onClick={handleToggleActive}
-              disabled={isToggling}
-              className={`
-                inline-block px-2 py-1 text-xs rounded font-medium transition-colors
-                ${isActive 
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40' 
-                  : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                }
-                ${isToggling ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
-              `}
-            >
-              {isToggling ? '...' : (isActive ? 'Active' : 'Inactive')}
-            </button>
+            {/* Active/Inactive badge */}
+            <ActiveToggleButton
+              id={income.id}
+              isActive={income.is_active}
+              tableName="income"
+              itemName={income.name}
+            />
           </div>
         </div>
         

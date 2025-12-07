@@ -33,15 +33,17 @@ export function formatDate(date: string): string {
  * @returns Formatted date string (e.g., "Jan 15, 2024")
  */
 export function formatDateOnly(dateString: string): string {
-  // Split the date string and create date in local timezone
-  const [year, month, day] = dateString.split('-').map(Number);
-  const date = new Date(year, month - 1, day); // month is 0-indexed
-
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  try {
+    // Parse date as local midnight to avoid timezone issues
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
 }
 
 /**
