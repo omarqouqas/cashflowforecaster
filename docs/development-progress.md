@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 6, 2024 (Day 6 Complete)
+**Last Updated:** December 7, 2024
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,10 +10,10 @@
 
 ## Quick Stats
 
-- **Days in Development:** 6
+- **Days in Development:** 7
 - **Commits:** [Check git log]
 - **Files Created:** [Check git ls-files | wc -l]
-- **Lines of Code:** ~[estimate]
+- **Lines of Code:** Estimate ~3,000-4,000 (if tracking)
 - **Database Tables:** 9
 - **Test Coverage:** Manual testing (automated tests coming later)
 
@@ -236,7 +236,7 @@
 
 ---
 
-### 🚧 Phase 3: Core Data Models (Days 6-8) - IN PROGRESS
+### 🚧 Phase 3: Core Data Models (Days 6-8) - IN PROGRESS - 67% complete (2 of 3 done)
 
 #### Day 6: Account Management ✅ COMPLETE
 
@@ -311,32 +311,123 @@
 
 ---
 
-#### Day 7: Income Sources (Planned)
+#### Day 7: Income Sources Management ✅ COMPLETE
 
-**Target Date:** December 7, 2024
+**Date:** December 7, 2024
 
-**Estimated Time:** 2-3 hours
+**Time Invested:** 2-3 hours
 
-**To Complete:**
+**Completed:**
 
-- [ ] Income list page
-- [ ] Add income form
-- [ ] Edit income functionality
-- [ ] Delete income with confirmation
-- [ ] Frequency selection (weekly, biweekly, monthly)
-- [ ] Next payment date picker
-- [ ] Income summary on dashboard
+- [x] Income list page with monthly summary
+- [x] Add new income form with validation
+- [x] Edit income functionality
+- [x] Delete income with confirmation
+- [x] Income summary on dashboard (live data)
+- [x] Monthly income calculation algorithm
+- [x] Frequency options (weekly, biweekly, monthly, one-time, irregular)
+- [x] Link income to accounts (optional)
+- [x] Active/inactive status toggle
+- [x] Empty states and success messages
+- [x] Date display fix (timezone issue resolved)
+- [x] Page refresh fix after edits
 
-**Files to Create:**
+**Key Files Created:**
 
-- `app/dashboard/income/page.tsx`
-- `app/dashboard/income/new/page.tsx`
-- `app/dashboard/income/[id]/edit/page.tsx`
-- `components/income/delete-income-button.tsx`
+- `app/dashboard/income/page.tsx` - Income list with summary (Server Component)
+- `app/dashboard/income/new/page.tsx` - Add income form (Client Component)
+- `app/dashboard/income/[id]/edit/page.tsx` - Edit income form (Client Component)
+- `components/income/delete-income-button.tsx` - Delete with confirmation
+- `lib/utils/format.ts` - Updated with formatDateOnly() function
+
+**Key Files Updated:**
+
+- `app/dashboard/page.tsx` - Added income summary with live data and calculation
+
+**Database Operations:**
+
+- Full CRUD on income table (Create, Read, Update, Delete)
+- Row Level Security working correctly
+- User can only access their own income sources
+- TypeScript types from Supabase schema
+
+**Income Calculation Algorithm:**
+
+Converts all frequencies to monthly equivalent:
+
+- **Weekly:** amount × 52 ÷ 12 = monthly
+- **Biweekly:** amount × 26 ÷ 12 = monthly  
+- **Monthly:** amount × 1 = monthly
+- **One-time:** excluded from monthly total
+- **Irregular:** excluded from monthly total
+
+Example calculation verified:
+
+- Weekly $500 → $2,166.67/month
+- Biweekly $2,000 → $4,333.33/month
+- Monthly $1,200 → $1,200/month
+- **Total: $7,700/month** ✓ Accurate
+
+**UI/UX Improvements:**
+
+- Professional card layout with green theme (income)
+- Summary card showing estimated monthly income
+- Frequency badges (weekly, biweekly, monthly, etc.)
+- Active/Inactive status badges with visual dimming
+- Large formatted currency displays
+- Next payment date display
+- Empty state for new users
+- Success notifications after actions
+- Responsive design (mobile-first)
+- Account linking dropdown with user's accounts
+
+**Bug Fixes:**
+
+- **Date display issue:** Dates showing one day behind
+  - Cause: UTC midnight converted to local timezone
+  - Solution: Created formatDateOnly() function for date-only fields
+  - Result: Dates now display exactly as entered
+
+- **Page not refreshing after edit:** Updates didn't appear until manual refresh
+  - Cause: Next.js Server Component caching
+  - Solution: Added router.refresh() before redirect
+  - Result: Changes appear immediately after save
+
+**Testing:**
+
+- Comprehensive testing completed (12 test scenarios)
+- Created 5 test income sources with different frequencies
+- Verified monthly calculation accuracy
+- Tested all CRUD operations
+- Validated form validation
+- Confirmed active/inactive toggle
+- Verified dashboard integration
+- Tested mobile responsiveness
+- Confirmed success messages
+- Validated edge cases (large amounts, many sources)
+
+**Learnings:**
+
+- Frequency-to-monthly conversion algorithms
+- Next.js caching behavior with Server Components
+- Date handling with timezones (UTC vs local)
+- router.refresh() for cache invalidation
+- Conditional calculations (exclude one-time and irregular)
+- Badge design patterns for status display
+- Formula testing and verification importance
+
+**Technical Decisions:**
+
+- Keep accurate monthly calculation (26 biweekly periods, not 24)
+- Add explanation for biweekly calculation to avoid user confusion
+- Separate badges for frequency and active status
+- Visual dimming for inactive income sources
+- Optional account linking (not required)
+- formatDateOnly() for date-only fields vs formatDate() for timestamps
 
 ---
 
-#### Day 8: Bills Management (Planned)
+#### Day 8: Bills Management 📋 NEXT
 
 **Target Date:** December 8, 2024
 
@@ -344,14 +435,15 @@
 
 **To Complete:**
 
-- [ ] Bills list page
-- [ ] Add bill form
+- [ ] Bills list page with monthly summary
+- [ ] Add bill form with validation
 - [ ] Edit bill functionality
 - [ ] Delete bill with confirmation
 - [ ] Due date picker
 - [ ] Frequency selection (one-time, monthly, quarterly, annually)
-- [ ] Category selection
+- [ ] Category selection (rent, utilities, subscriptions, etc.)
 - [ ] Bills summary on dashboard
+- [ ] Apply learnings from Days 6-7 (router.refresh, formatDateOnly)
 
 **Files to Create:**
 
@@ -359,6 +451,15 @@
 - `app/dashboard/bills/new/page.tsx`
 - `app/dashboard/bills/[id]/edit/page.tsx`
 - `components/bills/delete-bill-button.tsx`
+
+**Pattern:**
+
+Similar to income management but for expenses:
+
+- Red/pink theme (vs green for income)
+- Monthly bill calculation
+- Categories for organization
+- Due date tracking
 
 ---
 
@@ -501,6 +602,56 @@
 - First click shows Cancel/Confirm
 - Second click actually deletes
 
+### December 7, 2024
+
+**Decision:** Use accurate biweekly calculation (26 periods, not 24)
+
+**Reasoning:**
+
+- Mathematically correct (52 weeks ÷ 2 = 26 payments per year)
+- Accounts for months with 3 paychecks (happens twice yearly)
+- Better for long-term cash flow planning
+- Shows true average monthly income
+- Some users may expect $10,000 for $5,000 biweekly, but accurate is $10,833.33
+
+**Implementation:**
+
+- Added explanation note: "* Biweekly = 26 payments/year ÷ 12 months"
+- Clear formula in code with comments
+- Tested and verified calculation accuracy
+
+**Decision:** Create formatDateOnly() for date-only fields
+
+**Reasoning:**
+
+- Date-only fields (like "next payment date") were showing one day behind
+- Issue: UTC midnight being converted to local timezone
+- Solution: Parse dates as local dates without timezone conversion
+- Keeps existing formatDate() for timestamps (created_at, updated_at)
+
+**Implementation:**
+
+- New function: formatDateOnly() in lib/utils/format.ts
+- Explicitly handles date-only values in user's local timezone
+- Applied to next_date, due_date, and similar fields
+- Prevents timezone confusion for users
+
+**Decision:** Use router.refresh() after mutations
+
+**Reasoning:**
+
+- Next.js 14 aggressively caches Server Component data
+- After edits, page showed stale data until manual refresh
+- Poor UX - users confused if save worked
+- router.refresh() forces fresh data fetch
+
+**Implementation:**
+
+- Added router.refresh() before redirect in all edit pages
+- Applied to accounts and income edit flows
+- Will apply to bills (Day 8) proactively
+- Alternative (Server Actions) considered for future refactor
+
 ---
 
 ## Metrics to Track (Post-Launch)
@@ -564,24 +715,37 @@
 **Days 4-5:** Authentication (5-7 hours total)
 
 - Average: 2.5-3.5 hours per day
-- Phase: Complete auth system
+- Phase: Complete auth system with enhancements
 
 **Day 6:** Account Management (2-3 hours)
 
 - Phase: Core data models (1 of 3 complete)
 
-**Cumulative:** ~17-22 hours over 6 days
+**Day 7:** Income Management (2-3 hours)
+
+- Phase: Core data models (2 of 3 complete)
+- Includes bug fixes and comprehensive testing
+
+**Cumulative:** ~19-25 hours over 7 days
 
 **Average:** ~3 hours per day
 
 **Status:** On track for 6-8 week MVP timeline
 
+**Velocity Observation:**
+
+- Consistent 2-3 hour days for feature development
+- Pattern established: List page → Add form → Edit form → Delete
+- Code reuse accelerating development (Day 8 will be faster)
+- Testing time investment paying off (fewer bugs)
+
 **Projected Completion:**
 
-- Days 7-8: Income & Bills (4-6 hours)
-- Days 9-15: Calendar Feature (15-20 hours)
-- Days 16-20: Polish & Launch Prep (10-15 hours)
-- **Estimated MVP Completion:** Mid-January 2025
+- Day 8: Bills (2-3 hours) - December 8
+- Days 9-15: Calendar Feature (15-20 hours) - December 9-15
+- Days 16-20: Polish & Launch Prep (10-15 hours) - December 16-20
+- **Estimated MVP Completion:** December 20-22, 2024
+- **Target Public Launch:** Early January 2025 (revised from February)
 
 ### What's Working Well
 
@@ -589,12 +753,31 @@
 - Supabase for quick backend setup
 - TypeScript for catching errors early
 - Git for version control and safety
+- **Pattern reuse:** Account → Income → Bills (accelerating development)
+- **Comprehensive testing:** Finding issues before they accumulate
+- **Documentation:** Progress tracking helps maintain momentum
+- **Consistent velocity:** 2-3 hours daily is sustainable
 
 ### Challenges Encountered
 
 - Supabase CLI authentication (resolved with browser login)
 - Understanding Next.js 14 cookie handling (resolved with proper client types)
 - Git authentication (resolved with Personal Access Token)
+
+**Day 7 Challenges:**
+
+- **Date timezone issues:** Dates showing one day behind
+  - Resolved: Created formatDateOnly() function
+  - Lesson: Be explicit about date-only vs datetime fields
+
+- **Caching after edits:** Changes not visible without refresh
+  - Resolved: Added router.refresh() before redirects
+  - Lesson: Next.js 14 caching requires explicit invalidation
+
+- **Biweekly calculation confusion:** Expected $10k but showed $10,833.33
+  - Resolved: Added explanation text for users
+  - Lesson: Document non-obvious calculations in UI
+  - Decision: Keep accurate calculation (better for users long-term)
 
 ### Lessons Learned
 

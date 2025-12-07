@@ -127,6 +127,7 @@ export default function EditAccountPage() {
       setError(updateError.message);
     } else {
       // Success - redirect to accounts list
+      router.refresh();
       router.push('/dashboard/accounts?success=account-updated');
     }
 

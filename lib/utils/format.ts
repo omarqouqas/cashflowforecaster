@@ -27,6 +27,24 @@ export function formatDate(date: string): string {
 }
 
 /**
+ * Formats a date-only string (YYYY-MM-DD) to a readable format without timezone conversion
+ * Use this for date-only values stored in the database to avoid timezone offset issues
+ * @param dateString - Date string in YYYY-MM-DD format
+ * @returns Formatted date string (e.g., "Jan 15, 2024")
+ */
+export function formatDateOnly(dateString: string): string {
+  // Split the date string and create date in local timezone
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day); // month is 0-indexed
+
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/**
  * Formats a date string to relative time (e.g., "2 hours ago")
  * @param date - ISO date string
  * @returns Relative time string
