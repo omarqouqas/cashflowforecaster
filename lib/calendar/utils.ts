@@ -3,6 +3,20 @@
  */
 
 /**
+ * Parses a date-only string (YYYY-MM-DD) as local midnight, not UTC.
+ * This prevents timezone shifts that would show the wrong day.
+ * 
+ * Uses noon (12:00:00) instead of midnight to avoid Daylight Saving Time edge cases.
+ * 
+ * @param dateString - Date string in YYYY-MM-DD format
+ * @returns Date object at local noon
+ */
+export function parseLocalDate(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0); // Use noon to avoid DST issues
+}
+
+/**
  * Checks if two dates represent the same calendar day.
  * Compares year, month, and day only (ignores time).
  * 
@@ -154,23 +168,40 @@ export function getNextBiweeklyDate(startDate: Date, currentDate: Date): Date {
 }
 
 /**
- * Returns status color based on balance thresholds.
+ * Returns status color based on balance thresholds relative to a safety buffer.
  * 
- * Thresholds:
- * - balance >= 10000: 'green' (safe)
- * - balance >= 7000: 'yellow' (caution)
- * - balance >= 5000: 'orange' (low)
- * - balance < 5000: 'red' (danger/overdraft)
+ * The safety buffer represents the minimum balance a user wants to maintain.
+ * Status colors are calculated as multiples of this buffer:
+ * 
+ * - Green (safe): balance >= safetyBuffer * 2
+ * - Yellow (caution): balance >= safetyBuffer * 1.5
+ * - Orange (low): balance >= safetyBuffer
+ * - Red (danger): balance < safetyBuffer
  * 
  * @param balance - The account balance to evaluate
+ * @param safetyBuffer - The minimum safety buffer amount (default: 500)
  * @returns Status color: 'green' | 'yellow' | 'orange' | 'red'
+ * 
+ * @example
+ * // With default $500 safety buffer:
+ * getStatusColor(1000) // 'green' (>= $1000)
+ * getStatusColor(750)  // 'yellow' (>= $750)
+ * getStatusColor(500)  // 'orange' (>= $500)
+ * getStatusColor(200)  // 'red' (< $500)
+ * 
+ * @example
+ * // With $200 safety buffer (tight budget):
+ * getStatusColor(400, 200) // 'green' (>= $400)
+ * getStatusColor(300, 200) // 'yellow' (>= $300)
+ * getStatusColor(200, 200) // 'orange' (>= $200)
+ * getStatusColor(100, 200) // 'red' (< $200)
  */
-export function getStatusColor(balance: number): 'green' | 'yellow' | 'orange' | 'red' {
-  if (balance >= 10000) {
+export function getStatusColor(balance: number, safetyBuffer: number = 500): 'green' | 'yellow' | 'orange' | 'red' {
+  if (balance >= safetyBuffer * 2) {
     return 'green';
-  } else if (balance >= 7000) {
+  } else if (balance >= safetyBuffer * 1.5) {
     return 'yellow';
-  } else if (balance >= 5000) {
+  } else if (balance >= safetyBuffer) {
     return 'orange';
   } else {
     return 'red';

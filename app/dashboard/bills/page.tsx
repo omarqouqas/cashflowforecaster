@@ -37,10 +37,14 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
       // Convert all frequencies to monthly equivalent
       switch (bill.frequency) {
+        case 'weekly':
+          return total + (bill.amount * 52) / 12;
+        case 'biweekly':
+          return total + (bill.amount * 26) / 12;
         case 'monthly':
           return total + bill.amount * 1;
         case 'quarterly':
-          return total + (bill.amount * 4) / 12;
+          return total + bill.amount / 3;
         case 'annually':
           return total + bill.amount / 12;
         case 'one-time':
@@ -125,7 +129,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
                 <button
                   type="button"
                   className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                  title="This is your average monthly bills. Quarterly bills are converted to monthly (amount × 4 ÷ 12). Annually bills are converted to monthly (amount ÷ 12). One-time bills are excluded."
+                  title="This is your average monthly bills. Weekly bills are converted to monthly (amount × 52 ÷ 12). Biweekly bills are converted to monthly (amount × 26 ÷ 12). Quarterly bills are converted to monthly (amount ÷ 3). Annually bills are converted to monthly (amount ÷ 12). One-time bills are excluded."
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path
@@ -143,7 +147,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
                 From {activeBills.length} active bill{activeBills.length !== 1 ? 's' : ''}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
-                * Quarterly = amount × 4 ÷ 12 | Annually = amount ÷ 12
+                * Weekly = amount × 52 ÷ 12 | Biweekly = amount × 26 ÷ 12 | Quarterly = amount ÷ 3 | Annually = amount ÷ 12
               </p>
             </div>
             <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
@@ -196,6 +200,8 @@ function BillCard({ bill }: { bill: Bill }) {
   };
 
   const frequencyColors: Record<string, string> = {
+    weekly: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    biweekly: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
     monthly: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
     quarterly: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
     annually: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',

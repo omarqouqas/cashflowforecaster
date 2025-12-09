@@ -40,10 +40,12 @@ type BillRecord = Tables<'bills'>;
  * 4. Calculates all bill occurrences within the date range
  * 5. Projects daily balances by applying income and bills chronologically
  * 6. Identifies the lowest balance day
+ * 7. Applies status colors based on the safety buffer threshold
  * 
  * @param accounts - Array of account records (uses is_spendable to determine active accounts)
  * @param income - Array of income source records
  * @param bills - Array of bill records
+ * @param safetyBuffer - The minimum safety buffer amount for status color calculation (default: 500)
  * @returns CalendarData object containing 60 days of projected cash flow
  * 
  * @throws {Error} If accounts array is empty or invalid
@@ -52,7 +54,8 @@ type BillRecord = Tables<'bills'>;
 export default function generateCalendar(
   accounts: AccountRecord[],
   income: IncomeRecord[],
-  bills: BillRecord[]
+  bills: BillRecord[],
+  safetyBuffer: number = 500
 ): CalendarData {
   try {
     // Step 1: Calculate starting balance
@@ -108,8 +111,8 @@ export default function generateCalendar(
       // Calculate new balance
       const balance = previousBalance + incomeAmount - billsAmount;
 
-      // Determine status
-      const status = getStatusColor(balance);
+      // Determine status using the safety buffer
+      const status = getStatusColor(balance, safetyBuffer);
       console.log('Day', index, date.toDateString(), 'Bal:', balance.toFixed(0), 'Status:', status);
 
       acc.push({

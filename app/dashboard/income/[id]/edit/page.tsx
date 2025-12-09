@@ -276,16 +276,21 @@ export default function EditIncomePage() {
             </div>
 
             {/* Is Active Checkbox */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-3">
               <input
                 type="checkbox"
                 id="is_active"
                 {...register('is_active')}
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700"
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700"
               />
-              <Label htmlFor="is_active" className="font-normal cursor-pointer">
-                This is an active income source
-              </Label>
+              <div>
+                <Label htmlFor="is_active" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Include in forecast
+                </Label>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Uncheck to pause this income without deleting it
+                </p>
+              </div>
             </div>
 
             {/* Error Message */}

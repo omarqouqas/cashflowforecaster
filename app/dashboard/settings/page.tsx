@@ -1,10 +1,22 @@
 import { requireAuth } from '@/lib/auth/session';
+import { createClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 
 export default async function SettingsPage() {
   const user = await requireAuth();
+  const supabase = await createClient();
+
+  // Fetch current user settings
+  const { data: settings } = await supabase
+    .from('user_settings')
+    .select('safety_buffer')
+    .eq('user_id', user.id)
+    .single();
+
+  const safetyBuffer = settings?.safety_buffer ?? 500;
 
   // Format the created_at date
   const accountCreatedDate = user.created_at
@@ -72,6 +84,9 @@ export default async function SettingsPage() {
               </Link>
             </div>
           </div>
+
+          {/* Safety Buffer Card */}
+          <SafetyBufferForm initialValue={safetyBuffer} />
 
           {/* Preferences Card */}
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">

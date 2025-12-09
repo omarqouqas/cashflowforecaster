@@ -1,5 +1,6 @@
 import { parseISO, startOfDay, isAfter, isBefore, isEqual, addMonths, getDate, setDate, endOfMonth } from 'date-fns';
 import { Transaction } from './types';
+import { parseLocalDate } from './utils';
 
 /**
  * Bill record structure for calculating occurrences.
@@ -11,7 +12,7 @@ interface BillRecord {
   name: string;
   /** Amount of the bill */
   amount: number;
-  /** Frequency: 'monthly', 'quarterly', 'annually', or 'one-time' */
+  /** Frequency: 'weekly', 'biweekly', 'monthly', 'quarterly', 'annually', or 'one-time' */
   frequency: string;
   /** Whether this bill is currently active */
   is_active: boolean | null;
@@ -23,6 +24,8 @@ interface BillRecord {
  * Calculates all bill transaction occurrences within a date range.
  * 
  * Handles different frequencies:
+ * - weekly: every 7 days from due_date
+ * - biweekly: every 14 days from due_date
  * - monthly: same day each month from due_date, handling month-end edge cases (e.g., Jan 31 → Feb 28)
  * - quarterly: every 3 months from due_date on the same day of month, handling month-end edge cases
  * - annually: every 12 months from due_date on the same month and day each year
@@ -48,7 +51,7 @@ export function calculateBillOccurrences(
 
   const rangeStart = typeof startDate === 'string' ? parseISO(startDate) : startDate;
   const rangeEnd = typeof endDate === 'string' ? parseISO(endDate) : endDate;
-  const billDueDate = parseISO(bill.due_date);
+  const billDueDate = parseLocalDate(bill.due_date);
 
   const occurrences: Transaction[] = [];
   const rangeStartDay = startOfDay(rangeStart);
@@ -61,6 +64,66 @@ export function calculateBillOccurrences(
   }
 
   switch (bill.frequency) {
+    case 'weekly': {
+      // Start from bill.due_date
+      let currentDate = billDueDay;
+
+      // If due_date is before range start, find first occurrence in range
+      if (isBefore(currentDate, rangeStartDay)) {
+        // Calculate days difference and find next weekly occurrence
+        const daysDiff = Math.floor((rangeStartDay.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+        const weeksToAdd = Math.ceil(daysDiff / 7);
+        currentDate = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + (weeksToAdd * 7));
+      }
+
+      // Add occurrence every 7 days until past rangeEndDay
+      while (currentDate <= rangeEndDay) {
+        occurrences.push({
+          date: new Date(currentDate),
+          id: bill.id,
+          name: bill.name,
+          amount: bill.amount,
+          type: 'bill',
+          frequency: bill.frequency,
+        });
+        
+        currentDate = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+      break;
+    }
+
+    case 'biweekly': {
+      // Start from bill.due_date
+      let currentDate = billDueDay;
+
+      // If due_date is before range start, find first occurrence in range
+      if (isBefore(currentDate, rangeStartDay)) {
+        // Calculate days difference and find next biweekly occurrence
+        const daysDiff = Math.floor((rangeStartDay.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+        const periodsToAdd = Math.ceil(daysDiff / 14);
+        currentDate = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + (periodsToAdd * 14));
+      }
+
+      // Add occurrence every 14 days until past rangeEndDay
+      while (currentDate <= rangeEndDay) {
+        occurrences.push({
+          date: new Date(currentDate),
+          id: bill.id,
+          name: bill.name,
+          amount: bill.amount,
+          type: 'bill',
+          frequency: bill.frequency,
+        });
+        
+        currentDate = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + 14);
+      }
+      break;
+    }
+
     case 'monthly': {
       const dateStr = typeof bill.due_date === 'string' 
         ? bill.due_date 

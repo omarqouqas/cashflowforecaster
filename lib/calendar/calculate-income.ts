@@ -1,6 +1,6 @@
 import { parseISO, startOfDay, isAfter, isBefore, isEqual, addMonths, getDate, setDate, endOfMonth } from 'date-fns';
 import { Transaction } from './types';
-import { addDays, getNextWeeklyDate, getNextBiweeklyDate } from './utils';
+import { addDays, getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate } from './utils';
 
 /**
  * Income record structure for calculating occurrences.
@@ -72,7 +72,7 @@ export function calculateIncomeOccurrences(
     return [];
   }
 
-  const parsedStartDate = new Date(startDateValue);
+  const parsedStartDate = parseLocalDate(startDateValue);
   if (isNaN(parsedStartDate.getTime())) {
     console.error('Invalid date for income:', income.name, '- date value is not a valid date:', startDateValue);
     return [];
@@ -84,7 +84,7 @@ export function calculateIncomeOccurrences(
   const rangeStart = typeof startDate === 'string' ? parseISO(startDate) : startDate;
   const rangeEnd = typeof endDate === 'string' ? parseISO(endDate) : endDate;
   const incomeNextDate = parsedStartDate;
-  const incomeEndDate = income.end_date ? parseISO(income.end_date) : null;
+  const incomeEndDate = income.end_date ? parseLocalDate(income.end_date) : null;
 
   const occurrences: Transaction[] = [];
   const rangeStartDay = startOfDay(rangeStart);
