@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Wallet, TrendingUp, FileText } from 'lucide-react'
+import { Home, Wallet, TrendingUp, FileText, Calendar } from 'lucide-react'
 
 export function DashboardNav() {
   const pathname = usePathname()
@@ -12,6 +12,7 @@ export function DashboardNav() {
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
+    { href: '/dashboard/calendar/test', label: 'Calendar Test', icon: Calendar },
   ]
   
   return (
