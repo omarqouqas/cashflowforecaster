@@ -125,9 +125,9 @@ export function calculateBillOccurrences(
     }
 
     case 'monthly': {
-      const dateStr = typeof bill.due_date === 'string' 
-        ? bill.due_date 
-        : billDueDay.toISOString().split('T')[0];
+      // Avoid `split('T')[0]` returning `string | undefined` in TS typings.
+      // `toISOString()` is always `YYYY-MM-DDTHH:mm:ss.sssZ`, so slicing is safe here.
+      const dateStr = bill.due_date ?? billDueDay.toISOString().slice(0, 10);
       const [year, month, day] = dateStr.split('-').map(Number);
       
       // Start with the due day
