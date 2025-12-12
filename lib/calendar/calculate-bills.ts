@@ -128,7 +128,20 @@ export function calculateBillOccurrences(
       // Avoid `split('T')[0]` returning `string | undefined` in TS typings.
       // `toISOString()` is always `YYYY-MM-DDTHH:mm:ss.sssZ`, so slicing is safe here.
       const dateStr = bill.due_date ?? billDueDay.toISOString().slice(0, 10);
-      const [year, month, day] = dateStr.split('-').map(Number);
+      const parts = dateStr.split('-').map(Number);
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+
+      // Validate we have valid date parts
+      // Note: this function calculates occurrences for a single bill, so we "skip" by breaking out
+      // of this frequency handler, resulting in no monthly occurrences being added.
+      if (year == null || month == null || day == null) {
+        break;
+      }
+      if (!year || !month || !day || Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
+        break;
+      }
       
       // Start with the due day
       const targetDay = day;
