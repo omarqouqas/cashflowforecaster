@@ -51,12 +51,12 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
 
   return (
     <>
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+      <div className="bg-white border border-zinc-200 rounded-lg p-6">
         {/* Month sections */}
         {Object.entries(daysByMonth).map(([monthKey, days]) => (
           <div key={monthKey} className="mb-8 last:mb-0">
             {/* Month header */}
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+            <h3 className="text-xl font-semibold text-zinc-900 mb-4">
               {monthKey}
             </h3>
 
@@ -75,8 +75,8 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
         ))}
 
         {/* Legend */}
-        <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+        <div className="mt-8 pt-6 border-t border-zinc-200">
+          <h4 className="text-sm font-semibold text-zinc-900 mb-3">
             Balance Status
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -126,34 +126,27 @@ interface LegendItemProps {
 }
 
 function LegendItem({ color, label, description }: LegendItemProps) {
-  const colorClasses = {
-    green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-    yellow: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800',
-    orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
-    red: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
-  };
-
   const indicatorColors = {
-    green: 'bg-green-500 dark:bg-green-400',
-    yellow: 'bg-yellow-500 dark:bg-yellow-400',
-    orange: 'bg-orange-500 dark:bg-orange-400',
-    red: 'bg-red-500 dark:bg-red-400',
+    green: 'bg-emerald-500',
+    yellow: 'bg-amber-400',
+    orange: 'bg-orange-500',
+    red: 'bg-rose-500',
   };
 
   const textColors = {
-    green: 'text-green-700 dark:text-green-300',
-    yellow: 'text-yellow-700 dark:text-yellow-300',
-    orange: 'text-orange-700 dark:text-orange-300',
-    red: 'text-red-700 dark:text-red-300',
+    green: 'text-emerald-700',
+    yellow: 'text-amber-700',
+    orange: 'text-orange-700',
+    red: 'text-rose-700',
   };
 
   return (
-    <div className={cn('border rounded-lg p-3', colorClasses[color])}>
+    <div className="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
       <div className="flex items-center gap-2 mb-1">
         <div className={cn('w-3 h-3 rounded-full', indicatorColors[color])} />
         <span className={cn('text-sm font-semibold', textColors[color])}>{label}</span>
       </div>
-      <p className="text-xs text-slate-600 dark:text-slate-400">{description}</p>
+      <p className="text-xs text-zinc-500">{description}</p>
     </div>
   );
 }

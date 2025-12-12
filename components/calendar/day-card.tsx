@@ -28,36 +28,36 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
   // Status colors mapping
   const statusColors = {
     green: {
-      bg: 'bg-green-50 dark:bg-green-900/20',
-      border: 'border-green-200 dark:border-green-800',
-      hover: 'hover:bg-green-100 dark:hover:bg-green-900/30',
-      indicator: 'bg-green-500 dark:bg-green-400',
-      text: 'text-green-700 dark:text-green-300',
-      balanceText: 'text-green-700 dark:text-green-300',
+      bg: 'bg-zinc-50',
+      border: 'border-zinc-200',
+      hover: 'hover:bg-zinc-100',
+      indicator: 'bg-emerald-500',
+      text: 'text-emerald-700',
+      balanceText: 'text-emerald-700',
     },
     yellow: {
-      bg: 'bg-yellow-50 dark:bg-yellow-900/20',
-      border: 'border-yellow-200 dark:border-yellow-800',
-      hover: 'hover:bg-yellow-100 dark:hover:bg-yellow-900/30',
-      indicator: 'bg-yellow-500 dark:bg-yellow-400',
-      text: 'text-yellow-700 dark:text-yellow-300',
-      balanceText: 'text-yellow-700 dark:text-yellow-300',
+      bg: 'bg-zinc-50',
+      border: 'border-zinc-200',
+      hover: 'hover:bg-zinc-100',
+      indicator: 'bg-amber-400',
+      text: 'text-amber-700',
+      balanceText: 'text-amber-700',
     },
     orange: {
-      bg: 'bg-orange-50 dark:bg-orange-900/20',
-      border: 'border-orange-200 dark:border-orange-800',
-      hover: 'hover:bg-orange-100 dark:hover:bg-orange-900/30',
-      indicator: 'bg-orange-500 dark:bg-orange-400',
-      text: 'text-orange-700 dark:text-orange-300',
-      balanceText: 'text-orange-700 dark:text-orange-300',
+      bg: 'bg-zinc-50',
+      border: 'border-zinc-200',
+      hover: 'hover:bg-zinc-100',
+      indicator: 'bg-orange-500',
+      text: 'text-orange-700',
+      balanceText: 'text-orange-700',
     },
     red: {
-      bg: 'bg-red-50 dark:bg-red-900/20',
-      border: 'border-red-200 dark:border-red-800',
-      hover: 'hover:bg-red-100 dark:hover:bg-red-900/30',
-      indicator: 'bg-red-500 dark:bg-red-400',
-      text: 'text-red-700 dark:text-red-300',
-      balanceText: 'text-red-700 dark:text-red-300',
+      bg: 'bg-zinc-50',
+      border: 'border-zinc-200',
+      hover: 'hover:bg-zinc-100',
+      indicator: 'bg-rose-500',
+      text: 'text-rose-700',
+      balanceText: 'text-rose-700',
     },
   };
 
@@ -81,14 +81,14 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
     <button
       onClick={onClick}
       className={cn(
-        'relative border rounded-lg p-3 text-left transition-all cursor-pointer',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800',
-        'hover:shadow-md hover:scale-[1.02]',
+        'relative border rounded-lg p-3 text-left transition-colors cursor-pointer',
+        'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 focus:ring-offset-white',
+        'hover:border-zinc-300',
         colors.bg,
         colors.border,
         colors.hover,
-        isToday && 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-800',
-        isLowestDay && 'ring-2 ring-red-500 ring-offset-2 dark:ring-offset-slate-800'
+        isToday && 'ring-2 ring-zinc-900 ring-offset-2 ring-offset-white',
+        isLowestDay && 'ring-2 ring-rose-500 ring-offset-2 ring-offset-white'
       )}
       aria-label={`View details for ${format(day.date, 'EEEE, MMMM d, yyyy')}`}
     >
@@ -97,23 +97,23 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
 
       {/* AlertTriangle badge for lowest balance day */}
       {isLowestDay && (
-        <div className="absolute top-1 right-1 bg-red-500 dark:bg-red-600 text-white rounded-full p-0.5">
+        <div className="absolute top-1 right-1 bg-rose-500 text-white rounded-full p-0.5">
           <AlertTriangle className="w-3 h-3" />
         </div>
       )}
 
       {/* Date header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+        <span className="text-xs font-medium text-zinc-500">
           {format(day.date, 'EEE')}
         </span>
-        <span className="text-sm font-bold text-slate-900 dark:text-white">
+        <span className="text-sm font-semibold text-zinc-900">
           {format(day.date, 'd')}
         </span>
       </div>
 
       {/* Balance */}
-      <div className={cn('text-lg font-bold mb-2', colors.balanceText)}>
+      <div className={cn('text-lg font-semibold mb-2 tabular-nums tracking-tight', colors.balanceText)}>
         {formatCurrency(day.balance)}
       </div>
 
@@ -123,8 +123,8 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
           {/* Income indicator */}
           {day.income.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
-              <span className="text-xs font-medium text-green-700 dark:text-green-300">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
+              <span className="text-xs font-medium text-emerald-700 tabular-nums">
                 +{formatCurrency(totalIncome)}
               </span>
             </div>
@@ -133,8 +133,8 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
           {/* Bills indicator */}
           {day.bills.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <TrendingDown className="w-3.5 h-3.5 text-red-600 dark:text-red-400 flex-shrink-0" />
-              <span className="text-xs font-medium text-red-700 dark:text-red-300">
+              <TrendingDown className="w-3.5 h-3.5 text-rose-700 flex-shrink-0" />
+              <span className="text-xs font-medium text-rose-700 tabular-nums">
                 -{formatCurrency(totalBills)}
               </span>
             </div>
@@ -144,7 +144,7 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
 
       {/* Transaction count badge - bottom right */}
       {totalTransactions > 0 && (
-        <div className="absolute bottom-2 right-2 bg-slate-900 dark:bg-slate-700 text-white text-xs font-medium px-1.5 py-0.5 rounded">
+        <div className="absolute bottom-2 right-2 bg-zinc-900 text-white text-xs font-medium px-1.5 py-0.5 rounded">
           {totalTransactions} {totalTransactions === 1 ? 'item' : 'items'}
         </div>
       )}

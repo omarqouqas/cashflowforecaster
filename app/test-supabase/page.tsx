@@ -107,7 +107,7 @@ export default async function TestSupabasePage() {
         </div>
 
         {/* Main Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900 px-6 py-4">
             <h1 className="text-2xl font-bold text-white">Cash Flow Forecaster - Supabase Connection Test</h1>

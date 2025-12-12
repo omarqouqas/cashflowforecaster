@@ -130,7 +130,7 @@ export default function UpdatePasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 space-y-6">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-8 space-y-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">Verifying reset link...</p>
@@ -146,7 +146,7 @@ export default function UpdatePasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 space-y-6">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-8 space-y-6">
             <div className="text-center space-y-4">
               <div className="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                 <svg
@@ -203,7 +203,7 @@ export default function UpdatePasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-12">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 space-y-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-8 space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
               Set New Password

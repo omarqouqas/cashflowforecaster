@@ -43,18 +43,18 @@ export function UserMenu({ user }: UserMenuProps) {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-zinc-50 transition-colors"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+        <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white text-sm font-medium">
           {user.email?.[0].toUpperCase()}
         </div>
-        <span className="text-sm hidden sm:block text-gray-700 dark:text-gray-300">
+        <span className="text-sm hidden sm:block text-zinc-700">
           {user.email}
         </span>
         <svg
-          className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
+          className={`w-4 h-4 text-zinc-500 transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
           fill="none"
@@ -72,9 +72,9 @@ export function UserMenu({ user }: UserMenuProps) {
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-gray-200 dark:border-slate-700 z-50">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700">
-            <p className="text-sm text-gray-900 dark:text-white font-medium">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-md border border-zinc-200 z-50">
+          <div className="px-4 py-3 border-b border-zinc-200">
+            <p className="text-sm text-zinc-900 font-medium">
               {user.email}
             </p>
           </div>
@@ -82,7 +82,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <div className="py-1">
             <Link
               href="/dashboard/settings"
-              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+              className="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Settings
@@ -90,7 +90,7 @@ export function UserMenu({ user }: UserMenuProps) {
 
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+              className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-zinc-50 transition-colors"
             >
               Log out
             </button>

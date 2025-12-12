@@ -14,20 +14,17 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-500/25 hover:shadow-md',
-  secondary:
-    'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
-  outline:
-    'border border-slate-300 bg-transparent text-slate-900 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800',
-  ghost:
-    'bg-transparent text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800',
-  danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm shadow-red-500/25 hover:shadow-md',
+  primary: 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm',
+  secondary: 'bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50 shadow-sm',
+  outline: 'bg-transparent border border-zinc-200 text-zinc-700 hover:bg-zinc-50',
+  ghost: 'bg-transparent text-zinc-700 hover:bg-zinc-100',
+  danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-6 py-3 text-base',
+  sm: 'h-11 px-3 text-sm',
+  md: 'h-11 px-4 text-sm',
+  lg: 'h-12 px-6 text-base',
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -49,8 +46,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
+          'inline-flex items-center justify-center gap-2 font-medium rounded-md transition-colors duration-150',
+          'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 focus:ring-offset-white',
           'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
           variantStyles[variant],
           sizeStyles[size],

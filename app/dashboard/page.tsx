@@ -117,7 +117,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6 border border-slate-200 dark:border-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 border border-slate-200 dark:border-slate-700">
           {/* Success Message */}
           {message === 'password-updated' && (
             <div className="mb-6">
@@ -137,7 +137,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             {/* Calendar Card */}
             {calendarData && (
               <Link href="/dashboard/calendar">
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                       <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -170,7 +170,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             {/* Accounts Card */}
             <Link href="/dashboard/accounts">
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                     <Wallet className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -216,7 +216,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             {/* Income Card */}
             <Link href="/dashboard/income">
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -262,7 +262,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             {/* Bills Card */}
             <Link href="/dashboard/bills">
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
                     <Receipt className="w-6 h-6 text-red-600 dark:text-red-400" />
