@@ -132,10 +132,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             Your 60-day cash flow calendar will appear here soon.
           </p>
 
-          {/* Summary cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Calendar Card */}
-            {calendarData && (
+          {/* Calendar card (kept separate from the 3 summary cards grid) */}
+          {calendarData && (
+            <div className="mb-6">
               <Link href="/dashboard/calendar">
                 <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
                   <div className="flex justify-between items-start mb-4">
@@ -166,143 +165,68 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   </p>
                 </div>
               </Link>
-            )}
+            </div>
+          )}
 
+          {/* Summary cards (Minimalist Utility) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {/* Accounts Card */}
             <Link href="/dashboard/accounts">
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                    <Wallet className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  {accountCount > 0 ? (
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {accountCount}
-                    </span>
-                  ) : (
-                    <span className="w-0 h-0"></span>
-                  )}
+              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-[200px] flex flex-col justify-between hover:bg-zinc-50 transition-colors">
+                <div>
+                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Accounts</p>
+                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-900 mt-3">
+                    {formatCurrency(totalBalance, currency)}
+                  </p>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {accountCount > 0
+                      ? `Across ${accountCount} ${accountCount === 1 ? 'account' : 'accounts'}`
+                      : 'Add your bank accounts'}
+                  </p>
                 </div>
-
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Accounts</h3>
-
-                {accountCount > 0 ? (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Current Balance
-                    </p>
-                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                      {formatCurrency(totalBalance, currency)}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Across {accountCount} {accountCount === 1 ? 'account' : 'accounts'}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Add your bank accounts
-                    </p>
-                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                      $0
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Click to add →
-                    </p>
-                  </>
-                )}
+                <div className="text-sm text-zinc-500 mt-6">
+                  {accountCount > 0 ? 'View accounts →' : 'Click to add →'}
+                </div>
               </div>
             </Link>
 
             {/* Income Card */}
             <Link href="/dashboard/income">
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
-                  </div>
-                  {incomeCount > 0 ? (
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {incomeCount}
-                    </span>
-                  ) : (
-                    <span className="w-0 h-0"></span>
-                  )}
+              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-[200px] flex flex-col justify-between hover:bg-zinc-50 transition-colors">
+                <div>
+                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Income</p>
+                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-emerald-600 mt-3">
+                    {formatCurrency(monthlyIncome, currency)}
+                  </p>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {incomeCount > 0
+                      ? `From ${incomeCount} ${incomeCount === 1 ? 'source' : 'sources'}`
+                      : 'Track income sources'}
+                  </p>
                 </div>
-
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Income</h3>
-
-                {incomeCount > 0 ? (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Monthly Income
-                    </p>
-                    <p className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                      {formatCurrency(monthlyIncome, currency)}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      From {incomeCount} {incomeCount === 1 ? 'source' : 'sources'}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Track income sources
-                    </p>
-                    <p className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                      $0
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Click to add →
-                    </p>
-                  </>
-                )}
+                <div className="text-sm text-zinc-500 mt-6">
+                  {incomeCount > 0 ? 'View income →' : 'Click to add →'}
+                </div>
               </div>
             </Link>
 
             {/* Bills Card */}
             <Link href="/dashboard/bills">
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                    <Receipt className="w-6 h-6 text-red-600 dark:text-red-400" />
-                  </div>
-                  {activeBillsCount > 0 ? (
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {activeBillsCount}
-                    </span>
-                  ) : (
-                    <span className="w-0 h-0"></span>
-                  )}
+              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-[200px] flex flex-col justify-between hover:bg-zinc-50 transition-colors">
+                <div>
+                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Bills</p>
+                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-rose-600 mt-3">
+                    {formatCurrency(monthlyBills, currency)}
+                  </p>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {activeBillsCount > 0
+                      ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
+                      : 'Track your bills'}
+                  </p>
                 </div>
-
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Bills</h3>
-
-                {activeBillsCount > 0 ? (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Monthly Bills
-                    </p>
-                    <p className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-                      {formatCurrency(monthlyBills, currency)}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {activeBillsCount} {activeBillsCount === 1 ? 'active bill' : 'active bills'}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Track your bills
-                    </p>
-                    <p className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-                      $0
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Click to add →
-                    </p>
-                  </>
-                )}
+                <div className="text-sm text-zinc-500 mt-6">
+                  {activeBillsCount > 0 ? 'View bills →' : 'Click to add →'}
+                </div>
               </div>
             </Link>
           </div>
