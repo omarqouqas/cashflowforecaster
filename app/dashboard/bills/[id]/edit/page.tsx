@@ -15,7 +15,10 @@ import { Tables } from '@/types/supabase';
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
   amount: z.coerce
-    .number({ message: 'Amount must be a valid number' })
+    .number({
+      required_error: 'Amount is required',
+      invalid_type_error: 'Amount must be a number',
+    })
     .positive('Amount must be positive'),
   due_date: z.string().min(1, 'Due date is required'),
   frequency: z.enum(['weekly', 'biweekly', 'monthly', 'quarterly', 'annually', 'one-time'], {
