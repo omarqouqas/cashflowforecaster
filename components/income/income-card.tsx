@@ -8,7 +8,7 @@ import { formatCurrency, formatDateOnly } from '@/lib/utils/format'
 import { ActiveToggleButton } from '@/components/ui/active-toggle-button'
 import Link from 'next/link'
 
-type Income = Tables<'income'>['Row']
+type Income = Tables<'income'>
 
 interface IncomeCardProps {
   income: Income

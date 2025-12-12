@@ -29,7 +29,7 @@ const incomeSchema = z.object({
 });
 
 type IncomeFormData = z.infer<typeof incomeSchema>;
-type Income = Tables<'income'>['Row'];
+type Income = Tables<'income'>;
 type Account = Pick<Tables<'accounts'>, 'id' | 'name' | 'account_type'>;
 
 export default function EditIncomePage() {

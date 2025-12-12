@@ -31,7 +31,7 @@ const billSchema = z.object({
 });
 
 type BillFormData = z.infer<typeof billSchema>;
-type Bill = Tables<'bills'>['Row'];
+type Bill = Tables<'bills'>;
 
 export default function EditBillPage() {
   const params = useParams();
