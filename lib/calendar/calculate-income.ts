@@ -1,4 +1,4 @@
-import { parseISO, startOfDay, isAfter, isBefore, isEqual, addMonths, getDate, setDate, endOfMonth } from 'date-fns';
+import { parseISO, startOfDay, isAfter, isBefore, isEqual, getDate, setDate, endOfMonth } from 'date-fns';
 import { Transaction } from './types';
 import { addDays, getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate } from './utils';
 
