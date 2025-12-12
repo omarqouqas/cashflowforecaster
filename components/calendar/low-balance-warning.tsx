@@ -73,7 +73,7 @@ export function LowBalanceWarning({
             </p>
           )}
 
-          {firstDangerDay.daysFromNow <= 7 && (
+          {firstDangerDay && firstDangerDay.daysFromNow <= 7 && (
             <p className={`text-xs mt-2 font-medium ${isOverdraft ? 'text-rose-800' : 'text-amber-800'}`}>
               {firstDangerDay.daysFromNow === 0
                 ? '⚠️ This is today!'
