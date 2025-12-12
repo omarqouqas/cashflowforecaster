@@ -29,7 +29,7 @@ export function IncomeCard({ income }: IncomeCardProps) {
             </span>
             <ActiveToggleButton
               id={income.id}
-              isActive={income.is_active}
+              isActive={income.is_active ?? true}
               tableName="income"
               itemName={income.name}
             />

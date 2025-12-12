@@ -209,7 +209,7 @@ function BillCard({ bill }: { bill: Bill }) {
             </span>
             <ActiveToggleButton
               id={bill.id}
-              isActive={bill.is_active}
+              isActive={bill.is_active ?? true}
               tableName="bills"
               itemName={bill.name}
             />
