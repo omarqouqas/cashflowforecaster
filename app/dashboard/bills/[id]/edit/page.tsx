@@ -20,10 +20,10 @@ const billSchema = z.object({
   }).positive('Amount must be positive'),
   due_date: z.string().min(1, 'Due date is required'),
   frequency: z.enum(['weekly', 'biweekly', 'monthly', 'quarterly', 'annually', 'one-time'], {
-    required_error: 'Please select a frequency',
+    message: 'Please select a frequency',
   }),
   category: z.enum(['rent', 'utilities', 'subscriptions', 'insurance', 'other'], {
-    required_error: 'Please select a category',
+    message: 'Please select a category',
   }),
   is_active: z.boolean().default(true),
 });

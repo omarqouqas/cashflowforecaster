@@ -19,7 +19,7 @@ const incomeSchema = z.object({
     invalid_type_error: 'Amount must be a number',
   }).positive('Amount must be positive'),
   frequency: z.enum(['one-time', 'weekly', 'biweekly', 'monthly', 'irregular'], {
-    required_error: 'Please select a frequency',
+    message: 'Please select a frequency',
   }),
   next_date: z.string().min(1, 'Next payment date is required'),
   account_id: z.string().nullable().optional(),

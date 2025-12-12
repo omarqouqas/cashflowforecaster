@@ -18,7 +18,7 @@ type Account = Tables<'accounts'>;
 const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required').max(50, 'Name too long'),
   account_type: z.enum(['checking', 'savings'], {
-    required_error: 'Please select an account type',
+    message: 'Please select an account type',
   }),
   current_balance: z.coerce.number({
     required_error: 'Balance is required',
