@@ -14,10 +14,9 @@ import { Tables } from '@/types/supabase';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
-  amount: z.coerce.number({
-    required_error: 'Amount is required',
-    invalid_type_error: 'Amount must be a number',
-  }).positive('Amount must be positive'),
+  amount: z.coerce
+    .number({ message: 'Amount must be a valid number' })
+    .positive('Amount must be positive'),
   frequency: z.enum(['one-time', 'weekly', 'biweekly', 'monthly', 'irregular'], {
     message: 'Please select a frequency',
   }),

@@ -20,10 +20,7 @@ const accountSchema = z.object({
   account_type: z.enum(['checking', 'savings'], {
     message: 'Please select an account type',
   }),
-  current_balance: z.coerce.number({
-    required_error: 'Balance is required',
-    invalid_type_error: 'Balance must be a number',
-  }),
+  current_balance: z.coerce.number({ message: 'Balance must be a valid number' }),
   currency: z.string().default('USD'),
   is_spendable: z.boolean().default(true),
 });

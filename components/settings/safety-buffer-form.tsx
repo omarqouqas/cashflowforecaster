@@ -14,10 +14,7 @@ import { formatCurrency } from '@/lib/utils/format';
 
 const safetyBufferSchema = z.object({
   safetyBuffer: z.coerce
-    .number({
-      required_error: 'Safety buffer is required',
-      invalid_type_error: 'Safety buffer must be a number',
-    })
+    .number({ message: 'Safety buffer must be a valid number' })
     .min(50, 'Safety buffer must be at least $50')
     .multipleOf(50, 'Safety buffer must be a multiple of 50'),
 });
