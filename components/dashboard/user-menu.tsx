@@ -48,7 +48,7 @@ export function UserMenu({ user }: UserMenuProps) {
         aria-haspopup="true"
       >
         <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white text-sm font-medium">
-          {user.email?.[0].toUpperCase()}
+          {user.email?.[0]?.toUpperCase() ?? '?'}
         </div>
         <span className="text-sm hidden sm:block text-zinc-700">
           {user.email}
