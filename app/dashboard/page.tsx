@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { SuccessMessage } from '@/components/ui/success-message';
 import Link from 'next/link';
-import { Wallet, TrendingUp, Receipt, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
@@ -172,10 +172,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {/* Accounts Card */}
             <Link href="/dashboard/accounts">
-              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-[200px] flex flex-col justify-between hover:bg-zinc-50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Accounts</p>
-                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-900 mt-3">
+              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Accounts</p>
+                <div className="mt-2">
+                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-900">
                     {formatCurrency(totalBalance, currency)}
                   </p>
                   <p className="text-sm text-zinc-500 mt-1">
@@ -184,18 +184,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       : 'Add your bank accounts'}
                   </p>
                 </div>
-                <div className="text-sm text-zinc-500 mt-6">
-                  {accountCount > 0 ? 'View accounts →' : 'Click to add →'}
-                </div>
               </div>
             </Link>
 
             {/* Income Card */}
             <Link href="/dashboard/income">
-              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-[200px] flex flex-col justify-between hover:bg-zinc-50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Income</p>
-                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-emerald-600 mt-3">
+              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Income</p>
+                <div className="mt-2">
+                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-emerald-600">
                     {formatCurrency(monthlyIncome, currency)}
                   </p>
                   <p className="text-sm text-zinc-500 mt-1">
@@ -204,18 +201,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       : 'Track income sources'}
                   </p>
                 </div>
-                <div className="text-sm text-zinc-500 mt-6">
-                  {incomeCount > 0 ? 'View income →' : 'Click to add →'}
-                </div>
               </div>
             </Link>
 
             {/* Bills Card */}
             <Link href="/dashboard/bills">
-              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-[200px] flex flex-col justify-between hover:bg-zinc-50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Bills</p>
-                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-rose-600 mt-3">
+              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Bills</p>
+                <div className="mt-2">
+                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-rose-600">
                     {formatCurrency(monthlyBills, currency)}
                   </p>
                   <p className="text-sm text-zinc-500 mt-1">
@@ -223,9 +217,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
                       : 'Track your bills'}
                   </p>
-                </div>
-                <div className="text-sm text-zinc-500 mt-6">
-                  {activeBillsCount > 0 ? 'View bills →' : 'Click to add →'}
                 </div>
               </div>
             </Link>

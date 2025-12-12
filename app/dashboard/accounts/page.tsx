@@ -82,13 +82,9 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
             {!accounts || accounts.length === 0 ? (
               /* Empty State */
               <div className="text-center py-12">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
-                  <Wallet className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">
-                  No accounts yet
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <Wallet className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
+                <p className="text-zinc-500">No accounts yet</p>
+                <p className="text-sm text-zinc-500 mt-1 mb-6">
                   Add your first bank account to start tracking your cash flow
                 </p>
                 <Link href="/dashboard/accounts/new">
@@ -96,8 +92,8 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
                 </Link>
               </div>
             ) : (
-              /* Accounts Grid */
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              /* Accounts List */
+              <div className="space-y-3">
                 {accounts.map((account) => (
                   <AccountCard key={account.id} account={account} />
                 ))}
@@ -111,31 +107,42 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
 
 function AccountCard({ account }: { account: Account }) {
   const accountTypeColors: Record<string, string> = {
-    checking: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    savings: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+    checking: 'bg-blue-50 text-blue-700',
+    savings: 'bg-violet-50 text-violet-700',
   };
 
   const accountTypeColor =
     accountTypeColors[account.account_type || 'checking'] ||
-    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+    'bg-zinc-100 text-zinc-600';
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-            {account.name}
-          </h3>
-          <span
-            className={`inline-block px-2 py-1 text-xs rounded font-medium ${accountTypeColor}`}
-          >
-            {account.account_type || 'checking'}
-          </span>
+    <div className="border border-zinc-200 bg-white rounded-lg p-4 hover:bg-zinc-50 transition-colors">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-base font-medium text-zinc-900 truncate">{account.name}</p>
+          {account.updated_at ? (
+            <p className="text-sm text-zinc-500">
+              Updated {formatRelativeTime(account.updated_at)}
+            </p>
+          ) : (
+            <p className="text-sm text-zinc-500">&nbsp;</p>
+          )}
+          <div className="flex gap-2 flex-wrap mt-2">
+            <span
+              className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${accountTypeColor}`}
+            >
+              {account.account_type || 'checking'}
+            </span>
+          </div>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <p className="text-lg font-semibold tabular-nums text-zinc-900">
+            {formatCurrency(account.current_balance, account.currency || 'USD')}
+          </p>
           <Link href={`/dashboard/accounts/${account.id}/edit`}>
             <button
-              className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors"
+              className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded transition-colors"
               aria-label="Edit account"
             >
               <Edit className="w-4 h-4" />
@@ -144,16 +151,6 @@ function AccountCard({ account }: { account: Account }) {
           <DeleteAccountButton accountId={account.id} accountName={account.name} />
         </div>
       </div>
-
-      <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-        {formatCurrency(account.current_balance, account.currency || 'USD')}
-      </div>
-
-      {account.updated_at && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Updated {formatRelativeTime(account.updated_at)}
-        </p>
-      )}
     </div>
   );
 }

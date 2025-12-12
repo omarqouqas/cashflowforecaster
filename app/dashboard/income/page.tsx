@@ -156,13 +156,11 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           {!incomes || incomes.length === 0 ? (
             /* Empty State */
             <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <TrendingUp className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
+              <p className="text-zinc-500">
                 No income sources yet
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              </p>
+              <p className="text-sm text-zinc-500 mt-1 mb-6">
                 Add your salary, freelance work, or other income sources to track your cash flow
               </p>
               <Link href="/dashboard/income/new">
@@ -170,8 +168,8 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
               </Link>
             </div>
           ) : (
-            /* Income Grid */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            /* Income List */
+            <div className="space-y-3">
               {incomes.map((income) => (
                 <IncomeCard key={income.id} income={income} />
               ))}

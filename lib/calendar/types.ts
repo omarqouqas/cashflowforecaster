@@ -54,5 +54,10 @@ export interface CalendarData {
   lowestBalance: number;
   /** The date when the lowest balance occurred */
   lowestBalanceDay: Date;
+  /**
+   * How much money the user can safely spend today without going below
+   * their safety buffer before the next income (or within a 14-day horizon).
+   */
+  safeToSpend: number;
 }
 

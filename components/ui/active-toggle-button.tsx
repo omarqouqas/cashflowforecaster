@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Check, X } from 'lucide-react'
 
 interface ActiveToggleButtonProps {
   id: string
@@ -64,26 +63,27 @@ export function ActiveToggleButton({
     <button
       onClick={handleToggle}
       disabled={isLoading}
-      className={`
-        inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium
-        transition-all duration-200
-        cursor-pointer hover:opacity-80
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-        disabled:cursor-wait disabled:opacity-70
-        ${
-          isActive
-            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-            : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-        }
-      `}
+      type="button"
+      role="switch"
+      aria-checked={isActive}
+      aria-label={`${itemName} is ${isActive ? 'active' : 'inactive'}. Click to ${
+        isActive ? 'deactivate' : 'activate'
+      }.`}
+      className={[
+        'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+        isActive ? 'bg-emerald-500' : 'bg-zinc-200',
+        'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2',
+        isLoading ? 'opacity-50 cursor-not-allowed' : '',
+      ].join(' ')}
       title={`Click to ${isActive ? 'deactivate' : 'activate'} ${itemName}`}
     >
-      {isActive ? (
-        <Check className="w-3 h-3" />
-      ) : (
-        <X className="w-3 h-3" />
-      )}
-      <span>{isActive ? 'Active' : 'Inactive'}</span>
+      <span className="sr-only">{isActive ? 'Active' : 'Inactive'}</span>
+      <span
+        className={[
+          'inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform',
+          isActive ? 'translate-x-6' : 'translate-x-1',
+        ].join(' ')}
+      />
     </button>
   )
 }

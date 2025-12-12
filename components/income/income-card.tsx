@@ -15,35 +15,18 @@ interface IncomeCardProps {
 }
 
 export function IncomeCard({ income }: IncomeCardProps) {
-  const isActive = income.is_active ?? true
-
-  const frequencyColors: Record<string, string> = {
-    weekly: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    biweekly: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-    monthly: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    irregular: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-    'one-time': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-  }
-
-  const frequencyColor =
-    frequencyColors[income.frequency] ||
-    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-
   return (
-    <div className={`
-      bg-white dark:bg-slate-800 border rounded-lg p-6 shadow-sm transition-all
-      ${!isActive ? 'opacity-60 border-gray-300 dark:border-slate-600' : 'border-slate-200 dark:border-slate-700 hover:shadow-md'}
-    `}>
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{income.name}</h3>
-          <div className="flex gap-2 flex-wrap">
-            {/* Frequency badge */}
-            <span className={`inline-block px-2 py-1 text-xs rounded font-medium capitalize ${frequencyColor}`}>
+    <div className="border border-zinc-200 bg-white rounded-lg p-4 hover:bg-zinc-50 transition-colors">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-base font-medium text-zinc-900 truncate">{income.name}</p>
+          <p className="text-sm text-zinc-500">
+            Next payment: {formatDateOnly(income.next_date)}
+          </p>
+          <div className="flex gap-2 flex-wrap mt-2">
+            <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded capitalize">
               {income.frequency}
             </span>
-            
-            {/* Active/Inactive badge */}
             <ActiveToggleButton
               id={income.id}
               isActive={income.is_active}
@@ -52,27 +35,19 @@ export function IncomeCard({ income }: IncomeCardProps) {
             />
           </div>
         </div>
-        
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <p className="text-lg font-semibold tabular-nums text-emerald-600">
+            {formatCurrency(income.amount)}
+          </p>
           <Link href={`/dashboard/income/${income.id}/edit`}>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" aria-label="Edit income">
               <Edit className="w-4 h-4" />
             </Button>
           </Link>
-          <DeleteIncomeButton 
-            incomeId={income.id} 
-            incomeName={income.name} 
-          />
+          <DeleteIncomeButton incomeId={income.id} incomeName={income.name} />
         </div>
       </div>
-      
-      <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-        {formatCurrency(income.amount)}
-      </div>
-      
-      <p className="text-sm text-gray-600 dark:text-gray-400">
-        Next payment: {formatDateOnly(income.next_date)}
-      </p>
     </div>
   )
 }

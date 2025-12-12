@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 
 interface DeleteBillButtonProps {
@@ -28,44 +27,72 @@ export function DeleteBillButton({ billId, billName }: DeleteBillButtonProps) {
       setIsDeleting(false)
       setIsConfirming(false)
     } else {
+      router.push('/dashboard/bills?success=bill-deleted')
       router.refresh()
     }
   }
 
   if (!isConfirming) {
     return (
-      <Button
-        variant="outline"
-        size="sm"
+      <button
         onClick={() => setIsConfirming(true)}
-        title="Delete bill"
-        className="border-red-500 text-red-600 hover:bg-red-600 hover:text-white dark:border-red-500 dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white"
+        aria-label={`Delete ${billName}`}
+        className="p-2 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
       >
         <Trash2 className="w-4 h-4" />
-      </Button>
+      </button>
     )
   }
 
   return (
-    <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
+    <div
+      className={[
+        'flex items-center gap-2 bg-rose-50 border border-rose-200 rounded-md px-3 py-1.5',
+        isDeleting ? 'opacity-50 cursor-not-allowed' : '',
+      ].join(' ')}
+    >
+      {isDeleting && (
+        <svg
+          className="animate-spin h-4 w-4 text-rose-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+      )}
+
+      <span className="text-sm text-rose-700">Delete?</span>
+
+      <button
+        type="button"
         onClick={() => setIsConfirming(false)}
         disabled={isDeleting}
-        className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+        className="text-sm text-zinc-600 hover:text-zinc-900 px-2 py-1 disabled:pointer-events-none"
       >
         Cancel
-      </Button>
-      <Button
-        variant="danger"
-        size="sm"
+      </button>
+      <button
+        type="button"
         onClick={handleDelete}
         disabled={isDeleting}
-        className="flex-1"
+        className="text-sm font-medium text-rose-600 hover:text-rose-700 px-2 py-1 disabled:pointer-events-none"
       >
-        {isDeleting ? 'Deleting...' : 'Confirm'}
-      </Button>
+        Confirm
+      </button>
     </div>
   )
 }

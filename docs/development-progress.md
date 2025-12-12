@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 8, 2024
+**Last Updated:** December 11, 2024
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,32 +10,31 @@
 
 ## Quick Stats
 
-- **Days in Development:** 10
+- **Days in Development:** 15
 - **Commits:** [Check git log]
 - **Files Created:** [Check git ls-files | wc -l]
-- **Lines of Code:** Estimate ~4,000-5,000 (if tracking)
+- **Lines of Code:** Estimate ~6,000-7,000
 - **Database Tables:** 9
 - **Test Coverage:** Manual testing (automated tests coming later)
 
 ## Current Status Summary
 
-**Overall Progress:** ~70% of MVP complete
+**Overall Progress:** ~85% of MVP complete
 
 **Completed Phases:**
 - ✅ Phase 1: Foundation (Days 1-3) - COMPLETE
-- ✅ Phase 2: Authentication (Days 4-5) - COMPLETE  
+- ✅ Phase 2: Authentication (Days 4-5) - COMPLETE
 - ✅ Phase 3: Core Data Models (Days 6-8) - COMPLETE
-  - Accounts, Income, Bills - Full CRUD operations
-- 🚧 Phase 4: Calendar Feature (Days 9-15) - IN PROGRESS
+- ✅ Phase 4: Calendar Feature (Days 9-15) - COMPLETE
   - ✅ Algorithm & Logic (Days 9-10) - COMPLETE
-  - ⏳ UI Components (Days 11-13) - PENDING
-  - ⏳ Polish & Testing (Days 14-15) - PENDING
+  - ✅ UI Components (Days 11-13) - COMPLETE
+  - ✅ Polish & Testing (Days 14-15) - COMPLETE
 
 **Next Steps:**
-1. Build calendar UI components (Days 11-13)
-2. Integrate with real user data
-3. Polish and optimize (Days 14-15)
-4. Final testing and launch prep
+1. Settings page enhancements (user-configurable thresholds)
+2. Scenarios / "Can I Afford It?" feature
+3. Final polish and launch prep
+4. Vercel deployment
 
 ---
 
@@ -256,7 +255,7 @@
 
 ---
 
-### ✅ Phase 3: Core Data Models (Days 6-8) - COMPLETE - 100% complete (3 of 3 done)
+### ✅ Phase 3: Core Data Models (Days 6-8) - COMPLETE
 
 #### Day 6: Account Management ✅ COMPLETE
 
@@ -376,7 +375,7 @@
 Converts all frequencies to monthly equivalent:
 
 - **Weekly:** amount × 52 ÷ 12 = monthly
-- **Biweekly:** amount × 26 ÷ 12 = monthly  
+- **Biweekly:** amount × 26 ÷ 12 = monthly
 - **Monthly:** amount × 1 = monthly
 - **One-time:** excluded from monthly total
 - **Irregular:** excluded from monthly total
@@ -554,11 +553,15 @@ Converts all frequencies to monthly equivalent:
 
 ---
 
-### 🚧 Phase 4: Calendar Feature (Days 9-15) - IN PROGRESS
+### ✅ Phase 4: Calendar Feature (Days 9-15) - COMPLETE
 
-**Status:** Algorithm complete (Days 9-10), UI pending (Days 11-15)
+#### Days 9-10: Calendar Algorithm ✅ COMPLETE
 
-**Algorithm Implementation - ✅ COMPLETE (Days 9-10):**
+**Date:** December 8, 2024
+
+**Time Invested:** 4-6 hours
+
+**Completed:**
 
 - [x] Calendar generation algorithm (60-day projection)
 - [x] Income occurrence calculator (all frequencies)
@@ -603,8 +606,8 @@ const dayToUse = Math.min(targetDay, lastDayOfMonth)
 This ensures Jan 31 bills appear on Feb 28/29 correctly.
 
 **Status Color Thresholds:**
-- Green: Balance ≥ $1,000 (safe)
-- Yellow: Balance ≥ $500 (caution)
+- Green: Balance ≥ safety buffer + cushion (safe)
+- Yellow: Balance ≥ safety buffer (caution)
 - Orange: Balance ≥ $0 (low)
 - Red: Balance < $0 (overdraft)
 
@@ -631,32 +634,116 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 - All 4 status colors working ✓
 - Calculation speed: <50ms ✓
 
-#### Days 11-13: Calendar UI - ⏳ PENDING
+---
 
-**Status:** Not yet started. Algorithm is complete and tested, ready for UI implementation.
+#### Days 11-13: Calendar UI ✅ COMPLETE
 
-**Planned:**
-- [ ] Main calendar page (`/dashboard/calendar`)
-- [ ] Calendar component (60-day grid view)
-- [ ] Day card component (shows balance, transactions, status)
-- [ ] Safe-to-spend display
-- [ ] Low tide alerts (warnings for low balance days)
-- [ ] Mobile responsive design
-- [ ] Integration with real user data (accounts, income, bills)
+**Date:** December 11, 2024
 
-**Current State:**
-- Test page exists at `/dashboard/calendar/test` with comprehensive validation
-- Algorithm fully functional and tested
-- Ready to build production UI using real user data
+**Time Invested:** 6-8 hours
 
-#### Days 14-15: Calendar Polish - ⏳ PENDING
+**Completed:**
 
-**Planned:**
-- [ ] Performance optimization (calendar generation caching)
-- [ ] Loading states
-- [ ] Error handling
-- [ ] Edge case testing with real user data
-- [ ] User testing and feedback
+- [x] Main calendar page (`/dashboard/calendar`)
+- [x] Vertical timeline view (60-day projection)
+- [x] TimelineRow component with status indicators, balance, transaction summary
+- [x] Click-to-expand DayDetail panel with full transaction list
+- [x] StickyCalendarHeader with 4-card summary (Starting, Lowest, Income, Bills)
+- [x] Safety buffer display
+- [x] Integration with real user data (accounts, income, bills)
+- [x] Mobile-responsive design (tested on iPhone 14 Pro Max)
+- [x] Color-coded status system (green/yellow/orange/red)
+
+**Key Files Created:**
+
+- `app/dashboard/calendar/page.tsx` - Main calendar page (Server Component)
+- `components/calendar/calendar-container.tsx` - Interactive container (Client Component)
+- `components/calendar/timeline.tsx` - TimelineRow component
+- `components/calendar/day-detail.tsx` - Expandable day details
+- `components/calendar/sticky-header.tsx` - Summary header with 4 cards
+
+**Architecture:**
+
+- Server Component (page.tsx) handles data fetching from Supabase
+- Client Component (CalendarContainer) handles interactivity (click to expand)
+- Clean separation of concerns between data and UI
+
+**UI/UX Features:**
+
+- Vertical timeline (better for mobile than grid)
+- Status bar on left edge of each row (green/yellow/orange/red)
+- Click any row to expand and see transaction details
+- Sticky header with key metrics always visible
+- Transaction dots showing income (green) and bills (red)
+- "Today" highlighted in teal
+- Smooth scroll to expanded day
+
+---
+
+#### Days 14-15: Calendar Polish ✅ COMPLETE
+
+**Date:** December 11, 2024
+
+**Time Invested:** 3-4 hours
+
+**Completed:**
+
+- [x] "Safe to Spend" calculation and display
+  - Shows how much user can spend without going below safety buffer
+  - Formula: lowestBalanceIn14Days - safetyBuffer
+  - Handles edge cases (negative values capped to $0)
+  - Prominent hero metric at top of calendar
+- [x] Info tooltip explaining the Safe to Spend calculation
+  - Reusable Tooltip component created
+  - Shows breakdown: lowest balance, safety buffer, result
+  - Works on hover (desktop) and tap (mobile)
+- [x] Low Balance Warning banner
+  - Prominent alert when danger days are upcoming
+  - Differentiates between overdraft (red) and low balance (amber)
+  - Shows days until danger, count of low-balance days
+  - "This is today!" / "Tomorrow!" messaging for urgency
+- [x] Fixed "0 days away" → "This is today!" messaging
+- [x] Mobile responsive design verified (iPhone 14 Pro Max)
+
+**Key Files Created:**
+
+- `components/ui/tooltip.tsx` - Reusable tooltip with hover/tap support
+- `components/calendar/low-balance-warning.tsx` - Warning banner component
+
+**Key Files Updated:**
+
+- `components/calendar/sticky-header.tsx` - Added Safe to Spend hero metric with tooltip
+- `components/calendar/calendar-container.tsx` - Added warning banner integration
+- `app/dashboard/calendar/page.tsx` - Added new calculations (safeToSpend, lowestIn14Days)
+
+**Safe to Spend Calculation:**
+
+```typescript
+// How much can you spend today without ever going below your safety buffer?
+const lowestIn14Days = Math.min(...calendarData.days.slice(0, 14).map(d => d.balance))
+const safeToSpend = Math.max(0, lowestIn14Days - safetyBuffer)
+```
+
+**Example scenarios:**
+- Balance $2,500,000, Lowest $2,500,000, Buffer $500 → Safe to spend: $2,499,500 ✓
+- Balance $711.93, Lowest $711.93, Buffer $500 → Safe to spend: $211.93 ✓
+- Balance $300, Lowest $300, Buffer $500 → Safe to spend: $0 ✓
+
+**Low Balance Warning Logic:**
+
+- Shows when any day has 'red' (overdraft) or 'orange' (below buffer) status
+- Only shows for danger within next 14 days to avoid alert fatigue
+- Differentiates messaging:
+  - Overdraft: "Your balance will go negative on [date]"
+  - Low balance: "Your balance will drop to [amount] on [date]"
+- Urgency indicators: "This is today!", "Tomorrow!", "Only X days away"
+
+**Technical Decisions:**
+
+- Safe to Spend uses 14-day lookahead (not full 60 days) for relevance
+- Tooltip shows calculation breakdown for user transparency
+- Warning only shows for upcoming danger (not far-future issues)
+- Reusable Tooltip component can be used elsewhere in app
 
 ---
 
@@ -684,11 +771,52 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 
 ---
 
+## Design System
+
+### Adopted: Minimalist Utility (Linear/Notion style)
+
+**Date Adopted:** December 11, 2024
+
+**Design Principles:**
+
+- Clean, tool-like aesthetic ("get in and get out")
+- Zinc color palette for neutrals
+- Teal accent color (not indigo - more unique)
+- Minimal shadows (prefer borders)
+- Mobile-first responsive design
+- 44px minimum touch targets
+
+**Color Palette:**
+
+- Background: `bg-white`, `bg-zinc-50` (subtle)
+- Text: `text-zinc-900` (primary), `text-zinc-500` (secondary)
+- Borders: `border-zinc-200`
+- Accent: `teal-600` for primary actions
+- Status colors:
+  - Safe (green): `bg-emerald-500`, `text-emerald-600`
+  - Caution (yellow): `bg-amber-400`, `text-amber-600`
+  - Low (orange): `bg-orange-500`, `text-orange-600`
+  - Danger (red): `bg-rose-500`, `text-rose-600`
+
+**Typography:**
+
+- Font: Inter (via Next.js)
+- Financial data: `tabular-nums` for alignment
+- Headers: `font-semibold`
+- Labels: `text-xs uppercase tracking-wide`
+
+**Components Created:**
+
+- Tooltip (`/components/ui/tooltip.tsx`)
+- Various calendar components following design system
+
+---
+
 ## Technical Debt & Future Improvements
 
 ### Known Issues
 
-- None currently (fresh project!)
+- None currently blocking
 
 ### Future Enhancements
 
@@ -703,7 +831,7 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 
 ### Mobile Strategy
 
-- [ ] Phase 1: PWA (current) - Complete MVP
+- [x] Phase 1: PWA (current) - MVP complete
 - [ ] Phase 2: Evaluate traction (Month 3-4)
 - [ ] Phase 3: Build React Native (if needed)
 - [ ] Phase 4: Submit to app stores
@@ -716,7 +844,7 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 
 **Decision:** Use PWA instead of React Native initially
 
-**Reasoning:** 
+**Reasoning:**
 
 - Faster to market (no app store approval)
 - Lower costs (no $99/year Apple fee)
@@ -755,12 +883,6 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 - Improved performance (less JavaScript sent to browser)
 - Follows Next.js 14 App Router best practices
 
-**Implementation:**
-
-- Accounts list: Server Component (fetches from DB)
-- Add/Edit forms: Client Components (handle user input)
-- Delete button: Client Component (confirmation dialog)
-
 **Decision:** Two-step confirmation for delete actions
 
 **Reasoning:**
@@ -768,8 +890,8 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 - Prevents accidental deletions
 - Simple UX (no modal needed)
 - Inline confirmation is more intuitive
-- First click shows Cancel/Confirm
-- Second click actually deletes
+
+---
 
 ### December 7, 2024
 
@@ -777,79 +899,61 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 
 **Reasoning:**
 
-- Active/inactive status toggle was 5 steps: edit → change status → save → redirect → refresh
-- Poor UX - too many clicks for simple action
+- Active/inactive status toggle was 5 steps
 - Same pattern needed on both bills and income pages
-- Reusable component follows DRY principle
-- One-click toggle significantly improves user experience
-
-**Implementation:**
-
-- Created `components/ui/active-toggle-button.tsx`
-- Accepts model type, id, current status, and update function
-- Works with both bills and income models
-- Uses router.refresh() for immediate UI update
-- Optimistic UI with loading states
-- Applied to both bills and income pages
-
-**Result:**
-
-- Status toggle reduced from 5 steps to 1 click
-- Better UX and faster user workflow
-- Reusable component can extend to other models
-- Consistent behavior across all status toggles
-
----
-
-### December 7, 2024
+- One-click toggle significantly improves UX
 
 **Decision:** Use accurate biweekly calculation (26 periods, not 24)
 
 **Reasoning:**
 
 - Mathematically correct (52 weeks ÷ 2 = 26 payments per year)
-- Accounts for months with 3 paychecks (happens twice yearly)
 - Better for long-term cash flow planning
-- Shows true average monthly income
-- Some users may expect $10,000 for $5,000 biweekly, but accurate is $10,833.33
-
-**Implementation:**
-
-- Added explanation note: "* Biweekly = 26 payments/year ÷ 12 months"
-- Clear formula in code with comments
-- Tested and verified calculation accuracy
 
 **Decision:** Create formatDateOnly() for date-only fields
 
 **Reasoning:**
 
-- Date-only fields (like "next payment date") were showing one day behind
-- Issue: UTC midnight being converted to local timezone
-- Solution: Parse dates as local dates without timezone conversion
-- Keeps existing formatDate() for timestamps (created_at, updated_at)
+- Date-only fields were showing one day behind due to UTC conversion
+- Separate function prevents timezone confusion
 
-**Implementation:**
+---
 
-- New function: formatDateOnly() in lib/utils/format.ts
-- Explicitly handles date-only values in user's local timezone
-- Applied to next_date, due_date, and similar fields
-- Prevents timezone confusion for users
+### December 11, 2024
 
-**Decision:** Use router.refresh() after mutations
+**Decision:** Adopt Minimalist Utility design system
 
 **Reasoning:**
 
-- Next.js 14 aggressively caches Server Component data
-- After edits, page showed stale data until manual refresh
-- Poor UX - users confused if save worked
-- router.refresh() forces fresh data fetch
+- Target users are stressed about money - need clarity, not flash
+- Calendar is the hero - minimal UI lets data shine
+- Ages well (no trendy neon colors)
+- Faster to build and maintain
 
-**Implementation:**
+**Decision:** Use vertical timeline instead of calendar grid
 
-- Added router.refresh() before redirect in all edit pages
-- Applied to accounts, income, and bills edit flows
-- Also applied to toggle component for immediate UI updates
-- Alternative (Server Actions) considered for future refactor
+**Reasoning:**
+
+- Better for mobile (primary use case)
+- More natural for daily view
+- Easier to show transaction details
+- Click-to-expand pattern works well
+
+**Decision:** Safe to Spend uses 14-day lookahead
+
+**Reasoning:**
+
+- 60-day lookahead would show artificially low numbers
+- 14 days is actionable planning horizon
+- Matches typical pay cycle
+
+**Decision:** Add tooltip explaining Safe to Spend calculation
+
+**Reasoning:**
+
+- Users need to understand this key metric
+- Transparency builds trust
+- Reduces confusion when amount is $0
 
 ---
 
@@ -907,70 +1011,29 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 ### Development Velocity
 
 **Days 1-3:** Foundation (10-12 hours total)
-
 - Average: 3-4 hours per day
-- Phase: Project setup, Database, Infrastructure
 
 **Days 4-5:** Authentication (5-7 hours total)
-
 - Average: 2.5-3.5 hours per day
-- Phase: Complete auth system with enhancements
 
-**Day 6:** Account Management (2-3 hours)
-
-- Phase: Core data models (1 of 3 complete)
-
-**Day 7:** Income Management (2-3 hours)
-
-- Phase: Core data models (2 of 3 complete)
-- Includes bug fixes and comprehensive testing
-
-**Day 8:** Bills Management (2-3 hours)
-
-- Phase: Core data models (3 of 3 complete)
-- Bonus: Reusable toggle component created
+**Days 6-8:** Core Data Models (6-9 hours total)
+- Average: 2-3 hours per day
 - Pattern reuse accelerating development
 
 **Days 9-10:** Calendar Algorithm (4-6 hours total)
-
-- Phase: Calendar feature - algorithm implementation
 - Comprehensive test suite created
-- All edge cases handled and verified
 
-**Cumulative:** ~25-34 hours over 10 days
+**Days 11-13:** Calendar UI (6-8 hours total)
+- Component architecture established
 
-**Average:** ~2.5-3.4 hours per day
+**Days 14-15:** Calendar Polish (3-4 hours total)
+- Safe to Spend and warnings added
 
-**Status:** On track for MVP timeline. Algorithm complete, UI next.
+**Cumulative:** ~40-50 hours over 15 days
 
-**Velocity Observation:**
+**Average:** ~2.7-3.3 hours per day
 
-- Consistent 2-3 hour days for feature development
-- Pattern established: List page → Add form → Edit form → Delete
-- Code reuse accelerating development (Day 8 completed faster)
-- Reusable components created (toggle button) improve future velocity
-- Testing time investment paying off (fewer bugs)
-- Phase 3 (Core Data Models) complete
-- Phase 4 (Calendar) algorithm complete and thoroughly tested
-- Ready to build production UI using established patterns
-
-**Current Status (December 2024):**
-
-- ✅ Phase 1: Foundation (Days 1-3) - COMPLETE
-- ✅ Phase 2: Authentication (Days 4-5) - COMPLETE
-- ✅ Phase 3: Core Data Models (Days 6-8) - COMPLETE
-- 🚧 Phase 4: Calendar Feature (Days 9-15) - IN PROGRESS
-  - ✅ Algorithm & Logic (Days 9-10) - COMPLETE
-  - ⏳ UI Components (Days 11-13) - PENDING
-  - ⏳ Polish & Testing (Days 14-15) - PENDING
-
-**Projected Completion:**
-
-- Days 11-13: Calendar UI (8-10 hours) - Next phase
-- Days 14-15: Calendar Polish (4-6 hours)
-- Days 16-20: Polish & Launch Prep (10-15 hours)
-- **Estimated MVP Completion:** Late December 2024 / Early January 2025
-- **Target Public Launch:** Early January 2025
+**Status:** Phase 4 complete! Ready for final MVP features.
 
 ### What's Working Well
 
@@ -978,63 +1041,22 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 - Supabase for quick backend setup
 - TypeScript for catching errors early
 - Git for version control and safety
-- **Pattern reuse:** Account → Income → Bills (accelerating development)
-- **Reusable components:** Toggle button works across models (bills & income)
-- **Comprehensive testing:** Finding issues before they accumulate
-- **Documentation:** Progress tracking helps maintain momentum
-- **Consistent velocity:** 2-3 hours daily is sustainable
-- **Calendar algorithm:** Fully tested and ready for UI integration
-- **Test-driven approach:** Comprehensive test page validates all edge cases
+- Pattern reuse accelerating development
+- Reusable components (toggle, tooltip) improve velocity
+- Comprehensive testing finding issues early
+- Documentation maintaining momentum
+- Consistent 2-3 hour daily sessions sustainable
+- Design system creating visual consistency
 
-### Challenges Encountered
+### Challenges Encountered & Resolved
 
-- Supabase CLI authentication (resolved with browser login)
-- Understanding Next.js 14 cookie handling (resolved with proper client types)
-- Git authentication (resolved with Personal Access Token)
-
-**Day 8 Highlights:**
-
-- **Reusable component creation:** ActiveToggleButton component
-  - Reduced status toggle from 5 steps to 1 click
-  - Works on both bills and income pages
-  - Demonstrates component reusability value
-
-- **Pattern mastery:** Bills implementation completed faster
-  - Applied all learnings from Days 6-7 proactively
-  - router.refresh() and formatDateOnly() used from start
-  - Consistent patterns across all three data models
-
-**Days 9-10 Highlights:**
-
-- **Calendar algorithm complete:** Full 60-day projection working
-  - Handles all frequency types (weekly, biweekly, monthly, quarterly, annually, one-time)
-  - Month-end date handling (Jan 31 → Feb 28/29) working correctly
-  - Status color coding implemented (green/yellow/orange/red)
-  - Comprehensive test suite with 11 validation checks
-  - All edge cases tested and verified
-  - Debug helper for development troubleshooting
-
-- **Test page created:** `/dashboard/calendar/test` provides full validation
-  - Tests with realistic data scenarios
-  - Validates inactive items exclusion
-  - Verifies multiple transactions on same day
-  - Confirms balance calculations are accurate
-  - Ready for UI implementation using real user data
-
-**Day 7 Challenges:**
-
-- **Date timezone issues:** Dates showing one day behind
-  - Resolved: Created formatDateOnly() function
-  - Lesson: Be explicit about date-only vs datetime fields
-
-- **Caching after edits:** Changes not visible without refresh
-  - Resolved: Added router.refresh() before redirects
-  - Lesson: Next.js 14 caching requires explicit invalidation
-
-- **Biweekly calculation confusion:** Expected $10k but showed $10,833.33
-  - Resolved: Added explanation text for users
-  - Lesson: Document non-obvious calculations in UI
-  - Decision: Keep accurate calculation (better for users long-term)
+- Supabase CLI authentication → browser login
+- Next.js 14 cookie handling → proper client types
+- Git authentication → Personal Access Token
+- Date timezone issues → formatDateOnly()
+- Page caching after edits → router.refresh()
+- Calendar click not working → Server/Client component separation
+- Safe to Spend formula → corrected to use lowestIn14Days
 
 ### Lessons Learned
 
@@ -1042,8 +1064,31 @@ This ensures Jan 31 bills appear on Feb 28/29 correctly.
 - Test Supabase connection before building features
 - Generate types from live database (don't maintain manually)
 - Commit frequently (after each completed feature)
+- Server Components for data, Client Components for interactivity
+- router.refresh() critical for cache invalidation
+- Design system speeds up development significantly
+- Tooltips help users understand complex calculations
+
+---
+
+## Remaining MVP Tasks
+
+### High Priority (Before Launch)
+
+- [ ] Settings page: user-configurable safety buffer
+- [ ] Scenarios / "Can I Afford It?" feature (optional for MVP)
+- [ ] Final polish and bug fixes
+- [ ] Vercel deployment
+- [ ] Custom domain connection
+
+### Nice to Have (Post-MVP)
+
+- [ ] Email parser for bill detection
+- [ ] Chevron icons for expand affordance
+- [ ] Loading skeletons
+- [ ] Error boundaries
+- [ ] Automated testing
 
 ---
 
 **This is a living document. Update after each development session.**
-

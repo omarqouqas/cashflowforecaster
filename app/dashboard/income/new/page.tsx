@@ -6,13 +6,10 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FormError } from '@/components/ui/form-error';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 
 const incomeSchema = z.object({
@@ -100,75 +97,78 @@ export default function NewIncomePage() {
   };
 
   return (
-    <>
-      {/* Breadcrumb */}
-      <div className="mb-6">
-        <Link
-          href="/dashboard/income"
-          className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" />
-          Back to Income
-        </Link>
-      </div>
+    <div className="max-w-lg mx-auto">
+      <Link
+        href="/dashboard/income"
+        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Income
+      </Link>
 
-      {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add Income Source</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Add a new source of income to track in your cash flow calendar
-        </p>
-      </div>
+      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Income Source</h1>
 
-      {/* Form Card */}
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 shadow-sm">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Income Name */}
-            <div>
-              <Label htmlFor="name">Income Source Name</Label>
+      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Income Name */}
+          <div>
+            <Label htmlFor="name" className="text-zinc-700 mb-1.5 block">
+              Income Source Name<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <Input
+              id="name"
+              placeholder="e.g., Salary, Freelance Project, Side Gig"
+              {...register('name')}
+              className={errors.name ? 'border-rose-500 focus:ring-rose-500' : undefined}
+            />
+            {errors.name?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.name.message}</p>
+            )}
+          </div>
+
+          {/* Amount */}
+          <div>
+            <Label htmlFor="amount" className="text-zinc-700 mb-1.5 block">
+              Amount<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
               <Input
-                id="name"
-                placeholder="e.g., Salary, Freelance Project, Side Gig"
-                className="mt-1"
-                {...register('name')}
+                id="amount"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                className={[
+                  'pl-8',
+                  errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
+                ].join(' ')}
+                {...register('amount')}
               />
-              <FormError message={errors.name?.message} />
             </div>
+            {errors.amount?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.amount.message}</p>
+            )}
+            <p className="text-sm text-zinc-500 mt-1.5">
+              Enter the amount you receive each payment
+            </p>
+          </div>
 
-            {/* Amount */}
-            <div>
-              <Label htmlFor="amount">Amount</Label>
-              <div className="relative mt-1">
-                <span className="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">$</span>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="pl-8"
-                  {...register('amount')}
-                />
-              </div>
-              <FormError message={errors.amount?.message} />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Enter the amount you receive each payment
-              </p>
-            </div>
-
-            {/* Frequency */}
-            <div>
-              <Label htmlFor="frequency">Frequency</Label>
+          {/* Frequency */}
+          <div>
+            <Label htmlFor="frequency" className="text-zinc-700 mb-1.5 block">
+              Frequency<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <div className="relative">
               <select
                 id="frequency"
                 {...register('frequency')}
-                className={cn(
-                  'w-full mt-1 px-3 py-2 rounded-md border border-gray-300 bg-white',
-                  'text-sm',
-                  'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                  'disabled:cursor-not-allowed disabled:opacity-50',
-                  'dark:bg-slate-700 dark:border-slate-600 dark:text-white'
-                )}
+                className={[
+                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
+                  'placeholder:text-zinc-400',
+                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'appearance-none pr-10',
+                  errors.frequency ? 'border-rose-500 focus:ring-rose-500' : '',
+                ].join(' ')}
               >
                 <option value="">Select frequency...</option>
                 <option value="weekly">Weekly</option>
@@ -177,37 +177,45 @@ export default function NewIncomePage() {
                 <option value="one-time">One-time payment</option>
                 <option value="irregular">Irregular / Variable</option>
               </select>
-              <FormError message={errors.frequency?.message} />
+              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
+            {errors.frequency?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.frequency.message}</p>
+            )}
+          </div>
 
-            {/* Next Payment Date */}
-            <div>
-              <Label htmlFor="next_date">Next Payment Date</Label>
-              <Input
-                id="next_date"
-                type="date"
-                className="mt-1"
-                {...register('next_date')}
-              />
-              <FormError message={errors.next_date?.message} />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                When do you expect the next payment?
-              </p>
-            </div>
+          {/* Next Payment Date */}
+          <div>
+            <Label htmlFor="next_date" className="text-zinc-700 mb-1.5 block">
+              Next Payment Date<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <Input
+              id="next_date"
+              type="date"
+              {...register('next_date')}
+              className={errors.next_date ? 'border-rose-500 focus:ring-rose-500' : undefined}
+            />
+            {errors.next_date?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.next_date.message}</p>
+            )}
+            <p className="text-sm text-zinc-500 mt-1.5">When do you expect the next payment?</p>
+          </div>
 
-            {/* Account Link (Optional) */}
-            <div>
-              <Label htmlFor="account_id">Deposit Account (Optional)</Label>
+          {/* Account Link (Optional) */}
+          <div>
+            <Label htmlFor="account_id" className="text-zinc-700 mb-1.5 block">
+              Deposit Account (Optional)
+            </Label>
+            <div className="relative">
               <select
                 id="account_id"
                 {...register('account_id')}
-                className={cn(
-                  'w-full mt-1 px-3 py-2 rounded-md border border-gray-300 bg-white',
-                  'text-sm',
-                  'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                  'disabled:cursor-not-allowed disabled:opacity-50',
-                  'dark:bg-slate-700 dark:border-slate-600 dark:text-white'
-                )}
+                className={[
+                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
+                  'placeholder:text-zinc-400',
+                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'appearance-none pr-10',
+                ].join(' ')}
               >
                 <option value="">No specific account</option>
                 {accounts.map((account) => (
@@ -216,55 +224,55 @@ export default function NewIncomePage() {
                   </option>
                 ))}
               </select>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Which account does this income go into?
+              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+            <p className="text-sm text-zinc-500 mt-1.5">Which account does this income go into?</p>
+          </div>
+
+          {/* Is Active Checkbox */}
+          <div className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="is_active"
+              {...register('is_active')}
+              defaultChecked
+              className="mt-1 h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+            />
+            <div>
+              <Label
+                htmlFor="is_active"
+                className="text-zinc-700 cursor-pointer"
+              >
+                Include in forecast
+              </Label>
+              <p className="text-sm text-zinc-500 mt-1">
+                Uncheck to pause this income without deleting it
               </p>
             </div>
+          </div>
 
-            {/* Is Active Checkbox */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="is_active"
-                {...register('is_active')}
-                defaultChecked
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700"
-              />
-              <div>
-                <Label htmlFor="is_active" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Include in forecast
-                </Label>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Uncheck to pause this income without deleting it
-                </p>
-              </div>
-            </div>
+          {error && <p className="text-sm text-rose-600">{error}</p>}
 
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-3 text-sm text-red-800 dark:text-red-200">
-                {error}
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push('/dashboard/income')}
-                disabled={isLoading}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isLoading} loading={isLoading}>
-                {isLoading ? 'Adding...' : 'Add Income Source'}
-              </Button>
-            </div>
-          </form>
-        </div>
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+            <button
+              type="button"
+              onClick={() => router.push('/dashboard/income')}
+              disabled={isLoading}
+              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 }
 

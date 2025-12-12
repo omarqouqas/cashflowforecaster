@@ -8,7 +8,7 @@
  * 4. Identifying the lowest balance day
  */
 
-import { CalendarData, CalendarDay, Transaction } from './types';
+import { CalendarData, CalendarDay } from './types';
 import { calculateIncomeOccurrences } from './calculate-income';
 import { calculateBillOccurrences } from './calculate-bills';
 import { addDays, isSameDay, getStatusColor } from './utils';
@@ -136,12 +136,20 @@ export default function generateCalendar(
       }
     }
 
-    // Step 7: Return CalendarData
+    // Step 7: Safe to Spend (next 14 days)
+    // safeToSpend = lowestBalanceInNext14Days - safetyBuffer (capped at 0)
+    const next14Days = days.slice(0, 14);
+    const lowestIn14Days =
+      next14Days.length === 0 ? startingBalance : Math.min(...next14Days.map((d) => d.balance));
+    const safeToSpend = Math.max(0, lowestIn14Days - safetyBuffer);
+
+    // Step 8: Return CalendarData
     return {
       days,
       startingBalance,
       lowestBalance,
       lowestBalanceDay,
+      safeToSpend,
     };
   } catch (error) {
     console.error('Error generating calendar:', error);

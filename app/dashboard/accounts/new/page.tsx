@@ -6,13 +6,10 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FormError } from '@/components/ui/form-error';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowLeft, ChevronDown } from 'lucide-react';
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required').max(50, 'Name too long'),
@@ -84,155 +81,149 @@ export default function NewAccountPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-      {/* Header/Nav */}
-      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-              Cash Flow Forecaster
-            </h1>
+    <div className="max-w-lg mx-auto">
+      <Link
+        href="/dashboard/accounts"
+        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Accounts
+      </Link>
+
+      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Account</h1>
+
+      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Account Name */}
+          <div>
+            <Label htmlFor="name" className="text-zinc-700 mb-1.5 block">
+              Account Name<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <Input
+              id="name"
+              placeholder="e.g., Main Checking"
+              {...register('name')}
+              className={errors.name ? 'border-rose-500 focus:ring-rose-500' : undefined}
+            />
+            {errors.name?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.name.message}</p>
+            )}
           </div>
-        </div>
-      </header>
 
-      {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <Link
-            href="/dashboard/accounts"
-            className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to Accounts
-          </Link>
-        </div>
-
-        {/* Page Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Add Account</h2>
-        </div>
-
-        {/* Form Card */}
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 shadow-sm">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Account Name */}
-              <div>
-                <Label htmlFor="name">Account Name</Label>
-                <Input
-                  id="name"
-                  placeholder="e.g., Main Checking"
-                  {...register('name')}
-                  className="mt-1"
-                />
-                <FormError message={errors.name?.message} />
-              </div>
-
-              {/* Account Type */}
-              <div>
-                <Label htmlFor="account_type">Account Type</Label>
-                <select
-                  id="account_type"
-                  {...register('account_type')}
-                  className={cn(
-                    'w-full mt-1 px-3 py-2 rounded-md border border-gray-300 bg-white',
-                    'text-sm',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                    'disabled:cursor-not-allowed disabled:opacity-50',
-                    'dark:bg-slate-700 dark:border-slate-600 dark:text-white'
-                  )}
-                >
-                  <option value="">Select type...</option>
-                  <option value="checking">Checking</option>
-                  <option value="savings">Savings</option>
-                </select>
-                <FormError message={errors.account_type?.message} />
-              </div>
-
-              {/* Current Balance */}
-              <div>
-                <Label htmlFor="current_balance">Current Balance</Label>
-                <div className="relative mt-1">
-                  <span className="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">
-                    $
-                  </span>
-                  <Input
-                    id="current_balance"
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    className="pl-8"
-                    {...register('current_balance')}
-                  />
-                </div>
-                <FormError message={errors.current_balance?.message} />
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Enter your current account balance
-                </p>
-              </div>
-
-              {/* Currency */}
-              <div>
-                <Label htmlFor="currency">Currency</Label>
-                <select
-                  id="currency"
-                  {...register('currency')}
-                  className={cn(
-                    'w-full mt-1 px-3 py-2 rounded-md border border-gray-300 bg-white',
-                    'text-sm',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                    'disabled:cursor-not-allowed disabled:opacity-50',
-                    'dark:bg-slate-700 dark:border-slate-600 dark:text-white'
-                  )}
-                >
-                  <option value="USD">USD ($)</option>
-                  <option value="CAD">CAD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                </select>
-                <FormError message={errors.currency?.message} />
-              </div>
-
-              {/* Is Spendable Checkbox */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="is_spendable"
-                  {...register('is_spendable')}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700"
-                />
-                <Label htmlFor="is_spendable" className="font-normal cursor-pointer">
-                  Use this account for expenses
-                </Label>
-              </div>
-
-              {/* Error Message */}
-              {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-3 text-sm text-red-800 dark:text-red-200">
-                  {error}
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push('/dashboard/accounts')}
-                  disabled={isLoading}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isLoading} loading={isLoading}>
-                  {isLoading ? 'Creating...' : 'Create Account'}
-                </Button>
-              </div>
-            </form>
+          {/* Account Type */}
+          <div>
+            <Label htmlFor="account_type" className="text-zinc-700 mb-1.5 block">
+              Account Type<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <div className="relative">
+              <select
+                id="account_type"
+                {...register('account_type')}
+                className={[
+                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
+                  'placeholder:text-zinc-400',
+                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'appearance-none pr-10',
+                  errors.account_type ? 'border-rose-500 focus:ring-rose-500' : '',
+                ].join(' ')}
+              >
+                <option value="">Select type...</option>
+                <option value="checking">Checking</option>
+                <option value="savings">Savings</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+            {errors.account_type?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.account_type.message}</p>
+            )}
           </div>
-        </div>
-      </main>
+
+          {/* Current Balance */}
+          <div>
+            <Label htmlFor="current_balance" className="text-zinc-700 mb-1.5 block">
+              Current Balance<span className="text-rose-500 ml-0.5">*</span>
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                $
+              </span>
+              <Input
+                id="current_balance"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                className={[
+                  'pl-8',
+                  errors.current_balance ? 'border-rose-500 focus:ring-rose-500' : '',
+                ].join(' ')}
+                {...register('current_balance')}
+              />
+            </div>
+            {errors.current_balance?.message && (
+              <p className="text-sm text-rose-600 mt-1.5">{errors.current_balance.message}</p>
+            )}
+            <p className="text-sm text-zinc-500 mt-1.5">Enter your current account balance</p>
+          </div>
+
+          {/* Currency */}
+          <div>
+            <Label htmlFor="currency" className="text-zinc-700 mb-1.5 block">
+              Currency
+            </Label>
+            <div className="relative">
+              <select
+                id="currency"
+                {...register('currency')}
+                className={[
+                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
+                  'placeholder:text-zinc-400',
+                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'appearance-none pr-10',
+                ].join(' ')}
+              >
+                <option value="USD">USD ($)</option>
+                <option value="CAD">CAD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Is Spendable Checkbox */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_spendable"
+              {...register('is_spendable')}
+              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+            />
+            <Label htmlFor="is_spendable" className="text-zinc-700 font-normal cursor-pointer">
+              Use this account for expenses
+            </Label>
+          </div>
+
+          {error && <p className="text-sm text-rose-600">{error}</p>}
+
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+            <button
+              type="button"
+              onClick={() => router.push('/dashboard/accounts')}
+              disabled={isLoading}
+              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Creating...' : 'Create Account'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

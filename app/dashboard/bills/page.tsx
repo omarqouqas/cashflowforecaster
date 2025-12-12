@@ -163,13 +163,9 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           {!bills || bills.length === 0 ? (
             /* Empty State */
             <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                <Receipt className="w-8 h-8 text-red-600 dark:text-red-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                No bills yet
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <Receipt className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
+              <p className="text-zinc-500">No bills yet</p>
+              <p className="text-sm text-zinc-500 mt-1 mb-6">
                 Add your first bill to start tracking your expenses
               </p>
               <Link href="/dashboard/bills/new">
@@ -177,8 +173,8 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
               </Link>
             </div>
           ) : (
-            /* Bills Grid */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            /* Bills List */
+            <div className="space-y-3">
               {bills.map((bill) => (
                 <BillCard key={bill.id} bill={bill} />
               ))}
@@ -191,67 +187,26 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 }
 
 function BillCard({ bill }: { bill: Bill }) {
-  const categoryColors: Record<string, string> = {
-    rent: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    utilities: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-    subscriptions: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-    insurance: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-    other: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-  };
-
-  const frequencyColors: Record<string, string> = {
-    weekly: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    biweekly: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-    monthly: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    quarterly: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-    annually: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-    'one-time': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-  };
-
-  const categoryColor =
-    categoryColors[bill.category || 'other'] ||
-    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
-
-  const frequencyColor =
-    frequencyColors[bill.frequency] ||
-    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
-
-  const isActive = bill.is_active ?? true;
-
   return (
-    <div
-      className={`
-        bg-white dark:bg-slate-800 border rounded-lg p-6 shadow-sm transition-all h-[200px] flex flex-col
-        ${
-          !isActive
-            ? 'opacity-60 border-gray-300 dark:border-slate-600'
-            : 'border-slate-200 dark:border-slate-700 hover:shadow-md'
-        }
-      `}
-    >
-      <div className="flex justify-between items-start mb-4 flex-shrink-0">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 truncate">
-            {bill.name}
-          </h3>
-          <div className="flex gap-2 flex-wrap">
-            {/* Category badge */}
+    <div className="border border-zinc-200 bg-white rounded-lg p-4 hover:bg-zinc-50 transition-colors">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-base font-medium text-zinc-900 truncate">{bill.name}</p>
+          {bill.due_date ? (
+            <p className="text-sm text-zinc-500">Due: {formatDateOnly(bill.due_date)}</p>
+          ) : (
+            <p className="text-sm text-zinc-500">&nbsp;</p>
+          )}
+
+          <div className="flex gap-2 flex-wrap mt-2">
             {bill.category && (
-              <span
-                className={`inline-block px-2 py-1 text-xs rounded font-medium capitalize ${categoryColor}`}
-              >
+              <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded capitalize">
                 {bill.category}
               </span>
             )}
-
-            {/* Frequency badge */}
-            <span
-              className={`inline-block px-2 py-1 text-xs rounded font-medium capitalize ${frequencyColor}`}
-            >
+            <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded capitalize">
               {bill.frequency}
             </span>
-
-            {/* Active/Inactive badge */}
             <ActiveToggleButton
               id={bill.id}
               isActive={bill.is_active}
@@ -261,10 +216,13 @@ function BillCard({ bill }: { bill: Bill }) {
           </div>
         </div>
 
-        <div className="flex gap-2 flex-shrink-0 ml-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <p className="text-lg font-semibold tabular-nums text-rose-600">
+            {formatCurrency(bill.amount)}
+          </p>
           <Link href={`/dashboard/bills/${bill.id}/edit`}>
             <button
-              className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors"
+              className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded transition-colors"
               aria-label="Edit bill"
             >
               <Edit className="w-4 h-4" />
@@ -272,18 +230,6 @@ function BillCard({ bill }: { bill: Bill }) {
           </Link>
           <DeleteBillButton billId={bill.id} billName={bill.name} />
         </div>
-      </div>
-
-      <div className="flex-1 flex flex-col justify-end">
-        <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-          {formatCurrency(bill.amount)}
-        </div>
-
-        {bill.due_date && (
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Due: {formatDateOnly(bill.due_date)}
-          </p>
-        )}
       </div>
     </div>
   );

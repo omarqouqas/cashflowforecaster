@@ -2,47 +2,57 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Wallet, TrendingUp, FileText, Calendar, Settings } from 'lucide-react'
+import { Wallet, TrendingUp, FileText, Calendar, Settings } from 'lucide-react'
 
 export function DashboardNav() {
   const pathname = usePathname()
   
   const links = [
-    { href: '/dashboard', label: 'Dashboard', icon: Home },
+    { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
-    { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
   
   return (
-    <nav className="flex gap-1 sm:gap-4 overflow-x-auto border-b border-slate-200 dark:border-slate-700 px-4 bg-white dark:bg-slate-800">
-      {links.map((link) => {
-        const Icon = link.icon
-        // For dashboard home, exact match. For other routes, check if pathname starts with the href
-        const isActive = link.href === '/dashboard' 
-          ? pathname === link.href
-          : pathname.startsWith(link.href)
-        
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`
-              flex items-center gap-2 px-3 py-3 border-b-2 -mb-px transition-colors whitespace-nowrap
-              ${isActive 
-                ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' 
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }
-            `}
-          >
-            <Icon className="w-4 h-4" />
-            <span className="text-sm font-medium hidden sm:inline">{link.label}</span>
-          </Link>
-        )
-      })}
-    </nav>
+    <div className="border-b border-zinc-200 bg-white sticky top-0 z-10 backdrop-blur-sm bg-white/90">
+      <nav className="flex gap-1 px-4 py-2 overflow-x-auto -mx-4 px-4 scrollbar-hide">
+        {links.map((link) => {
+          const Icon = link.icon
+          const isActive = pathname.startsWith(link.href)
+          const isCalendar = link.href === '/dashboard/calendar'
+
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={[
+                'px-3 py-2 min-h-[44px]',
+                'text-sm font-medium rounded-md whitespace-nowrap',
+                'transition-colors',
+                'inline-flex items-center gap-2',
+                isActive
+                  ? 'text-zinc-900 bg-zinc-100'
+                  : isCalendar
+                    ? 'text-teal-700 hover:text-zinc-900 hover:bg-zinc-100'
+                    : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100',
+              ].join(' ')}
+            >
+              <Icon className="w-4 h-4" />
+              <span>
+                {link.label}
+                {isCalendar && !isActive && (
+                  <span className="bg-teal-100 text-teal-700 text-xs px-1.5 rounded ml-1">
+                    NEW
+                  </span>
+                )}
+              </span>
+            </Link>
+          )
+        })}
+      </nav>
+    </div>
   )
 }
 
