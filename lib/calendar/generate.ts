@@ -76,6 +76,9 @@ export default function generateCalendar(
     }
 
     const endDate = dates[dates.length - 1];
+    if (!endDate) {
+      throw new Error('Failed to generate calendar dates: endDate is undefined');
+    }
 
     // Step 3: Calculate all income occurrences for the entire 60-day period
     const allIncomeOccurrences = income
@@ -91,7 +94,7 @@ export default function generateCalendar(
 
     // Step 5: Project daily balances using reduce to build array incrementally
     const days = dates.reduce((acc, date, index) => {
-      const previousBalance = index === 0 ? startingBalance : acc[index - 1].balance;
+      const previousBalance = index === 0 ? startingBalance : acc[index - 1]!.balance;
 
       // Find income for this specific day
       const incomeToday = allIncomeOccurrences.filter(occ => isSameDay(occ.date, date));

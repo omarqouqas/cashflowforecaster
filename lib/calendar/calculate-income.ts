@@ -1,6 +1,6 @@
-import { parseISO, startOfDay, isAfter, isBefore, isEqual, getDate, setDate, endOfMonth } from 'date-fns';
+import { parseISO, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
 import { Transaction } from './types';
-import { addDays, getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate } from './utils';
+import { getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate } from './utils';
 
 /**
  * Income record structure for calculating occurrences.
@@ -173,17 +173,17 @@ export function calculateIncomeOccurrences(
     }
 
     case 'monthly': {
-      const dateStr = typeof startDateValue === 'string' 
-        ? startDateValue 
-        : startDateValue.toISOString().split('T')[0];
-      const [year, month, day] = dateStr.split('-').map(Number);
-      
-      const targetDay = day;
-      
+      // Use the already-validated parsedStartDate to avoid relying on string formats.
+      const baseDate = parsedStartDate;
+      const targetDay = baseDate.getDate();
+
+      const initialYear = baseDate.getFullYear();
+      const initialMonthIndex = baseDate.getMonth(); // 0-based
+
       // Ensure initial date is valid for the month (handle month-end edge cases)
-      const lastDayOfInitialMonth = new Date(year, month, 0).getDate();
+      const lastDayOfInitialMonth = new Date(initialYear, initialMonthIndex + 1, 0).getDate();
       const initialDayToUse = Math.min(targetDay, lastDayOfInitialMonth);
-      let currentDate = new Date(year, month - 1, initialDayToUse, 12, 0, 0);
+      let currentDate = new Date(initialYear, initialMonthIndex, initialDayToUse, 12, 0, 0);
       
       console.log('Processing monthly income');
       

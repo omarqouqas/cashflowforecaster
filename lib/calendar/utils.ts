@@ -12,7 +12,16 @@
  * @returns Date object at local noon
  */
 export function parseLocalDate(dateString: string): Date {
-  const [year, month, day] = dateString.split('-').map(Number);
+  // With `noUncheckedIndexedAccess`, split() parts are possibly undefined.
+  // Also, callers rely on invalid inputs producing an Invalid Date (NaN time),
+  // so we return `new Date(NaN)` instead of throwing.
+  const match = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(dateString.trim());
+  if (!match) return new Date(NaN);
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+
   return new Date(year, month - 1, day, 12, 0, 0); // Use noon to avoid DST issues
 }
 
