@@ -35,7 +35,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order('created_at', { ascending: false }),
     supabase
       .from('user_settings')
-      .select('safety_buffer')
+      .select('safety_buffer, timezone')
       .eq('user_id', user.id)
       .single(),
   ]);
@@ -46,6 +46,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   // Extract safety buffer with fallback to default
   const safetyBuffer = settingsResult.data?.safety_buffer ?? 500;
+  const timezone = settingsResult.data?.timezone ?? null;
 
   // Calculate totals
   const totalBalance = accounts.reduce((sum, acc) => sum + (acc.current_balance || 0), 0);
@@ -57,7 +58,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   let calendarData = null;
   if (accounts.length > 0) {
     try {
-      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer);
+      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined);
     } catch (error) {
       console.error('Error generating calendar:', error);
     }

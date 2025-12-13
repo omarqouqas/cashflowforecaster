@@ -11,8 +11,13 @@
 import { CalendarData, CalendarDay } from './types';
 import { calculateIncomeOccurrences } from './calculate-income';
 import { calculateBillOccurrences } from './calculate-bills';
-import { addDays, isSameDay, getStatusColor } from './utils';
+import { addDays, isSameDay, getStatusColor, getTodayAtNoon } from './utils';
 import { Tables } from '@/types/supabase';
+
+const CALENDAR_VERBOSE =
+  typeof process !== 'undefined' &&
+  typeof process.env !== 'undefined' &&
+  process.env.CALENDAR_VERBOSE === 'true';
 
 /**
  * Account record structure for calendar generation.
@@ -29,6 +34,34 @@ type IncomeRecord = Tables<'income'>;
  */
 type BillRecord = Tables<'bills'>;
 
+function getTodayAtNoonForTimezone(timezone?: string): Date {
+  if (!timezone) return getTodayAtNoon();
+
+  try {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(now);
+
+    const year = Number(parts.find((p) => p.type === 'year')?.value);
+    const month = Number(parts.find((p) => p.type === 'month')?.value);
+    const day = Number(parts.find((p) => p.type === 'day')?.value);
+
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return getTodayAtNoon();
+    }
+
+    // Construct a local Date at noon for the calendar day in the user's timezone.
+    // This avoids midnight/DST edge cases while aligning the "day" with the user's configured timezone.
+    return new Date(year, month - 1, day, 12, 0, 0, 0);
+  } catch {
+    // Invalid timezone (RangeError) or Intl limitations
+    return getTodayAtNoon();
+  }
+}
 
 /**
  * Generates a 60-day cash flow calendar projection.
@@ -55,7 +88,8 @@ export default function generateCalendar(
   accounts: AccountRecord[],
   income: IncomeRecord[],
   bills: BillRecord[],
-  safetyBuffer: number = 500
+  safetyBuffer: number = 500,
+  timezone?: string
 ): CalendarData {
   try {
     // Step 1: Calculate starting balance
@@ -67,8 +101,7 @@ export default function generateCalendar(
       .reduce((sum, a) => sum + a.current_balance, 0);
 
     // Step 2: Generate 60-day date array
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize to start of day
+    const today = getTodayAtNoonForTimezone(timezone);
 
     const dates: Date[] = [];
     for (let i = 0; i < 60; i++) {
@@ -84,13 +117,13 @@ export default function generateCalendar(
     const allIncomeOccurrences = income
       .filter(inc => inc.is_active !== false)
       .flatMap(inc => calculateIncomeOccurrences(inc, today, endDate));
-    console.log('Total income occurrences:', allIncomeOccurrences.length);
+    if (CALENDAR_VERBOSE) console.log('Total income occurrences:', allIncomeOccurrences.length);
 
     // Step 4: Calculate all bill occurrences for the entire 60-day period
     const allBillOccurrences = bills
       .filter(bill => bill.is_active !== false)
       .flatMap(bill => calculateBillOccurrences(bill, today, endDate));
-    console.log('Total bill occurrences:', allBillOccurrences.length);
+    if (CALENDAR_VERBOSE) console.log('Total bill occurrences:', allBillOccurrences.length);
 
     // Step 5: Project daily balances using reduce to build array incrementally
     const days = dates.reduce((acc, date, index) => {
@@ -108,7 +141,20 @@ export default function generateCalendar(
 
       // Debug logging for multiple transactions on same day
       if (incomeToday.length > 1 || billsToday.length > 1) {
-        console.log('Multi-transaction day:', date.toDateString(), 'Income:', incomeToday.length, 'Bills:', billsToday.length, 'Total income:', incomeAmount, 'Total bills:', billsAmount);
+        if (CALENDAR_VERBOSE) {
+          console.log(
+            'Multi-transaction day:',
+            date.toDateString(),
+            'Income:',
+            incomeToday.length,
+            'Bills:',
+            billsToday.length,
+            'Total income:',
+            incomeAmount,
+            'Total bills:',
+            billsAmount
+          );
+        }
       }
 
       // Calculate new balance
@@ -116,7 +162,9 @@ export default function generateCalendar(
 
       // Determine status using the safety buffer
       const status = getStatusColor(balance, safetyBuffer);
-      console.log('Day', index, date.toDateString(), 'Bal:', balance.toFixed(0), 'Status:', status);
+      if (CALENDAR_VERBOSE) {
+        console.log('Day', index, date.toDateString(), 'Bal:', balance.toFixed(0), 'Status:', status);
+      }
 
       acc.push({
         date: new Date(date),

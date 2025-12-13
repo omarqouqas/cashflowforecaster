@@ -35,7 +35,7 @@ export default async function CalendarPage() {
       .order('created_at', { ascending: false }),
     supabase
       .from('user_settings')
-      .select('safety_buffer')
+      .select('safety_buffer, timezone')
       .eq('user_id', user.id)
       .single(),
   ])
@@ -45,6 +45,7 @@ export default async function CalendarPage() {
   const bills: Bill[] = billsResult.data || []
 
   const safetyBuffer = settingsResult.data?.safety_buffer ?? 500
+  const timezone = settingsResult.data?.timezone ?? null
 
   const fetchErrors = [accountsResult.error, incomeResult.error, billsResult.error].filter(
     Boolean
@@ -80,7 +81,7 @@ export default async function CalendarPage() {
   let calendarError: string | null = null
 
   try {
-    calendarData = generateCalendar(accounts, income, bills, safetyBuffer)
+    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined)
   } catch (e) {
     calendarError = e instanceof Error ? e.message : 'Failed to generate calendar'
   }

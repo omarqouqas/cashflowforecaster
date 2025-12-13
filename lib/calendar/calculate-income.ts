@@ -2,6 +2,11 @@ import { parseISO, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
 import { Transaction } from './types';
 import { getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate } from './utils';
 
+const CALENDAR_VERBOSE =
+  typeof process !== 'undefined' &&
+  typeof process.env !== 'undefined' &&
+  process.env.CALENDAR_VERBOSE === 'true';
+
 /**
  * Income record structure for calculating occurrences.
  */
@@ -48,23 +53,29 @@ export function calculateIncomeOccurrences(
   endDate: string | Date
 ): Transaction[] {
   // Detailed logging at start
-  console.log('=== Income:', income.name, '===');
-  console.log('Amount:', income.amount);
-  console.log('Frequency:', income.frequency);
-  console.log('Next date:', income.next_date);
-  console.log('Is active:', income.is_active);
+  if (CALENDAR_VERBOSE) {
+    console.log('=== Income:', income.name, '===');
+    console.log('Amount:', income.amount);
+    console.log('Frequency:', income.frequency);
+    console.log('Next date:', income.next_date);
+    console.log('Is active:', income.is_active);
+  }
 
   // Check if income is active (treat undefined/null as active - default behavior)
-  console.log('Active check:', income.is_active !== false ? 'ACTIVE' : 'INACTIVE');
+  if (CALENDAR_VERBOSE) {
+    console.log('Active check:', income.is_active !== false ? 'ACTIVE' : 'INACTIVE');
+  }
   if (income.is_active === false) {
-    console.log('Total occurrences:', 0);
+    if (CALENDAR_VERBOSE) console.log('Total occurrences:', 0);
     return [];
   }
 
   // Check if income.next_date exists, fallback to income.start_date
   const startDateValue = income.next_date || income.start_date;
   const dateFieldUsed = income.next_date ? 'next_date' : 'start_date';
-  console.log('Using date field:', dateFieldUsed, 'with value:', startDateValue);
+  if (CALENDAR_VERBOSE) {
+    console.log('Using date field:', dateFieldUsed, 'with value:', startDateValue);
+  }
 
   // Validate the date
   if (!startDateValue) {
@@ -108,7 +119,7 @@ export function calculateIncomeOccurrences(
 
   switch (frequency) {
     case 'weekly': {
-      console.log('Processing', frequency, 'income');
+      if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
       // Start from income.next_date
       let currentDate = incomeNextDay;
 
@@ -119,7 +130,7 @@ export function calculateIncomeOccurrences(
 
       // Add occurrence every 7 days, continue until past effectiveEndDate
       while (!isAfter(currentDate, effectiveEndDate)) {
-        console.log('Added occurrence:', currentDate.toDateString());
+        if (CALENDAR_VERBOSE) console.log('Added occurrence:', currentDate.toDateString());
         occurrences.push({
           date: new Date(currentDate),
           id: income.id,
@@ -137,7 +148,7 @@ export function calculateIncomeOccurrences(
     }
 
     case 'biweekly': {
-      console.log('Processing', frequency, 'income');
+      if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
       // Start from income.next_date
       let currentDate = incomeNextDay;
 
@@ -146,14 +157,18 @@ export function calculateIncomeOccurrences(
         currentDate = getNextBiweeklyDate(incomeNextDay, rangeStartDay);
       }
 
-      console.log('Starting biweekly loop - currentDate:', currentDate.toDateString());
-      console.log('End date:', effectiveEndDate.toDateString());
-      console.log('Condition check:', !isAfter(currentDate, effectiveEndDate));
+      if (CALENDAR_VERBOSE) {
+        console.log('Starting biweekly loop - currentDate:', currentDate.toDateString());
+        console.log('End date:', effectiveEndDate.toDateString());
+        console.log('Condition check:', !isAfter(currentDate, effectiveEndDate));
+      }
 
       // Add occurrence every 14 days, continue until past effectiveEndDate
       while (!isAfter(currentDate, effectiveEndDate)) {
-        console.log('INSIDE LOOP - currentDate:', currentDate.toDateString());
-        console.log('Added occurrence:', currentDate.toDateString());
+        if (CALENDAR_VERBOSE) {
+          console.log('INSIDE LOOP - currentDate:', currentDate.toDateString());
+          console.log('Added occurrence:', currentDate.toDateString());
+        }
         occurrences.push({
           date: new Date(currentDate),
           id: income.id,
@@ -166,9 +181,9 @@ export function calculateIncomeOccurrences(
         // Get next biweekly occurrence - create new Date object before incrementing
         currentDate = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + 14);
-        console.log('Incremented to:', currentDate.toDateString());
+        if (CALENDAR_VERBOSE) console.log('Incremented to:', currentDate.toDateString());
       }
-      console.log('Loop ended - final currentDate:', currentDate.toDateString());
+      if (CALENDAR_VERBOSE) console.log('Loop ended - final currentDate:', currentDate.toDateString());
       break;
     }
 
@@ -185,7 +200,7 @@ export function calculateIncomeOccurrences(
       const initialDayToUse = Math.min(targetDay, lastDayOfInitialMonth);
       let currentDate = new Date(initialYear, initialMonthIndex, initialDayToUse, 12, 0, 0);
       
-      console.log('Processing monthly income');
+      if (CALENDAR_VERBOSE) console.log('Processing monthly income');
       
       // If next_date is before range start, find first occurrence in range
       if (isBefore(startOfDay(currentDate), rangeStartDay)) {
@@ -217,7 +232,7 @@ export function calculateIncomeOccurrences(
             type: 'income',
             frequency: income.frequency
           });
-          console.log('Added occurrence:', currentDate.toDateString());
+          if (CALENDAR_VERBOSE) console.log('Added occurrence:', currentDate.toDateString());
         }
         
         // Increment month with month-end handling
@@ -239,7 +254,7 @@ export function calculateIncomeOccurrences(
     }
 
     case 'one-time': {
-      console.log('Processing', frequency, 'income');
+      if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
       // Check if next_date is within range [startDate, endDate]
       if (
         (isAfter(incomeNextDay, rangeStartDay) || isEqual(incomeNextDay, rangeStartDay)) &&
@@ -260,17 +275,17 @@ export function calculateIncomeOccurrences(
     }
 
     case 'irregular': {
-      console.log('Processing', frequency, 'income');
+      if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
       // Return empty array (cannot predict)
       break;
     }
 
     default:
-      console.log('Processing', frequency, 'income');
+      if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
       // Unknown frequency, return empty array
       break;
   }
 
-  console.log('Total occurrences:', occurrences.length);
+  if (CALENDAR_VERBOSE) console.log('Total occurrences:', occurrences.length);
   return occurrences;
 }

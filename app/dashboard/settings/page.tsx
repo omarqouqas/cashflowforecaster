@@ -4,6 +4,12 @@ import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
+import { TimezoneForm } from '@/components/settings/timezone-form';
+
+export const metadata = {
+  title: 'Settings | Cash Flow Forecaster',
+  description: 'Configure your Cash Flow Forecaster preferences',
+};
 
 export default async function SettingsPage() {
   const user = await requireAuth();
@@ -12,11 +18,12 @@ export default async function SettingsPage() {
   // Fetch current user settings
   const { data: settings } = await supabase
     .from('user_settings')
-    .select('safety_buffer')
+    .select('safety_buffer, timezone')
     .eq('user_id', user.id)
     .single();
 
   const safetyBuffer = settings?.safety_buffer ?? 500;
+  const timezone = settings?.timezone ?? null;
 
   // Format the created_at date
   const accountCreatedDate = user.created_at
@@ -61,6 +68,14 @@ export default async function SettingsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  User ID
+                </label>
+                <p className="text-sm text-gray-900 dark:text-white font-mono">
+                  {user.id}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Account Created
                 </label>
                 <p className="text-sm text-gray-900 dark:text-white">
@@ -85,6 +100,9 @@ export default async function SettingsPage() {
             </div>
           </div>
 
+          {/* Timezone Card */}
+          <TimezoneForm initialValue={timezone} />
+
           {/* Safety Buffer Card */}
           <SafetyBufferForm initialValue={safetyBuffer} />
 
@@ -97,14 +115,6 @@ export default async function SettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Currency
-                </label>
-                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                  Coming soon
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Timezone
                 </label>
                 <p className="text-sm text-gray-500 dark:text-gray-400 italic">
                   Coming soon

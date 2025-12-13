@@ -3,6 +3,25 @@
  */
 
 /**
+ * Returns today's date at local noon (12:00:00.000).
+ * Noon is used throughout the calendar system to avoid DST/timezone edge cases
+ * that can shift midnight dates to the previous/next day when serialized.
+ */
+export function getTodayAtNoon(): Date {
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  return today;
+}
+
+/**
+ * Normalizes a date to local noon (12:00:00.000) on the same calendar day.
+ * Returns a new Date instance and does not mutate the input.
+ */
+export function normalizeToNoon(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+}
+
+/**
  * Parses a date-only string (YYYY-MM-DD) as local midnight, not UTC.
  * This prevents timezone shifts that would show the wrong day.
  * 
@@ -80,13 +99,12 @@ export function formatCalendarDate(date: Date): string {
  * @returns Date object representing the next monthly occurrence
  */
 export function getNextMonthlyDate(currentDate: Date, targetDay: number): Date {
-  const result = new Date(currentDate);
+  const result = normalizeToNoon(currentDate);
   const currentDay = result.getDate();
   
   // If we're before the target day this month, try to use this month
   if (currentDay < targetDay) {
-    const testDate = new Date(result);
-    testDate.setDate(targetDay);
+    const testDate = normalizeToNoon(new Date(result.getFullYear(), result.getMonth(), targetDay));
     
     // Check if the target day exists in this month
     if (testDate.getMonth() === result.getMonth()) {
@@ -94,18 +112,19 @@ export function getNextMonthlyDate(currentDate: Date, targetDay: number): Date {
     }
     
     // If target day doesn't exist (e.g., Feb 31), use last day of current month
-    const lastDayOfMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0);
+    const lastDayOfMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0, 12, 0, 0, 0);
     return lastDayOfMonth;
   }
   
   // Otherwise, move to next month
   result.setMonth(result.getMonth() + 1);
   result.setDate(targetDay);
+  result.setHours(12, 0, 0, 0);
   
   // Check if target day exists in next month
   if (result.getDate() !== targetDay) {
     // Target day doesn't exist (e.g., Feb 31), use last day of next month
-    const lastDayOfNextMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0);
+    const lastDayOfNextMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0, 12, 0, 0, 0);
     return lastDayOfNextMonth;
   }
   
@@ -121,11 +140,8 @@ export function getNextMonthlyDate(currentDate: Date, targetDay: number): Date {
  * @returns Date object representing the next weekly occurrence
  */
 export function getNextWeeklyDate(startDate: Date, currentDate: Date): Date {
-  const start = new Date(startDate);
-  start.setHours(0, 0, 0, 0);
-  
-  const current = new Date(currentDate);
-  current.setHours(0, 0, 0, 0);
+  const start = normalizeToNoon(startDate);
+  const current = normalizeToNoon(currentDate);
   
   // Calculate days difference
   const daysDiff = Math.floor((current.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
@@ -153,11 +169,8 @@ export function getNextWeeklyDate(startDate: Date, currentDate: Date): Date {
  * @returns Date object representing the next biweekly occurrence
  */
 export function getNextBiweeklyDate(startDate: Date, currentDate: Date): Date {
-  const start = new Date(startDate);
-  start.setHours(0, 0, 0, 0);
-  
-  const current = new Date(currentDate);
-  current.setHours(0, 0, 0, 0);
+  const start = normalizeToNoon(startDate);
+  const current = normalizeToNoon(currentDate);
   
   // Calculate days difference
   const daysDiff = Math.floor((current.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
