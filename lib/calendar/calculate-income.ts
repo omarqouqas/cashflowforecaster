@@ -21,6 +21,10 @@ interface IncomeRecord {
   frequency: string;
   /** Whether this income source is currently active */
   is_active: boolean | null;
+  /** Optional status for invoice-linked income (e.g., 'pending' | 'confirmed') */
+  status?: string | null;
+  /** Optional linked invoice id (for invoice-linked income) */
+  invoice_id?: string | null;
   /** Next occurrence date (start date for recurring income) */
   next_date?: string;
   /** Start date (fallback if next_date is not available) */
@@ -138,6 +142,8 @@ export function calculateIncomeOccurrences(
           amount: income.amount,
           type: 'income',
           frequency: income.frequency,
+          status: income.status ?? null,
+          invoice_id: income.invoice_id ?? null,
         });
 
         // Get next weekly occurrence - create new Date object before incrementing
@@ -176,6 +182,8 @@ export function calculateIncomeOccurrences(
           amount: income.amount,
           type: 'income',
           frequency: income.frequency,
+          status: income.status ?? null,
+          invoice_id: income.invoice_id ?? null,
         });
 
         // Get next biweekly occurrence - create new Date object before incrementing
@@ -230,7 +238,9 @@ export function calculateIncomeOccurrences(
             name: income.name,
             amount: income.amount,
             type: 'income',
-            frequency: income.frequency
+            frequency: income.frequency,
+            status: income.status ?? null,
+            invoice_id: income.invoice_id ?? null,
           });
           if (CALENDAR_VERBOSE) console.log('Added occurrence:', currentDate.toDateString());
         }
@@ -268,6 +278,8 @@ export function calculateIncomeOccurrences(
           amount: income.amount,
           type: 'income',
           frequency: income.frequency,
+          status: income.status ?? null,
+          invoice_id: income.invoice_id ?? null,
         });
       }
       // If no, return empty array (already initialized as empty)

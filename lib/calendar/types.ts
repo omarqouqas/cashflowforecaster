@@ -20,6 +20,13 @@ export interface Transaction {
   frequency: string;
   /** Date when this transaction occurs */
   date: Date;
+  /**
+   * Optional status for income transactions (used for invoice-linked income).
+   * Common values: 'pending' | 'confirmed'
+   */
+  status?: string | null;
+  /** Optional linked invoice id (for invoice-linked income) */
+  invoice_id?: string | null;
 }
 
 /**

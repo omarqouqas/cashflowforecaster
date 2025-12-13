@@ -32,7 +32,8 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   // Calculate total monthly income
   const calculateMonthlyIncome = (incomesList: Income[]): number => {
     return incomesList.reduce((total, income) => {
-      if (!income.is_active) return total;
+      // Treat NULL as active (legacy rows) – only exclude explicitly deactivated rows.
+      if (income.is_active === false) return total;
 
       // Convert all frequencies to monthly equivalent
       switch (income.frequency) {
@@ -53,7 +54,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   };
 
   const monthlyTotal = calculateMonthlyIncome(incomes || []);
-  const activeIncomes = incomes?.filter((i) => i.is_active) || [];
+  const activeIncomes = incomes?.filter((i) => i.is_active !== false) || [];
 
   return (
     <>

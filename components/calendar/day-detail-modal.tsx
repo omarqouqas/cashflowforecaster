@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format } from 'date-fns';
-import { X } from 'lucide-react';
+import { Clock, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -169,9 +169,17 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
                     className="bg-white border border-zinc-200 rounded-lg p-3 flex items-center justify-between"
                   >
                     <div className="flex-1">
-                      <p className="font-medium text-zinc-900">
-                        {transaction.name}
-                      </p>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <p className="font-medium text-zinc-900 truncate">
+                          {transaction.name}
+                        </p>
+                        {transaction.status === 'pending' && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 whitespace-nowrap">
+                            <Clock className="w-3 h-3" />
+                            Pending
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-zinc-500 mt-0.5">
                         {capitalizeFrequency(transaction.frequency)}
                       </p>

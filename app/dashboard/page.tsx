@@ -2,10 +2,11 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { SuccessMessage } from '@/components/ui/success-message';
 import Link from 'next/link';
-import { Calendar } from 'lucide-react';
+import { Calendar, Receipt, CheckCircle2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
+import { getInvoiceSummary } from '@/lib/actions/invoices';
 
 interface DashboardPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -17,7 +18,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const supabase = await createClient();
 
   // Fetch accounts, income, bills, and user settings in parallel
-  const [accountsResult, incomeResult, billsResult, settingsResult] = await Promise.all([
+  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult] = await Promise.all([
     supabase
       .from('accounts')
       .select('*')
@@ -38,11 +39,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .select('safety_buffer, timezone')
       .eq('user_id', user.id)
       .single(),
+    getInvoiceSummary(),
   ]);
 
   const accounts = accountsResult.data || [];
   const incomes = incomeResult.data || [];
   const bills = billsResult.data || [];
+  const invoiceSummary = invoiceSummaryResult;
 
   // Extract safety buffer with fallback to default
   const safetyBuffer = settingsResult.data?.safety_buffer ?? 500;
@@ -69,7 +72,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     if (!incomes) return 0;
 
     return incomes.reduce((total, income) => {
-      if (!income.is_active) return total;
+      // Treat NULL as active (legacy rows) – only exclude explicitly deactivated rows.
+      if (income.is_active === false) return total;
 
       switch (income.frequency) {
         case 'weekly':
@@ -78,6 +82,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           return total + (income.amount * 26 / 12);
         case 'monthly':
           return total + income.amount;
+        case 'one-time':
+        case 'irregular':
+          return total;
         default:
           return total;
       }
@@ -85,7 +92,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const monthlyIncome = calculateMonthlyIncome(incomes);
-  const incomeCount = incomes.filter(i => i.is_active).length;
+  const incomeCount = incomes.filter((i) => i.is_active !== false).length;
 
   // Calculate monthly bills equivalent
   const calculateMonthlyBills = (bills: any[]) => {
@@ -168,6 +175,51 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </Link>
             </div>
           )}
+
+          {/* Outstanding invoices */}
+          <div className="mb-6">
+            <div className="border border-zinc-200 bg-white rounded-lg p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
+                    Outstanding Invoices
+                  </p>
+                  {invoiceSummary.unpaidCount === 0 ? (
+                    <div className="mt-2 flex items-center gap-2 text-zinc-600">
+                      <CheckCircle2 className="w-5 h-5 text-teal-700" />
+                      <p className="text-base font-medium">No outstanding invoices</p>
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-900">
+                        {formatCurrency(invoiceSummary.totalOutstanding, currency)}
+                      </p>
+                      <p className="text-sm text-zinc-500 mt-1">
+                        {invoiceSummary.unpaidCount} unpaid invoice{invoiceSummary.unpaidCount === 1 ? '' : 's'}
+                        {invoiceSummary.overdueCount > 0 && (
+                          <span className="ml-2 text-rose-600 font-medium">
+                            {invoiceSummary.overdueCount} overdue
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col items-end gap-3">
+                  <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                    <Receipt className="w-6 h-6 text-teal-700" />
+                  </div>
+                  <Link
+                    href="/dashboard/invoices"
+                    className="text-sm font-medium text-teal-700 hover:text-teal-800"
+                  >
+                    View all →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Summary cards (Minimalist Utility) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">

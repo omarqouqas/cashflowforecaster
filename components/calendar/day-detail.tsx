@@ -1,6 +1,6 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { Clock, X } from 'lucide-react'
 import { CalendarDay } from '@/lib/calendar/types'
 import { formatCurrency } from '@/lib/utils/format'
 
@@ -69,8 +69,21 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
           {day.income.map((t) => (
             <div key={`inc-${t.id}-${t.date.getTime()}`} className="flex items-center justify-between py-2.5">
               <div className="flex items-center min-w-0">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true" />
+                <span
+                  className={
+                    t.status === 'pending'
+                      ? 'w-2 h-2 rounded-full border border-emerald-500 border-dashed bg-transparent'
+                      : 'w-2 h-2 rounded-full bg-emerald-500'
+                  }
+                  aria-hidden="true"
+                />
                 <span className="text-sm text-zinc-900 ml-2 truncate">{t.name}</span>
+                {t.status === 'pending' && (
+                  <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                    <Clock className="w-3 h-3" />
+                    Pending
+                  </span>
+                )}
               </div>
               <span className="text-sm font-medium tabular-nums text-emerald-600">+{formatCurrency(t.amount)}</span>
             </div>

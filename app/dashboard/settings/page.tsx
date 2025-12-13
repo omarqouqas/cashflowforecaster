@@ -68,14 +68,6 @@ export default async function SettingsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  User ID
-                </label>
-                <p className="text-sm text-gray-900 dark:text-white font-mono">
-                  {user.id}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Account Created
                 </label>
                 <p className="text-sm text-gray-900 dark:text-white">

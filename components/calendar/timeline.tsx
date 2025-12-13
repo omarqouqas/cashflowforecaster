@@ -62,6 +62,13 @@ function formatDow(date: Date) {
     .toUpperCase()
 }
 
+function incomeDotClass(status?: string | null) {
+  if (status === 'pending') {
+    return 'w-2 h-2 rounded-full border border-emerald-500 border-dashed bg-transparent'
+  }
+  return 'w-2 h-2 rounded-full bg-emerald-500'
+}
+
 export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowProps) {
   const today = isTodayProp ?? isToday(day.date)
 
@@ -117,7 +124,7 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
               {day.income.slice(0, 3).map((t) => (
                 <span
                   key={`inc-${t.id}-${t.date.getTime()}`}
-                  className="w-2 h-2 rounded-full bg-emerald-500"
+                  className={incomeDotClass(t.status)}
                   aria-hidden="true"
                 />
               ))}

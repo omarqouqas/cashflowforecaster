@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -131,6 +131,7 @@ export type Database = {
           created_at: string | null
           frequency: string
           id: string
+          invoice_id: string | null
           is_active: boolean | null
           last_date: string | null
           name: string
@@ -149,6 +150,7 @@ export type Database = {
           created_at?: string | null
           frequency: string
           id?: string
+          invoice_id?: string | null
           is_active?: boolean | null
           last_date?: string | null
           name: string
@@ -167,6 +169,7 @@ export type Database = {
           created_at?: string | null
           frequency?: string
           id?: string
+          invoice_id?: string | null
           is_active?: boolean | null
           last_date?: string | null
           name?: string
@@ -188,6 +191,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "income_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "income_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -195,6 +205,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      invoices: {
+        Row: {
+          amount: number
+          client_email: string | null
+          client_name: string
+          created_at: string | null
+          description: string | null
+          due_date: string
+          id: string
+          invoice_number: string
+          paid_at: string | null
+          sent_at: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          amount: number
+          client_email?: string | null
+          client_name: string
+          created_at?: string | null
+          description?: string | null
+          due_date: string
+          id?: string
+          invoice_number: string
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          amount?: number
+          client_email?: string | null
+          client_name?: string
+          created_at?: string | null
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+          viewed_at?: string | null
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
