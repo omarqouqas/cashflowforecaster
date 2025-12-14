@@ -7,6 +7,7 @@ import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
 import { DeleteInvoiceIconButton } from '@/components/invoices/delete-invoice-icon-button';
 import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
 import type { Tables } from '@/types/supabase';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 
 function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
@@ -35,6 +36,10 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
   try {
     invoices = await getInvoices();
   } catch (e) {
+    // Don't treat auth redirects as fetch failures (common during build/static generation)
+    if (isRedirectError(e)) {
+      throw e;
+    }
     error = e instanceof Error ? e.message : 'Unknown error';
     // eslint-disable-next-line no-console
     console.error('Error fetching invoices:', e);
