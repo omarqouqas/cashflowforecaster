@@ -5,6 +5,7 @@ import { Plus, Receipt, ArrowLeft, Pencil } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
 import { DeleteInvoiceIconButton } from '@/components/invoices/delete-invoice-icon-button';
+import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
 import type { Tables } from '@/types/supabase';
 
 function statusBadge(status: string | null | undefined) {
@@ -140,6 +141,14 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="inline-flex items-center justify-end gap-2">
+                            {(invoice.status ?? 'draft') === 'draft' && (
+                              <SendInvoiceButton
+                                invoiceId={invoice.id}
+                                clientEmail={invoice.client_email}
+                                disabled={!invoice.client_email}
+                                compact
+                              />
+                            )}
                             {(() => {
                               const s = invoice.status ?? 'draft';
                               const showEdit = s === 'draft' || s === 'sent';

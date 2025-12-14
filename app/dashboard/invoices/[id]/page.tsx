@@ -6,6 +6,7 @@ import { formatCurrency, formatDate, formatDateOnly } from '@/lib/utils/format';
 import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
 import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
 import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button';
+import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
 import { CheckCircle2, Circle, Pencil } from 'lucide-react';
 
 function statusBadge(status: string | null | undefined) {
@@ -126,6 +127,29 @@ export default async function InvoiceDetailPage({
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <DownloadPdfButton invoiceId={invoice.id} />
+        {status === 'draft' && (
+          <SendInvoiceButton
+            invoiceId={invoice.id}
+            clientEmail={invoice.client_email}
+            disabled={!invoice.client_email}
+            allowMessage
+          />
+        )}
+        {status !== 'draft' && status !== 'paid' && (
+          <div className="flex flex-col justify-center">
+            <p className="text-xs text-zinc-500">
+              Sent{invoice.sent_at ? ` on ${formatDate(invoice.sent_at)}` : ''}
+            </p>
+            <div className="mt-2">
+              <SendInvoiceButton
+                invoiceId={invoice.id}
+                clientEmail={invoice.client_email}
+                disabled={!invoice.client_email}
+                mode="resend"
+              />
+            </div>
+          </div>
+        )}
         {status !== 'paid' && (
           <Link
             href={`/dashboard/invoices/${invoice.id}/edit`}
@@ -197,14 +221,14 @@ export default async function InvoiceDetailPage({
           <TimelineStep
             label="Sent"
             completed={sentCompleted}
-            timestamp={null}
-            note="Not tracked yet"
+            timestamp={invoice.sent_at}
+            note="Not sent yet"
           />
           <TimelineStep
             label="Viewed"
             completed={viewedCompleted}
-            timestamp={null}
-            note="Not tracked yet"
+            timestamp={invoice.viewed_at}
+            note="Not viewed yet"
           />
           <TimelineStep
             label="Paid"
