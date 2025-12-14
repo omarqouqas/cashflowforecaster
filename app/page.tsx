@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import PricingSection from '@/components/pricing/pricing-section';
 import { Bell, Calendar, Clock, PlusCircle, Wallet } from 'lucide-react';
 
 export default function Home() {
@@ -169,56 +170,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="px-6 py-14">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="text-2xl font-semibold text-center text-zinc-900">
-              Simple, transparent pricing
-            </h2>
-
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-xl border border-zinc-200 bg-white p-6">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="text-lg font-semibold text-zinc-900">Free</h3>
-                  <p className="text-zinc-600">
-                    <span className="text-3xl font-semibold text-zinc-900">$0</span>
-                    <span className="text-sm">/forever</span>
-                  </p>
-                </div>
-                <ul className="mt-4 space-y-2 text-zinc-600">
-                  <li>Manual entry</li>
-                  <li>Up to 10 bills</li>
-                  <li>60-day forecast</li>
-                </ul>
-              </div>
-
-              <div className="rounded-xl border border-teal-200 bg-white p-6 shadow-sm">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="text-lg font-semibold text-zinc-900">Pro</h3>
-                  <p className="text-zinc-600">
-                    <span className="text-3xl font-semibold text-zinc-900">$7.99</span>
-                    <span className="text-sm">/month</span>
-                  </p>
-                </div>
-                <ul className="mt-4 space-y-2 text-zinc-600">
-                  <li>Email bill parser</li>
-                  <li>Unlimited bills</li>
-                  <li>Priority support</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-8 flex justify-center">
-              <Link href="/auth/signup">
-                <Button
-                  variant="primary"
-                  className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg text-lg font-medium h-auto"
-                >
-                  Get Started Free
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+        <PricingSection />
 
         <section className="px-6 py-14 bg-zinc-50 border-y border-zinc-200">
           <div className="mx-auto max-w-6xl text-center">

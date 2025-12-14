@@ -162,13 +162,10 @@ CREATE OR REPLACE FUNCTION generate_invoice_number() ...
 - [x] **Landing Page:** Complete with features, pricing, CTA
 - [x] **Vercel Project:** Created and connected to GitHub
 - [x] **Runway Collect Phase 1:** Invoicing feature complete
-
-### 🚧 In Progress
-
-- [ ] **Invoice UI Polish:** Edit/delete buttons placement
-- [ ] **Accounts Page Redesign:** Match Income/Bills UX
-- [ ] **Vercel Deployment:** Final build testing
-- [ ] **Custom Domain:** Connect after successful build
+- [x] **Invoice UI Polish:** Edit/delete buttons placement
+- [x] **Accounts Page Redesign:** Match Income/Bills UX
+- [x] **Vercel Deployment:** Final build testing
+- [x] **Custom Domain:** Connect after successful build
 
 ### 📋 Post-Launch
 
@@ -283,9 +280,6 @@ CREATE OR REPLACE FUNCTION generate_invoice_number() ...
 
 ## What's Next
 
-- 🚧 Polish invoice list actions (edit/delete placement)
-- 🚧 Accounts page redesign
-- 🚧 Final deployment
 - 📋 Runway Collect Phase 2 (email sending)
 
 ---
