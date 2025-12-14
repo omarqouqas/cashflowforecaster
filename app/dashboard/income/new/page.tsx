@@ -86,6 +86,7 @@ export default function NewIncomePage() {
       next_date: data.next_date,
       account_id: data.account_id || null,
       is_active: data.is_active,
+      status: data.is_active ? 'active' : 'paused',
     });
 
     if (insertError) {

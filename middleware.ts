@@ -67,8 +67,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // If user is not logged in and tries to access dashboard, redirect to login
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  // If user is not logged in and tries to access protected pages, redirect to login
+  if (
+    !user &&
+    (request.nextUrl.pathname.startsWith('/dashboard') ||
+      request.nextUrl.pathname.startsWith('/onboarding'))
+  ) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
@@ -78,6 +82,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/onboarding',
     '/auth/login',
     '/auth/signup',
   ],

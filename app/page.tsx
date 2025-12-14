@@ -195,7 +195,7 @@ export default function Home() {
 
         <footer className="px-6 py-10">
           <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
-            <p>© 2024 Cash Flow Forecaster</p>
+            <p>© 2025 Cash Flow Forecaster</p>
             <div className="flex items-center gap-4">
               <Link href="#" className="hover:text-zinc-700">
                 Privacy Policy

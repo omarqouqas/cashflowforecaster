@@ -1,7 +1,9 @@
 import { requireAuth } from '@/lib/auth/session'
+import { createClient } from '@/lib/supabase/server'
 import { EmailVerificationBanner } from '@/components/auth/email-verification-banner'
 import { DashboardNav } from '@/components/dashboard/nav'
 import { LogoutButton } from '@/components/auth/logout-button'
+import { redirect } from 'next/navigation'
 
 export default async function DashboardLayout({
   children,
@@ -9,6 +11,28 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const user = await requireAuth()
+
+  // Onboarding gate: if user has no accounts and has not completed onboarding,
+  // redirect them to the guided setup wizard.
+  const supabase = await createClient()
+  const [{ count: accountCount }, settingsRow] = await Promise.all([
+    supabase
+      .from('accounts')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    supabase
+      .from('user_settings')
+      .select('onboarding_complete')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+  ])
+
+  const isOnboarded = settingsRow.data?.onboarding_complete === true
+  const hasAccounts = (accountCount ?? 0) > 0
+
+  if (!isOnboarded && !hasAccounts) {
+    redirect('/onboarding')
+  }
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950">

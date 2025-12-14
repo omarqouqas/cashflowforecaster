@@ -1,0 +1,150 @@
+'use server';
+
+import { requireAuth } from '@/lib/auth/session';
+import { createClient } from '@/lib/supabase/server';
+import { resend } from '@/lib/email/resend';
+import { buildInvoiceEmail } from '@/lib/email/templates/invoice-email';
+import { renderToBuffer } from '@react-pdf/renderer';
+import { InvoiceTemplate } from '@/lib/pdf/invoice-template';
+import { revalidatePath } from 'next/cache';
+import type { Tables } from '@/types/supabase';
+
+export type SendInvoiceInput = {
+  invoiceId: string;
+  message?: string;
+  forceResend?: boolean;
+};
+
+export type SendInvoiceResult =
+  | { ok: true; sentTo: string; sentAt: string }
+  | { ok: false; error: string; code?: string };
+
+function isValidEmail(email: string) {
+  // Reasonable validation for UI + server (not RFC-complete on purpose)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+function getSenderName(user: { email?: string | null; user_metadata?: any }) {
+  const meta = user.user_metadata ?? {};
+  return (
+    meta.full_name ||
+    meta.name ||
+    meta.display_name ||
+    (typeof user.email === 'string' && user.email) ||
+    'Sender'
+  );
+}
+
+async function fetchOwnedInvoice(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  invoiceId: string,
+  userId: string
+): Promise<Tables<'invoices'> | null> {
+  const { data, error } = await supabase
+    .from('invoices')
+    .select('*')
+    .eq('id', invoiceId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ?? null;
+}
+
+export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceResult> {
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      return { ok: false, code: 'missing_resend_api_key', error: 'Email is not configured.' };
+    }
+
+    const user = await requireAuth();
+    const supabase = await createClient();
+
+    const invoice = await fetchOwnedInvoice(supabase, input.invoiceId, user.id);
+    if (!invoice) {
+      return { ok: false, code: 'not_found', error: 'Invoice not found' };
+    }
+
+    const status = (invoice.status ?? 'draft') as string;
+    const isAlreadySent = status !== 'draft';
+    if (isAlreadySent && !input.forceResend) {
+      return { ok: false, code: 'already_sent', error: 'Invoice has already been sent' };
+    }
+
+    const toEmail = (invoice.client_email ?? '').trim();
+    if (!toEmail) {
+      return { ok: false, code: 'missing_email', error: 'Client email is required to send an invoice' };
+    }
+
+    if (!isValidEmail(toEmail)) {
+      return { ok: false, code: 'invalid_email', error: 'Please enter a valid email address' };
+    }
+
+    const senderName = getSenderName(user);
+
+    // Generate PDF
+    const doc = InvoiceTemplate({
+      invoice,
+      fromEmail: user.email ?? 'Unknown',
+    });
+    const pdfBuffer = await renderToBuffer(doc);
+
+    const { subject, html } = buildInvoiceEmail({
+      invoice_number: invoice.invoice_number ?? 'Invoice',
+      amount: invoice.amount ?? 0,
+      due_date: invoice.due_date,
+      client_name: invoice.client_name,
+      sender_name: senderName,
+      note: input.message,
+    });
+
+    const from =
+      process.env.RESEND_FROM_EMAIL?.trim() || 'Cash Flow Forecaster <onboarding@resend.dev>';
+
+    const res = await resend.emails.send({
+      from,
+      to: toEmail,
+      subject,
+      html,
+      attachments: [
+        {
+          filename: `invoice-${invoice.invoice_number ?? invoice.id}.pdf`,
+          content: Buffer.from(pdfBuffer),
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+
+    if (res.error) {
+      // eslint-disable-next-line no-console
+      console.error('Resend error:', res.error);
+      return { ok: false, code: 'resend_error', error: 'Failed to send invoice. Please try again.' };
+    }
+
+    const sentAt = new Date().toISOString();
+
+    const { error: updateErr } = await supabase
+      .from('invoices')
+      .update({
+        status: 'sent',
+        sent_at: sentAt,
+        updated_at: sentAt,
+      })
+      .eq('id', invoice.id)
+      .eq('user_id', user.id);
+
+    if (updateErr) {
+      // eslint-disable-next-line no-console
+      console.error('Failed updating invoice after email send:', updateErr);
+    }
+
+    revalidatePath('/dashboard/invoices');
+    revalidatePath(`/dashboard/invoices/${invoice.id}`);
+
+    return { ok: true, sentTo: toEmail, sentAt };
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('sendInvoice failed:', e);
+    return { ok: false, code: 'unknown', error: 'Failed to send invoice. Please try again.' };
+  }
+}

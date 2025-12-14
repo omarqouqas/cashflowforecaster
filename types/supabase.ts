@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -428,6 +428,7 @@ export type Database = {
           date_format: string | null
           default_account_id: string | null
           notification_preferences: Json | null
+          onboarding_complete: boolean
           safety_buffer: number | null
           safety_mode: boolean | null
           timezone: string | null
@@ -441,6 +442,7 @@ export type Database = {
           date_format?: string | null
           default_account_id?: string | null
           notification_preferences?: Json | null
+          onboarding_complete?: boolean
           safety_buffer?: number | null
           safety_mode?: boolean | null
           timezone?: string | null
@@ -454,6 +456,7 @@ export type Database = {
           date_format?: string | null
           default_account_id?: string | null
           notification_preferences?: Json | null
+          onboarding_complete?: boolean
           safety_buffer?: number | null
           safety_mode?: boolean | null
           timezone?: string | null
