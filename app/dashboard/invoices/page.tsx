@@ -1,9 +1,10 @@
 import { getInvoices } from '@/lib/actions/invoices';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Receipt, ArrowLeft } from 'lucide-react';
+import { Plus, Receipt, ArrowLeft, Pencil } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
+import { DeleteInvoiceIconButton } from '@/components/invoices/delete-invoice-icon-button';
 import type { Tables } from '@/types/supabase';
 
 function statusBadge(status: string | null | undefined) {
@@ -22,7 +23,11 @@ function statusBadge(status: string | null | undefined) {
   }
 }
 
-export default async function InvoicesPage() {
+interface InvoicesPageProps {
+  searchParams?: { success?: string };
+}
+
+export default async function InvoicesPage({ searchParams }: InvoicesPageProps) {
   let invoices: Tables<'invoices'>[] = [];
   let error: string | null = null;
 
@@ -46,6 +51,13 @@ export default async function InvoicesPage() {
           Back to Dashboard
         </Link>
       </div>
+
+      {/* Success */}
+      {searchParams?.success === 'invoice-deleted' && (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6">
+          <p className="text-sm text-green-800 dark:text-green-200">✓ Invoice deleted successfully</p>
+        </div>
+      )}
 
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
@@ -127,7 +139,34 @@ export default async function InvoicesPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <DownloadPdfButton invoiceId={invoice.id} />
+                          <div className="inline-flex items-center justify-end gap-2">
+                            {(() => {
+                              const s = invoice.status ?? 'draft';
+                              const showEdit = s === 'draft' || s === 'sent';
+                              return (
+                                showEdit && (
+                                  <Link
+                                    href={`/dashboard/invoices/${invoice.id}/edit`}
+                                    className="p-2 text-zinc-400 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+                                    aria-label="Edit invoice"
+                                    title="Edit invoice"
+                                  >
+                                    <Pencil className="w-4 h-4" />
+                                  </Link>
+                                )
+                              );
+                            })()}
+
+                            {(invoice.status ?? 'draft') === 'draft' && (
+                              <DeleteInvoiceIconButton
+                                invoiceId={invoice.id}
+                                invoiceLabel={invoice.invoice_number}
+                              />
+                            )}
+
+                            {/* Always visible */}
+                            <DownloadPdfButton invoiceId={invoice.id} />
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -141,5 +180,3 @@ export default async function InvoicesPage() {
     </>
   );
 }
-
-

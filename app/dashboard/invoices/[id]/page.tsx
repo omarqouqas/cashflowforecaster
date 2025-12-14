@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { formatCurrency, formatDate, formatDateOnly } from '@/lib/utils/format';
 import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
 import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button';
+import { CheckCircle2, Circle, Pencil } from 'lucide-react';
 
 function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
@@ -60,8 +61,10 @@ function TimelineStep({
 
 export default async function InvoiceDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: { error?: string };
 }) {
   await requireAuth();
   const { id } = await params;
@@ -99,6 +102,12 @@ export default async function InvoiceDetailPage({
         ← Back to Invoices
       </Link>
 
+      {searchParams?.error === 'paid-cannot-edit' && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+          <p className="text-sm text-amber-900 font-medium">Paid invoices cannot be edited.</p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
@@ -117,6 +126,17 @@ export default async function InvoiceDetailPage({
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <DownloadPdfButton invoiceId={invoice.id} />
+        {status !== 'paid' && (
+          <Link
+            href={`/dashboard/invoices/${invoice.id}/edit`}
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 min-h-[32px]"
+            aria-label="Edit invoice"
+            title="Edit invoice"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Edit</span>
+          </Link>
+        )}
         {status !== 'paid' && <MarkAsPaidButton invoiceId={invoice.id} />}
       </div>
 
@@ -200,6 +220,17 @@ export default async function InvoiceDetailPage({
           >
             View linked income entry →
           </Link>
+        </div>
+      </div>
+
+      {/* Danger zone (optional, less prominent) */}
+      <div className="mt-6 border border-rose-200 bg-rose-50 rounded-lg p-6">
+        <h2 className="text-sm font-semibold text-rose-900">Danger zone</h2>
+        <p className="text-sm text-rose-800 mt-1">
+          Deleting a draft invoice will also remove the linked income entry from your forecast.
+        </p>
+        <div className="mt-4">
+          <DeleteInvoiceButton invoiceId={invoice.id} status={invoice.status} />
         </div>
       </div>
     </div>
