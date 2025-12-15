@@ -104,7 +104,6 @@ export function calculateScenario(calendarData: CalendarData, input: ScenarioExp
     };
   }
 
-  const calendarStart = normalizeToNoon(days[0]!.date);
   const calendarEnd = normalizeToNoon(days[days.length - 1]!.date);
 
   const expenseDate = normalizeToNoon(input.date);
@@ -130,7 +129,7 @@ export function calculateScenario(calendarData: CalendarData, input: ScenarioExp
   for (const occ of occurrences) {
     const idx = indexByDayKey.get(dateKey(occ));
     if (idx == null) continue;
-    delta[idx] += amount;
+    delta[idx] = (delta[idx] ?? 0) + amount;
   }
 
   let runningExtra = 0;
