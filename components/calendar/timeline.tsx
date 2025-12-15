@@ -32,21 +32,6 @@ function statusBarClass(status: CalendarDay['status']) {
   }
 }
 
-function statusTextClass(status: CalendarDay['status']) {
-  switch (status) {
-    case 'green':
-      return 'text-emerald-400'
-    case 'yellow':
-      return 'text-amber-400'
-    case 'orange':
-      return 'text-orange-400'
-    case 'red':
-      return 'text-rose-400'
-    default:
-      return 'text-zinc-100'
-  }
-}
-
 function formatMonthDay(date: Date) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
