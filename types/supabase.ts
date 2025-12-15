@@ -206,6 +206,41 @@ export type Database = {
           },
         ]
       }
+      invoice_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          invoice_id: string
+          reminder_type: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invoice_id: string
+          reminder_type: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          reminder_type?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_reminders_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount: number
@@ -216,7 +251,9 @@ export type Database = {
           due_date: string
           id: string
           invoice_number: string
+          last_reminder_at: string | null
           paid_at: string | null
+          reminder_count: number
           sent_at: string | null
           status: string | null
           updated_at: string | null
@@ -232,7 +269,9 @@ export type Database = {
           due_date: string
           id?: string
           invoice_number: string
+          last_reminder_at?: string | null
           paid_at?: string | null
+          reminder_count?: number
           sent_at?: string | null
           status?: string | null
           updated_at?: string | null
@@ -248,7 +287,9 @@ export type Database = {
           due_date?: string
           id?: string
           invoice_number?: string
+          last_reminder_at?: string | null
           paid_at?: string | null
+          reminder_count?: number
           sent_at?: string | null
           status?: string | null
           updated_at?: string | null

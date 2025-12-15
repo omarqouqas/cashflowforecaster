@@ -7,6 +7,7 @@ import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
 import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
 import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button';
 import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
+import { SendReminderButton } from '@/components/invoices/send-reminder-button';
 import { CheckCircle2, Circle, Pencil } from 'lucide-react';
 
 function statusBadge(status: string | null | undefined) {
@@ -81,6 +82,17 @@ export default async function InvoiceDetailPage({
     redirect('/dashboard/invoices');
   }
 
+  const { data: reminderHistory, error: remindersErr } = await supabase
+    .from('invoice_reminders')
+    .select('reminder_type, sent_at')
+    .eq('invoice_id', invoice.id)
+    .order('sent_at', { ascending: false });
+
+  if (remindersErr) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching invoice reminders:', remindersErr);
+  }
+
   const { data: linkedIncome } = await supabase
     .from('income')
     .select('id')
@@ -151,6 +163,14 @@ export default async function InvoiceDetailPage({
           </div>
         )}
         {status !== 'paid' && (
+          <SendReminderButton
+            invoiceId={invoice.id}
+            invoiceStatus={invoice.status}
+            lastReminderAt={invoice.last_reminder_at}
+            reminderCount={invoice.reminder_count ?? 0}
+          />
+        )}
+        {status !== 'paid' && (
           <Link
             href={`/dashboard/invoices/${invoice.id}/edit`}
             className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 min-h-[32px]"
@@ -207,6 +227,43 @@ export default async function InvoiceDetailPage({
           </div>
         )}
       </div>
+
+      {/* Reminder History */}
+      {Array.isArray(reminderHistory) && reminderHistory.length > 0 ? (
+        <div className="border border-zinc-200 bg-zinc-700/5 rounded-lg p-4 mb-6">
+          <h2 className="text-sm font-semibold text-zinc-900 mb-3">Reminder History</h2>
+          <div className="space-y-2">
+            {reminderHistory.map((r) => {
+              const type = (r.reminder_type ?? '').toLowerCase();
+              const label =
+                type === 'friendly' ? 'Friendly' : type === 'firm' ? 'Firm' : type === 'final' ? 'Final' : 'Reminder';
+              const badge =
+                type === 'friendly'
+                  ? 'bg-teal-50 text-teal-800 border border-teal-200'
+                  : type === 'firm'
+                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                    : type === 'final'
+                      ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                      : 'bg-zinc-50 text-zinc-700 border border-zinc-200';
+
+              return (
+                <div key={`${r.sent_at}-${r.reminder_type}`} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={['inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold', badge].join(' ')}>
+                      {label}
+                    </span>
+                    <p className="text-xs text-zinc-700 truncate">
+                      {label.toLowerCase()} reminder sent {r.sent_at ? formatDate(r.sent_at) : '—'}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : overdue ? (
+        <p className="text-xs text-zinc-500 mb-6">No reminders sent yet</p>
+      ) : null}
 
       {/* Timeline */}
       <div className="border border-zinc-200 bg-white rounded-lg p-6">
