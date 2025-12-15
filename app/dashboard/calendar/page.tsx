@@ -5,6 +5,7 @@ import generateCalendar from '@/lib/calendar/generate'
 import Link from 'next/link'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { CalendarContainer } from '@/components/calendar/calendar-container'
+import { ScenarioButton } from '@/components/scenarios/scenario-button'
 
 type Account = Tables<'accounts'>
 type Income = Tables<'income'>
@@ -55,14 +56,14 @@ export default async function CalendarPage() {
     return (
       <div>
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-zinc-900">Cash Flow Calendar</h1>
-          <p className="text-sm text-zinc-500">60-day projection</p>
+          <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
+          <p className="text-sm text-zinc-400">60-day projection</p>
         </div>
 
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
           <div className="text-center py-10">
             <CalendarIcon className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
-            <p className="text-zinc-500">Add an account to generate your forecast.</p>
+            <p className="text-zinc-400">Add an account to generate your forecast.</p>
             <div className="mt-6">
               <Link
                 href="/dashboard/accounts/new"
@@ -90,11 +91,11 @@ export default async function CalendarPage() {
     return (
       <div>
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-zinc-900">Cash Flow Calendar</h1>
-          <p className="text-sm text-zinc-500">60-day projection</p>
+          <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
+          <p className="text-sm text-zinc-400">60-day projection</p>
         </div>
 
-        <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-4 py-3 mb-6">
+        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 rounded-md px-4 py-3 mb-6">
           {calendarError || 'Error generating calendar. Please try again.'}
         </div>
       </div>
@@ -130,21 +131,26 @@ export default async function CalendarPage() {
 
   return (
     <div>
-      {/* Page Header */}
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold text-zinc-900">Cash Flow Calendar</h1>
-        <p className="text-sm text-zinc-500">60-day projection</p>
-      </div>
-
-      {fetchErrors.length > 0 && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-4 py-3 mb-4">
-          Error loading some calendar data. The projection may be incomplete.
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+        {/* Page Header */}
+        <div className="px-4 py-4 border-b border-zinc-800">
+          <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
+          <p className="text-sm text-zinc-400">60-day projection</p>
         </div>
-      )}
 
-      <div className="border border-zinc-200 bg-white rounded-lg overflow-hidden">
+        {fetchErrors.length > 0 && (
+          <div className="px-4 pt-4">
+            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 rounded-md px-4 py-3">
+              Error loading some calendar data. The projection may be incomplete.
+            </div>
+          </div>
+        )}
+
         <CalendarContainer calendarData={calendarContainerData} />
       </div>
+
+      {/* Floating Scenario Tester */}
+      <ScenarioButton variant="fab" source="calendar" />
     </div>
   )
 }

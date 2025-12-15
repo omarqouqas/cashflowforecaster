@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2 } from 'lucide-react'
+import { showError, showSuccess } from '@/lib/toast'
 
 interface DeleteBillButtonProps {
   billId: string
@@ -23,11 +24,12 @@ export function DeleteBillButton({ billId, billName }: DeleteBillButtonProps) {
     const { error } = await supabase.from('bills').delete().eq('id', billId)
 
     if (error) {
-      alert('Error deleting bill: ' + error.message)
+      showError(error.message)
       setIsDeleting(false)
       setIsConfirming(false)
     } else {
-      router.push('/dashboard/bills?success=bill-deleted')
+      showSuccess('Deleted successfully')
+      router.push('/dashboard/bills')
       router.refresh()
     }
   }

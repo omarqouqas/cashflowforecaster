@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Tables } from '@/types/supabase';
 import { updateInvoice } from '@/lib/actions/invoices';
+import { showError, showSuccess } from '@/lib/toast';
 
 const invoiceSchema = z.object({
   invoice_number: z
@@ -73,10 +74,13 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
         description: data.description ? data.description : null,
       });
 
+      showSuccess('Changes saved');
       router.refresh();
       router.push(`/dashboard/invoices/${invoice.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
+      const message = e instanceof Error ? e.message : 'Something went wrong';
+      showError(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }

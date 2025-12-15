@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { showError, showSuccess } from '@/lib/toast'
 
 export type StepAccountValues = {
   name: string
@@ -50,8 +51,11 @@ export function StepAccount({
         account_type: accountType,
         current_balance: parsedBalance,
       })
+      showSuccess('Account added!')
     } catch (e: any) {
-      setError(e?.message ?? 'Something went wrong.')
+      const message = e?.message ?? 'Something went wrong.'
+      showError(message)
+      setError(message)
     } finally {
       setIsSubmitting(false)
     }

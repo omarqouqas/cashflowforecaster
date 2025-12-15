@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
+import { showError, showSuccess } from '@/lib/toast';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -60,7 +61,9 @@ export default function EditBillPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        setError('You must be logged in');
+      const message = 'You must be logged in';
+      showError(message);
+      setError(message);
         setIsLoading(false);
         return;
       }
@@ -121,7 +124,9 @@ export default function EditBillPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setError('You must be logged in');
+      const message = 'You must be logged in';
+      showError(message);
+      setError(message);
       setIsSubmitting(false);
       return;
     }
@@ -134,13 +139,17 @@ export default function EditBillPage() {
       .single();
 
     if (verifyError || !billData) {
-      setError('Bill not found');
+      const message = 'Bill not found';
+      showError(message);
+      setError(message);
       setIsSubmitting(false);
       return;
     }
 
     if (billData.user_id !== user.id) {
-      setError('Unauthorized: This bill does not belong to you');
+      const message = 'Unauthorized: This bill does not belong to you';
+      showError(message);
+      setError(message);
       setIsSubmitting(false);
       return;
     }
@@ -160,10 +169,12 @@ export default function EditBillPage() {
       .eq('id', billId);
 
     if (updateError) {
+      showError(updateError.message);
       setError(updateError.message);
     } else {
+      showSuccess('Changes saved');
       router.refresh();
-      router.push('/dashboard/bills?success=updated');
+      router.push('/dashboard/bills');
     }
 
     setIsSubmitting(false);

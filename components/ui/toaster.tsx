@@ -5,14 +5,26 @@ import { Toaster } from 'react-hot-toast';
 export function AppToaster() {
   return (
     <Toaster
-      position="top-right"
+      position="bottom-center"
       toastOptions={{
-        duration: 4000,
+        duration: 3000,
         style: {
-          background: '#ffffff',
-          color: '#18181b',
-          border: '1px solid #e4e4e7',
+          background: '#27272a', // zinc-800
+          color: '#fafafa',
+          border: '1px solid #3f3f46', // zinc-700
           borderRadius: '12px',
+        },
+        success: {
+          iconTheme: {
+            primary: '#14b8a6', // teal-500
+            secondary: '#fafafa',
+          },
+        },
+        error: {
+          iconTheme: {
+            primary: '#ef4444', // red-500
+            secondary: '#fafafa',
+          },
         },
       }}
     />

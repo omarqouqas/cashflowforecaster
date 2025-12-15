@@ -12,6 +12,7 @@ import { DeleteAccountButton } from '@/components/accounts/delete-account-button
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
+import { showError, showSuccess } from '@/lib/toast';
 
 type Account = Tables<'accounts'>;
 
@@ -61,7 +62,9 @@ export default function EditAccountPage() {
 
       if (fetchError) {
         console.error('Error fetching account:', fetchError);
-        setError('Account not found');
+        const message = 'Account not found';
+        showError(message);
+        setError(message);
         setIsLoading(false);
         // Redirect to accounts list after a short delay
         setTimeout(() => {
@@ -102,7 +105,9 @@ export default function EditAccountPage() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError('You must be logged in');
+      const message = 'You must be logged in';
+      showError(message);
+      setError(message);
       setIsSubmitting(false);
       return;
     }
@@ -121,11 +126,13 @@ export default function EditAccountPage() {
       .eq('id', accountId);
 
     if (updateError) {
+      showError(updateError.message);
       setError(updateError.message);
     } else {
       // Success - redirect to accounts list
+      showSuccess('Changes saved');
       router.refresh();
-      router.push('/dashboard/accounts?success=account-updated');
+      router.push('/dashboard/accounts');
     }
 
     setIsSubmitting(false);

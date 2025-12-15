@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2 } from 'lucide-react'
+import { showError, showSuccess } from '@/lib/toast'
 
 interface DeleteIncomeButtonProps {
   incomeId: string
@@ -26,10 +27,11 @@ export function DeleteIncomeButton({ incomeId, incomeName }: DeleteIncomeButtonP
       .eq('id', incomeId)
     
     if (error) {
-      alert('Error deleting income: ' + error.message)
+      showError(error.message)
       setIsDeleting(false)
     } else {
-      router.push('/dashboard/income?success=income-deleted')
+      showSuccess('Deleted successfully')
+      router.push('/dashboard/income')
       router.refresh()
     }
   }

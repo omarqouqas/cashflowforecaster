@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { deleteInvoice } from '@/lib/actions/invoices';
 import { Button } from '@/components/ui/button';
 import { InfoTooltip } from '@/components/ui/tooltip';
+import { showError, showSuccess } from '@/lib/toast';
 
 export function DeleteInvoiceButton({
   invoiceId,
@@ -29,10 +30,13 @@ export function DeleteInvoiceButton({
 
     try {
       await deleteInvoice(invoiceId);
+      showSuccess('Deleted successfully');
       router.push('/dashboard/invoices');
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to delete invoice');
+      const message = e instanceof Error ? e.message : 'Failed to delete invoice';
+      showError(message);
+      setError(message);
       setIsDeleting(false);
     }
   };

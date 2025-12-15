@@ -1,23 +1,23 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 13, 2024
+**Last Updated:** December 14, 2024
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
-**Live URL:** https://cashflowforecaster.io (deployment in progress)
+**Live URL:** https://cashflowforecaster.io
 
 ---
 
 ## Quick Stats
 
-- **Days in Development:** 17
-- **Commits:** ~35+
-- **Database Tables:** 10 (added invoices)
+- **Days in Development:** 18
+- **Commits:** ~45+
+- **Database Tables:** 10
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** ~98% of MVP complete + Runway Collect Phase 1 complete
+**Overall Progress:** MVP Complete + Post-Launch Polish
 
 **Completed Phases:**
 - ✅ Phase 1: Foundation (Days 1-3) - COMPLETE
@@ -26,123 +26,147 @@
 - ✅ Phase 4: Calendar Feature (Days 9-15) - COMPLETE
 - ✅ Phase 5: Landing Page (Day 16) - COMPLETE
 - ✅ Phase 6: Runway Collect - Invoicing (Day 17) - COMPLETE
-- 🚧 Phase 7: Deployment - IN PROGRESS
+- ✅ Phase 7: Deployment (Day 17) - COMPLETE
+- ✅ Phase 8: Post-Launch Polish (Day 18) - COMPLETE
 
 **Current Focus:**
-- Invoice edit/delete UI polish
-- Accounts page redesign
-- Final deployment push
+- "Can I Afford It?" scenario feature
+- Runway Collect Phase 2 (email sending)
 
 ---
 
-## Day 17: Runway Collect Feature (December 13, 2024)
+## Day 18: Post-Launch Polish (December 14, 2024)
 
-### Runway Collect Phase 1 ✅ COMPLETE
+### Features Completed Today
 
-**Time Invested:** 4-5 hours
+#### Pricing Section Redesign ✅
+- [x] Monthly/Yearly billing toggle (yearly = 2 months free)
+- [x] Three-tier pricing cards (Free, Pro, Premium)
+- [x] "Most Popular" badge on Pro tier
+- [x] Feature comparison with checkmarks
+- [x] Trust signals: "Cancel anytime • 14-day money-back guarantee • No credit card required"
+- [x] "Coming soon" badges for Plaid bank sync and Couples mode
+- [x] Responsive design (stacked on mobile)
 
-**What is Runway Collect?**
-A built-in invoicing system that transforms the app from passive cash flow tracking to active income generation. Users create invoices which automatically sync with their cash flow forecast.
+#### Onboarding Wizard ✅
+- [x] 4-step guided setup flow
+- [x] Progress indicator with step numbers and checkmarks
+- [x] Step 1: Add first account (name, type, balance)
+- [x] Step 2: Add primary income (name, amount, frequency, next payment date)
+- [x] Step 3: Add bills (pre-populated suggestions + custom)
+- [x] Step 4: Success screen with "See Your Forecast" CTA
+- [x] Auto-redirect for new users with 0 accounts
+- [x] Fixed income status constraint error during onboarding
 
-### Features Implemented
+#### Invoice Email Sending (Runway Collect Phase 2) ✅
+- [x] Resend integration for transactional emails
+- [x] Professional email template (HTML)
+- [x] PDF attachment to emails
+- [x] "Send Invoice" button on invoice detail page
+- [x] Status updates (sent_at timestamp)
+- [x] Fixed react-dom/server build error with template string approach
 
-#### Database Schema
-- [x] Created `invoices` table with fields: id, user_id, invoice_number, client_name, client_email, amount, due_date, description, status, sent_at, viewed_at, paid_at, created_at, updated_at
-- [x] Added `invoice_id` foreign key to `income` table
-- [x] Updated `income.status` constraint to include 'pending' and 'confirmed'
-- [x] Auto-increment invoice number trigger (INV-001, INV-002, etc.)
-- [x] Modified trigger to allow custom invoice numbers
-- [x] RLS policies for user data isolation
+#### Calendar Dark Theme ✅
+- [x] Converted calendar from light to dark theme
+- [x] bg-zinc-900 container, bg-zinc-800 day cells
+- [x] Consistent with rest of app design system
+- [x] Fixed header contrast issue ("Cash Flow Calendar" visibility)
 
-#### Invoice Management
-- [x] Invoice list page (`/dashboard/invoices`)
-- [x] Create invoice form with fields: client name, email, amount, due date, description, custom invoice number
-- [x] Invoice detail page with status timeline
-- [x] Edit invoice functionality (for draft/sent invoices)
-- [x] Delete invoice functionality (for draft invoices)
-- [x] Status badges: Draft (gray), Sent (blue), Viewed (yellow), Paid (green)
+#### Today Indicator ✅
+- [x] "TODAY" label in teal on current date
+- [x] Teal left border and ring highlight
+- [x] Auto-scroll to today on page load
 
-#### PDF Generation
-- [x] Professional invoice PDF template using @react-pdf/renderer
-- [x] API route for PDF generation (`/api/invoices/[id]/pdf`)
-- [x] Download PDF button on list and detail pages
-- [x] Clean layout: header, from/to sections, amount, due date, description
+#### Low Balance Warnings ✅
+- [x] Created lib/calendar/constants.ts with threshold ($100) and helpers
+- [x] Amber styling for low balance ($0-$99)
+- [x] Rose/red styling for negative balance (overdraft)
+- [x] AlertTriangle icons next to warning balances
+- [x] "Overdraft risk" label on negative days
+- [x] Today styling preserved (teal ring) even on warning days
+- [x] Summary "LOWEST" card shows warning colors
+- [x] Overdraft Warning banner with date and amount
+- [x] Dashboard warning card for upcoming low balance days
+- [x] Day detail modal shows warning banner
 
-#### Calendar Integration
-- [x] Auto-create income entry when invoice is created
-- [x] Income entry linked via `invoice_id`
-- [x] Pending income shows dashed border + "Pending" pill on calendar
-- [x] Confirmed/paid income shows solid green
-- [x] Mark as Paid updates both invoice and linked income status
+#### React Hot Toast ✅
+- [x] Installed and configured react-hot-toast
+- [x] Custom styling matching zinc + teal design system
+- [x] Success/error toasts on CRUD operations
+- [x] Bottom-center positioning
 
-#### Income Page Integration
-- [x] Invoice-linked income shows status badge (Pending/Paid)
-- [x] Regular income has no badge (cleaner UI)
-- [x] Estimated Monthly Income excludes one-time invoices
-- [x] Deactivating income properly updates calculations
+#### Build Fixes ✅
+- [x] Fixed react-dom/server usage in invoice email template
+- [x] Fixed Windows + Google Drive webpack cache issues
+- [x] Conditional outputFileTracing for local vs Vercel builds
+- [x] Fixed NEXT_REDIRECT error logging during build
 
-#### Dashboard Integration
-- [x] Outstanding Invoices summary card
-- [x] Shows: unpaid count, total outstanding, overdue count
-- [x] "View all →" link to invoices page
-- [x] Empty state with checkmark when no outstanding invoices
-
-### New Dependencies
+### New Dependencies Added
 ```json
 {
-  "@react-pdf/renderer": "^3.x"
+  "resend": "^x.x.x",
+  "react-hot-toast": "^2.x.x"
 }
 ```
 
 ### New Files Created
 ```
-app/dashboard/invoices/
-├── page.tsx                 # Invoice list
-├── new/page.tsx            # Create invoice form
-└── [id]/
-    ├── page.tsx            # Invoice detail
-    └── edit/page.tsx       # Edit invoice form
+app/onboarding/
+├── page.tsx                      # Main wizard container
 
-lib/actions/invoices.ts      # Server actions (CRUD + summary)
-lib/pdf/invoice-template.tsx # PDF template
+components/onboarding/
+├── progress-steps.tsx            # Step indicator
+├── step-account.tsx              # Account setup
+├── step-income.tsx               # Income setup
+├── step-bills.tsx                # Bills setup
+└── step-success.tsx              # Completion screen
 
-components/invoices/
-├── download-pdf-button.tsx  # PDF download component
-└── mark-as-paid-button.tsx  # Status update component
+components/pricing/
+├── pricing-section.tsx           # Main pricing component
+├── pricing-card.tsx              # Reusable tier card
+└── billing-toggle.tsx            # Monthly/yearly switch
 
-api/invoices/[id]/pdf/route.ts  # PDF generation endpoint
+components/scenarios/             # (Ready for next feature)
+
+lib/email/
+├── resend.ts                     # Resend client initialization
+└── templates/
+    └── invoice-email.tsx         # Invoice email HTML template
+
+lib/calendar/
+└── constants.ts                  # LOW_BALANCE_THRESHOLD, getBalanceStatus()
+
+lib/toast.ts                      # Toast helper functions
 ```
 
 ### Files Modified
 ```
-components/dashboard/nav.tsx          # Added Invoices nav item
-components/income/income-card.tsx     # Added pending/paid badges
-components/calendar/timeline.tsx      # Pending income styling
-components/calendar/day-detail.tsx    # Pending income indicators
-components/calendar/day-detail-modal.tsx
-lib/calendar/types.ts                 # Added status to transactions
-lib/calendar/calculate-income.ts      # Pass status through
-app/dashboard/page.tsx                # Outstanding invoices card
-app/dashboard/income/page.tsx         # Monthly estimate fixes
-types/supabase.ts                     # Regenerated with invoices
-```
+app/page.tsx                      # Added new pricing section
+app/dashboard/layout.tsx          # Onboarding redirect logic
+app/dashboard/calendar/page.tsx   # Dark theme, header fix
+next.config.mjs                   # Webpack cache + outputFileTracing fixes
 
-### Database Migrations
-```sql
--- New table
-CREATE TABLE invoices (...)
+components/calendar/
+├── calendar-container.tsx        # Dark theme, auto-scroll to today
+├── timeline.tsx                  # Low balance styling, today indicator
+├── calendar-summary.tsx          # Warning colors on LOWEST
+├── day-detail.tsx                # Warning banner
+├── day-detail-modal.tsx          # Warning banner
+├── sticky-header.tsx             # Dark theme
+├── low-balance-warning.tsx       # Updated styling
+├── calendar-skeleton.tsx         # Dark theme
+├── calendar-empty-state.tsx      # Dark theme
+└── day-card.tsx                  # Dark theme
 
--- Income table updates
-ALTER TABLE income ADD COLUMN invoice_id UUID REFERENCES invoices(id);
-ALTER TABLE income ADD CONSTRAINT income_status_check 
-  CHECK (status IN ('pending', 'confirmed', 'expected', 'active', 'paused'));
+components/invoices/
+└── send-invoice-button.tsx       # New send functionality
 
--- Tracking timestamps
-ALTER TABLE invoices ADD COLUMN sent_at TIMESTAMPTZ;
-ALTER TABLE invoices ADD COLUMN viewed_at TIMESTAMPTZ;
+lib/actions/
+├── income.ts                     # Fixed status default for onboarding
+└── send-invoice.ts               # New email sending action
 
--- Custom invoice number support
-CREATE OR REPLACE FUNCTION generate_invoice_number() ...
+lib/email/templates/
+└── invoice-email.tsx             # Template string instead of ReactDOMServer
 ```
 
 ---
@@ -154,26 +178,58 @@ CREATE OR REPLACE FUNCTION generate_invoice_number() ...
 - [x] **Domains Secured:** cashflowforecaster.io, .app
 - [x] **DNS Configured:** Namecheap → Vercel
 - [x] **Git Repository:** Connected to GitHub
-- [x] **GitHub Remote:** https://github.com/omarqouqas/cashflowforecaster
 - [x] **Supabase Project:** Created and configured
-- [x] **Database Schema:** 10 tables with RLS (added invoices)
+- [x] **Database Schema:** 10 tables with RLS
 - [x] **TypeScript Types:** Generated from database
 - [x] **Environment Variables:** Configured locally + Vercel
-- [x] **Landing Page:** Complete with features, pricing, CTA
-- [x] **Vercel Project:** Created and connected to GitHub
-- [x] **Runway Collect Phase 1:** Invoicing feature complete
-- [x] **Invoice UI Polish:** Edit/delete buttons placement
-- [x] **Accounts Page Redesign:** Match Income/Bills UX
-- [x] **Vercel Deployment:** Final build testing
-- [x] **Custom Domain:** Connect after successful build
+- [x] **Landing Page:** Complete with pricing, features, CTA
+- [x] **Vercel Deployment:** Live and working
+- [x] **Custom Domain:** cashflowforecaster.io connected
+- [x] **SSL Certificate:** Auto via Vercel
+- [x] **Runway Collect Phase 1:** Invoicing complete
+- [x] **Runway Collect Phase 2:** Email sending complete
+- [x] **Onboarding Wizard:** Complete
+- [x] **Pricing Section:** Redesigned with tiers
+- [x] **Calendar Polish:** Dark theme, today indicator, low balance warnings
+- [x] **Toast Notifications:** react-hot-toast configured
+- [x] **"Can I Afford It?" Scenarios:** Core differentiator feature
 
-### 📋 Post-Launch
+### 📋 Post-Launch (Next)
 
-- [ ] **Runway Collect Phase 2:** Email sending via Resend
 - [ ] **Runway Collect Phase 3:** Automated payment reminders
-- [ ] **SSL Certificate:** Auto via Vercel
 - [ ] **Analytics:** PostHog (for tracking)
 - [ ] **Error Monitoring:** Sentry (for debugging)
+
+---
+
+## Feature Roadmap
+
+### Completed ✅
+| Feature | Status | Notes |
+|---------|--------|-------|
+| 60-day cash flow calendar | ✅ | Core feature |
+| Accounts CRUD | ✅ | Multiple accounts supported |
+| Income CRUD | ✅ | Recurring + one-time |
+| Bills CRUD | ✅ | All frequencies supported |
+| Runway Collect invoicing | ✅ | PDF generation |
+| Invoice email sending | ✅ | Via Resend |
+| Onboarding wizard | ✅ | 4-step guided setup |
+| Pricing section | ✅ | 3 tiers with toggle |
+| Today indicator | ✅ | Auto-scroll + highlight |
+| Low balance warnings | ✅ | Amber/rose styling |
+| Toast notifications | ✅ | react-hot-toast |
+
+### In Progress 🚧
+| Feature | Priority | Est. Time |
+|---------|----------|-----------|
+| "Can I Afford It?" scenarios | HIGH | 4-6 hours |
+
+### Upcoming 📋
+| Feature | Priority | Est. Time |
+|---------|----------|-----------|
+| Payment reminders (Phase 3) | MEDIUM | 3-4 hours |
+| Email parser | LOW | 6-8 hours |
+| Plaid bank sync | LOW | 8-10 hours |
 
 ---
 
@@ -185,66 +241,17 @@ CREATE OR REPLACE FUNCTION generate_invoice_number() ...
 - Auto-sync with income/calendar
 - Track payment status
 
-### Phase 2: Send & Track (Next)
+### Phase 2: Send & Track ✅ COMPLETE
 - Email invoices directly via Resend
-- Track when client opens invoice (viewed_at)
-- Automatic status updates
-- Email templates
+- PDF attachment
+- sent_at timestamp tracking
+- Professional email template
 
-### Phase 3: Nudge System (Future)
+### Phase 3: Nudge System (Next)
 - Pre-written reminder templates
 - One-click send reminders
 - Automated reminder scheduling
 - Overdue notifications
-
----
-
-## Updated Remaining Tasks
-
-### Immediate (Today/Tomorrow)
-
-1. Fix invoice edit/delete button placement
-2. Redesign Accounts page to match Income/Bills
-3. Final Vercel build test
-4. Connect cashflowforecaster.io domain
-5. Update Supabase redirect URLs
-6. Test production flows
-
-### Post-Launch (Week 1)
-
-- [ ] Monitor for errors
-- [ ] Collect user feedback
-- [ ] Fix any production bugs
-- [ ] Add loading states/skeletons
-- [ ] Add error boundaries
-
-### Future Enhancements
-
-- [ ] Runway Collect Phase 2 (email sending)
-- [ ] Runway Collect Phase 3 (reminders)
-- [ ] Scenarios / "Can I Afford It?" feature
-- [ ] Email parser for bill detection
-- [ ] Automated testing
-- [ ] CI/CD pipeline
-
----
-
-## Lessons Learned Today
-
-### Feature Prioritization
-- **Runway Collect solves real friction** - Manual data entry was the #1 UX problem
-- **Active > Passive** - Users want tools that help them get paid, not just track spending
-- **Natural upgrade path** - Invoicing is a clear Pro tier feature
-
-### Database Design
-- **Plan for relationships** - Adding invoice_id to income was straightforward
-- **Constraint migrations need data** - Had to include 'expected' in status check because of existing rows
-- **Triggers can be smart** - Auto-generate invoice numbers only when not provided
-
-### Component Reuse
-- **Patterns matter** - Using same form patterns (react-hook-form + zod) speeds development
-- **Consistent styling** - zinc + teal design system makes new features feel native
-- **Badge components** - Reusable status badges across invoices and income pages
 
 ---
 
@@ -259,78 +266,70 @@ CREATE OR REPLACE FUNCTION generate_invoice_number() ...
 | Calendar UI | 11-13 | 6-8 | ✅ Complete |
 | Calendar Polish | 14-15 | 3-4 | ✅ Complete |
 | Landing Page | 16 | 2-3 | ✅ Complete |
-| Runway Collect | 17 | 4-5 | ✅ Complete |
-| Deployment | 16-17 | 3+ | 🚧 In Progress |
+| Runway Collect P1 | 17 | 4-5 | ✅ Complete |
+| Deployment | 17 | 2-3 | ✅ Complete |
+| Post-Launch Polish | 18 | 5-6 | ✅ Complete |
 
-**Cumulative:** ~55-65 hours over 17 days
+**Cumulative:** ~60-70 hours over 18 days
 
-**Average:** ~3.5 hours per day
+**Average:** ~3.5-4 hours per day
 
 ---
 
-## What's Working
+## Lessons Learned Today
 
-- ✅ Complete Runway Collect invoicing feature
-- ✅ PDF generation with professional templates
-- ✅ Calendar integration with pending/confirmed states
-- ✅ Dashboard outstanding invoices summary
-- ✅ Income page status badges
-- ✅ Custom invoice numbers
-- ✅ Edit/delete functionality (mostly complete)
+### Onboarding Matters
+- **Empty dashboard = lost users** - Guided setup dramatically improves activation
+- **Database constraints bite back** - Income status field needed 'active' default for onboarding
+- **Pre-populated suggestions work** - Users love clicking to add common bills
+
+### Build Issues on Windows
+- **Google Drive + Next.js cache don't mix** - Disabled webpack persistent cache locally
+- **outputFileTracing conflicts** - Conditional config for local vs Vercel
+- **ReactDOMServer in edge runtime** - Use template strings for email HTML
+
+### Dark Theme Consistency
+- **Light cards in dark layouts look jarring** - Went full dark for calendar
+- **Contrast matters** - Header text was invisible until fixed
+- **Warning colors pop better on dark** - Amber/rose really stand out on zinc-900
+
+### Low Balance UX
+- **$100 threshold feels right** - Not too aggressive, catches real problems
+- **Today + warning can coexist** - Teal ring on rose background works
+- **Overdraft banner is essential** - Users need the big scary warning
+
+---
+
+## What's Working Well
+
+- ✅ Complete MVP with all core features
+- ✅ Runway Collect invoicing + email sending
+- ✅ Onboarding wizard for new users
+- ✅ Polished calendar with warnings
+- ✅ Professional pricing section
+- ✅ Toast notifications throughout
+- ✅ Build and deployment stable
 
 ## What's Next
 
-- 📋 Runway Collect Phase 2 (email sending)
+1. **"Can I Afford It?" scenarios** - Core differentiator, unique value prop
+2. **Payment reminders (Phase 3)** - Complete Runway Collect story
+3. **User feedback collection** - See what real users need
+4. **Analytics setup** - PostHog for tracking behavior
 
 ---
 
-## Key Files Changed Today
+## Key Metrics to Track (Post-Launch)
 
-**New Files:**
-- `app/dashboard/invoices/` (entire directory)
-- `lib/actions/invoices.ts`
-- `lib/pdf/invoice-template.tsx`
-- `components/invoices/download-pdf-button.tsx`
-- `components/invoices/mark-as-paid-button.tsx`
-- `app/api/invoices/[id]/pdf/route.ts`
-
-**Modified Files:**
-- `types/supabase.ts` - Regenerated multiple times
-- `components/dashboard/nav.tsx` - Added Invoices
-- `components/income/income-card.tsx` - Status badges
-- `components/calendar/*.tsx` - Pending income styling
-- `lib/calendar/*.ts` - Status propagation
-- `app/dashboard/page.tsx` - Outstanding invoices card
-- `app/dashboard/income/page.tsx` - Monthly estimate fixes
-
-**Database Changes:**
-- Added `invoices` table
-- Added `invoice_id` to `income` table
-- Added `sent_at`, `viewed_at` to `invoices`
-- Updated `income.status` constraint
-- Modified invoice number trigger
+- Signup conversion rate (landing → account)
+- Onboarding completion rate (4 steps)
+- Free-to-paid conversion rate
+- DAU/MAU ratio
+- Invoice send rate (for Pro users)
+- Calendar views per user per week
 
 ---
 
-## Screenshots
-
-### Invoices List
-- Shows all invoices with status badges
-- Custom invoice numbers working (789, 123456, INV-001, etc.)
-- Edit icon for draft/sent, Download PDF for all
-
-### Income Page
-- Invoice-linked entries show Pending/Paid badges
-- Regular income has no badge
-- Toggle controls active/inactive state
-
-### Calendar Integration
-- Pending income shows dashed outline + "Pending" pill
-- Paid/confirmed income shows solid green
-- Both types display correctly on due dates
-
----
-
-**Status:** Runway Collect Phase 1 complete! Polish and deploy. 🚀
+**Status:** MVP Complete + Polish Complete. Ready for "Can I Afford It?" feature. 🚀
 
 **This is a living document. Update after each development session.**

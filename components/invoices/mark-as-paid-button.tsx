@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateInvoiceStatus } from '@/lib/actions/invoices';
+import { showError, showSuccess } from '@/lib/toast';
 
 export function MarkAsPaidButton({ invoiceId }: { invoiceId: string }) {
   const router = useRouter();
@@ -13,7 +14,10 @@ export function MarkAsPaidButton({ invoiceId }: { invoiceId: string }) {
     setIsLoading(true);
     try {
       await updateInvoiceStatus(invoiceId, 'paid');
+      showSuccess('Invoice marked as paid');
       router.refresh();
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Failed to update invoice');
     } finally {
       setIsLoading(false);
     }

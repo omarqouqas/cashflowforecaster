@@ -51,12 +51,12 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
 
   return (
     <>
-      <div className="bg-white border border-zinc-200 rounded-lg p-6">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
         {/* Month sections */}
         {Object.entries(daysByMonth).map(([monthKey, days]) => (
           <div key={monthKey} className="mb-8 last:mb-0">
             {/* Month header */}
-            <h3 className="text-xl font-semibold text-zinc-900 mb-4">
+            <h3 className="text-xl font-semibold text-zinc-100 mb-4">
               {monthKey}
             </h3>
 
@@ -75,8 +75,8 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
         ))}
 
         {/* Legend */}
-        <div className="mt-8 pt-6 border-t border-zinc-200">
-          <h4 className="text-sm font-semibold text-zinc-900 mb-3">
+        <div className="mt-8 pt-6 border-t border-zinc-800">
+          <h4 className="text-sm font-semibold text-zinc-100 mb-3">
             Balance Status
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -141,12 +141,12 @@ function LegendItem({ color, label, description }: LegendItemProps) {
   };
 
   return (
-    <div className="border border-zinc-200 rounded-lg p-3 bg-zinc-50">
+    <div className="border border-zinc-800 rounded-lg p-3 bg-zinc-800">
       <div className="flex items-center gap-2 mb-1">
         <div className={cn('w-3 h-3 rounded-full', indicatorColors[color])} />
         <span className={cn('text-sm font-semibold', textColors[color])}>{label}</span>
       </div>
-      <p className="text-xs text-zinc-500">{description}</p>
+      <p className="text-xs text-zinc-400">{description}</p>
     </div>
   );
 }

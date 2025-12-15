@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2 } from 'lucide-react'
+import { showError, showSuccess } from '@/lib/toast'
 
 interface DeleteAccountButtonProps {
   accountId: string
@@ -26,10 +27,11 @@ export function DeleteAccountButton({ accountId, accountName }: DeleteAccountBut
       .eq('id', accountId)
 
     if (error) {
-      alert('Error deleting account: ' + error.message)
+      showError(error.message)
       setIsDeleting(false)
     } else {
-      router.push('/dashboard/accounts?success=account-deleted')
+      showSuccess('Deleted successfully')
+      router.push('/dashboard/accounts')
       router.refresh() // Refresh to update list
     }
   }

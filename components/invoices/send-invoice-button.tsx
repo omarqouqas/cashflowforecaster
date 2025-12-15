@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { Send, RotateCcw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { sendInvoice } from '@/lib/actions/send-invoice';
+import { showError, showSuccess } from '@/lib/toast';
 
 export type SendInvoiceButtonProps = {
   invoiceId: string;
@@ -81,13 +81,13 @@ export function SendInvoiceButton({
     }
 
     if (!email) {
-      toast.error('Client email is required to send an invoice.');
+      showError('Client email is required to send an invoice.');
       setState('error');
       return;
     }
 
     if (!isValidEmail(email)) {
-      toast.error('Please enter a valid email address.');
+      showError('Please enter a valid email address.');
       setState('error');
       return;
     }
@@ -102,11 +102,11 @@ export function SendInvoiceButton({
 
     if (!res.ok) {
       if (res.code === 'already_sent') {
-        toast.error('This invoice was already sent. Use “Resend” to send it again.');
+        showError('This invoice was already sent. Use “Resend” to send it again.');
       } else if (res.code === 'invalid_email') {
-        toast.error('Please enter a valid email address.');
+        showError('Please enter a valid email address.');
       } else {
-        toast.error('Failed to send invoice. Please try again.');
+        showError('Failed to send invoice. Please try again.');
       }
 
       setState('error');
@@ -114,7 +114,7 @@ export function SendInvoiceButton({
       return;
     }
 
-    toast.success(`Invoice sent to ${res.sentTo}`);
+    showSuccess(`Invoice sent to ${res.sentTo}`);
     setState('success');
 
     // Refresh to update status + timestamps

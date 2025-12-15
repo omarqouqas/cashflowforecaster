@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
+import { showError, showSuccess } from '@/lib/toast'
 
 export type StepIncomeRow = {
   id: string
@@ -82,8 +83,11 @@ export function StepIncome({
           next_date: r.next_date,
         }))
       )
+      showSuccess('Income added')
     } catch (e: any) {
-      setError(e?.message ?? 'Something went wrong.')
+      const message = e?.message ?? 'Something went wrong.'
+      showError(message)
+      setError(message)
     } finally {
       setIsSubmitting(false)
     }

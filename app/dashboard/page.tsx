@@ -2,11 +2,14 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { SuccessMessage } from '@/components/ui/success-message';
 import Link from 'next/link';
-import { Calendar, Receipt, CheckCircle2 } from 'lucide-react';
+import { Calendar, Receipt, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
 import { getInvoiceSummary } from '@/lib/actions/invoices';
+import { differenceInCalendarDays, startOfDay } from 'date-fns';
+import { LOW_BALANCE_THRESHOLD } from '@/lib/calendar/constants';
+import { ScenarioButton } from '@/components/scenarios/scenario-button';
 
 interface DashboardPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -66,6 +69,23 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       console.error('Error generating calendar:', error);
     }
   }
+
+  const lowBalanceWarning = (() => {
+    if (!calendarData) return null;
+
+    const today = startOfDay(new Date());
+    const upcoming = calendarData.days
+      .map((day) => ({
+        day,
+        daysFromNow: differenceInCalendarDays(startOfDay(day.date), today),
+      }))
+      .filter((x) => x.daysFromNow >= 0 && x.daysFromNow < 14)
+      .filter((x) => x.day.balance < LOW_BALANCE_THRESHOLD)
+      .sort((a, b) => a.day.balance - b.day.balance)[0];
+
+    if (!upcoming) return null;
+    return { amount: upcoming.day.balance, date: upcoming.day.date };
+  })();
 
   // Calculate monthly income equivalent
   const calculateMonthlyIncome = (incomes: any[]) => {
@@ -140,6 +160,25 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             Your 60-day cash flow calendar will appear here soon.
           </p>
 
+          {/* Low balance warning (next 14 days) */}
+          {lowBalanceWarning && (
+            <div className="mb-6">
+              <div className="bg-amber-500/10 border border-amber-500/50 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-amber-400">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="font-medium">Low balance warning</span>
+                </div>
+                <p className="text-slate-700 dark:text-zinc-300 text-sm mt-1">
+                  Your balance may drop to {formatCurrency(lowBalanceWarning.amount, currency)} on{' '}
+                  {formatDate(lowBalanceWarning.date)}
+                </p>
+                <Link href="/dashboard/calendar" className="text-teal-500 text-sm hover:underline">
+                  View calendar →
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Calendar card (kept separate from the 3 summary cards grid) */}
           {calendarData && (
             <div className="mb-6">
@@ -175,6 +214,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </Link>
             </div>
           )}
+
+          {/* "Can I Afford It?" scenario tester */}
+          <div className="mb-6">
+            <ScenarioButton variant="card" source="dashboard" />
+          </div>
 
           {/* Outstanding invoices */}
           <div className="mb-6">

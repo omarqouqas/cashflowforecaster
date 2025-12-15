@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { showError, showSuccess } from '@/lib/toast';
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required').max(50, 'Name too long'),
@@ -55,7 +56,9 @@ export default function NewAccountPage() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError('You must be logged in');
+      const message = 'You must be logged in';
+      showError(message);
+      setError(message);
       setIsLoading(false);
       return;
     }
@@ -71,10 +74,12 @@ export default function NewAccountPage() {
     });
 
     if (insertError) {
+      showError(insertError.message);
       setError(insertError.message);
     } else {
       // Success - redirect to accounts list
-      router.push('/dashboard/accounts?success=account-created');
+      showSuccess('Account created');
+      router.push('/dashboard/accounts');
     }
 
     setIsLoading(false);

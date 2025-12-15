@@ -6,6 +6,7 @@ import { DayDetail } from './day-detail'
 import { StickyCalendarHeader } from './sticky-header'
 import { LowBalanceWarning } from './low-balance-warning'
 import type { CalendarDay, Transaction } from '@/lib/calendar/types'
+import { isToday } from 'date-fns'
 
 interface CalendarContainerProps {
   calendarData: {
@@ -54,6 +55,10 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
   const lowestBalanceDate = useMemo(() => toDate(calendarData.lowestBalanceDate), [calendarData.lowestBalanceDate])
 
   const rowWrappersRef = useRef<Array<HTMLDivElement | null>>([])
+
+  const todayIndex = useMemo(() => {
+    return days.findIndex((d) => isToday(d.date))
+  }, [days])
 
   const headerProps = useMemo(
     () => ({
@@ -116,8 +121,19 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
     })
   }, [selectedDayIndex])
 
+  // Auto-scroll today into view on mount
+  useEffect(() => {
+    if (todayIndex < 0) return
+    const el = rowWrappersRef.current[todayIndex]
+    if (!el) return
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
+    // run once per days load
+  }, [todayIndex])
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-zinc-900 text-zinc-100">
       <StickyCalendarHeader {...headerProps} />
 
       {/* Low Balance Warning */}
@@ -131,7 +147,7 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
       )}
 
       <div className="flex-1">
-        <div className="divide-y divide-zinc-100">
+        <div className="space-y-2 p-4">
           {days.map((day, index) => (
             <div
               key={day.date.getTime()}
@@ -139,7 +155,7 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
                 rowWrappersRef.current[index] = node
               }}
             >
-              <TimelineRow day={day} isToday={index === 0} onClick={() => handleDayClick(index)} />
+              <TimelineRow day={day} isToday={index === todayIndex} onClick={() => handleDayClick(index)} />
               {selectedDayIndex === index && (
                 <DayDetail
                   day={day}

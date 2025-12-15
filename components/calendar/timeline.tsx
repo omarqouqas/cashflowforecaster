@@ -2,6 +2,9 @@
 
 import { CalendarDay } from '@/lib/calendar/types'
 import { formatCurrency } from '@/lib/utils/format'
+import { getBalanceStatus } from '@/lib/calendar/constants'
+import { isToday } from 'date-fns'
+import { AlertTriangle } from 'lucide-react'
 
 export interface CalendarTimelineProps {
   days: CalendarDay[]
@@ -12,14 +15,6 @@ export interface TimelineRowProps {
   day: CalendarDay
   isToday?: boolean
   onClick: () => void
-}
-
-function isToday(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  const t = new Date()
-  t.setHours(0, 0, 0, 0)
-  return d.getTime() === t.getTime()
 }
 
 function statusBarClass(status: CalendarDay['status']) {
@@ -40,15 +35,15 @@ function statusBarClass(status: CalendarDay['status']) {
 function statusTextClass(status: CalendarDay['status']) {
   switch (status) {
     case 'green':
-      return 'text-emerald-600'
+      return 'text-emerald-400'
     case 'yellow':
-      return 'text-amber-600'
+      return 'text-amber-400'
     case 'orange':
-      return 'text-orange-600'
+      return 'text-orange-400'
     case 'red':
-      return 'text-rose-600'
+      return 'text-rose-400'
     default:
-      return 'text-zinc-900'
+      return 'text-zinc-100'
   }
 }
 
@@ -78,28 +73,61 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
   const hasIncome = incomeTotal > 0
   const hasBills = billsTotal > 0
 
-  const balanceClass = day.balance < 0 ? 'text-rose-600' : statusTextClass(day.status)
+  const balanceStatus = getBalanceStatus(day.balance)
+  const isNegative = balanceStatus === 'negative'
+  const isLowBalance = balanceStatus === 'low'
+  const showWarning = isNegative || isLowBalance
+
+  const rowBase = 'w-full flex items-start px-4 py-3 transition-colors cursor-pointer min-h-[64px] text-left rounded-lg border'
+  const rowBgClass = isNegative
+    ? 'bg-rose-500/20'
+    : isLowBalance
+      ? 'bg-amber-500/10'
+      : 'bg-zinc-800'
+
+  // Preserve today styling: teal ring + teal border priority (even if low/negative)
+  const rowBorderClass = today
+    ? 'border-teal-500'
+    : isNegative
+      ? 'border-rose-500'
+      : isLowBalance
+        ? 'border-amber-500/50'
+        : 'border-zinc-700'
+
+  const balanceClass = isNegative
+    ? 'text-rose-400 font-semibold'
+    : isLowBalance
+      ? 'text-amber-400'
+      : 'text-zinc-100'
+
+  // Today indicator takes priority for the left status bar color
+  const statusBar = today ? 'bg-teal-500' : statusBarClass(day.status)
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-start px-4 py-3 hover:bg-zinc-50 transition-colors cursor-pointer min-h-[64px] text-left"
+      className={[
+        rowBase,
+        rowBgClass,
+        rowBorderClass,
+        today ? 'ring-1 ring-teal-500/50' : 'hover:bg-zinc-700/50',
+      ].join(' ')}
     >
       {/* Status Indicator */}
-      <div className={`w-1 h-10 rounded-full mr-3 ${statusBarClass(day.status)}`} />
+      <div className={`w-1 h-10 rounded-full mr-3 ${statusBar}`} />
 
       {/* Date Column */}
       <div className="w-14 flex-shrink-0 text-left">
         {today ? (
           <>
-            <p className="text-xs font-medium text-teal-600 uppercase tracking-wide">Today</p>
-            <p className="text-sm font-semibold text-teal-600">{formatMonthDay(day.date)}</p>
+            <p className="text-xs font-medium text-teal-500 uppercase tracking-wide">Today</p>
+            <p className="text-sm font-semibold text-zinc-100">{formatMonthDay(day.date)}</p>
           </>
         ) : (
           <>
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">{formatDow(day.date)}</p>
-            <p className="text-sm font-medium text-zinc-900">{formatMonthDay(day.date)}</p>
+            <p className="text-sm font-medium text-zinc-200">{formatMonthDay(day.date)}</p>
           </>
         )}
       </div>
@@ -109,12 +137,12 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
         {hasIncome || hasBills ? (
           <>
             {hasIncome && (
-              <span className="text-xs text-zinc-500 tabular-nums">
+              <span className="text-xs text-zinc-300 tabular-nums">
                 +{formatCurrency(incomeTotal)}
               </span>
             )}
             {hasBills && (
-              <span className="text-xs text-zinc-500 tabular-nums">
+              <span className="text-xs text-zinc-300 tabular-nums">
                 -{formatCurrency(billsTotal)}
               </span>
             )}
@@ -129,7 +157,7 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
                 />
               ))}
               {day.income.length > 3 && (
-                <span className="text-xs text-zinc-500">+{day.income.length - 3}</span>
+                <span className="text-xs text-zinc-400">+{day.income.length - 3}</span>
               )}
               {day.bills.slice(0, 3).map((t) => (
                 <span
@@ -139,20 +167,31 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
                 />
               ))}
               {day.bills.length > 3 && (
-                <span className="text-xs text-zinc-500">+{day.bills.length - 3}</span>
+                <span className="text-xs text-zinc-400">+{day.bills.length - 3}</span>
               )}
             </div>
           </>
         ) : (
-          <span className="text-xs text-zinc-400 italic">No transactions</span>
+          <span className="text-xs text-zinc-500 italic">No transactions</span>
         )}
       </div>
 
       {/* Balance */}
       <div className="text-right flex-shrink-0">
-        <p className={`text-base font-semibold tabular-nums ${balanceClass}`}>
-          {formatCurrency(day.balance)}
-        </p>
+        <div className="flex flex-col items-end">
+          <div className={`flex items-center gap-1.5 text-base tabular-nums ${balanceClass}`}>
+            {showWarning && (
+              <AlertTriangle
+                className={`w-4 h-4 ${isNegative ? 'text-rose-400' : 'text-amber-400'}`}
+                aria-hidden="true"
+              />
+            )}
+            <span>{formatCurrency(day.balance)}</span>
+          </div>
+          {isNegative && (
+            <p className="text-xs text-rose-300 mt-0.5">Overdraft risk</p>
+          )}
+        </div>
       </div>
     </button>
   )
@@ -160,7 +199,7 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
 
 export function CalendarTimeline({ days, onDayClick }: CalendarTimelineProps) {
   return (
-    <div className="divide-y divide-zinc-100">
+    <div className="space-y-2">
       {days.map((day) => (
         <TimelineRow key={day.date.getTime()} day={day} onClick={() => onDayClick(day)} />
       ))}

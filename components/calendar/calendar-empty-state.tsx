@@ -5,8 +5,8 @@ export function CalendarEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
       <Calendar className="w-12 h-12 text-zinc-300" />
-      <h2 className="text-lg font-medium text-zinc-900 mt-4">No data yet</h2>
-      <p className="text-sm text-zinc-500 text-center mt-2 max-w-xs">
+      <h2 className="text-lg font-medium text-zinc-100 mt-4">No data yet</h2>
+      <p className="text-sm text-zinc-400 text-center mt-2 max-w-xs">
         Add your accounts, income, and bills to see your 60-day cash flow projection.
       </p>
       <div className="mt-6">

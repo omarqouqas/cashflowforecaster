@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 import { deleteInvoice } from '@/lib/actions/invoices';
+import { showError, showSuccess } from '@/lib/toast';
 
 export function DeleteInvoiceIconButton({
   invoiceId,
@@ -21,10 +22,11 @@ export function DeleteInvoiceIconButton({
 
     try {
       await deleteInvoice(invoiceId);
-      router.push('/dashboard/invoices?success=invoice-deleted');
+      showSuccess('Deleted successfully');
+      router.push('/dashboard/invoices');
       router.refresh();
     } catch (e) {
-      alert('Error deleting invoice: ' + (e instanceof Error ? e.message : 'Unknown error'));
+      showError(e instanceof Error ? e.message : 'Unknown error');
       setIsDeleting(false);
     }
   };

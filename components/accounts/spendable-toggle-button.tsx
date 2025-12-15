@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { showError, showSuccess } from '@/lib/toast'
 
 interface SpendableToggleButtonProps {
   id: string
@@ -36,14 +37,15 @@ export function SpendableToggleButton({
       if (error) {
         setIsSpendable(previousState)
         console.error('Error updating account spendable:', error)
-        alert(`Error updating ${accountName}: ${error.message}`)
+        showError(error.message)
       } else {
+        showSuccess('Updated successfully')
         router.refresh()
       }
     } catch (e) {
       setIsSpendable(previousState)
       console.error('Unexpected error updating account spendable:', e)
-      alert(`Unexpected error updating ${accountName}: ${e instanceof Error ? e.message : 'Unknown error'}`)
+      showError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }

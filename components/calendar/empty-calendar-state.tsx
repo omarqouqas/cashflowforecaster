@@ -18,13 +18,13 @@ export function EmptyCalendarState({ type, message }: EmptyCalendarStateProps) {
   if (type === 'no-accounts') {
     return (
       <div className="text-center py-12">
-        <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
-          <Wallet className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-800 rounded-full flex items-center justify-center">
+          <Wallet className="w-10 h-10 text-zinc-400" />
         </div>
-        <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
+        <h3 className="text-xl font-semibold mb-3 text-zinc-100">
           No Accounts Yet
         </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+        <p className="text-zinc-400 mb-8 max-w-md mx-auto">
           {message ||
             'Add your first bank account to start tracking your cash flow forecast. Your 60-day projection will appear here once you have accounts set up.'}
         </p>
@@ -40,13 +40,13 @@ export function EmptyCalendarState({ type, message }: EmptyCalendarStateProps) {
   // type === 'no-data'
   return (
     <div className="text-center py-12">
-      <div className="w-20 h-20 mx-auto mb-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-        <Calendar className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+      <div className="w-20 h-20 mx-auto mb-6 bg-zinc-800 rounded-full flex items-center justify-center">
+        <Calendar className="w-10 h-10 text-teal-400" />
       </div>
-      <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
+      <h3 className="text-xl font-semibold mb-3 text-zinc-100">
         Your Calendar is Ready!
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+      <p className="text-zinc-400 mb-8 max-w-md mx-auto">
         {message ||
           'Add income sources and bills to see your detailed 60-day cash flow forecast. Your calendar will show projected balances based on your recurring transactions.'}
       </p>

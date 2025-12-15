@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
+import { showError, showSuccess } from '@/lib/toast'
 
 export type StepBillRow = {
   id: string
@@ -152,8 +153,11 @@ export function StepBills({
           category: b.category,
         }))
       )
+      showSuccess(bills.length === 1 ? 'Bill added' : 'Bills added')
     } catch (e: any) {
-      setError(e?.message ?? 'Something went wrong.')
+      const message = e?.message ?? 'Something went wrong.'
+      showError(message)
+      setError(message)
     } finally {
       setIsSubmitting(false)
     }

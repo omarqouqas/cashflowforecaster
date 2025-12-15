@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
+import { showError, showSuccess } from '@/lib/toast';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
@@ -65,6 +66,7 @@ export default function EditIncomePage() {
 
       if (incomeError) {
         console.error('Error fetching income:', incomeError);
+        showError(incomeError.message);
         router.push('/dashboard/income');
         return;
       }
@@ -121,10 +123,12 @@ export default function EditIncomePage() {
       .eq('id', incomeId);
 
     if (updateError) {
+      showError(updateError.message);
       setError(updateError.message);
     } else {
+      showSuccess('Changes saved');
       router.refresh();
-      router.push('/dashboard/income?success=income-updated');
+      router.push('/dashboard/income');
     }
 
     setIsSubmitting(false);

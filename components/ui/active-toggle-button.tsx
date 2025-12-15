@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { showError, showSuccess } from '@/lib/toast'
 
 interface ActiveToggleButtonProps {
   id: string
@@ -40,20 +41,17 @@ export function ActiveToggleButton({
         // Revert optimistic update on error
         setIsActive(previousState)
         console.error(`Error updating ${tableName}:`, error)
-        alert(`Error updating ${itemName}: ${error.message}`)
+        showError(error.message)
       } else {
         // Success - refresh the router to sync with server state
+        showSuccess('Updated successfully')
         router.refresh()
       }
     } catch (error) {
       // Revert optimistic update on error
       setIsActive(previousState)
       console.error(`Unexpected error updating ${tableName}:`, error)
-      alert(
-        `Unexpected error updating ${itemName}: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      )
+      showError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }

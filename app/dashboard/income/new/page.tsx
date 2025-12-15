@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
+import { showError, showSuccess } from '@/lib/toast';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
@@ -72,7 +73,9 @@ export default function NewIncomePage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setError('You must be logged in');
+      const message = 'You must be logged in';
+      showError(message);
+      setError(message);
       setIsLoading(false);
       return;
     }
@@ -90,10 +93,12 @@ export default function NewIncomePage() {
     });
 
     if (insertError) {
+      showError(insertError.message);
       setError(insertError.message);
     } else {
+      showSuccess('Income added');
       router.refresh();
-      router.push('/dashboard/income?success=income-created');
+      router.push('/dashboard/income');
     }
 
     setIsLoading(false);

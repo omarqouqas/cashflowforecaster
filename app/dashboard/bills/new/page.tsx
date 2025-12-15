@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { showError, showSuccess } from '@/lib/toast';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -57,7 +58,9 @@ export default function NewBillPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setError('You must be logged in');
+      const message = 'You must be logged in';
+      showError(message);
+      setError(message);
       setIsLoading(false);
       return;
     }
@@ -74,11 +77,13 @@ export default function NewBillPage() {
     });
 
     if (insertError) {
+      showError(insertError.message);
       setError(insertError.message);
       setIsLoading(false);
     } else {
+      showSuccess('Bill added');
       router.refresh();
-      router.push('/dashboard/bills?success=created');
+      router.push('/dashboard/bills');
     }
   };
 
