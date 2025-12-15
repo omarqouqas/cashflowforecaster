@@ -20,7 +20,7 @@ interface CalendarSummaryProps {
  * 3. Expected Income (green theme)
  * 4. Expected Bills (red theme)
  */
-export function CalendarSummary({ calendarData, safetyBuffer }: CalendarSummaryProps) {
+export function CalendarSummary({ calendarData }: CalendarSummaryProps) {
   // Calculate days until lowest balance
   const today = startOfDay(new Date());
   const lowestBalanceDate = startOfDay(calendarData.lowestBalanceDay);
