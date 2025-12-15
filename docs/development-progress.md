@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 15, 2024
+**Last Updated:** December 14, 2024
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 19
-- **Commits:** ~50+
+- **Days in Development:** 20
+- **Commits:** ~55+
 - **Database Tables:** 11
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Runway Collect Complete
+**Overall Progress:** MVP Complete + Runway Collect Complete + Google OAuth Complete
 
 **Completed Phases:**
 
@@ -30,12 +30,62 @@
 - ✅ Phase 7: Deployment (Day 17) - COMPLETE
 - ✅ Phase 8: Post-Launch Polish (Day 18) - COMPLETE
 - ✅ Phase 9: Payment Reminders (Day 19) - COMPLETE
+- ✅ Phase 10: Landing Page Polish + Google OAuth (Day 20) - COMPLETE
 
 **Current Focus:**
 
+- Stripe integration (payment processing)
 - Analytics setup (PostHog)
 - User feedback collection
 - Marketing / user acquisition
+
+---
+
+## Day 20: Landing Page Polish + Google OAuth (December 14, 2024)
+
+### Features Completed Today
+
+#### Landing Page Improvements ✅
+
+- [x] Sticky header with mobile hamburger menu
+- [x] "How It Works" 3-step section with teal numbered badges
+- [x] Features section with mini-UI mockups (Scenario Tester, Runway Collect, Warnings)
+- [x] Footer with Privacy/Terms/Contact links and social placeholders
+- [x] "Made for freelancers, by a freelancer" tagline
+- [x] Removed GitHub from footer social links
+- [x] Updated CTA buttons: "Get Started" on all tiers
+- [x] Added "Pro features coming soon" / "Premium features coming soon" text under paid tier buttons
+- [x] Optimized hero screenshot showing transaction flow + Overdraft Warning banner
+
+#### Google OAuth ✅
+
+- [x] Configured Google Cloud Console (OAuth 2.0 Web Application)
+- [x] Configured Supabase Google provider with Client ID/Secret
+- [x] Created `lib/auth/oauth.ts` with `signInWithGoogle()` function
+- [x] Updated auth callback route to handle OAuth
+- [x] Created `components/auth/google-sign-in-button.tsx` with Google "G" logo
+- [x] Created `components/auth/or-divider.tsx` component
+- [x] Added Google sign-in to login page (above email form)
+- [x] Added Google sign-in to signup page (above email form)
+- [x] Tested end-to-end: Google → Supabase → Dashboard ✅
+
+### New Files Created
+
+```
+lib/auth/oauth.ts                          # Google OAuth helper
+components/auth/google-sign-in-button.tsx  # Google button with logo
+components/auth/or-divider.tsx             # "or" divider component
+components/landing/landing-header.tsx      # Sticky nav + mobile menu
+```
+
+### Files Modified
+
+```
+app/page.tsx                    # Landing page sections
+app/auth/login/page.tsx         # Added Google OAuth button
+app/auth/signup/page.tsx        # Added Google OAuth button
+app/auth/callback/route.ts      # OAuth callback handling
+```
 
 ---
 
@@ -227,12 +277,13 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 - [x] **Calendar Polish:** Dark theme, today indicator, low balance warnings
 - [x] **Toast Notifications:** react-hot-toast configured
 - [x] **"Can I Afford It?" Scenarios:** Core differentiator feature
+- [x] **Google OAuth:** Configured and working
 
 ### 📋 Next Up
 
+- [ ] **Stripe Integration:** Payment processing for Pro/Premium tiers
 - [ ] **Analytics:** PostHog (for tracking user behavior)
 - [ ] **Error Monitoring:** Sentry (for debugging)
-- [ ] **Stripe Integration:** Payment processing for Pro/Premium tiers
 
 ---
 
@@ -281,13 +332,16 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 | Low balance warnings | ✅ | Amber/rose styling |
 | Toast notifications | ✅ | react-hot-toast |
 | "Can I Afford It?" scenarios | ✅ | Core differentiator |
+| Google OAuth | ✅ | One-click signup |
+| Landing page polish | ✅ | Header, footer, how it works, features |
 
 ### Upcoming 📋
 
 | Feature | Priority | Est. Time |
 | :---- | :---- | :---- |
-| PostHog analytics | HIGH | 1-2 hours |
 | Stripe payments | HIGH | 4-6 hours |
+| PostHog analytics | HIGH | 1-2 hours |
+| Magic Link auth | LOW | 30 min |
 | Email parser | LOW | 6-8 hours |
 | Plaid bank sync | LOW | 8-10 hours |
 
@@ -308,8 +362,9 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 | Deployment | 17 | 2-3 | ✅ Complete |
 | Post-Launch Polish | 18 | 5-6 | ✅ Complete |
 | Payment Reminders | 19 | 3-4 | ✅ Complete |
+| Landing + OAuth | 20 | 3-4 | ✅ Complete |
 
-**Cumulative:** ~65-75 hours over 19 days
+**Cumulative:** ~70-80 hours over 20 days
 
 **Average:** ~3.5-4 hours per day
 
@@ -328,6 +383,12 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 ---
 
 ## Lessons Learned
+
+### Day 20: Landing Page + Google OAuth
+
+- **OAuth reduces friction significantly** - One-click Google signup removes the biggest barrier to trying the app
+- **Landing page storytelling matters** - "How It Works" + feature mockups help visitors understand value before signing up
+- **Hero screenshot should show the problem being solved** - Overdraft Warning banner is the emotional hook
 
 ### Day 19: Payment Reminders
 
@@ -353,16 +414,18 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 - ✅ Professional pricing section
 - ✅ Toast notifications throughout
 - ✅ Build and deployment stable
+- ✅ Google OAuth for frictionless signup
+- ✅ Landing page with clear value proposition
 
 ## What's Next
 
-1. **PostHog analytics** - Track user behavior and conversion funnel
-2. **Stripe integration** - Enable paid subscriptions
+1. **Stripe integration** - Enable paid subscriptions for Pro/Premium
+2. **PostHog analytics** - Track user behavior and conversion funnel
 3. **User acquisition** - Reddit posts, Product Hunt prep
 4. **User feedback** - See what real users need
 
 ---
 
-**Status:** Runway Collect Complete. Ready for analytics + payments. 🚀
+**Status:** Landing page polished, Google OAuth working. Ready for Stripe integration. 🚀
 
 **This is a living document. Update after each development session.**
