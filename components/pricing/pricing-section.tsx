@@ -17,7 +17,7 @@ const TIERS: Array<Omit<PricingCardProps, 'period' | 'priceTransitioning'>> = [
       { text: 'Basic calendar view' },
       { text: 'Email support (48hr)' },
     ],
-    cta: { label: 'Get Started', href: '/auth/signup', variant: 'outline' },
+    cta: { label: 'Get Started', href: '/auth/signup', variant: 'solid' },
   },
   {
     name: 'Pro',
@@ -33,7 +33,8 @@ const TIERS: Array<Omit<PricingCardProps, 'period' | 'priceTransitioning'>> = [
       { text: '90-day forecast' },
       { text: 'Priority support (24hr)' },
     ],
-    cta: { label: 'Start Free Trial', href: '/auth/signup', variant: 'solid' },
+    cta: { label: 'Get Started', href: '/auth/signup', variant: 'solid' },
+    ctaSubtext: 'Pro features coming soon',
   },
   {
     name: 'Premium',
@@ -47,7 +48,8 @@ const TIERS: Array<Omit<PricingCardProps, 'period' | 'priceTransitioning'>> = [
       { text: 'Couples mode', kind: 'coming_soon', badgeText: 'Coming soon' },
       { text: '12 months history' },
     ],
-    cta: { label: 'Start Free Trial', href: '/auth/signup', variant: 'outline' },
+    cta: { label: 'Get Started', href: '/auth/signup', variant: 'solid' },
+    ctaSubtext: 'Premium features coming soon',
   },
 ];
 

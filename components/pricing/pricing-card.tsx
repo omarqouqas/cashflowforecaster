@@ -25,6 +25,7 @@ export interface PricingCardProps {
   description?: string;
   features: PricingFeature[];
   cta: PricingCta;
+  ctaSubtext?: string;
   popular?: boolean;
   priceTransitioning?: boolean;
 }
@@ -98,6 +99,7 @@ export function PricingCard({
   period,
   features,
   cta,
+  ctaSubtext,
   popular = false,
   priceTransitioning = false,
 }: PricingCardProps) {
@@ -190,6 +192,7 @@ export function PricingCard({
         <Link href={cta.href} className={ctaClass(cta.variant)}>
           {cta.label}
         </Link>
+        {ctaSubtext && <p className="mt-2 text-sm text-zinc-500">{ctaSubtext}</p>}
       </div>
     </div>
   );

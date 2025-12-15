@@ -305,9 +305,6 @@ export default function Home() {
                 <Link href="#" className="hover:text-zinc-200 transition-colors">
                   LinkedIn
                 </Link>
-                <Link href="#" className="hover:text-zinc-200 transition-colors">
-                  GitHub
-                </Link>
               </div>
             </div>
           </div>
