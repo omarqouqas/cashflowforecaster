@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
+import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
+import { OrDivider } from '@/components/auth/or-divider';
+import { signInWithGoogle } from '@/lib/auth/oauth';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -19,9 +22,19 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+  const isBusy = isLoading || isOAuthLoading;
+
+  // Show a friendly message if the OAuth callback redirected here with an error.
+  useEffect(() => {
+    if (searchParams.get('error') === 'oauth_error') {
+      setError('Google sign-in failed. Please try again.');
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -83,6 +96,22 @@ export default function LoginPage() {
     }
   };
 
+  const onGoogleSignIn = async () => {
+    setIsOAuthLoading(true);
+    setError(null);
+
+    try {
+      const { error: oauthError } = await signInWithGoogle();
+      if (oauthError) {
+        setError('Google sign-in failed. Please try again.');
+      }
+    } catch {
+      setError('Google sign-in failed. Please try again.');
+    } finally {
+      setIsOAuthLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-12">
       <div className="w-full max-w-md">
@@ -94,6 +123,15 @@ export default function LoginPage() {
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Sign in to your Cash Flow Forecaster account
             </p>
+          </div>
+
+          <div className="space-y-4">
+            <GoogleSignInButton
+              onClick={onGoogleSignIn}
+              loading={isOAuthLoading}
+              disabled={isBusy}
+            />
+            <OrDivider />
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -111,7 +149,7 @@ export default function LoginPage() {
                 {...register('email')}
                 className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="you@example.com"
-                disabled={isLoading}
+                disabled={isBusy}
               />
               {errors.email && (
                 <p className="text-sm text-red-600 dark:text-red-400">
@@ -135,14 +173,14 @@ export default function LoginPage() {
                   {...register('password')}
                   className="w-full px-4 py-2 pr-10 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   placeholder="Enter your password"
-                  disabled={isLoading}
+                  disabled={isBusy}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none"
                   tabIndex={-1}
-                  disabled={isLoading}
+                  disabled={isBusy}
                 >
                   {showPassword ? (
                     <svg
@@ -212,7 +250,7 @@ export default function LoginPage() {
               size="md"
               fullWidth
               loading={isLoading}
-              disabled={isLoading}
+              disabled={isBusy}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>

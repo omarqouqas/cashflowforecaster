@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
+import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
+import { OrDivider } from '@/components/auth/or-divider';
+import { signInWithGoogle } from '@/lib/auth/oauth';
 
 const signupSchema = z
   .object({
@@ -26,10 +29,12 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
+  const isBusy = isLoading || isOAuthLoading;
 
   const {
     register,
@@ -88,6 +93,23 @@ export default function SignupPage() {
     }
   };
 
+  const onGoogleSignIn = async () => {
+    setIsOAuthLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error: oauthError } = await signInWithGoogle();
+      if (oauthError) {
+        setError('Google sign-in failed. Please try again.');
+      }
+    } catch {
+      setError('Google sign-in failed. Please try again.');
+    } finally {
+      setIsOAuthLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-6 py-12">
       <div className="w-full max-w-md">
@@ -99,6 +121,15 @@ export default function SignupPage() {
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Get started with Cash Flow Forecaster
             </p>
+          </div>
+
+          <div className="space-y-4">
+            <GoogleSignInButton
+              onClick={onGoogleSignIn}
+              loading={isOAuthLoading}
+              disabled={isBusy}
+            />
+            <OrDivider />
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -116,7 +147,7 @@ export default function SignupPage() {
                 {...register('email')}
                 className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="you@example.com"
-                disabled={isLoading}
+                disabled={isBusy}
               />
               {errors.email && (
                 <p className="text-sm text-red-600 dark:text-red-400">
@@ -140,14 +171,14 @@ export default function SignupPage() {
                   {...register('password')}
                   className="w-full px-4 py-2 pr-10 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   placeholder="At least 8 characters"
-                  disabled={isLoading}
+                  disabled={isBusy}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none"
                   tabIndex={-1}
-                  disabled={isLoading}
+                  disabled={isBusy}
                 >
                   {showPassword ? (
                     <svg
@@ -208,14 +239,14 @@ export default function SignupPage() {
                   {...register('confirmPassword')}
                   className="w-full px-4 py-2 pr-10 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   placeholder="Confirm your password"
-                  disabled={isLoading}
+                  disabled={isBusy}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none"
                   tabIndex={-1}
-                  disabled={isLoading}
+                  disabled={isBusy}
                 >
                   {showConfirmPassword ? (
                     <svg
@@ -282,7 +313,7 @@ export default function SignupPage() {
               size="md"
               fullWidth
               loading={isLoading}
-              disabled={isLoading}
+              disabled={isBusy}
             >
               {isLoading ? 'Creating account...' : 'Create account'}
             </Button>
