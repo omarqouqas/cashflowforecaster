@@ -8,7 +8,7 @@ import { Check, X, Zap, Building2, Crown } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 import { PRICING_TIERS, formatPrice } from '@/lib/stripe/config';
-import { PricingCards } from '@/components/pricing/pricing-cards';
+import { PricingCard } from '@/components/pricing/pricing-card';
 
 export const metadata = {
   title: 'Pricing | Cash Flow Forecaster',
