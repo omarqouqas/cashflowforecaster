@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 import { BillingToggle, type BillingPeriod } from './billing-toggle';
-import { PricingCard, type PricingCardProps, type PricingFeature, type PricingCta } from './pricing-card';
+import { PricingCard, type PricingFeature, type PricingCta } from './pricing-card';
 import { createCheckoutSession } from '@/lib/actions/stripe';
 import type { SubscriptionTier } from '@/lib/stripe/config';
 

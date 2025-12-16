@@ -31,26 +31,29 @@ export async function getUserSubscription(userId?: string): Promise<UserSubscrip
     finalUserId = user.id;
   }
   
-  const { data: subscription, error } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('user_id', finalUserId)
+  const { data: userRow, error } = await supabase
+    .from('users')
+    .select(
+      'stripe_customer_id, stripe_subscription_id, subscription_tier, subscription_status, subscription_ends_at'
+    )
+    .eq('id', finalUserId)
     .single();
   
-  if (error || !subscription) {
-    // No subscription record = free tier
+  if (error || !userRow) {
+    // No user record = free tier
     return getDefaultSubscription();
   }
   
   return {
-    tier: subscription.tier as SubscriptionTier,
-    status: subscription.status,
-    stripeCustomerId: subscription.stripe_customer_id,
-    stripeSubscriptionId: subscription.stripe_subscription_id,
-    currentPeriodEnd: subscription.current_period_end 
-      ? new Date(subscription.current_period_end) 
+    tier: (userRow.subscription_tier as SubscriptionTier | null) ?? 'free',
+    status: userRow.subscription_status ?? 'active',
+    stripeCustomerId: userRow.stripe_customer_id,
+    stripeSubscriptionId: userRow.stripe_subscription_id,
+    currentPeriodEnd: userRow.subscription_ends_at
+      ? new Date(userRow.subscription_ends_at)
       : null,
-    cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false,
+    // We don't currently persist cancel_at_period_end in the `users` table.
+    cancelAtPeriodEnd: false,
   };
 }
 
@@ -108,10 +111,7 @@ export async function canUseBankSync(userId?: string): Promise<boolean> {
 /**
  * Check if user can use the new feature (tier-dependent flag)
  */
-export async function canUseNewFeature(userId?: string): Promise<boolean> {
-  const limits = await getUserLimits(userId);
-  return limits.newFeatureEnabled;
-}
+// (Removed placeholder "new feature" flag – it wasn't part of our tier limits schema.)
 
 /**
  * Get user's limits based on their tier

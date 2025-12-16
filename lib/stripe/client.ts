@@ -17,7 +17,8 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
 
 // Server-side Stripe instance (use in API routes and server actions only)
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-11-20.acacia',
+  // Keep this in sync with the Stripe SDK's supported apiVersion literal type.
+  apiVersion: '2025-11-17.clover',
   typescript: true,
 });
 

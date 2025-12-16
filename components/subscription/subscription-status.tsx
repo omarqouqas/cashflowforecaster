@@ -5,10 +5,10 @@
 
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { Crown, Zap, Settings, ExternalLink, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { type SubscriptionTier, PRICING_TIERS, formatPrice } from '@/lib/stripe/config';
+import { type SubscriptionTier, PRICING_TIERS } from '@/lib/stripe/config';
 import { createPortalSession } from '@/lib/actions/stripe';
 import toast from 'react-hot-toast';
 

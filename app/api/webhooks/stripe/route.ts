@@ -127,8 +127,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
   
   // Get subscription details
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as unknown as Stripe.Subscription;
   const priceId = subscription.items.data[0]?.price.id;
+  if (!priceId) {
+    console.error(`Missing price ID for subscription: ${subscriptionId}`);
+    return;
+  }
   const tier = getTierFromPriceId(priceId);
   
   // Don't proceed if we can't determine the tier
@@ -139,20 +143,27 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   
   // Update database
   const { error } = await supabaseAdmin
-    .from('subscriptions')
-    .upsert({
-      user_id: userId,
-      stripe_customer_id: customerId,
-      stripe_subscription_id: subscriptionId,
-      stripe_price_id: priceId,
-      tier: tier,
-      status: subscription.status === 'active' ? 'active' : 'trialing',
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: subscription.cancel_at_period_end,
-    }, {
-      onConflict: 'user_id',
-    });
+    .from('users')
+    .upsert(
+      {
+        id: userId,
+        email:
+          session.customer_details?.email ??
+          session.customer_email ??
+          // fallback – keep insert valid even if Stripe doesn't send an email for some reason
+          `${userId}@unknown.local`,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscriptionId,
+        subscription_tier: tier,
+        subscription_status: subscription.status,
+        subscription_ends_at: new Date(((subscription as any).current_period_end as number) * 1000).toISOString(),
+        trial_ends_at: subscription.trial_end
+          ? new Date(subscription.trial_end * 1000).toISOString()
+          : null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id' }
+    );
   
   if (error) {
     console.error('Database error in handleCheckoutCompleted:', error);
@@ -180,12 +191,12 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   if (!userId) {
     // Try to find by customer ID in our database
     const { data } = await supabaseAdmin
-      .from('subscriptions')
-      .select('user_id')
+      .from('users')
+      .select('id')
       .eq('stripe_customer_id', customerId)
       .single();
     
-    userId = data?.user_id;
+    userId = data?.id;
   }
   
   if (!userId) {
@@ -194,6 +205,10 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
   
   const priceId = subscription.items.data[0]?.price.id;
+  if (!priceId) {
+    console.error(`Missing price ID in subscription update: ${subscription.id}`);
+    return;
+  }
   const tier = getTierFromPriceId(priceId);
   
   // Don't proceed if we can't determine the tier
@@ -223,20 +238,23 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
   
   const { error } = await supabaseAdmin
-    .from('subscriptions')
-    .upsert({
-      user_id: userId,
-      stripe_customer_id: customerId,
-      stripe_subscription_id: subscription.id,
-      stripe_price_id: priceId,
-      tier: tier,
-      status: status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: subscription.cancel_at_period_end,
-    }, {
-      onConflict: 'user_id',
-    });
+    .from('users')
+    .upsert(
+      {
+        id: userId,
+        email: `${userId}@unknown.local`,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscription.id,
+        subscription_tier: tier,
+        subscription_status: status,
+        subscription_ends_at: new Date(((subscription as any).current_period_end as number) * 1000).toISOString(),
+        trial_ends_at: subscription.trial_end
+          ? new Date(subscription.trial_end * 1000).toISOString()
+          : null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id' }
+    );
   
   if (error) {
     console.error('Database error in handleSubscriptionChange:', error);
@@ -254,34 +272,34 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   
   // Find user by customer ID
   const { data } = await supabaseAdmin
-    .from('subscriptions')
-    .select('user_id')
+    .from('users')
+    .select('id')
     .eq('stripe_customer_id', customerId)
     .single();
   
-  if (!data?.user_id) {
+  if (!data?.id) {
     console.error('No user found for canceled subscription:', subscription.id);
     return;
   }
   
   // Downgrade to free tier
   const { error } = await supabaseAdmin
-    .from('subscriptions')
+    .from('users')
     .update({
-      tier: 'free',
-      status: 'canceled',
       stripe_subscription_id: null,
-      stripe_price_id: null,
-      cancel_at_period_end: false,
+      subscription_tier: 'free',
+      subscription_status: 'canceled',
+      subscription_ends_at: null,
+      updated_at: new Date().toISOString(),
     })
-    .eq('user_id', data.user_id);
+    .eq('id', data.id);
   
   if (error) {
     console.error('Database error in handleSubscriptionCanceled:', error);
     return;
   }
   
-  console.log(`Subscription canceled for user ${data.user_id}`);
+  console.log(`Subscription canceled for user ${data.id}`);
 }
 
 /**
@@ -292,23 +310,26 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   
   // Find user and ensure they're active
   const { data } = await supabaseAdmin
-    .from('subscriptions')
-    .select('user_id')
+    .from('users')
+    .select('id')
     .eq('stripe_customer_id', customerId)
     .single();
   
-  if (data?.user_id) {
+  if (data?.id) {
     const { error } = await supabaseAdmin
-      .from('subscriptions')
-      .update({ status: 'active' })
-      .eq('user_id', data.user_id);
+      .from('users')
+      .update({
+        subscription_status: 'active',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', data.id);
     
     if (error) {
       console.error('Database error in handlePaymentSucceeded:', error);
       return;
     }
     
-    console.log(`Payment succeeded for user ${data.user_id}`);
+    console.log(`Payment succeeded for user ${data.id}`);
   }
 }
 
@@ -320,23 +341,26 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   
   // Find user and mark as past_due
   const { data } = await supabaseAdmin
-    .from('subscriptions')
-    .select('user_id')
+    .from('users')
+    .select('id')
     .eq('stripe_customer_id', customerId)
     .single();
   
-  if (data?.user_id) {
+  if (data?.id) {
     const { error } = await supabaseAdmin
-      .from('subscriptions')
-      .update({ status: 'past_due' })
-      .eq('user_id', data.user_id);
+      .from('users')
+      .update({
+        subscription_status: 'past_due',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', data.id);
     
     if (error) {
       console.error('Database error in handlePaymentFailed:', error);
       return;
     }
     
-    console.log(`Payment failed for user ${data.user_id}`);
+    console.log(`Payment failed for user ${data.id}`);
     
     // TODO: Send email notification about failed payment
   }
