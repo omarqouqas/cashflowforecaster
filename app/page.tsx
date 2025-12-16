@@ -4,8 +4,26 @@ import { Button } from '@/components/ui/button';
 import PricingSection from '@/components/pricing/pricing-section';
 import LandingHeader from '@/components/landing/landing-header';
 import { AlarmClock, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Sparkles, Wallet } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
+import { getUserSubscription } from '@/lib/stripe/subscription';
 
-export default function Home() {
+export default async function Home() {
+  // Get auth state on server
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  // Get subscription tier if logged in
+  let currentTier: 'free' | 'pro' | 'premium' = 'free';
+  if (user) {
+    try {
+      const subscription = await getUserSubscription(user.id);
+      currentTier = subscription.tier;
+    } catch (error) {
+      // If subscription fetch fails, default to free
+      console.error('Error fetching subscription:', error);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white selection-teal scroll-smooth">
       {/* subtle dot grid */}
@@ -84,7 +102,7 @@ export default function Home() {
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">How it works</h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                A simple 3-step flow to get clarity on what’s safe to spend—today and 60 days from now.
+                A simple 3-step flow to get clarity on what's safe to spend—today and 60 days from now.
               </p>
             </div>
 
@@ -146,7 +164,7 @@ export default function Home() {
                 Features built for real-life cash flow
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                Test “can I afford it?”, send invoices, and get warned early—without spreadsheets.
+                Test "can I afford it?", send invoices, and get warned early—without spreadsheets.
               </p>
             </div>
 
@@ -160,7 +178,7 @@ export default function Home() {
                     Scenario Tester
                   </span>
                 </div>
-                <h3 className="mt-4 font-semibold text-white">“Can I Afford It?”</h3>
+                <h3 className="mt-4 font-semibold text-white">"Can I Afford It?"</h3>
                 <p className="mt-2 text-zinc-400">
                   Try a purchase, bill, or income change and instantly see how it affects your next 60 days.
                 </p>
@@ -251,7 +269,11 @@ export default function Home() {
           </div>
         </section>
 
-        <PricingSection />
+        {/* Pricing Section with Stripe Integration */}
+        <PricingSection 
+          isLoggedIn={!!user} 
+          currentTier={currentTier} 
+        />
 
         <section className="px-6 py-16">
           <div className="mx-auto max-w-6xl text-center">

@@ -1,3 +1,8 @@
+// components/pricing/pricing-card.tsx
+// ============================================
+// Pricing Card Component with Stripe Checkout Support
+// ============================================
+
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -13,8 +18,11 @@ export interface PricingFeature {
 
 export interface PricingCta {
   label: string;
-  href: string;
+  href?: string;
   variant: CtaVariant;
+  onClick?: () => void;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 export interface PricingCardProps {
@@ -77,9 +85,38 @@ function SoonIcon({ className }: { className?: string }) {
   );
 }
 
-function ctaClass(variant: CtaVariant) {
+function LoadingSpinner({ className }: { className?: string }) {
+  return (
+    <svg
+      className={`animate-spin ${className}`}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
+    </svg>
+  );
+}
+
+function ctaClass(variant: CtaVariant, disabled?: boolean) {
   const base =
     'inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950';
+
+  if (disabled) {
+    return [base, 'bg-zinc-800 text-zinc-500 cursor-not-allowed'].join(' ');
+  }
 
   if (variant === 'solid') {
     return [base, 'bg-teal-500 text-zinc-950 hover:bg-teal-400'].join(' ');
@@ -110,6 +147,9 @@ export function PricingCard({
   const suffix = showYearly ? '/year' : priceMonthly === 0 ? '/forever' : '/month';
 
   const monthlyEquivalent = showYearly ? priceYearly! / 12 : undefined;
+
+  // Determine if we should use a button (onClick) or a link (href)
+  const useButton = !!cta.onClick || cta.loading || cta.disabled;
 
   return (
     <div
@@ -189,10 +229,27 @@ export function PricingCard({
       </ul>
 
       <div className="mt-7">
-        <Link href={cta.href} className={ctaClass(cta.variant)}>
-          {cta.label}
-        </Link>
-        {ctaSubtext && <p className="mt-2 text-sm text-zinc-500">{ctaSubtext}</p>}
+        {useButton ? (
+          <button
+            onClick={cta.onClick}
+            disabled={cta.loading || cta.disabled}
+            className={ctaClass(cta.variant, cta.disabled)}
+          >
+            {cta.loading ? (
+              <>
+                <LoadingSpinner className="h-4 w-4 mr-2" />
+                Loading...
+              </>
+            ) : (
+              cta.label
+            )}
+          </button>
+        ) : (
+          <Link href={cta.href || '#'} className={ctaClass(cta.variant)}>
+            {cta.label}
+          </Link>
+        )}
+        {ctaSubtext && <p className="mt-2 text-center text-sm text-zinc-500">{ctaSubtext}</p>}
       </div>
     </div>
   );

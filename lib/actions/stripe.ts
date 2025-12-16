@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import { stripe, getURL } from '@/lib/stripe/client';
 import { 
   STRIPE_PRICE_IDS, 
+  isPlaceholderPriceId,
   type SubscriptionTier, 
   type BillingInterval 
 } from '@/lib/stripe/config';
@@ -32,8 +33,9 @@ export async function createCheckoutSession(
     // Get the price ID based on tier and interval
     const priceId = STRIPE_PRICE_IDS[tier][interval === 'month' ? 'monthly' : 'yearly'];
     
-    if (!priceId || priceId.startsWith('price_')) {
-      // Placeholder price ID - not configured yet
+    // Check if price ID is configured (not a placeholder)
+    if (isPlaceholderPriceId(priceId)) {
+      console.error(`Stripe price ID not configured for ${tier}/${interval}:`, priceId);
       return { error: 'Pricing not configured. Please contact support.' };
     }
     

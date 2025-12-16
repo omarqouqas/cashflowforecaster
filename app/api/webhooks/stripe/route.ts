@@ -10,10 +10,19 @@ import { stripe, webhookSecret } from '@/lib/stripe/client';
 import { createClient } from '@supabase/supabase-js';
 import { getTierFromPriceId } from '@/lib/stripe/config';
 
+// Validate environment variables at startup
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
+}
+
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable');
+}
+
 // Create a Supabase client with service role for webhook handling
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
   {
     auth: {
       autoRefreshToken: false,
@@ -122,8 +131,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const priceId = subscription.items.data[0]?.price.id;
   const tier = getTierFromPriceId(priceId);
   
+  // Don't proceed if we can't determine the tier
+  if (!tier) {
+    console.error(`Unknown price ID received in checkout: ${priceId}`);
+    return;
+  }
+  
   // Update database
-  await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from('subscriptions')
     .upsert({
       user_id: userId,
@@ -138,6 +153,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }, {
       onConflict: 'user_id',
     });
+  
+  if (error) {
+    console.error('Database error in handleCheckoutCompleted:', error);
+    return;
+  }
   
   console.log(`Checkout completed for user ${userId}, tier: ${tier}`);
 }
@@ -176,6 +196,12 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const priceId = subscription.items.data[0]?.price.id;
   const tier = getTierFromPriceId(priceId);
   
+  // Don't proceed if we can't determine the tier
+  if (!tier) {
+    console.error(`Unknown price ID in subscription update: ${priceId}`);
+    return;
+  }
+  
   // Map Stripe status to our status
   let status: string;
   switch (subscription.status) {
@@ -196,7 +222,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
       status = 'inactive';
   }
   
-  await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from('subscriptions')
     .upsert({
       user_id: userId,
@@ -211,6 +237,11 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
     }, {
       onConflict: 'user_id',
     });
+  
+  if (error) {
+    console.error('Database error in handleSubscriptionChange:', error);
+    return;
+  }
   
   console.log(`Subscription updated for user ${userId}: ${status}, tier: ${tier}`);
 }
@@ -234,7 +265,7 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   }
   
   // Downgrade to free tier
-  await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from('subscriptions')
     .update({
       tier: 'free',
@@ -244,6 +275,11 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
       cancel_at_period_end: false,
     })
     .eq('user_id', data.user_id);
+  
+  if (error) {
+    console.error('Database error in handleSubscriptionCanceled:', error);
+    return;
+  }
   
   console.log(`Subscription canceled for user ${data.user_id}`);
 }
@@ -262,10 +298,15 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     .single();
   
   if (data?.user_id) {
-    await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from('subscriptions')
       .update({ status: 'active' })
       .eq('user_id', data.user_id);
+    
+    if (error) {
+      console.error('Database error in handlePaymentSucceeded:', error);
+      return;
+    }
     
     console.log(`Payment succeeded for user ${data.user_id}`);
   }
@@ -285,10 +326,15 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     .single();
   
   if (data?.user_id) {
-    await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from('subscriptions')
       .update({ status: 'past_due' })
       .eq('user_id', data.user_id);
+    
+    if (error) {
+      console.error('Database error in handlePaymentFailed:', error);
+      return;
+    }
     
     console.log(`Payment failed for user ${data.user_id}`);
     

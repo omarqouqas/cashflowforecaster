@@ -1,18 +1,28 @@
 // lib/stripe/client.ts
 // ============================================
-// Stripe Client Configuration
+// Stripe Client Configuration (SERVER-ONLY)
 // ============================================
 
+import 'server-only';
 import Stripe from 'stripe';
 
+// Validate required environment variables
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing STRIPE_SECRET_KEY environment variable');
+}
+
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  throw new Error('Missing STRIPE_WEBHOOK_SECRET environment variable');
+}
+
 // Server-side Stripe instance (use in API routes and server actions only)
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-11-20.acacia',
   typescript: true,
 });
 
 // Webhook secret for verifying Stripe webhook signatures
-export const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+export const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 // App URLs for redirects
 export const getURL = () => {

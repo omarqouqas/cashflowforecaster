@@ -106,6 +106,14 @@ export async function canUseBankSync(userId?: string): Promise<boolean> {
 }
 
 /**
+ * Check if user can use the new feature (tier-dependent flag)
+ */
+export async function canUseNewFeature(userId?: string): Promise<boolean> {
+  const limits = await getUserLimits(userId);
+  return limits.newFeatureEnabled;
+}
+
+/**
  * Get user's limits based on their tier
  */
 export async function getUserLimits(userId?: string) {

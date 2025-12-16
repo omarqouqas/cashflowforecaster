@@ -32,19 +32,55 @@ export interface PricingTier {
 }
 
 // ============================================
-// IMPORTANT: Replace these with your actual Stripe Price IDs
-// Create these in Stripe Dashboard > Products > Add Product
+// Stripe Price IDs from environment variables
 // ============================================
 export const STRIPE_PRICE_IDS = {
   pro: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_monthly',
-    yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY || 'price_pro_yearly',
+    monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY || '',
+    yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY || '',
   },
   premium: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY || 'price_premium_monthly',
-    yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_YEARLY || 'price_premium_yearly',
+    monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY || '',
+    yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_YEARLY || '',
   },
 } as const;
+
+// Placeholder patterns to detect unconfigured price IDs
+const PLACEHOLDER_PATTERNS = [
+  'price_pro_monthly',
+  'price_pro_yearly', 
+  'price_premium_monthly',
+  'price_premium_yearly',
+];
+
+/**
+ * Check if a price ID is a placeholder (not a real Stripe price ID)
+ */
+export function isPlaceholderPriceId(priceId: string): boolean {
+  // Empty or undefined
+  if (!priceId) return true;
+  
+  // Known placeholder patterns
+  if (PLACEHOLDER_PATTERNS.includes(priceId)) return true;
+  
+  // Real Stripe price IDs are longer and contain underscores after "price_"
+  // e.g., price_1ABC123def456... (at least 20+ chars)
+  if (priceId.startsWith('price_') && priceId.length < 20) return true;
+  
+  return false;
+}
+
+/**
+ * Check if Stripe pricing is properly configured
+ */
+export function isStripePricingConfigured(): boolean {
+  return (
+    !isPlaceholderPriceId(STRIPE_PRICE_IDS.pro.monthly) &&
+    !isPlaceholderPriceId(STRIPE_PRICE_IDS.pro.yearly) &&
+    !isPlaceholderPriceId(STRIPE_PRICE_IDS.premium.monthly) &&
+    !isPlaceholderPriceId(STRIPE_PRICE_IDS.premium.yearly)
+  );
+}
 
 // Pricing tier definitions
 export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
@@ -94,8 +130,8 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
       couplesModeEnabled: false,
     },
     prices: {
-      monthly: { amount: 799, priceId: STRIPE_PRICE_IDS.pro.monthly }, // $7.99
-      yearly: { amount: 7900, priceId: STRIPE_PRICE_IDS.pro.yearly }, // $79.00
+      monthly: { amount: 799, priceId: STRIPE_PRICE_IDS.pro.monthly },
+      yearly: { amount: 7900, priceId: STRIPE_PRICE_IDS.pro.yearly },
     },
   },
   premium: {
@@ -120,8 +156,8 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
       couplesModeEnabled: true,
     },
     prices: {
-      monthly: { amount: 1499, priceId: STRIPE_PRICE_IDS.premium.monthly }, // $14.99
-      yearly: { amount: 14900, priceId: STRIPE_PRICE_IDS.premium.yearly }, // $149.00
+      monthly: { amount: 1499, priceId: STRIPE_PRICE_IDS.premium.monthly },
+      yearly: { amount: 14900, priceId: STRIPE_PRICE_IDS.premium.yearly },
     },
   },
 };
@@ -135,21 +171,29 @@ export function formatPrice(cents: number): string {
   }).format(cents / 100);
 }
 
-// Helper to get tier from price ID
-export function getTierFromPriceId(priceId: string): SubscriptionTier {
+/**
+ * Get tier from price ID
+ * Returns null if price ID is not recognized (prevents silent downgrades)
+ */
+export function getTierFromPriceId(priceId: string): SubscriptionTier | null {
+  if (!priceId) return null;
+  
   if (
     priceId === STRIPE_PRICE_IDS.premium.monthly ||
     priceId === STRIPE_PRICE_IDS.premium.yearly
   ) {
     return 'premium';
   }
+  
   if (
     priceId === STRIPE_PRICE_IDS.pro.monthly ||
     priceId === STRIPE_PRICE_IDS.pro.yearly
   ) {
     return 'pro';
   }
-  return 'free';
+  
+  // Don't silently return 'free' for unknown price IDs
+  return null;
 }
 
 // Helper to check if a tier has a specific feature
