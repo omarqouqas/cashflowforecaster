@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Prevent 307 redirects for API routes (fixes Stripe webhook issues)
+  skipTrailingSlashRedirect: true,
+  
   eslint: {
     ignoreDuringBuilds: true,
   },
