@@ -146,6 +146,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Determine billing interval from price
   const price = await stripe.prices.retrieve(priceId);
   const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
+
+  // Get period dates from subscription (cast to access properties)
+  const subData = subscription as unknown as {
+    current_period_start: number;
+    current_period_end: number;
+    cancel_at_period_end: boolean;
+    status: string;
+  };
   
   // Update subscriptions table
   const { error } = await supabaseAdmin
@@ -156,11 +164,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       stripe_subscription_id: subscriptionId,
       price_id: priceId,
       tier: tier,
-      status: subscription.status === 'active' ? 'active' : 'trialing',
+      status: subData.status === 'active' ? 'active' : 'trialing',
       interval: interval,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: subscription.cancel_at_period_end,
+      current_period_start: new Date(subData.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subData.current_period_end * 1000).toISOString(),
+      cancel_at_period_end: subData.cancel_at_period_end,
     }, {
       onConflict: 'user_id',
     });
@@ -242,6 +250,13 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   // Determine billing interval from price
   const price = await stripe.prices.retrieve(priceId);
   const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
+
+  // Get period dates from subscription (cast to access properties)
+  const subData = subscription as unknown as {
+    current_period_start: number;
+    current_period_end: number;
+    cancel_at_period_end: boolean;
+  };
   
   const { error } = await supabaseAdmin
     .from('subscriptions')
@@ -253,9 +268,9 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
       tier: tier,
       status: status,
       interval: interval,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: subscription.cancel_at_period_end,
+      current_period_start: new Date(subData.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subData.current_period_end * 1000).toISOString(),
+      cancel_at_period_end: subData.cancel_at_period_end,
     }, {
       onConflict: 'user_id',
     });
