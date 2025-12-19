@@ -1,6 +1,7 @@
 // app/api/webhooks/stripe/route.ts
 // ============================================
-// Stripe Webhook Handler - Fixed date extraction
+// Stripe Webhook Handler - Fixed for API 2025-11-17.clover
+// Period dates are now inside subscription.items.data[0]
 // ============================================
 
 import { headers } from 'next/headers';
@@ -106,32 +107,53 @@ export async function POST(request: Request) {
 
 /**
  * Extract period dates from subscription object
- * Handles both old and new Stripe API formats
+ * In Stripe API 2025-11-17.clover, dates are inside items.data[0]
  */
 function extractPeriodDates(subscription: any): { start: string | null; end: string | null } {
   let startTimestamp: number | null = null;
   let endTimestamp: number | null = null;
 
-  // Try different property paths
-  if (typeof subscription.current_period_start === 'number') {
-    startTimestamp = subscription.current_period_start;
-  } else if (subscription.current_period?.start) {
-    startTimestamp = subscription.current_period.start;
+  // NEW API (2025-11-17.clover): dates are in items.data[0]
+  const firstItem = subscription.items?.data?.[0];
+  if (firstItem) {
+    if (typeof firstItem.current_period_start === 'number') {
+      startTimestamp = firstItem.current_period_start;
+    }
+    if (typeof firstItem.current_period_end === 'number') {
+      endTimestamp = firstItem.current_period_end;
+    }
   }
 
-  if (typeof subscription.current_period_end === 'number') {
+  // FALLBACK: Old API format (dates on subscription object directly)
+  if (!startTimestamp && typeof subscription.current_period_start === 'number') {
+    startTimestamp = subscription.current_period_start;
+  }
+  if (!endTimestamp && typeof subscription.current_period_end === 'number') {
     endTimestamp = subscription.current_period_end;
-  } else if (subscription.current_period?.end) {
+  }
+
+  // FALLBACK 2: Nested current_period object
+  if (!startTimestamp && subscription.current_period?.start) {
+    startTimestamp = subscription.current_period.start;
+  }
+  if (!endTimestamp && subscription.current_period?.end) {
     endTimestamp = subscription.current_period.end;
   }
 
   // Log for debugging
   console.log('Period extraction:', {
-    raw_start: subscription.current_period_start,
-    raw_end: subscription.current_period_end,
-    current_period: subscription.current_period,
-    extracted_start: startTimestamp,
-    extracted_end: endTimestamp,
+    from_items: {
+      start: firstItem?.current_period_start,
+      end: firstItem?.current_period_end,
+    },
+    from_root: {
+      start: subscription.current_period_start,
+      end: subscription.current_period_end,
+    },
+    extracted: {
+      start: startTimestamp,
+      end: endTimestamp,
+    },
   });
 
   return {
@@ -141,34 +163,13 @@ function extractPeriodDates(subscription: any): { start: string | null; end: str
 }
 
 /**
- * Stripe's Invoice typing changes across versions/API versions.
- * At runtime, subscription invoices commonly include a subscription reference,
- * but the TS type may omit it. Extract safely with runtime guards.
- */
-function getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
-  const anyInvoice = invoice as unknown as {
-    subscription?: string | { id?: string } | null;
-    subscription_details?: { subscription?: string | null } | null;
-  };
-
-  const sub = anyInvoice.subscription;
-  if (typeof sub === 'string') return sub;
-  if (sub && typeof sub === 'object' && typeof sub.id === 'string') return sub.id;
-
-  const detailsSub = anyInvoice.subscription_details?.subscription;
-  if (typeof detailsSub === 'string') return detailsSub;
-
-  return null;
-}
-
-/**
  * Handle successful checkout completion
  */
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
   
-  // Get user ID from metadata or customer
+  // Get user ID from metadata
   let userId = session.metadata?.supabase_user_id;
   
   if (!userId) {
@@ -183,11 +184,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
   
-  // Get FULL subscription details from Stripe API (not from event payload)
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  
-  // Log raw subscription for debugging
-  console.log('Raw subscription from API:', JSON.stringify(subscription, null, 2));
+  // Get FULL subscription details from Stripe API with items expanded
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+    expand: ['items.data'],
+  });
   
   const priceId = subscription.items.data[0]?.price.id;
   
@@ -203,11 +203,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // Determine billing interval from price
-  const price = await stripe.prices.retrieve(priceId);
-  const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
+  // Get interval from the subscription item's price
+  const price = subscription.items.data[0]?.price;
+  const interval = price?.recurring?.interval === 'year' ? 'year' : 'month';
 
-  // Extract period dates
+  // Extract period dates (now from items.data[0])
   const periodDates = extractPeriodDates(subscription);
   
   // Update subscriptions table
@@ -242,10 +242,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
   
-  // Log raw subscription for debugging
-  console.log('Subscription change event:', JSON.stringify(subscription, null, 2));
-  
-  // Get user ID from subscription metadata or customer
+  // Get user ID from subscription metadata
   let userId = subscription.metadata?.supabase_user_id;
   
   if (!userId) {
@@ -304,11 +301,11 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
       status = 'active';
   }
 
-  // Determine billing interval from price
-  const price = await stripe.prices.retrieve(priceId);
-  const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
+  // Get interval from the subscription item's price
+  const price = subscription.items.data[0]?.price;
+  const interval = price?.recurring?.interval === 'year' ? 'year' : 'month';
 
-  // Extract period dates
+  // Extract period dates (now from items.data[0])
   const periodDates = extractPeriodDates(subscription);
   
   const { error } = await supabaseAdmin
@@ -363,6 +360,8 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
       stripe_subscription_id: null,
       price_id: null,
       interval: null,
+      current_period_start: null,
+      current_period_end: null,
       cancel_at_period_end: false,
     })
     .eq('user_id', data.user_id);
@@ -380,7 +379,14 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
  */
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
-  const subscriptionId = getInvoiceSubscriptionId(invoice);
+  
+  // Get subscription ID from invoice
+  const subscriptionId = (invoice as any).subscription as string | null;
+  
+  if (!subscriptionId) {
+    console.log('Invoice not associated with a subscription');
+    return;
+  }
   
   // Find user
   const { data } = await supabaseAdmin
@@ -389,9 +395,11 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     .eq('stripe_customer_id', customerId)
     .single();
   
-  if (data?.user_id && subscriptionId) {
-    // Fetch fresh subscription data to get updated period dates
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  if (data?.user_id) {
+    // Fetch fresh subscription data with items expanded
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['items.data'],
+    });
     const periodDates = extractPeriodDates(subscription);
     
     const { error } = await supabaseAdmin

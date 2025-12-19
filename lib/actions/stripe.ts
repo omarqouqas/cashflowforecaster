@@ -42,14 +42,14 @@ export async function createCheckoutSession(
       return { error: 'Pricing not configured. Please contact support.' };
     }
     
-    // Check if user already has a Stripe customer ID
-    const { data: existingUser } = await supabase
-      .from('users')
+    // Check if user already has a Stripe customer ID (billing data lives in `subscriptions`)
+    const { data: existingSubscription } = await supabase
+      .from('subscriptions')
       .select('stripe_customer_id')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
     
-    let customerId = existingUser?.stripe_customer_id;
+    let customerId = existingSubscription?.stripe_customer_id ?? null;
     
     // Create or retrieve Stripe customer
     if (!customerId) {
@@ -61,18 +61,17 @@ export async function createCheckoutSession(
       });
       customerId = customer.id;
       
-      // Save customer ID to database
+      // Save customer ID to database (billing data lives in `subscriptions`)
       await supabase
-        .from('users')
+        .from('subscriptions')
         .upsert(
           {
-            id: user.id,
-            email: user.email,
+            user_id: user.id,
             stripe_customer_id: customerId,
-            // Keep existing subscription fields as-is; webhook will update after checkout
-            updated_at: new Date().toISOString(),
+            tier: 'free',
+            status: 'inactive',
           },
-          { onConflict: 'id' }
+          { onConflict: 'user_id' }
         );
     }
     
@@ -121,19 +120,19 @@ export async function createPortalSession(): Promise<{ url: string } | { error: 
       return { error: 'You must be logged in' };
     }
     
-    // Get user's Stripe customer ID
-    const { data: userRow } = await supabase
-      .from('users')
+    // Get user's Stripe customer ID (billing data lives in `subscriptions`)
+    const { data: subscription } = await supabase
+      .from('subscriptions')
       .select('stripe_customer_id')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
     
-    if (!userRow?.stripe_customer_id) {
+    if (!subscription?.stripe_customer_id) {
       return { error: 'No subscription found' };
     }
     
     const portalSession = await stripe.billingPortal.sessions.create({
-      customer: userRow.stripe_customer_id,
+      customer: subscription.stripe_customer_id,
       return_url: `${getURL()}/dashboard/settings`,
     });
     
