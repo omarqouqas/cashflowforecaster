@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 14, 2024
+**Last Updated:** December 19, 2025
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 20
-- **Commits:** ~55+
-- **Database Tables:** 11
+- **Days in Development:** 21
+- **Commits:** ~65+
+- **Database Tables:** 12 (added `subscriptions`)
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Runway Collect Complete + Google OAuth Complete
+**Overall Progress:** MVP Complete + Runway Collect Complete + Google OAuth Complete + Stripe Integration Complete 🎉
 
 **Completed Phases:**
 
@@ -31,226 +31,159 @@
 - ✅ Phase 8: Post-Launch Polish (Day 18) - COMPLETE
 - ✅ Phase 9: Payment Reminders (Day 19) - COMPLETE
 - ✅ Phase 10: Landing Page Polish + Google OAuth (Day 20) - COMPLETE
+- ✅ Phase 11: Stripe Integration (Day 21) - COMPLETE
 
 **Current Focus:**
 
-- Stripe integration (payment processing)
 - Analytics setup (PostHog)
 - User feedback collection
 - Marketing / user acquisition
+- Reddit launch prep
 
 ---
 
-## Day 20: Landing Page Polish + Google OAuth (December 14, 2024)
+## Day 21: Stripe Integration (December 19, 2025)
 
 ### Features Completed Today
 
-#### Landing Page Improvements ✅
+#### Stripe Checkout Integration ✅
 
-- [x] Sticky header with mobile hamburger menu
-- [x] "How It Works" 3-step section with teal numbered badges
-- [x] Features section with mini-UI mockups (Scenario Tester, Runway Collect, Warnings)
-- [x] Footer with Privacy/Terms/Contact links and social placeholders
-- [x] "Made for freelancers, by a freelancer" tagline
-- [x] Removed GitHub from footer social links
-- [x] Updated CTA buttons: "Get Started" on all tiers
-- [x] Added "Pro features coming soon" / "Premium features coming soon" text under paid tier buttons
-- [x] Optimized hero screenshot showing transaction flow + Overdraft Warning banner
+- [x] Stripe SDK installed and configured (`stripe@17`)
+- [x] Created Stripe products and prices (Pro Monthly/Yearly, Premium Monthly/Yearly)
+- [x] Checkout session creation with user metadata
+- [x] Success/cancel redirect handling
+- [x] Price ID configuration in environment variables
 
-#### Google OAuth ✅
+#### Webhook Handler ✅
 
-- [x] Configured Google Cloud Console (OAuth 2.0 Web Application)
-- [x] Configured Supabase Google provider with Client ID/Secret
-- [x] Created `lib/auth/oauth.ts` with `signInWithGoogle()` function
-- [x] Updated auth callback route to handle OAuth
-- [x] Created `components/auth/google-sign-in-button.tsx` with Google "G" logo
-- [x] Created `components/auth/or-divider.tsx` component
-- [x] Added Google sign-in to login page (above email form)
-- [x] Added Google sign-in to signup page (above email form)
-- [x] Tested end-to-end: Google → Supabase → Dashboard ✅
+- [x] Webhook endpoint at `/api/webhooks/stripe`
+- [x] Signature verification with `STRIPE_WEBHOOK_SECRET`
+- [x] Event handling for:
+  - `checkout.session.completed`
+  - `customer.subscription.created`
+  - `customer.subscription.updated`
+  - `customer.subscription.deleted`
+  - `invoice.payment_succeeded`
+  - `invoice.payment_failed`
+- [x] Fixed 307 redirect issue with `skipTrailingSlashRedirect` in next.config
+- [x] Fixed date extraction for Stripe API 2025-11-17.clover (dates moved to `items.data[0]`)
+
+#### Subscriptions Database ✅
+
+- [x] New `subscriptions` table with RLS
+- [x] Fields: user_id, stripe_customer_id, stripe_subscription_id, tier, status, price_id, interval, current_period_start, current_period_end, cancel_at_period_end
+- [x] Single source of truth for all billing data (not using `users` table for billing)
+
+#### Customer Portal ✅
+
+- [x] Stripe Customer Portal configured
+- [x] "Manage" button in Settings page
+- [x] Users can update payment method, view invoices, cancel subscription
+- [x] Return URL configured to `/dashboard/settings`
+
+#### Subscription Status Component ✅
+
+- [x] `components/subscription/subscription-status.tsx` component
+- [x] Shows tier badge (Free/Pro/Premium) with appropriate icon
+- [x] Shows status (Active/Trial/Past Due/Canceled)
+- [x] Shows renewal date ("Renews on Jan 18, 2026")
+- [x] "Manage" button for paid users
+- [x] "Upgrade to Pro" CTA for free users
+- [x] Warning banner for past_due status
+- [x] Cancel notice when `cancel_at_period_end` is true
+
+#### Pricing Section Updates ✅
+
+- [x] Landing page pricing cards trigger Stripe Checkout
+- [x] "Current Plan" shown for user's active tier (disabled button)
+- [x] "Go to Dashboard" for free tier when logged in
+- [x] Loading states during checkout redirect
+- [x] Proper authentication check before checkout
+
+#### Helper Functions ✅
+
+- [x] `lib/stripe/subscription.ts` with:
+  - `getUserSubscription()` - Get user's current subscription
+  - `userHasAccess()` - Check tier access
+  - `canUseInvoicing()` - Pro+ feature check
+  - `canUseBankSync()` - Premium feature check
+  - `getUserLimits()` - Get tier limits
+  - `hasReachedBillsLimit()` / `hasReachedIncomeLimit()`
 
 ### New Files Created
 
 ```
-lib/auth/oauth.ts                          # Google OAuth helper
-components/auth/google-sign-in-button.tsx  # Google button with logo
-components/auth/or-divider.tsx             # "or" divider component
-components/landing/landing-header.tsx      # Sticky nav + mobile menu
-```
-
-### Files Modified
-
-```
-app/page.tsx                    # Landing page sections
-app/auth/login/page.tsx         # Added Google OAuth button
-app/auth/signup/page.tsx        # Added Google OAuth button
-app/auth/callback/route.ts      # OAuth callback handling
-```
-
----
-
-## Day 19: Payment Reminders - Runway Collect Phase 3 (December 15, 2024)
-
-### Features Completed Today
-
-#### Database Schema ✅
-
-- [x] New `invoice_reminders` table to track sent reminders
-- [x] Fields: id, invoice_id, user_id, reminder_type, sent_at, created_at
-- [x] Row Level Security enabled
-- [x] Added to invoices table: reminder_count, last_reminder_at
-
-#### Email Templates ✅
-
-- [x] Three escalating reminder templates in lib/email/templates/reminder-emails.ts
-- [x] Friendly (3 days overdue): Polite "just checking in" tone
-- [x] Firm (7 days overdue): Professional, emphasizes amount due
-- [x] Final (14+ days overdue): Urgent, mentions potential next steps
-- [x] Consistent styling with existing invoice email template
-
-#### Server Action ✅
-
-- [x] sendInvoiceReminder action in lib/actions/send-reminder.ts
-- [x] Validates user owns invoice, invoice not already paid
-- [x] Sends email via Resend with appropriate template
-- [x] Records reminder in invoice_reminders table
-- [x] Updates reminder_count and last_reminder_at on invoice
-- [x] Revalidates dashboard path
-
-#### Send Reminder Button ✅
-
-- [x] Dropdown component in components/invoices/send-reminder-button.tsx
-- [x] Three options: Friendly, Firm, Final with descriptions
-- [x] Shows "Last sent X ago" when applicable
-- [x] Disabled for paid invoices
-- [x] Loading state while sending
-- [x] Toast notifications for success/error
-- [x] Integrated into invoice detail page next to Send/Resend button
-
-#### Dashboard "Needs Follow-up" Badge ✅
-
-- [x] Amber banner showing count of invoices needing follow-up
-- [x] Criteria: overdue + (never reminded OR last reminder 3+ days ago)
-- [x] Click to filter with ?filter=followup query param
-- [x] Clear filter button when filtered
-- [x] Small amber dot indicator on invoice rows needing follow-up
-
-#### Reminder History ✅
-
-- [x] Fetches reminder history on invoice detail page
-- [x] Shows "Reminder History" section with sent reminders
-- [x] Type badges: friendly (teal), firm (amber), final (rose)
-- [x] "No reminders sent yet" prompt for overdue unpaid invoices
-
-### New Files Created
-
-```
-lib/email/templates/reminder-emails.ts    # 3 reminder email templates
-lib/actions/send-reminder.ts              # Server action for sending reminders
-components/invoices/send-reminder-button.tsx  # Dropdown UI component
+lib/stripe/client.ts                    # Stripe SDK initialization
+lib/stripe/config.ts                    # Pricing tiers, price IDs, limits
+lib/stripe/subscription.ts              # Subscription helper functions
+lib/actions/stripe.ts                   # Server actions (checkout, portal)
+app/api/webhooks/stripe/route.ts        # Webhook handler
+components/subscription/subscription-status.tsx  # Settings subscription card
 ```
 
 ### Database Changes
 
 ```sql
 -- New table
-CREATE TABLE invoice_reminders (
+CREATE TABLE subscriptions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  invoice_id uuid REFERENCES invoices(id) ON DELETE CASCADE,
-  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
-  reminder_type text CHECK (reminder_type IN ('friendly', 'firm', 'final')),
-  sent_at timestamptz DEFAULT now(),
-  created_at timestamptz DEFAULT now()
+  user_id uuid UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  stripe_customer_id text UNIQUE,
+  stripe_subscription_id text UNIQUE,
+  status text DEFAULT 'free' CHECK (status IN ('free', 'active', 'canceled', 'past_due', 'trialing', 'inactive')),
+  tier text DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'premium')),
+  price_id text,
+  interval text CHECK (interval IN ('month', 'year')),
+  current_period_start timestamptz,
+  current_period_end timestamptz,
+  cancel_at_period_end boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
--- Added to invoices table
-ALTER TABLE invoices ADD COLUMN reminder_count integer DEFAULT 0;
-ALTER TABLE invoices ADD COLUMN last_reminder_at timestamptz;
+-- RLS policies
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own subscription"
+  ON subscriptions FOR SELECT
+  USING (auth.uid() = user_id);
+```
+
+### Environment Variables Added
+
+```bash
+# Stripe
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+# Price IDs (server-side)
+STRIPE_PRICE_PRO_MONTHLY=price_xxx
+STRIPE_PRICE_PRO_YEARLY=price_xxx
+STRIPE_PRICE_PREMIUM_MONTHLY=price_xxx
+STRIPE_PRICE_PREMIUM_YEARLY=price_xxx
+
+# Price IDs (client-side)
+NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_YEARLY=price_xxx
 ```
 
 ### Files Modified
 
 ```
-app/dashboard/invoices/page.tsx           # Needs follow-up badge + filtering
-app/dashboard/invoices/[id]/page.tsx      # Send reminder button + history
-components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (build fix)
+app/dashboard/settings/page.tsx         # Added SubscriptionStatus component
+app/page.tsx                            # Pricing section with checkout
+components/pricing/pricing-section.tsx  # Stripe checkout integration
+next.config.mjs                         # Added skipTrailingSlashRedirect
 ```
 
----
+### Technical Challenges Solved
 
-## Day 18: Post-Launch Polish (December 14, 2024)
-
-### Features Completed
-
-#### Pricing Section Redesign ✅
-
-- [x] Monthly/Yearly billing toggle (yearly = 2 months free)
-- [x] Three-tier pricing cards (Free, Pro, Premium)
-- [x] "Most Popular" badge on Pro tier
-- [x] Feature comparison with checkmarks
-- [x] Trust signals: "Cancel anytime • 14-day money-back guarantee • No credit card required"
-- [x] "Coming soon" badges for Plaid bank sync and Couples mode
-- [x] Responsive design (stacked on mobile)
-
-#### Onboarding Wizard ✅
-
-- [x] 4-step guided setup flow
-- [x] Progress indicator with step numbers and checkmarks
-- [x] Step 1: Add first account (name, type, balance)
-- [x] Step 2: Add primary income (name, amount, frequency, next payment date)
-- [x] Step 3: Add bills (pre-populated suggestions + custom)
-- [x] Step 4: Success screen with "See Your Forecast" CTA
-- [x] Auto-redirect for new users with 0 accounts
-- [x] Fixed income status constraint error during onboarding
-
-#### Invoice Email Sending (Runway Collect Phase 2) ✅
-
-- [x] Resend integration for transactional emails
-- [x] Professional email template (HTML)
-- [x] PDF attachment to emails
-- [x] "Send Invoice" button on invoice detail page
-- [x] Status updates (sent_at timestamp)
-- [x] Fixed react-dom/server build error with template string approach
-
-#### Calendar Dark Theme ✅
-
-- [x] Converted calendar from light to dark theme
-- [x] bg-zinc-900 container, bg-zinc-800 day cells
-- [x] Consistent with rest of app design system
-- [x] Fixed header contrast issue ("Cash Flow Calendar" visibility)
-
-#### Today Indicator ✅
-
-- [x] "TODAY" label in teal on current date
-- [x] Teal left border and ring highlight
-- [x] Auto-scroll to today on page load
-
-#### Low Balance Warnings ✅
-
-- [x] Created lib/calendar/constants.ts with threshold ($100) and helpers
-- [x] Amber styling for low balance ($0-$99)
-- [x] Rose/red styling for negative balance (overdraft)
-- [x] AlertTriangle icons next to warning balances
-- [x] "Overdraft risk" label on negative days
-- [x] Today styling preserved (teal ring) even on warning days
-- [x] Summary "LOWEST" card shows warning colors
-- [x] Overdraft Warning banner with date and amount
-- [x] Dashboard warning card for upcoming low balance days
-- [x] Day detail modal shows warning banner
-
-#### React Hot Toast ✅
-
-- [x] Installed and configured react-hot-toast
-- [x] Custom styling matching zinc + teal design system
-- [x] Success/error toasts on CRUD operations
-- [x] Bottom-center positioning
-
-#### Build Fixes ✅
-
-- [x] Fixed react-dom/server usage in invoice email template
-- [x] Fixed Windows + Google Drive webpack cache issues
-- [x] Conditional outputFileTracing for local vs Vercel builds
-- [x] Fixed NEXT_REDIRECT error logging during build
+1. **307 Redirect on Webhooks** - Vercel's trailing slash redirect was intercepting webhook requests. Fixed with `skipTrailingSlashRedirect: true` in next.config.
+2. **Stripe API Date Format Change** - In API version `2025-11-17.clover`, period dates moved from `subscription.current_period_start` to `subscription.items.data[0].current_period_start`. Updated extraction logic.
+3. **Environment Variables in API Routes** - `NEXT_PUBLIC_*` vars aren't available server-side at runtime. Added duplicate non-prefixed vars for webhook handler.
+4. **TypeScript Subscription Types** - Stripe SDK types don't include period dates in newer versions. Used `as any` workaround with safe extraction.
 
 ---
 
@@ -262,7 +195,7 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 - [x] **DNS Configured:** Namecheap → Vercel
 - [x] **Git Repository:** Connected to GitHub
 - [x] **Supabase Project:** Created and configured
-- [x] **Database Schema:** 11 tables with RLS
+- [x] **Database Schema:** 12 tables with RLS
 - [x] **TypeScript Types:** Generated from database
 - [x] **Environment Variables:** Configured locally + Vercel
 - [x] **Landing Page:** Complete with pricing, features, CTA
@@ -278,38 +211,45 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 - [x] **Toast Notifications:** react-hot-toast configured
 - [x] **"Can I Afford It?" Scenarios:** Core differentiator feature
 - [x] **Google OAuth:** Configured and working
+- [x] **Stripe Integration:** Checkout, webhooks, portal, subscription management
 
 ### 📋 Next Up
 
-- [ ] **Stripe Integration:** Payment processing for Pro/Premium tiers
 - [ ] **Analytics:** PostHog (for tracking user behavior)
 - [ ] **Error Monitoring:** Sentry (for debugging)
+- [ ] **Feature Gating:** Enforce tier limits in UI
+- [ ] **Go Live:** Switch Stripe to live mode
 
 ---
 
-## Runway Collect - Complete Feature Set ✅
+## Stripe Integration - Complete Feature Set ✅
 
-### Phase 1: Invoice Generator ✅
+### Checkout Flow ✅
 
-- Create invoices with client info
-- Generate professional PDFs
-- Auto-sync with income/calendar
-- Track payment status
+- User clicks "Get Started" on Pro/Premium card
+- Redirected to Stripe Checkout
+- After payment, redirected to success page
+- Webhook updates subscription in database
+- User sees "Current Plan" on pricing cards
 
-### Phase 2: Send & Track ✅
+### Subscription Management ✅
 
-- Email invoices directly via Resend
-- PDF attachment
-- sent_at timestamp tracking
-- Professional email template
+- Settings page shows current subscription
+- "Manage" button opens Stripe Customer Portal
+- Users can update payment method
+- Users can view invoice history
+- Users can cancel subscription
 
-### Phase 3: Payment Reminders ✅
+### Webhook Events Handled ✅
 
-- Three escalating email templates (friendly, firm, final)
-- Send Reminder dropdown on invoice detail
-- Reminder history tracking
-- "Needs Follow-up" dashboard badge with filtering
-- Amber dot indicators on invoice rows
+| Event | Action |
+|-------|--------|
+| `checkout.session.completed` | Create/update subscription |
+| `customer.subscription.created` | Store subscription details |
+| `customer.subscription.updated` | Update tier/status/dates |
+| `customer.subscription.deleted` | Downgrade to free |
+| `invoice.payment_succeeded` | Mark active, update dates |
+| `invoice.payment_failed` | Mark past_due |
 
 ---
 
@@ -333,14 +273,17 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 | Toast notifications | ✅ | react-hot-toast |
 | "Can I Afford It?" scenarios | ✅ | Core differentiator |
 | Google OAuth | ✅ | One-click signup |
-| Landing page polish | ✅ | Header, footer, how it works, features |
+| Landing page polish | ✅ | Header, footer, how it works |
+| **Stripe payments** | ✅ | **Checkout, webhooks, portal** |
+| **Subscription management** | ✅ | **Settings page integration** |
 
 ### Upcoming 📋
 
 | Feature | Priority | Est. Time |
 | :---- | :---- | :---- |
-| Stripe payments | HIGH | 4-6 hours |
 | PostHog analytics | HIGH | 1-2 hours |
+| Feature gating enforcement | HIGH | 2-3 hours |
+| Stripe live mode | HIGH | 1 hour |
 | Magic Link auth | LOW | 30 min |
 | Email parser | LOW | 6-8 hours |
 | Plaid bank sync | LOW | 8-10 hours |
@@ -363,45 +306,34 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 | Post-Launch Polish | 18 | 5-6 | ✅ Complete |
 | Payment Reminders | 19 | 3-4 | ✅ Complete |
 | Landing + OAuth | 20 | 3-4 | ✅ Complete |
+| **Stripe Integration** | **21** | **6-8** | ✅ **Complete** |
 
-**Cumulative:** ~70-80 hours over 20 days
+**Cumulative:** ~80-95 hours over 21 days
 
-**Average:** ~3.5-4 hours per day
-
----
-
-## Key Metrics to Track (Post-Launch)
-
-- Signup conversion rate (landing → account)
-- Onboarding completion rate (4 steps)
-- Free-to-paid conversion rate
-- DAU/MAU ratio
-- Invoice send rate (for Pro users)
-- Reminder send rate
-- Calendar views per user per week
+**Average:** ~4 hours per day
 
 ---
 
 ## Lessons Learned
 
+### Day 21: Stripe Integration
+
+- **Webhook debugging is tricky** - 307 redirects, signature verification, and date extraction all required careful debugging
+- **Stripe API versions matter** - The `2025-11-17.clover` API moved period dates inside `items.data[0]`, breaking older extraction logic
+- **Environment variables need both versions** - `NEXT_PUBLIC_*` for client, non-prefixed for server API routes
+- **Single source of truth is essential** - Using `subscriptions` table exclusively (not `users`) prevents sync issues
+- **Test with Stripe CLI locally** - `stripe listen --forward-to localhost:3000/api/webhooks/stripe` saves hours
+
 ### Day 20: Landing Page + Google OAuth
 
-- **OAuth reduces friction significantly** - One-click Google signup removes the biggest barrier to trying the app
-- **Landing page storytelling matters** - "How It Works" + feature mockups help visitors understand value before signing up
+- **OAuth reduces friction significantly** - One-click Google signup removes the biggest barrier
+- **Landing page storytelling matters** - "How It Works" + feature mockups help visitors understand value
 - **Hero screenshot should show the problem being solved** - Overdraft Warning banner is the emotional hook
 
 ### Day 19: Payment Reminders
 
 - **Escalating tone matters** - Friendly → Firm → Final gives users a natural progression
 - **Follow-up filtering is key** - Badge + filter makes it easy to see what needs attention
-- **History builds trust** - Showing reminder history helps users track their collection efforts
-
-### Day 18: Post-Launch Polish
-
-- **Onboarding matters** - Empty dashboard = lost users. Guided setup dramatically improves activation
-- **Database constraints bite back** - Income status field needed 'active' default for onboarding
-- **Dark theme consistency** - Light cards in dark layouts look jarring
-- **Warning colors pop better on dark** - Amber/rose really stand out on zinc-900
 
 ---
 
@@ -416,16 +348,20 @@ components/calendar/calendar-summary.tsx  # Fixed unused safetyBuffer prop (buil
 - ✅ Build and deployment stable
 - ✅ Google OAuth for frictionless signup
 - ✅ Landing page with clear value proposition
+- ✅ **Stripe payments fully integrated**
+- ✅ **Subscription management in settings**
+- ✅ **Customer portal for self-service**
 
 ## What's Next
 
-1. **Stripe integration** - Enable paid subscriptions for Pro/Premium
-2. **PostHog analytics** - Track user behavior and conversion funnel
-3. **User acquisition** - Reddit posts, Product Hunt prep
-4. **User feedback** - See what real users need
+1. **PostHog analytics** - Track user behavior and conversion funnel
+2. **Feature gating** - Enforce Pro/Premium limits in UI
+3. **Go live with Stripe** - Switch to live mode, real payments
+4. **User acquisition** - Reddit posts, Product Hunt prep
+5. **User feedback** - See what real users need
 
 ---
 
-**Status:** Landing page polished, Google OAuth working. Ready for Stripe integration. 🚀
+**Status:** Stripe integration complete! Ready to accept real payments. 🚀💳
 
 **This is a living document. Update after each development session.**

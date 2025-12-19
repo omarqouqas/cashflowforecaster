@@ -1,9 +1,9 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 2.1  
-**Last Updated:** December 2024  
-**Status:** Active Development (Phase 4 - Calendar UI)  
-**Product URL:** https://cashflowforecaster.io (launching soon)  
+**Version:** 3.0  
+**Last Updated:** December 19, 2025  
+**Status:** Live - Accepting Payments  
+**Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
 ---
@@ -53,96 +53,137 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ## Current Development Status
 
+### ✅ ALL PHASES COMPLETE - LIVE AND ACCEPTING PAYMENTS
+
 ### Phase 1: Foundation ✅ COMPLETE (Days 1-3)
 - Next.js 14 project with TypeScript
 - Supabase backend integration
-- Database schema (9 tables)
+- Database schema (12 tables)
 - Row Level Security configured
 - Domains secured and DNS configured
 - Git repository and version control
 
 ### Phase 2: Authentication ✅ COMPLETE (Days 4-5)
 - Signup/login pages
+- Google OAuth integration
 - Protected routes
 - User profile management
 - Password reset flow
-- Email verification handling
-- Settings page
 
 ### Phase 3: Core Data Models ✅ COMPLETE (Days 6-8)
 - Account management (full CRUD)
 - Income sources management (full CRUD)
 - Bills management (full CRUD)
 - Dashboard with live summaries
-- Reusable components (toggle buttons, form components)
 
-### Phase 4: Calendar Feature 🚧 IN PROGRESS (Days 9-15)
-- ✅ Calendar generation algorithm (Days 9-10) - COMPLETE
-- ⏳ Calendar UI components (Days 11-13) - PENDING
-- ⏳ Polish & testing (Days 14-15) - PENDING
+### Phase 4: Calendar Feature ✅ COMPLETE (Days 9-15)
+- 60-day cash flow projection algorithm
+- Calendar UI with day detail modals
+- Color-coded balance warnings (amber/rose)
+- Today indicator with auto-scroll
+- Dark theme design
 
-### Timeline to MVP: 6-8 weeks
+### Phase 5: Landing Page ✅ COMPLETE (Day 16)
+- Hero section with value proposition
+- Feature highlights with mockups
+- "How It Works" section
+- Pricing section with tier comparison
+- Footer with links
 
-**Target Launch:** February 2025
+### Phase 6: Runway Collect ✅ COMPLETE (Days 17-19)
+- Invoice generator with PDF export
+- Email sending via Resend
+- Payment reminder system (3 escalating templates)
+- Auto-sync invoices with income forecasts
+
+### Phase 7: Onboarding ✅ COMPLETE (Day 18)
+- 4-step guided wizard
+- Account, income, bills setup
+- Pre-populated bill suggestions
+- Auto-redirect for new users
+
+### Phase 8: Stripe Integration ✅ COMPLETE (Day 21)
+- Stripe Checkout for Pro/Premium tiers
+- Webhook handler for subscription lifecycle
+- Customer Portal for self-service management
+- Subscription status in Settings page
+
+**Status:** LIVE AND ACCEPTING PAYMENTS 🎉
 
 ---
 
 ## Product Features
 
-### Core Features (MVP)
+### Core Features (MVP) ✅ ALL COMPLETE
 
-1. **Daily Liquidity Calendar**
+1. **Daily Liquidity Calendar** ✅
    - 60-day forward projection
-   - Color-coded balance indicators
-   - Daily transaction list
-   - Mobile-responsive design
+   - Color-coded balance indicators (green/amber/rose)
+   - Daily transaction list with detail modals
+   - Mobile-responsive dark theme design
+   - Today indicator with auto-scroll
+   - Overdraft warning banners
 
-2. **Account Management**
+2. **Account Management** ✅
    - Multiple bank accounts
    - Starting balance tracking
    - Account aggregation
 
-3. **Income Sources**
-   - Recurring income (weekly, bi-weekly, monthly)
+3. **Income Sources** ✅
+   - Recurring income (weekly, bi-weekly, monthly, etc.)
    - One-time income
    - Start/end date support
 
-4. **Bill Management**
+4. **Bill Management** ✅
    - Recurring bills (rent, utilities, subscriptions)
    - Due date tracking
    - Category organization
-   - Frequency support (monthly, quarterly, yearly)
+   - All frequencies supported (weekly through yearly)
 
-5. **Scenario Testing**
+5. **Scenario Testing** ✅
    - "Can I afford it?" calculator
    - Test hypothetical expenses
    - See impact on future balance
    - Save scenarios for reference
 
+6. **Runway Collect (Pro)** ✅
+   - Create professional invoices
+   - Generate & download PDFs
+   - Email invoices directly
+   - Payment reminder system (friendly/firm/final)
+   - Auto-sync with cash flow forecasts
+
+7. **Onboarding Wizard** ✅
+   - 4-step guided setup
+   - Pre-populated suggestions
+   - Immediate value demonstration
+
+8. **Stripe Payments** ✅
+   - Secure checkout via Stripe
+   - Customer portal for subscription management
+   - Automatic tier upgrades/downgrades
+
 ### Premium Features (Post-MVP)
 
-6. **Email Parser**
+9. **Email Parser** (Planned)
    - Forward bills to bills@cashflowforecaster.io
    - Automatic bill extraction
    - One-click bill creation
-   - Manual review/approval
 
-7. **Bank Sync (Premium)**
-   - Plaid integration
-   - Automatic transaction import
-   - Real-time balance updates
-   - Multi-account support
+10. **Bank Sync (Premium)** (Planned)
+    - Plaid integration
+    - Automatic transaction import
+    - Real-time balance updates
 
-8. **Notifications**
-   - Low balance alerts
-   - Bill due reminders
-   - Weekly check-ins
-   - SMS alerts (Premium)
+11. **Notifications** (Planned)
+    - Low balance alerts
+    - Bill due reminders
+    - SMS alerts (Premium)
 
-9. **Couples Mode (Premium)**
-   - Shared accounts
-   - Partner visibility
-   - Joint planning
+12. **Couples Mode (Premium)** (Planned)
+    - Shared accounts
+    - Partner visibility
+    - Joint planning
 
 ---
 
@@ -154,7 +195,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 **Revenue Goal:** $1,000 MRR by Month 6
 
-### Pricing (Updated)
+### Pricing (Live)
 
 **Free Tier:**
 - Manual entry only
@@ -168,25 +209,24 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 **Pro Tier:**
 - Everything in Free
-- Email parser (bills@cashflowforecaster.io)
+- Runway Collect invoicing
+- Generate & download PDF invoices
 - Unlimited bills & income
 - 90-day calendar forecast
-- Scenario testing
-- Weekly check-ins
+- Payment reminders
 - Priority support (24hr)
 
-**Price:** $8/month or $80/year  
+**Price:** $7.99/month or $79.00/year (2 months free)  
 **Margin:** 92% ($7.35 profit per user)
 
 **Premium Tier:**
 - Everything in Pro
-- Bank sync via Plaid
-- SMS alerts
-- Couples mode
+- Bank sync via Plaid (coming soon)
+- SMS alerts for low balance
+- Couples mode (coming soon)
 - 12 months history
-- Multi-account support
 
-**Price:** $15/month or $150/year  
+**Price:** $14.99/month or $149.00/year (2 months free)  
 **Margin:** 88% ($13.15 profit per user)
 
 ### Revenue Projections
@@ -213,158 +253,58 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ---
 
-## Mobile Strategy
+## Technical Implementation
 
-### Phase 1: PWA First (Current)
+### Architecture
 
-**Why PWA First:**
-- Faster to market (no app store approval)
-- Lower costs (no $99/year Apple fee)
-- Better economics (no 30% Apple tax)
-- Instant updates (no review process)
-- Works everywhere (iOS, Android, Desktop)
+- **Frontend:** Next.js 14 (App Router, Server Components)
+- **Backend:** Supabase (PostgreSQL + Auth + Storage)
+- **Payments:** Stripe (Checkout, Webhooks, Customer Portal)
+- **Email:** Resend (transactional emails)
+- **PDF:** @react-pdf/renderer
+- **Deployment:** Vercel
+- **Version Control:** Git + GitHub
 
-**PWA Capabilities:**
-- Install to home screen
-- Offline functionality
-- Push notifications (Android)
-- Native-like experience
-- Responsive design
+### Database Schema (12 tables)
 
-### Phase 2: Native Apps (Month 4+, If Needed)
+1. **accounts** - User bank accounts
+2. **income** - Income sources
+3. **bills** - Recurring expenses
+4. **user_settings** - User preferences (timezone, safety buffer)
+5. **scenarios** - "Can I afford it?" calculations
+6. **invoices** - Runway Collect invoices
+7. **invoice_reminders** - Payment reminder history
+8. **parsed_emails** - Email parser results (future)
+9. **weekly_checkins** - Burn rate tracking (future)
+10. **notifications** - User notifications
+11. **users** - Extended user profiles
+12. **subscriptions** - Stripe subscription data
 
-**When to Build Native:**
-- 100+ active users requesting it
-- $1,000+ MRR (can afford costs)
-- Users reporting PWA limitations
-- Need iOS push notifications
+### Security
 
-**Technology:** Expo (React Native)
+- Row Level Security (RLS) on all tables
+- Users can only access their own data
+- Supabase Auth + Google OAuth
+- Stripe webhook signature verification
+- Environment variables for all secrets
+- TypeScript for type safety
 
-**Timeline:** 3-4 weeks
+### Key Dependencies
 
-**Code Reuse:** 60-70% from web app
-
-**Backend:** No changes needed (Supabase works identically)
-
-**Cost Impact:**
-- Apple Developer: $99/year
-- Google Play: $25 one-time
-- No recurring costs (same backend)
-
----
-
-## Competitive Analysis
-
-### Direct Competitors
-
-**Monarch Money**
-- Price: $15/month
-- Focus: Wealth optimization ($100k+ earners)
-- Strength: Bank sync, investment tracking
-- Weakness: Complex UI, expensive
-- **Our Advantage:** Simpler, cheaper, calendar view
-
-**YNAB (You Need A Budget)**
-- Price: $15/month
-- Focus: Zero-based budgeting
-- Strength: Strong community, education
-- Weakness: Steep learning curve, past-focused
-- **Our Advantage:** Forward-looking, easier to use
-
-**Mint (Discontinued)**
-- Price: Free (was)
-- Focus: Expense tracking
-- Strength: Free, bank sync
-- Weakness: No longer available, cluttered
-- **Our Advantage:** Active product, focused feature set
-
-### Indirect Competitors
-
-**Spreadsheets (Excel, Google Sheets)**
-- Price: Free-$10/month
-- Strength: Flexible, familiar
-- Weakness: Manual, error-prone, no automation
-- **Our Advantage:** Automated, mobile-friendly, email parser
-
-**Banking Apps**
-- Price: Free
-- Strength: Real-time data, trusted
-- Weakness: No forward projection, limited planning
-- **Our Advantage:** 60-day forecast, scenario testing
-
-### Competitive Positioning (Updated December 2024)
-
-**Our Status:** Pre-launch (MVP in development)
-
-**Competitive Advantage:**
-- **Focus:** Survival tool (not wealth optimization)
-- **UI:** Calendar metaphor (more intuitive than graphs)
-- **Innovation:** Email parser (no competitor has this)
-- **Price:** $8/month (vs Monarch's $15)
-- **Audience:** $30-60k income (underserved market)
-
-**Market Gap Confirmed:**
-- Monarch/YNAB target $100k+ earners
-- We target struggling freelancers ($30-60k)
-- No direct competitor in this segment
-- Calendar view is unique differentiator
-
----
-
-## Financial Projections
-
-### Current Monthly Costs (Development)
-
-- Domains: $5/month (amortized)
-- Supabase: $0 (free tier)
-- Vercel: $0 (free tier)
-- Development tools: $0
-
-**Total:** ~$5/month
-
-### Projected Costs (After Launch)
-
-**At 100 users (10 paying):**
-- Domains: $5/month
-- Supabase: $0 (free tier sufficient)
-- Vercel: $0 (free tier sufficient)
-- OpenAI (email parsing): $5/month
-
-**Total:** ~$10/month  
-**Revenue:** $80/month (10 × $8)  
-**Profit:** $70/month
-
-**At 1,000 users (100 paying):**
-- Domains: $5/month
-- Supabase: $25/month (Pro tier)
-- Vercel: $20/month (Pro tier)
-- OpenAI: $50/month
-- PostHog: $20/month
-
-**Total:** ~$120/month  
-**Revenue:** $800/month  
-**Profit:** $680/month
-
-**At 5,000 users (500 paying):**
-- Domains: $5/month
-- Supabase: $125/month (Team tier)
-- Vercel: $100/month (Pro tier)
-- OpenAI: $200/month
-- PostHog: $50/month
-- Plaid: $200/month (bank sync)
-
-**Total:** ~$680/month  
-**Revenue:** $4,000/month  
-**Profit:** $3,320/month
-
-### Unit Economics
-
-**Customer Acquisition Cost (CAC):** $5-10 (organic + Reddit)
-**Lifetime Value (LTV):** $96 (12 months × $8)
-**LTV:CAC Ratio:** 10:1 to 19:1 (healthy)
-
-**Payback Period:** < 1 month
+```json
+{
+  "next": "14.2.x",
+  "react": "^18",
+  "@supabase/ssr": "^0.8.0",
+  "stripe": "^17.x",
+  "@react-pdf/renderer": "^4.x",
+  "resend": "^4.x",
+  "date-fns": "^4.x",
+  "tailwindcss": "^3.4",
+  "react-hot-toast": "^2.x",
+  "zod": "^3.x"
+}
+```
 
 ---
 
@@ -372,21 +312,21 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ### Launch Strategy
 
-**Phase 1: Beta Launch (Week 9)**
-- Deploy to production
-- Reddit launch (r/freelance, r/povertyfinance, r/smallbusiness)
-- Invite 100 beta users
-- Collect feedback
-- Fix critical bugs
+**Phase 1: Beta Launch (Current)**
+- ✅ Deploy to production
+- ✅ Stripe integration complete
+- 🔜 Reddit launch (r/freelance, r/povertyfinance, r/smallbusiness)
+- 🔜 Invite 100 beta users
+- 🔜 Collect feedback
 
-**Phase 2: Product Hunt (Week 10-11)**
+**Phase 2: Product Hunt (Week 2-3)**
 - Prepare launch materials
 - Build email list
 - Launch on Product Hunt
 - Target: Top 5 product of the day
 - Goal: 500 signups
 
-**Phase 3: Content Marketing (Month 3-6)**
+**Phase 3: Content Marketing (Month 2-6)**
 - Blog posts (cash flow tips, freelancer guides)
 - SEO optimization
 - Guest posts on freelancer blogs
@@ -399,132 +339,6 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Reddit ads (r/freelance, r/smallbusiness)
 - Budget: $500/month initially
 
-### Launch Timeline (Updated)
-
-**Week 1-2:** Foundation ✅ COMPLETE
-- Project setup
-- Database schema
-- Basic infrastructure
-
-**Week 3:** Authentication (Current)
-- Signup/login
-- Password reset
-- Protected routes
-
-**Week 4-5:** Core Features
-- Account management
-- Income/bills CRUD
-- User settings
-
-**Week 6-7:** Calendar Feature
-- Generation algorithm
-- UI components
-- Testing
-
-**Week 8:** Polish & Launch Prep
-- Bug fixes
-- Performance optimization
-- Landing page polish
-- Analytics setup
-
-**Week 9:** Beta Launch
-- Deploy to production
-- Reddit launch (r/freelance, r/povertyfinance)
-- Invite 100 beta users
-- Collect feedback
-
-**Week 10-12:** Iterate & Scale
-- Fix issues from beta
-- Implement email parser
-- Product Hunt launch
-- Paid tier launch
-
-**Target Public Launch:** February 2025
-
----
-
-## Technical Implementation
-
-### Architecture Decisions
-
-- **Frontend:** Next.js 14 (App Router, Server Components)
-- **Backend:** Supabase (PostgreSQL + Auth + Storage)
-- **Deployment:** Vercel (optimized for Next.js)
-- **Version Control:** Git + GitHub
-- **DNS:** Namecheap → Vercel
-
-### Database Schema (Implemented)
-
-9 tables created and tested:
-
-1. **accounts** - User bank accounts
-2. **income** - Income sources
-3. **bills** - Recurring expenses
-4. **user_settings** - User preferences
-5. **scenarios** - What-if calculations
-6. **parsed_emails** - Email parser results
-7. **weekly_checkins** - Burn rate tracking
-8. **notifications** - User notifications
-9. **users** - Extended user profiles
-
-### Security (Implemented)
-
-- Row Level Security enabled on all tables
-- Users can only access their own data
-- Supabase Auth handles authentication
-- Environment variables for secrets
-- TypeScript for type safety
-
-### Key Technologies
-
-- **Next.js 14:** React framework with App Router
-- **TypeScript:** Type-safe development
-- **Supabase:** Backend-as-a-Service (PostgreSQL, Auth, Storage)
-- **Tailwind CSS:** Utility-first styling
-- **Vercel:** Hosting and deployment
-- **Plaid:** Bank account integration (Premium feature)
-
----
-
-## User Experience
-
-### User Journey
-
-1. **Discovery:** User finds Cash Flow Forecaster via Reddit, Product Hunt, or search
-2. **Signup:** Quick email/password signup (30 seconds)
-3. **Onboarding:** Guided setup (5 minutes)
-   - Add bank account(s)
-   - Add income sources
-   - Add recurring bills
-4. **First View:** See 60-day calendar immediately
-5. **Daily Use:** Check calendar before making purchases
-6. **Upgrade:** User hits 10-bill limit → upgrade to Pro
-
-### Key User Flows
-
-**Flow 1: Initial Setup**
-1. Sign up → 2. Add account → 3. Add income → 4. Add bills → 5. View calendar
-
-**Flow 2: Daily Check**
-1. Open app → 2. View calendar → 3. Check balance for today/tomorrow → 4. Make decision
-
-**Flow 3: Add New Bill**
-1. Click "Add Bill" → 2. Enter details → 3. Save → 4. Calendar updates automatically
-
-**Flow 4: Scenario Test**
-1. Click "Can I afford it?" → 2. Enter expense amount/date → 3. See result → 4. Save or dismiss
-
-**Flow 5: Email Parser (Pro)**
-1. Forward bill email → 2. Receive notification → 3. Review parsed data → 4. Approve/create bill
-
-### Design Principles
-
-- **Simplicity:** Calendar is the hero, everything else is secondary
-- **Speed:** Calendar loads in < 500ms
-- **Clarity:** Color coding makes low-balance days obvious
-- **Mobile-First:** Works perfectly on phone (primary use case)
-- **Trust:** Transparent calculations, no hidden fees
-
 ---
 
 ## Success Metrics
@@ -535,8 +349,8 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Monthly Active Users (MAU)
 - Daily Active Users (DAU)
 - User retention (Day 7, Day 30)
+- Onboarding completion rate
 - Time to first calendar view
-- Bills/income sources per user
 
 **Business Metrics:**
 - Signup conversion rate
@@ -549,9 +363,8 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 **Product Metrics:**
 - Calendar views per user per week
 - Scenario tests per user
-- Email parser usage (Pro users)
+- Invoice creation rate (Pro users)
 - Feature adoption rates
-- Error rates
 
 ### Target Metrics (Month 6)
 
@@ -564,59 +377,51 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ---
 
-## Risk Assessment
+## Competitive Positioning
 
-### Technical Risks
+**Our Status:** Live and accepting payments
 
-**Risk:** Calendar algorithm bugs (incorrect projections)
-- **Mitigation:** Extensive testing, beta user feedback, manual verification
+**Competitive Advantage:**
 
-**Risk:** Supabase scaling issues
-- **Mitigation:** Monitor usage, upgrade tier as needed, consider alternatives
+- **Focus:** Survival tool (not wealth optimization)
+- **UI:** Calendar metaphor (more intuitive than graphs)
+- **Innovation:** Runway Collect invoicing with forecast sync
+- **Price:** $7.99/month (vs Monarch's $15)
+- **Audience:** $30-60k income (underserved market)
 
-**Risk:** Email parser accuracy
-- **Mitigation:** Manual review step, user feedback loop, improve AI model
+**Market Gap Confirmed:**
 
-### Business Risks
-
-**Risk:** Low conversion rate (< 5%)
-- **Mitigation:** A/B test pricing, improve onboarding, add more free value
-
-**Risk:** High churn rate (> 10%)
-- **Mitigation:** Weekly check-ins, email reminders, improve product value
-
-**Risk:** Competitor launches similar product
-- **Mitigation:** Move fast, build moat (email parser), focus on community
-
-### Market Risks
-
-**Risk:** Target market too small
-- **Mitigation:** Expand to small businesses, add B2B features
-
-**Risk:** Users don't understand value
-- **Mitigation:** Better onboarding, tutorials, case studies
+- Monarch/YNAB target $100k+ earners
+- We target struggling freelancers ($30-60k)
+- No direct competitor in this segment
+- Calendar view is unique differentiator
+- Invoice-to-forecast sync is unique
 
 ---
 
 ## Future Roadmap
 
-### Phase 2 Features (Months 4-6)
+### Phase 2 Features (Months 2-4)
 
+- PostHog analytics integration
+- Feature gating enforcement
 - Multi-currency support
-- Budget categories
-- Spending insights/analytics
 - Export to CSV/PDF
 - Email notifications
-- Mobile app (if needed)
 
-### Phase 3 Features (Months 7-12)
+### Phase 3 Features (Months 5-8)
 
-- Bank account integration (Plaid) - Premium
-- Automatic transaction import
+- Email parser (bills@cashflowforecaster.io)
+- Bank account integration (Plaid)
 - AI-powered bill categorization
 - Predictive analytics
+
+### Phase 4 Features (Months 9-12)
+
+- Couples mode
 - Team/collaboration features
 - API for integrations
+- Mobile app (if needed)
 
 ### Long-Term Vision (Year 2+)
 
@@ -624,36 +429,10 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - White-label solution
 - International expansion
 - Partnerships with freelancer platforms
-- Financial education content
 
 ---
 
-## Appendix
-
-### Market Research
-
-**Target Audience:** 57 million freelancers in the US
-- 36% report cash flow as #1 challenge
-- Average income: $30-60k/year
-- Tech-savvy, price-sensitive
-- Active on Reddit, Twitter, Product Hunt
-
-**Competitive Landscape:**
-- No direct competitor in $30-60k income segment
-- Calendar view is unique differentiator
-- Email parser is innovative feature
-- Price point ($8) is competitive
-
-### Key Assumptions
-
-1. 10-15% free-to-paid conversion rate
-2. $5-10 customer acquisition cost
-3. 5% monthly churn rate
-4. 12-month average customer lifetime
-5. 80% of users stay on free tier
-6. Email parser drives Pro upgrades
-
-### Contact Information
+## Contact Information
 
 **Product:** Cash Flow Forecaster  
 **Website:** https://cashflowforecaster.io  
@@ -662,8 +441,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ---
 
-**Document Version:** 2.1  
-**Last Updated:** December 2024  
-**Status:** Active Development (Phase 2)  
+**Document Version:** 3.0  
+**Last Updated:** December 19, 2025  
+**Status:** Live - Accepting Payments 🎉  
 **Next Review:** January 2025
-
