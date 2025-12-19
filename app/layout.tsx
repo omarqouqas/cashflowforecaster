@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppToaster } from '@/components/ui/toaster';
+import { PostHogProvider } from './providers/posthog-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -29,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased bg-white text-zinc-900 selection-teal`}>
-        {children}
+        <PostHogProvider>
+          {children}
+        </PostHogProvider>
         <AppToaster />
       </body>
     </html>

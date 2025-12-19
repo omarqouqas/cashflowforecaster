@@ -4,6 +4,7 @@ import { EmailVerificationBanner } from '@/components/auth/email-verification-ba
 import { DashboardNav } from '@/components/dashboard/nav'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { redirect } from 'next/navigation'
+import { IdentifyUser } from '@/components/analytics/identify-user'
 
 export default async function DashboardLayout({
   children,
@@ -36,6 +37,7 @@ export default async function DashboardLayout({
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
+      <IdentifyUser />
       <EmailVerificationBanner user={user} />
       
       <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
@@ -61,4 +63,3 @@ export default async function DashboardLayout({
     </div>
   )
 }
-
