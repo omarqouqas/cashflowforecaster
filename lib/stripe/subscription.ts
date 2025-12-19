@@ -31,29 +31,26 @@ export async function getUserSubscription(userId?: string): Promise<UserSubscrip
     finalUserId = user.id;
   }
   
-  const { data: userRow, error } = await supabase
-    .from('users')
-    .select(
-      'stripe_customer_id, stripe_subscription_id, subscription_tier, subscription_status, subscription_ends_at'
-    )
-    .eq('id', finalUserId)
+  const { data: subscription, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', finalUserId)
     .single();
   
-  if (error || !userRow) {
-    // No user record = free tier
+  if (error || !subscription) {
+    // No subscription record = free tier
     return getDefaultSubscription();
   }
   
   return {
-    tier: (userRow.subscription_tier as SubscriptionTier | null) ?? 'free',
-    status: userRow.subscription_status ?? 'active',
-    stripeCustomerId: userRow.stripe_customer_id,
-    stripeSubscriptionId: userRow.stripe_subscription_id,
-    currentPeriodEnd: userRow.subscription_ends_at
-      ? new Date(userRow.subscription_ends_at)
+    tier: subscription.tier as SubscriptionTier,
+    status: subscription.status,
+    stripeCustomerId: subscription.stripe_customer_id,
+    stripeSubscriptionId: subscription.stripe_subscription_id,
+    currentPeriodEnd: subscription.current_period_end 
+      ? new Date(subscription.current_period_end) 
       : null,
-    // We don't currently persist cancel_at_period_end in the `users` table.
-    cancelAtPeriodEnd: false,
+    cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false,
   };
 }
 
@@ -107,11 +104,6 @@ export async function canUseInvoicing(userId?: string): Promise<boolean> {
 export async function canUseBankSync(userId?: string): Promise<boolean> {
   return userHasAccess('premium', userId);
 }
-
-/**
- * Check if user can use the new feature (tier-dependent flag)
- */
-// (Removed placeholder "new feature" flag – it wasn't part of our tier limits schema.)
 
 /**
  * Get user's limits based on their tier

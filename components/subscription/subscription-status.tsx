@@ -94,7 +94,7 @@ export function SubscriptionStatus({
               {status === 'active' ? 'Active' :
                status === 'trialing' ? 'Trial' :
                status === 'past_due' ? 'Past Due' :
-               status === 'canceled' ? 'Canceled' : 'Inactive'}
+               status === 'canceled' ? 'Canceled' : 'Free'}
             </span>
           </div>
           
@@ -144,10 +144,10 @@ export function SubscriptionStatus({
       )}
 
       {/* Notice for canceled subscription */}
-      {cancelAtPeriodEnd && (
+      {cancelAtPeriodEnd && currentPeriodEnd && (
         <div className="mt-4 p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
           <p className="text-sm text-zinc-400">
-            Your subscription will end on {format(currentPeriodEnd!, 'MMM d, yyyy')}. 
+            Your subscription will end on {format(currentPeriodEnd, 'MMM d, yyyy')}. 
             You'll be downgraded to the Free plan after that.
           </p>
           <button

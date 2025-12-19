@@ -1,3 +1,8 @@
+// app/dashboard/settings/page.tsx
+// ============================================
+// Settings Page - Updated with Subscription Management
+// ============================================
+
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
@@ -5,6 +10,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
+import { SubscriptionStatus } from '@/components/subscription/subscription-status';
+import { getUserSubscription } from '@/lib/stripe/subscription';
 
 export const metadata = {
   title: 'Settings | Cash Flow Forecaster',
@@ -24,6 +31,9 @@ export default async function SettingsPage() {
 
   const safetyBuffer = settings?.safety_buffer ?? 500;
   const timezone = settings?.timezone ?? null;
+
+  // Fetch subscription status
+  const subscription = await getUserSubscription(user.id);
 
   // Format the created_at date
   const accountCreatedDate = user.created_at
@@ -52,6 +62,14 @@ export default async function SettingsPage() {
 
         {/* Settings sections */}
         <div className="space-y-6">
+          {/* Subscription Card - NEW */}
+          <SubscriptionStatus
+            tier={subscription.tier}
+            status={subscription.status}
+            currentPeriodEnd={subscription.currentPeriodEnd}
+            cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
+          />
+
           {/* Account Information Card */}
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
             <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
@@ -126,4 +144,3 @@ export default async function SettingsPage() {
     </div>
   );
 }
-
