@@ -4,6 +4,7 @@
 import { useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { identifyUser } from '@/lib/posthog'
+import { normalizeSubscriptionTier } from '@/lib/stripe/config'
 
 export function IdentifyUser() {
   useEffect(() => {
@@ -19,10 +20,12 @@ export function IdentifyUser() {
           .eq('user_id', user.id)
           .single()
 
+        const tier = normalizeSubscriptionTier(subscription?.tier, 'free')
+
         identifyUser(user.id, {
           email: user.email,
           name: user.user_metadata?.full_name,
-          tier: subscription?.tier || 'free',
+          tier,
           auth_provider: user.app_metadata?.provider as 'email' | 'google',
         })
       }

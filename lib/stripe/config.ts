@@ -6,6 +6,17 @@
 export type SubscriptionTier = 'free' | 'pro' | 'premium';
 export type BillingInterval = 'month' | 'year';
 
+export function isSubscriptionTier(value: unknown): value is SubscriptionTier {
+  return value === 'free' || value === 'pro' || value === 'premium';
+}
+
+export function normalizeSubscriptionTier(
+  value: unknown,
+  fallback: SubscriptionTier = 'free'
+): SubscriptionTier {
+  return isSubscriptionTier(value) ? value : fallback;
+}
+
 export interface PricingTier {
   name: string;
   description: string;

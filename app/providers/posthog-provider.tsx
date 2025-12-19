@@ -14,8 +14,16 @@ if (typeof window !== 'undefined') {
     capture_pageleave: true, // Track when users leave pages
     autocapture: true, // Auto-capture clicks, form submissions, etc.
     persistence: 'localStorage+cookie', // Better persistence across sessions
-    bootstrap: {
-      distinctID: undefined, // Will be set when user logs in
+    
+    // Session Replay - watch real user sessions
+    capture_performance: true, // Capture web vitals and performance data
+    disable_session_recording: false, // Enable session recording
+    session_recording: {
+      maskAllInputs: false, // Don't mask regular inputs (names, emails you need to see)
+      maskInputOptions: {
+        password: true, // Always mask passwords
+      },
+      maskTextSelector: '[data-ph-no-capture]', // Mask elements with this attribute
     },
   })
 }

@@ -4,7 +4,7 @@
 // ============================================
 
 import { createClient } from '@/lib/supabase/server';
-import { PRICING_TIERS, type SubscriptionTier } from './config';
+import { PRICING_TIERS, normalizeSubscriptionTier, type SubscriptionTier } from './config';
 
 export interface UserSubscription {
   tier: SubscriptionTier;
@@ -43,7 +43,7 @@ export async function getUserSubscription(userId?: string): Promise<UserSubscrip
   }
   
   return {
-    tier: subscription.tier as SubscriptionTier,
+    tier: normalizeSubscriptionTier(subscription.tier, 'free'),
     status: subscription.status,
     stripeCustomerId: subscription.stripe_customer_id,
     stripeSubscriptionId: subscription.stripe_subscription_id,
