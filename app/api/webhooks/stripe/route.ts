@@ -1,6 +1,6 @@
 // app/api/webhooks/stripe/route.ts
 // ============================================
-// Stripe Webhook Handler
+// Stripe Webhook Handler - Fixed date extraction
 // ============================================
 
 import { headers } from 'next/headers';
@@ -105,17 +105,39 @@ export async function POST(request: Request) {
 }
 
 /**
- * Safely convert Unix timestamp to ISO string
+ * Extract period dates from subscription object
+ * Handles both old and new Stripe API formats
  */
-function safeTimestampToISO(timestamp: unknown): string | null {
-  if (typeof timestamp === 'number' && timestamp > 0) {
-    try {
-      return new Date(timestamp * 1000).toISOString();
-    } catch {
-      return null;
-    }
+function extractPeriodDates(subscription: any): { start: string | null; end: string | null } {
+  let startTimestamp: number | null = null;
+  let endTimestamp: number | null = null;
+
+  // Try different property paths
+  if (typeof subscription.current_period_start === 'number') {
+    startTimestamp = subscription.current_period_start;
+  } else if (subscription.current_period?.start) {
+    startTimestamp = subscription.current_period.start;
   }
-  return null;
+
+  if (typeof subscription.current_period_end === 'number') {
+    endTimestamp = subscription.current_period_end;
+  } else if (subscription.current_period?.end) {
+    endTimestamp = subscription.current_period.end;
+  }
+
+  // Log for debugging
+  console.log('Period extraction:', {
+    raw_start: subscription.current_period_start,
+    raw_end: subscription.current_period_end,
+    current_period: subscription.current_period,
+    extracted_start: startTimestamp,
+    extracted_end: endTimestamp,
+  });
+
+  return {
+    start: startTimestamp ? new Date(startTimestamp * 1000).toISOString() : null,
+    end: endTimestamp ? new Date(endTimestamp * 1000).toISOString() : null,
+  };
 }
 
 /**
@@ -140,8 +162,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
   
-  // Get subscription details from Stripe API (fresh fetch)
+  // Get FULL subscription details from Stripe API (not from event payload)
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  
+  // Log raw subscription for debugging
+  console.log('Raw subscription from API:', JSON.stringify(subscription, null, 2));
+  
   const priceId = subscription.items.data[0]?.price.id;
   
   if (!priceId) {
@@ -151,7 +177,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   
   const tier = getTierFromPriceId(priceId);
   
-  // Don't proceed if we can't determine the tier
   if (!tier) {
     console.error(`Unknown price ID received in checkout: ${priceId}`);
     return;
@@ -161,8 +186,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const price = await stripe.prices.retrieve(priceId);
   const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
 
-  // Access raw data from the subscription object
-  const rawSub = subscription as any;
+  // Extract period dates
+  const periodDates = extractPeriodDates(subscription);
   
   // Update subscriptions table
   const { error } = await supabaseAdmin
@@ -175,9 +200,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       tier: tier,
       status: subscription.status === 'active' ? 'active' : 'trialing',
       interval: interval,
-      current_period_start: safeTimestampToISO(rawSub.current_period_start),
-      current_period_end: safeTimestampToISO(rawSub.current_period_end),
-      cancel_at_period_end: rawSub.cancel_at_period_end ?? false,
+      current_period_start: periodDates.start,
+      current_period_end: periodDates.end,
+      cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     }, {
       onConflict: 'user_id',
     });
@@ -187,7 +212,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     throw error;
   }
   
-  console.log(`Checkout completed for user ${userId}, tier: ${tier}`);
+  console.log(`Checkout completed for user ${userId}, tier: ${tier}, period_end: ${periodDates.end}`);
 }
 
 /**
@@ -195,6 +220,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
  */
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
+  
+  // Log raw subscription for debugging
+  console.log('Subscription change event:', JSON.stringify(subscription, null, 2));
   
   // Get user ID from subscription metadata or customer
   let userId = subscription.metadata?.supabase_user_id;
@@ -230,7 +258,6 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   
   const tier = getTierFromPriceId(priceId);
   
-  // Don't proceed if we can't determine the tier
   if (!tier) {
     console.error(`Unknown price ID in subscription update: ${priceId}`);
     return;
@@ -260,8 +287,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const price = await stripe.prices.retrieve(priceId);
   const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
 
-  // Access raw data from the subscription object
-  const rawSub = subscription as any;
+  // Extract period dates
+  const periodDates = extractPeriodDates(subscription);
   
   const { error } = await supabaseAdmin
     .from('subscriptions')
@@ -273,9 +300,9 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
       tier: tier,
       status: status,
       interval: interval,
-      current_period_start: safeTimestampToISO(rawSub.current_period_start),
-      current_period_end: safeTimestampToISO(rawSub.current_period_end),
-      cancel_at_period_end: rawSub.cancel_at_period_end ?? false,
+      current_period_start: periodDates.start,
+      current_period_end: periodDates.end,
+      cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     }, {
       onConflict: 'user_id',
     });
@@ -285,7 +312,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
     throw error;
   }
   
-  console.log(`Subscription updated for user ${userId}: ${status}, tier: ${tier}`);
+  console.log(`Subscription updated for user ${userId}: ${status}, tier: ${tier}, period_end: ${periodDates.end}`);
 }
 
 /**
@@ -332,18 +359,27 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
  */
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
+  const subscriptionId = invoice.subscription as string;
   
-  // Find user and ensure they're active
+  // Find user
   const { data } = await supabaseAdmin
     .from('subscriptions')
     .select('user_id')
     .eq('stripe_customer_id', customerId)
     .single();
   
-  if (data?.user_id) {
+  if (data?.user_id && subscriptionId) {
+    // Fetch fresh subscription data to get updated period dates
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const periodDates = extractPeriodDates(subscription);
+    
     const { error } = await supabaseAdmin
       .from('subscriptions')
-      .update({ status: 'active' })
+      .update({ 
+        status: 'active',
+        current_period_start: periodDates.start,
+        current_period_end: periodDates.end,
+      })
       .eq('user_id', data.user_id);
     
     if (error) {
@@ -351,7 +387,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
       throw error;
     }
     
-    console.log(`Payment succeeded for user ${data.user_id}`);
+    console.log(`Payment succeeded for user ${data.user_id}, period_end: ${periodDates.end}`);
   }
 }
 
