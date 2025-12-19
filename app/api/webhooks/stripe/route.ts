@@ -141,6 +141,27 @@ function extractPeriodDates(subscription: any): { start: string | null; end: str
 }
 
 /**
+ * Stripe's Invoice typing changes across versions/API versions.
+ * At runtime, subscription invoices commonly include a subscription reference,
+ * but the TS type may omit it. Extract safely with runtime guards.
+ */
+function getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const anyInvoice = invoice as unknown as {
+    subscription?: string | { id?: string } | null;
+    subscription_details?: { subscription?: string | null } | null;
+  };
+
+  const sub = anyInvoice.subscription;
+  if (typeof sub === 'string') return sub;
+  if (sub && typeof sub === 'object' && typeof sub.id === 'string') return sub.id;
+
+  const detailsSub = anyInvoice.subscription_details?.subscription;
+  if (typeof detailsSub === 'string') return detailsSub;
+
+  return null;
+}
+
+/**
  * Handle successful checkout completion
  */
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -359,7 +380,7 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
  */
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
-  const subscriptionId = invoice.subscription as string;
+  const subscriptionId = getInvoiceSubscriptionId(invoice);
   
   // Find user
   const { data } = await supabaseAdmin
