@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format } from 'date-fns';
@@ -30,6 +30,8 @@ interface DayDetailModalProps {
  * - Prevents body scroll while open
  */
 export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   // Handle Escape key to close
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -48,6 +50,12 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
     return () => {
       document.body.style.overflow = 'unset';
     };
+  }, []);
+
+  // Trigger slide-up animation for the mobile bottom sheet
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setIsSheetOpen(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   // Status colors mapping
@@ -88,16 +96,28 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         className={cn(
-          'bg-zinc-900 rounded-lg shadow-md max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col',
-          'border border-zinc-800'
+          // Mobile (< md): bottom sheet
+          'bottom-sheet w-full border border-zinc-800 shadow-md overflow-hidden flex flex-col',
+          'translate-y-full md:translate-y-0',
+          isSheetOpen ? 'translate-y-0' : 'translate-y-full',
+          // Desktop (>= md): centered modal (keep existing behavior)
+          'md:relative md:bottom-auto md:left-auto md:right-auto',
+          'md:rounded-lg md:max-w-2xl md:max-h-[90vh] md:w-full'
         )}
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
+        {/* Mobile drag handle */}
+        <div className="md:hidden">
+          <div className="bottom-sheet-handle" />
+        </div>
+
         {/* Header */}
         <div className="p-6 border-b border-zinc-800">
           <div className="flex items-start justify-between gap-4">
@@ -263,7 +283,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-zinc-800">
+        <div className="p-6 border-t border-zinc-800 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
           <Button variant="primary" onClick={onClose} fullWidth>
             Close
           </Button>
