@@ -54,10 +54,16 @@ export default async function DashboardLayout({
             </div>
           </div>
         </div>
+        {/* DashboardNav now handles both desktop (top) and mobile (bottom) navigation */}
         <DashboardNav />
       </header>
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* 
+        Main content area
+        - pb-24 on mobile to account for fixed bottom nav (64px + safe area)
+        - md:pb-8 on desktop (no bottom nav)
+      */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {children}
       </main>
     </div>

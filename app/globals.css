@@ -11,10 +11,14 @@
 
   html {
     scroll-behavior: smooth;
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior-y: contain;
   }
 
   body {
     @apply min-h-screen bg-white text-zinc-900 antialiased;
+    /* Prevent text size adjustment on orientation change */
+    -webkit-text-size-adjust: 100%;
   }
 
   /* Make "border" default to a crisp Zinc outline. */
@@ -22,6 +26,19 @@
   *::before,
   *::after {
     @apply border-zinc-200;
+  }
+
+  /* Improve tap highlighting on mobile */
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Ensure inputs don't zoom on iOS */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 
@@ -63,11 +80,138 @@
   .cfc-date {
     @apply text-sm text-zinc-500;
   }
+
+  /* Mobile touch-friendly button base */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Bottom sheet styling */
+  .bottom-sheet {
+    @apply fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-2xl;
+    @apply transform transition-transform duration-300 ease-out;
+    max-height: 85vh;
+    max-height: 85dvh; /* Dynamic viewport height for mobile browsers */
+  }
+
+  .bottom-sheet-handle {
+    @apply w-10 h-1 bg-zinc-600 rounded-full mx-auto mt-3 mb-2;
+  }
 }
 
 @layer utilities {
   /* Accent selection (teal-600, used sparingly) */
   .selection-teal::selection {
     @apply bg-teal-600/20;
+  }
+
+  /* Safe area padding for notched devices */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pl-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .pr-safe {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .px-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .py-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Margin variants for safe areas */
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mt-safe {
+    margin-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Prevent text selection on UI elements */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Hardware-accelerated animations */
+  .gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Active state for touch feedback */
+  .touch-active {
+    @apply active:scale-[0.98] active:opacity-90 transition-transform duration-75;
+  }
+
+  /* Ensure proper stacking for fixed elements on mobile */
+  .fixed-safe {
+    position: fixed;
+    left: env(safe-area-inset-left, 0px);
+    right: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* Custom media query for devices with notches/safe areas */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .has-safe-area {
+    /* This class can be used to detect safe area support */
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark mode scrollbar (for webkit browsers) */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #18181b; /* zinc-900 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3f3f46; /* zinc-700 */
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #52525b; /* zinc-600 */
   }
 }
