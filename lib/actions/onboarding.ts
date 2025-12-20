@@ -4,6 +4,29 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth/session'
 import type { Tables } from '@/types/supabase'
+import type { User } from '@supabase/supabase-js'
+
+async function ensurePublicUserRow(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  user: User
+): Promise<{ ok: true } | { error: string }> {
+  const email = user.email?.trim()
+  if (!email) return { error: 'Missing user email; cannot create profile row.' }
+
+  // Many tables in this app FK to public.users(id). If the profile row was never created
+  // (e.g., trigger not installed / different Supabase project), inserts will fail.
+  const { error } = await supabase.from('users').upsert(
+    {
+      id: user.id,
+      email,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'id' }
+  )
+
+  if (error) return { error: error.message }
+  return { ok: true }
+}
 
 export type OnboardingAccountInput = {
   name: string
@@ -34,6 +57,9 @@ export async function onboardingCreateAccount(
   try {
     const user = await requireAuth()
     const supabase = await createClient()
+
+    const ensure = await ensurePublicUserRow(supabase, user)
+    if ('error' in ensure) return ensure
 
     const name = (input.name || '').trim()
     if (!name) return { error: 'Account name is required.' }
@@ -72,6 +98,9 @@ export async function onboardingCreateIncomes(
   try {
     const user = await requireAuth()
     const supabase = await createClient()
+
+    const ensure = await ensurePublicUserRow(supabase, user)
+    if ('error' in ensure) return ensure
 
     if (!Array.isArray(inputs) || inputs.length === 0) {
       return { incomes: [] }
@@ -129,6 +158,9 @@ export async function onboardingCreateBills(
     const user = await requireAuth()
     const supabase = await createClient()
 
+    const ensure = await ensurePublicUserRow(supabase, user)
+    if ('error' in ensure) return ensure
+
     if (!Array.isArray(inputs) || inputs.length === 0) {
       return { bills: [] }
     }
@@ -181,6 +213,9 @@ export async function onboardingMarkComplete(): Promise<{ ok: true } | { error: 
   try {
     const user = await requireAuth()
     const supabase = await createClient()
+
+    const ensure = await ensurePublicUserRow(supabase, user)
+    if ('error' in ensure) return ensure
 
     // Mark complete in user_settings (this table is already writable by the user in-app).
     const { error } = await supabase
