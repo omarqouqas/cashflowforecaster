@@ -63,7 +63,8 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
   const isLowBalance = balanceStatus === 'low'
   const showWarning = isNegative || isLowBalance
 
-  const rowBase = 'w-full flex items-start px-4 py-3 transition-colors cursor-pointer min-h-[64px] text-left rounded-lg border'
+  const rowBase =
+    'w-full flex items-start px-4 py-3 cursor-pointer text-left rounded-lg border min-h-[72px] sm:min-h-[64px] transition-colors transition-transform active:scale-[0.98] active:bg-zinc-700/70'
   const rowBgClass = isNegative
     ? 'bg-rose-500/20'
     : isLowBalance
@@ -133,7 +134,7 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
             )}
 
             {/* Dots (one per transaction, capped for clutter) */}
-            <div className="flex items-center gap-1 flex-wrap">
+            <div className="hidden sm:flex items-center gap-1 flex-wrap">
               {day.income.slice(0, 3).map((t) => (
                 <span
                   key={`inc-${t.id}-${t.date.getTime()}`}
