@@ -52,7 +52,7 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
           type="button"
           onClick={() => setOpen(true)}
           className={cn(
-            'flex flex-col items-center justify-center w-16 h-full',
+            'flex flex-col items-center justify-center h-full',
             'transition-colors',
             'focus:outline-none focus:ring-2 focus:ring-teal-300/60 focus:ring-offset-2 focus:ring-offset-zinc-900',
             className
@@ -60,7 +60,7 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
           aria-label="Can I Afford It?"
         >
           <Calculator className="w-6 h-6" />
-          <span className="text-xs mt-1 font-medium">Afford?</span>
+          <span className="text-[11px] mt-1 font-medium">Afford?</span>
         </button>
 
         <ScenarioModal open={open} onClose={() => setOpen(false)} source={source ?? 'mobile-nav'} />

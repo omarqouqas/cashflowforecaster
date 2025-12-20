@@ -21,6 +21,7 @@ export function DashboardNav() {
   const mobileLinks = [
     { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
+    { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
@@ -69,7 +70,7 @@ export function DashboardNav() {
       {/* Mobile Bottom Navigation - Visible only on mobile */}
       <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
         <nav className="bg-zinc-900/95 backdrop-blur-sm border-t border-zinc-800 px-2 pb-safe">
-          <div className="flex items-center justify-around h-16">
+          <div className="flex items-center justify-between gap-1 h-16">
             {mobileLinks.map((link) => {
               const Icon = link.icon
               const isActive = pathname.startsWith(link.href)
@@ -80,13 +81,13 @@ export function DashboardNav() {
                   href={link.href}
                   className={[
                     'flex flex-col items-center justify-center',
-                    'w-16 h-full',
+                    'flex-1 h-full min-w-0',
                     'transition-colors',
                     isActive ? 'text-teal-400' : 'text-zinc-400 active:text-zinc-200',
                   ].join(' ')}
                 >
                   <Icon className="w-6 h-6" />
-                  <span className="text-xs mt-1 font-medium">{link.label}</span>
+                  <span className="text-[11px] mt-1 font-medium truncate w-full text-center px-1">{link.label}</span>
                 </Link>
               )
             })}
@@ -95,7 +96,7 @@ export function DashboardNav() {
             <ScenarioButton 
               variant="mobile-nav" 
               source="mobile-nav"
-              className="flex flex-col items-center justify-center w-16 h-full text-teal-400 active:text-teal-300"
+              className="flex flex-col items-center justify-center flex-1 h-full min-w-0 text-teal-400 active:text-teal-300"
             />
           </div>
         </nav>
