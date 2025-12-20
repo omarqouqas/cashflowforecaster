@@ -5,12 +5,12 @@ import { Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScenarioModal } from './scenario-modal';
 
-export type ScenarioButtonVariant = 'fab' | 'card';
+export type ScenarioButtonVariant = 'fab' | 'card' | 'mobile-nav';
 
 export interface ScenarioButtonProps {
   variant?: ScenarioButtonVariant;
   className?: string;
-  source?: 'calendar' | 'dashboard';
+  source?: 'calendar' | 'dashboard' | 'mobile-nav';
 }
 
 export function ScenarioButton({ variant = 'fab', className, source }: ScenarioButtonProps) {
@@ -41,6 +41,29 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
         </button>
 
         <ScenarioModal open={open} onClose={() => setOpen(false)} source={source ?? 'dashboard'} />
+      </>
+    );
+  }
+
+  if (variant === 'mobile-nav') {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={cn(
+            'flex flex-col items-center justify-center w-16 h-full',
+            'transition-colors',
+            'focus:outline-none focus:ring-2 focus:ring-teal-300/60 focus:ring-offset-2 focus:ring-offset-zinc-900',
+            className
+          )}
+          aria-label="Can I Afford It?"
+        >
+          <Calculator className="w-6 h-6" />
+          <span className="text-xs mt-1 font-medium">Afford?</span>
+        </button>
+
+        <ScenarioModal open={open} onClose={() => setOpen(false)} source={source ?? 'mobile-nav'} />
       </>
     );
   }
