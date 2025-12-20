@@ -47,14 +47,27 @@ function normalizeDay(day: CalendarDay): CalendarDay {
   }
 }
 
+function formatMinutesAgo(from: Date, now: Date): string {
+  const diffMs = Math.max(0, now.getTime() - from.getTime())
+  const mins = Math.floor(diffMs / 60_000)
+  if (mins <= 0) return 'just now'
+  if (mins === 1) return '1 minute ago'
+  return `${mins} minutes ago`
+}
+
 export function CalendarContainer({ calendarData }: CalendarContainerProps) {
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null)
+  const [isScrolledToTop, setIsScrolledToTop] = useState(true)
+  const [showRefreshIndicator, setShowRefreshIndicator] = useState(false)
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
+  const [now, setNow] = useState(() => new Date())
 
   const days = useMemo(() => calendarData.days.map(normalizeDay), [calendarData.days])
   const startingBalance = calendarData.startingBalance
   const lowestBalanceDate = useMemo(() => toDate(calendarData.lowestBalanceDate), [calendarData.lowestBalanceDate])
 
   const rowWrappersRef = useRef<Array<HTMLDivElement | null>>([])
+  const scrollRef = useRef<HTMLDivElement | null>(null)
 
   const todayIndex = useMemo(() => {
     return days.findIndex((d) => isToday(d.date))
@@ -132,8 +145,53 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
     // run once per days load
   }, [todayIndex])
 
+  const dataRevisionKey = useMemo(() => {
+    const first = days[0]?.date?.getTime() ?? 0
+    const last = days[days.length - 1]?.date?.getTime() ?? 0
+    return [
+      first,
+      last,
+      calendarData.startingBalance,
+      calendarData.lowestBalance,
+      toDate(calendarData.lowestBalanceDate).getTime(),
+      calendarData.lowestIn14Days,
+      calendarData.totalIncome,
+      calendarData.totalBills,
+      calendarData.endingBalance,
+      calendarData.safetyBuffer,
+      calendarData.safeToSpend,
+      calendarData.currency ?? 'USD',
+    ].join(':')
+  }, [
+    days,
+    calendarData.startingBalance,
+    calendarData.lowestBalance,
+    calendarData.lowestBalanceDate,
+    calendarData.lowestIn14Days,
+    calendarData.totalIncome,
+    calendarData.totalBills,
+    calendarData.endingBalance,
+    calendarData.safetyBuffer,
+    calendarData.safeToSpend,
+    calendarData.currency,
+  ])
+
+  // Track "last updated" and show a subtle refresh indicator when data changes.
+  useEffect(() => {
+    setLastUpdatedAt(new Date())
+    setShowRefreshIndicator(true)
+    const t = window.setTimeout(() => setShowRefreshIndicator(false), 1200)
+    return () => window.clearTimeout(t)
+  }, [dataRevisionKey])
+
+  // Keep relative timestamp fresh.
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(new Date()), 60_000)
+    return () => window.clearInterval(t)
+  }, [])
+
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-900 text-zinc-100">
+    <div className="flex flex-col bg-zinc-900 text-zinc-100">
       <StickyCalendarHeader {...headerProps} />
 
       {/* Low Balance Warning */}
@@ -146,7 +204,33 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
         />
       )}
 
-      <div className="flex-1">
+      <div
+        ref={scrollRef}
+        onScroll={(e) => {
+          const top = (e.currentTarget?.scrollTop ?? 0) <= 2
+          // Avoid setState spam while scrolling
+          setIsScrolledToTop((prev) => (prev === top ? prev : top))
+        }}
+        className={[
+          'relative overflow-y-auto',
+          'overscroll-y-contain',
+          // Keep this feeling app-like inside the card without hard-locking height.
+          'max-h-[calc(100vh-14rem)] sm:max-h-[calc(100vh-16rem)]',
+        ].join(' ')}
+      >
+        {/* Subtle refresh indicator (only visible when user is at the top). */}
+        {isScrolledToTop && showRefreshIndicator && (
+          <div className="pointer-events-none sticky top-0 z-30 px-4 pt-2">
+            <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-950/70 px-2.5 py-1 text-[11px] text-zinc-400 backdrop-blur-sm">
+              <span
+                className="h-3 w-3 animate-spin rounded-full border border-zinc-500 border-t-transparent"
+                aria-hidden="true"
+              />
+              <span>Refreshing…</span>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2 p-4">
           {days.map((day, index) => (
             <div
@@ -165,6 +249,14 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
               )}
             </div>
           ))}
+        </div>
+
+        <div className="px-4 pb-4">
+          {lastUpdatedAt ? (
+            <p className="text-[11px] text-zinc-500">
+              Last updated: <span className="tabular-nums">{formatMinutesAgo(lastUpdatedAt, now)}</span>
+            </p>
+          ) : null}
         </div>
       </div>
     </div>
