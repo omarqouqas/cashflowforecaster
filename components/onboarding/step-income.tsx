@@ -1,89 +1,45 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Plus, Trash2 } from 'lucide-react'
 import { showError, showSuccess } from '@/lib/toast'
 
-export type StepIncomeRow = {
-  id: string
-  name: string
-  amount: string
-  frequency: 'weekly' | 'biweekly' | 'monthly' | 'one-time'
-  next_date: string
-}
-
-function isValidRow(row: StepIncomeRow) {
-  const amount = Number(row.amount)
-  return (
-    row.name.trim().length > 0 &&
-    Number.isFinite(amount) &&
-    amount > 0 &&
-    Boolean(row.frequency) &&
-    row.next_date.trim().length > 0
-  )
-}
+type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'one-time'
 
 export function StepIncome({
-  defaultRows,
   onContinue,
   onSkip,
 }: {
-  defaultRows?: Partial<StepIncomeRow>[]
-  onContinue: (rows: Array<{ name: string; amount: number; frequency: StepIncomeRow['frequency']; next_date: string }>) => Promise<void>
+  onContinue: (income: { name: string; amount: number; frequency: Frequency; next_date: string }) => Promise<void>
   onSkip: () => void
 }) {
-  const [rows, setRows] = useState<StepIncomeRow[]>(() => {
-    const seed = defaultRows?.length
-      ? defaultRows
-      : [{ name: 'Salary', amount: '', frequency: 'biweekly' as const, next_date: '' }]
-
-    return seed.map((r, idx) => ({
-      id: `${Date.now()}-${idx}`,
-      name: r.name ?? (idx === 0 ? 'Salary' : 'Primary Income'),
-      amount: r.amount ?? '',
-      frequency: (r.frequency as any) ?? 'biweekly',
-      next_date: r.next_date ?? '',
-    }))
-  })
-
+  const [name, setName] = useState('Salary')
+  const [amount, setAmount] = useState('')
+  const [frequency, setFrequency] = useState<Frequency>('biweekly')
+  const [nextDate, setNextDate] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const allValid = useMemo(() => rows.every(isValidRow), [rows])
+  const parsedAmount = useMemo(() => {
+    if (amount.trim() === '') return null
+    const n = Number(amount)
+    return Number.isFinite(n) && n > 0 ? n : null
+  }, [amount])
 
-  function addRow() {
-    setRows((prev) => [
-      ...prev,
-      {
-        id: `${Date.now()}-${Math.random()}`,
-        name: 'Additional Income',
-        amount: '',
-        frequency: 'monthly',
-        next_date: '',
-      },
-    ])
-  }
-
-  function removeRow(id: string) {
-    setRows((prev) => prev.filter((r) => r.id !== id))
-  }
+  const canContinue = name.trim().length > 0 && parsedAmount !== null && nextDate.trim().length > 0
 
   async function handleContinue() {
-    if (!allValid) return
-
+    if (!canContinue || parsedAmount === null) return
     setIsSubmitting(true)
     setError(null)
 
     try {
-      await onContinue(
-        rows.map((r) => ({
-          name: r.name.trim(),
-          amount: Number(r.amount),
-          frequency: r.frequency,
-          next_date: r.next_date,
-        }))
-      )
-      showSuccess('Income added')
+      await onContinue({
+        name: name.trim(),
+        amount: parsedAmount,
+        frequency,
+        next_date: nextDate,
+      })
+      showSuccess('Income added!')
     } catch (e: any) {
       const message = e?.message ?? 'Something went wrong.'
       showError(message)
@@ -97,116 +53,79 @@ export function StepIncome({
     <div className="relative">
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
         <h2 className="text-xl font-semibold text-zinc-50">When do you get paid?</h2>
-        <p className="mt-1 text-sm text-zinc-400">Add your main source of income</p>
+        <p className="mt-1 text-sm text-zinc-400">
+          Add your main source of income. You can add more later.
+        </p>
 
-        <div className="mt-6 space-y-6">
-          {rows.map((row, idx) => {
-            const rowValid = isValidRow(row)
-            return (
-              <div key={row.id} className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-medium text-zinc-200">
-                    {idx === 0 ? 'Primary income' : `Income ${idx + 1}`}
-                  </p>
-                  {rows.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeRow(row.id)}
-                      className="inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-zinc-200"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Remove
-                    </button>
-                  )}
-                </div>
+        <div className="mt-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-zinc-200">Income name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Salary"
+              className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            />
+          </div>
 
-                <div className="mt-4 grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-200">Income name</label>
-                    <input
-                      value={row.name}
-                      onChange={(e) =>
-                        setRows((prev) =>
-                          prev.map((r) => (r.id === row.id ? { ...r, name: e.target.value } : r))
-                        )
-                      }
-                      placeholder={idx === 0 ? 'Salary' : 'Primary Income'}
-                      className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
+          <div>
+            <label className="block text-sm font-medium text-zinc-200">
+              Amount per paycheck <span className="text-rose-400">*</span>
+            </label>
+            <div className="mt-1 relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
+              <input
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                type="number"
+                step="0.01"
+                inputMode="decimal"
+                placeholder="0.00"
+                className="w-full rounded-lg bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                autoFocus
+              />
+            </div>
+            <p className="mt-1 text-xs text-zinc-500">After taxes (take-home pay)</p>
+          </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-200">Amount</label>
-                    <div className="mt-1 relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
-                      <input
-                        value={row.amount}
-                        onChange={(e) =>
-                          setRows((prev) =>
-                            prev.map((r) => (r.id === row.id ? { ...r, amount: e.target.value } : r))
-                          )
-                        }
-                        type="number"
-                        step="0.01"
-                        inputMode="decimal"
-                        placeholder="0.00"
-                        className="w-full rounded-lg bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
+          <div>
+            <label className="block text-sm font-medium text-zinc-200">How often?</label>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {([
+                { value: 'weekly', label: 'Weekly' },
+                { value: 'biweekly', label: 'Every 2 weeks' },
+                { value: 'monthly', label: 'Monthly' },
+                { value: 'one-time', label: 'One-time' },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setFrequency(opt.value)}
+                  className={[
+                    'rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors',
+                    frequency === opt.value
+                      ? 'border-teal-500 bg-teal-500/10 text-teal-400'
+                      : 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:border-zinc-600',
+                  ].join(' ')}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-200">Frequency</label>
-                    <select
-                      value={row.frequency}
-                      onChange={(e) =>
-                        setRows((prev) =>
-                          prev.map((r) =>
-                            r.id === row.id ? { ...r, frequency: e.target.value as StepIncomeRow['frequency'] } : r
-                          )
-                        )
-                      }
-                      className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    >
-                      <option value="weekly">Weekly</option>
-                      <option value="biweekly">Bi-weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="one-time">One-time</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-200">Next payment date</label>
-                    <input
-                      value={row.next_date}
-                      onChange={(e) =>
-                        setRows((prev) =>
-                          prev.map((r) => (r.id === row.id ? { ...r, next_date: e.target.value } : r))
-                        )
-                      }
-                      type="date"
-                      className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                {!rowValid && (
-                  <p className="mt-3 text-xs text-zinc-500">
-                    Fill out all fields to continue.
-                  </p>
-                )}
-              </div>
-            )
-          })}
-
-          <button
-            type="button"
-            onClick={addRow}
-            className="inline-flex items-center gap-2 text-sm font-medium text-teal-400 hover:text-teal-300"
-          >
-            <Plus className="h-4 w-4" />
-            Add another income
-          </button>
+          <div>
+            <label className="block text-sm font-medium text-zinc-200">
+              Next payday <span className="text-rose-400">*</span>
+            </label>
+            <input
+              value={nextDate}
+              onChange={(e) => setNextDate(e.target.value)}
+              type="date"
+              className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            />
+            <p className="mt-1 text-xs text-zinc-500">When will you receive your next payment?</p>
+          </div>
 
           {error && (
             <div className="rounded-lg border border-rose-900/40 bg-rose-950/30 px-3 py-2 text-sm text-rose-200">
@@ -222,7 +141,7 @@ export function StepIncome({
           <button
             type="button"
             onClick={handleContinue}
-            disabled={!allValid || isSubmitting}
+            disabled={!canContinue || isSubmitting}
             className={[
               'w-full rounded-xl bg-teal-500 text-zinc-950 font-semibold py-3.5',
               'transition-colors',

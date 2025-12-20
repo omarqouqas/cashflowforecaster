@@ -19,11 +19,8 @@ import {
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const REQUIRED_ACCOUNTS = 2
-
   const [step, setStep] = useState(0)
   const [completed, setCompleted] = useState<boolean[]>([false, false, false, false])
-  const [accountsCreated, setAccountsCreated] = useState(0)
 
   const [startingBalance, setStartingBalance] = useState<number | null>(null)
   const [currency, setCurrency] = useState<string>('USD')
@@ -96,7 +93,7 @@ export default function OnboardingPage() {
           <p className="text-xs font-medium tracking-wide text-zinc-500">Setup</p>
           <h1 className="mt-1 text-2xl font-semibold">{pageTitle}</h1>
           <p className="mt-1 text-sm text-zinc-400">
-            Get to your first forecast in under 2 minutes.
+            See your first forecast in under 2 minutes.
           </p>
         </div>
 
@@ -111,19 +108,7 @@ export default function OnboardingPage() {
         <div key={step} className="mt-6 transition-opacity duration-200">
           {step === 0 && (
             <StepAccount
-              key={accountsCreated}
-              accountNumber={Math.min(REQUIRED_ACCOUNTS, accountsCreated + 1)}
-              totalAccounts={REQUIRED_ACCOUNTS}
-              defaultValues={
-                accountsCreated === 0
-                  ? { name: 'Checking', account_type: 'checking' }
-                  : { name: 'Savings', account_type: 'savings' }
-              }
-              continueLabel={
-                accountsCreated + 1 < REQUIRED_ACCOUNTS
-                  ? `Save account ${accountsCreated + 1} of ${REQUIRED_ACCOUNTS}`
-                  : `Save account ${REQUIRED_ACCOUNTS} of ${REQUIRED_ACCOUNTS}`
-              }
+              defaultValues={{ name: 'Checking', account_type: 'checking' }}
               onContinue={async (values) => {
                 setGlobalError(null)
                 const res = await onboardingCreateAccount({
@@ -136,26 +121,15 @@ export default function OnboardingPage() {
 
                 if ('error' in res) throw new Error(res.error)
 
-                // Use the first created account as the preview starting balance.
-                if (accountsCreated === 0) {
-                  setStartingBalance(res.account.current_balance ?? values.current_balance)
-                  setCurrency(res.account.currency ?? 'USD')
-                }
-
-                const nextCount = accountsCreated + 1
-                if (nextCount < REQUIRED_ACCOUNTS) {
-                  setAccountsCreated(nextCount)
-                  return
-                }
+                setStartingBalance(res.account.current_balance ?? values.current_balance)
+                setCurrency(res.account.currency ?? 'USD')
 
                 markStepComplete(0)
                 nextStep()
               }}
               onSkip={() => {
                 setGlobalError(null)
-                // Allow skipping at any point (MVP). If they skip before adding any account,
-                // we keep startingBalance null so success screen reflects that.
-                if (accountsCreated === 0) setStartingBalance(null)
+                setStartingBalance(null)
                 markStepComplete(0)
                 nextStep()
               }}
@@ -164,9 +138,9 @@ export default function OnboardingPage() {
 
           {step === 1 && (
             <StepIncome
-              onContinue={async (rows) => {
+              onContinue={async (income) => {
                 setGlobalError(null)
-                const res = await onboardingCreateIncomes(rows)
+                const res = await onboardingCreateIncomes([income])
                 if ('error' in res) throw new Error(res.error)
 
                 markStepComplete(1)

@@ -10,17 +10,11 @@ export type StepAccountValues = {
 }
 
 export function StepAccount({
-  accountNumber,
-  totalAccounts,
   defaultValues,
-  continueLabel,
   onContinue,
   onSkip,
 }: {
-  accountNumber: number
-  totalAccounts: number
   defaultValues?: Partial<StepAccountValues>
-  continueLabel?: string
   onContinue: (values: { name: string; account_type: 'checking' | 'savings'; current_balance: number }) => Promise<void>
   onSkip: () => void
 }) {
@@ -64,32 +58,16 @@ export function StepAccount({
   return (
     <div className="relative">
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold text-zinc-50">Let&apos;s start with your main account</h2>
-            <p className="mt-1 text-sm text-zinc-400">
-              Add <span className="text-zinc-200 font-medium">{totalAccounts} accounts</span> so we can build a complete forecast.
-            </p>
-          </div>
-
-          <div className="shrink-0">
-            <span className="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950/40 px-2.5 py-1 text-xs font-medium text-zinc-300">
-              Account {accountNumber}/{totalAccounts}
-            </span>
-          </div>
+        <div>
+          <h2 className="text-xl font-semibold text-zinc-50">What's your current balance?</h2>
+          <p className="mt-1 text-sm text-zinc-400">
+            Enter your main checking account balance to start forecasting.
+          </p>
         </div>
 
         <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <p className="text-sm text-zinc-300">
-            {accountNumber === 1 ? (
-              <>
-                This is typically your <span className="text-zinc-100 font-medium">Checking</span> account.
-              </>
-            ) : (
-              <>
-                Great — now add your <span className="text-zinc-100 font-medium">second account</span> (often Savings).
-              </>
-            )}
+            💡 Use today's balance from your bank app. You can add more accounts later.
           </p>
         </div>
 
@@ -131,6 +109,7 @@ export function StepAccount({
                 placeholder="0.00"
                 className="w-full rounded-lg bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 required
+                autoFocus
               />
             </div>
             <p className="mt-1 text-xs text-zinc-500">Enter your current account balance</p>
@@ -159,7 +138,7 @@ export function StepAccount({
               'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-zinc-950',
             ].join(' ')}
           >
-            {isSubmitting ? 'Saving…' : continueLabel ?? 'Continue'}
+            {isSubmitting ? 'Saving…' : 'Continue'}
           </button>
 
           <button
@@ -167,7 +146,7 @@ export function StepAccount({
             onClick={onSkip}
             className="mt-3 w-full text-center text-sm text-zinc-500 hover:text-zinc-300"
           >
-            {accountNumber === totalAccounts ? 'Skip adding the second account' : 'Skip for now'}
+            Skip for now
           </button>
         </div>
       </div>
