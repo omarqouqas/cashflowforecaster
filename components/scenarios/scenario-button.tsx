@@ -74,8 +74,10 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          'fixed bottom-5 right-5 z-40',
-          'inline-flex items-center gap-2 px-4 py-3 min-h-[48px]',
+          // Desktop-only FAB: on mobile we use the fixed bottom nav action instead.
+          'hidden md:inline-flex',
+          'md:fixed md:bottom-5 md:right-5 md:z-40',
+          'items-center gap-2 px-4 py-3 min-h-[48px]',
           'bg-teal-500 hover:bg-teal-600 text-white font-semibold',
           'rounded-full shadow-lg border border-teal-400/30',
           'focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-zinc-900',
