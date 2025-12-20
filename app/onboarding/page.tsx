@@ -19,15 +19,65 @@ import {
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const [step, setStep] = useState(0)
-  const [completed, setCompleted] = useState<boolean[]>([false, false, false, false])
+  const STORAGE_KEY = 'cff_onboarding_state_v1'
 
-  const [startingBalance, setStartingBalance] = useState<number | null>(null)
-  const [currency, setCurrency] = useState<string>('USD')
-  const [billsTracked, setBillsTracked] = useState<number>(0)
+  type PersistedState = {
+    step: number
+    completed: boolean[]
+    startingBalance: number | null
+    currency: string
+    billsTracked: number
+  }
+
+  function loadPersisted(): PersistedState | null {
+    if (typeof window === 'undefined') return null
+    try {
+      const raw = window.sessionStorage.getItem(STORAGE_KEY)
+      if (!raw) return null
+      const parsed = JSON.parse(raw) as Partial<PersistedState>
+      if (typeof parsed.step !== 'number') return null
+      return {
+        step: Math.min(3, Math.max(0, parsed.step)),
+        completed: Array.isArray(parsed.completed) ? parsed.completed.map(Boolean).slice(0, 4) : [false, false, false, false],
+        startingBalance:
+          typeof parsed.startingBalance === 'number' || parsed.startingBalance === null
+            ? parsed.startingBalance
+            : null,
+        currency: typeof parsed.currency === 'string' && parsed.currency ? parsed.currency : 'USD',
+        billsTracked: typeof parsed.billsTracked === 'number' ? parsed.billsTracked : 0,
+      }
+    } catch {
+      return null
+    }
+  }
+
+  const persisted = loadPersisted()
+
+  const [step, setStep] = useState<number>(persisted?.step ?? 0)
+  const [completed, setCompleted] = useState<boolean[]>(persisted?.completed ?? [false, false, false, false])
+
+  const [startingBalance, setStartingBalance] = useState<number | null>(persisted?.startingBalance ?? null)
+  const [currency, setCurrency] = useState<string>(persisted?.currency ?? 'USD')
+  const [billsTracked, setBillsTracked] = useState<number>(persisted?.billsTracked ?? 0)
 
   const [globalError, setGlobalError] = useState<string | null>(null)
   const [isFinalizing, setIsFinalizing] = useState(false)
+
+  useEffect(() => {
+    // Persist wizard progress so server action refreshes don't reset the step back to 0.
+    try {
+      const state: PersistedState = {
+        step,
+        completed,
+        startingBalance,
+        currency,
+        billsTracked,
+      }
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    } catch {
+      // ignore storage failures (private mode / disabled storage)
+    }
+  }, [step, completed, startingBalance, currency, billsTracked])
 
   const pageTitle = useMemo(() => {
     switch (step) {
@@ -76,6 +126,11 @@ export default function OnboardingPage() {
       }
 
       markStepComplete(3)
+      try {
+        window.sessionStorage.removeItem(STORAGE_KEY)
+      } catch {
+        // ignore
+      }
       setIsFinalizing(false)
     }
 
