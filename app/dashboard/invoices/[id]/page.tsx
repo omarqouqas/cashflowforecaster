@@ -9,6 +9,7 @@ import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button
 import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
 import { SendReminderButton } from '@/components/invoices/send-reminder-button';
 import { CheckCircle2, Circle, Pencil } from 'lucide-react';
+import { canUseInvoicing } from '@/lib/stripe/subscription';
 
 function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
@@ -68,7 +69,11 @@ export default async function InvoiceDetailPage({
   params: Promise<{ id: string }>;
   searchParams?: { error?: string };
 }) {
-  await requireAuth();
+  const user = await requireAuth();
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    redirect('/dashboard/invoices');
+  }
   const { id } = await params;
   const supabase = await createClient();
 

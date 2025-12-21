@@ -4,6 +4,7 @@ import { resend } from '@/lib/email/resend';
 import { buildInvoiceEmail } from '@/lib/email/templates/invoice-email';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { InvoiceTemplate } from '@/lib/pdf/invoice-template';
+import { canUseInvoicing } from '@/lib/stripe/subscription';
 
 export const runtime = 'nodejs';
 
@@ -39,6 +40,14 @@ export async function POST(
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    return NextResponse.json(
+      { error: 'Invoicing requires a Pro subscription' },
+      { status: 403 }
+    );
   }
 
   let body: { message?: string; forceResend?: boolean } = {};

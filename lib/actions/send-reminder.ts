@@ -3,6 +3,7 @@
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { resend } from '@/lib/email/resend';
+import { canUseInvoicing } from '@/lib/stripe/subscription';
 import {
   buildFinalReminderEmail,
   buildFirmReminderEmail,
@@ -88,6 +89,14 @@ export async function sendInvoiceReminder(
     }
 
     const user = await requireAuth();
+    const hasAccess = await canUseInvoicing(user.id);
+    if (!hasAccess) {
+      return {
+        ok: false,
+        code: 'forbidden',
+        message: 'Invoicing requires a Pro subscription',
+      };
+    }
     const supabase = await createClient();
 
     // 1) Fetch invoice (verify ownership)

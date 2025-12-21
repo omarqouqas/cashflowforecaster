@@ -6,6 +6,8 @@ import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
 import { DeleteInvoiceIconButton } from '@/components/invoices/delete-invoice-icon-button';
 import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
+import { canUseInvoicing } from '@/lib/stripe/subscription';
+import { InvoicingUpgradePrompt } from '@/components/invoices/invoicing-upgrade-prompt';
 import type { Tables } from '@/types/supabase';
 import { isRedirectError } from 'next/dist/client/components/redirect';
 
@@ -55,6 +57,11 @@ function needsFollowUp(invoice: Tables<'invoices'>, now = new Date()) {
 }
 
 export default async function InvoicesPage({ searchParams }: InvoicesPageProps) {
+  const hasInvoicingAccess = await canUseInvoicing();
+  if (!hasInvoicingAccess) {
+    return <InvoicingUpgradePrompt />;
+  }
+
   let invoices: Tables<'invoices'>[] = [];
   let error: string | null = null;
 

@@ -2,6 +2,7 @@
 
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
+import { canUseInvoicing } from '@/lib/stripe/subscription';
 import type { Tables } from '@/types/supabase';
 
 export type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'paid';
@@ -48,6 +49,10 @@ export async function getInvoices(): Promise<Tables<'invoices'>[]> {
 
 export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: string }> {
   const user = await requireAuth();
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    throw new Error('Invoicing requires a Pro subscription');
+  }
   const supabase = await createClient();
 
   const requestedInvoiceNumber = input.invoice_number?.trim() || null;
@@ -121,6 +126,10 @@ export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: st
 
 export async function updateInvoiceStatus(id: string, status: InvoiceStatus) {
   const user = await requireAuth();
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    throw new Error('Invoicing requires a Pro subscription');
+  }
   const supabase = await createClient();
 
   const updates: Partial<Tables<'invoices'>> = { status };
@@ -167,6 +176,10 @@ export async function getInvoice(id: string): Promise<Tables<'invoices'> | null>
 
 export async function updateInvoice(id: string, input: UpdateInvoiceInput): Promise<void> {
   const user = await requireAuth();
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    throw new Error('Invoicing requires a Pro subscription');
+  }
   const supabase = await createClient();
 
   const { data: invoice, error: invErr } = await supabase
@@ -246,6 +259,10 @@ export async function updateInvoice(id: string, input: UpdateInvoiceInput): Prom
 
 export async function deleteInvoice(id: string): Promise<void> {
   const user = await requireAuth();
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    throw new Error('Invoicing requires a Pro subscription');
+  }
   const supabase = await createClient();
 
   const { data: invoice, error: invErr } = await supabase

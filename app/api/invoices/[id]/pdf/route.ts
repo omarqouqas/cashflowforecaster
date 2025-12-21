@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { InvoiceTemplate } from '@/lib/pdf/invoice-template';
+import { canUseInvoicing } from '@/lib/stripe/subscription';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,14 @@ export async function GET(
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const hasAccess = await canUseInvoicing(user.id);
+  if (!hasAccess) {
+    return NextResponse.json(
+      { error: 'Invoicing requires a Pro subscription' },
+      { status: 403 }
+    );
   }
 
   const { data: invoice, error } = await supabase
