@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Tables } from '@/types/supabase';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, TrendingUp, ArrowLeft, Sparkles } from 'lucide-react';
+import { TrendingUp, ArrowLeft, Sparkles } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import { IncomeCard } from '@/components/income/income-card';
 import { getUserUsageStats } from '@/lib/stripe/feature-gate';

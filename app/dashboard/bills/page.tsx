@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Tables } from '@/types/supabase';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Receipt, ArrowLeft, Edit, Sparkles } from 'lucide-react';
+import { Receipt, ArrowLeft, Edit, Sparkles } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { DeleteBillButton } from '@/components/bills/delete-bill-button';
 import { ActiveToggleButton } from '@/components/ui/active-toggle-button';
