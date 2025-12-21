@@ -5,7 +5,7 @@ import { Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScenarioModal } from './scenario-modal';
 
-export type ScenarioButtonVariant = 'fab' | 'card' | 'mobile-nav';
+export type ScenarioButtonVariant = 'fab' | 'card' | 'mobile-nav' | 'nav';
 
 export interface ScenarioButtonProps {
   variant?: ScenarioButtonVariant;
@@ -64,6 +64,32 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
         </button>
 
         <ScenarioModal open={open} onClose={() => setOpen(false)} source={source ?? 'mobile-nav'} />
+      </>
+    );
+  }
+
+  if (variant === 'nav') {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={cn(
+            'px-3 py-2 min-h-[44px]',
+            'text-sm font-medium rounded-md whitespace-nowrap',
+            'transition-colors',
+            'inline-flex items-center gap-2',
+            'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100',
+            'focus:outline-none focus:ring-2 focus:ring-teal-300/60 focus:ring-offset-2 focus:ring-offset-white',
+            className
+          )}
+          aria-label="Scenarios"
+        >
+          <Calculator className="w-4 h-4" />
+          <span>Scenarios</span>
+        </button>
+
+        <ScenarioModal open={open} onClose={() => setOpen(false)} source={source ?? 'dashboard'} />
       </>
     );
   }

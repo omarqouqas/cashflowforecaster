@@ -7,6 +7,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
+import { ChevronRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
@@ -70,8 +71,24 @@ export default async function SettingsPage() {
             cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
           />
 
-          {/* Invoices (moved off the primary nav) */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
+          {/* Mobile-only quick access */}
+          <div className="md:hidden">
+            <h3 className="text-sm font-medium text-zinc-400 mb-3">Quick Access</h3>
+            <Link
+              href="/dashboard/invoices"
+              className="flex items-center gap-3 p-3 bg-zinc-900 border border-zinc-800 rounded-lg"
+            >
+              <FileText className="w-5 h-5 text-teal-500" />
+              <div className="min-w-0">
+                <p className="text-zinc-100 font-medium">Invoices</p>
+                <p className="text-xs text-zinc-400">Runway Collect</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-zinc-500 ml-auto" />
+            </Link>
+          </div>
+
+          {/* Desktop/tablet quick link (redundant on mobile) */}
+          <div className="hidden md:block bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
             <h2 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Invoices</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               View and manage your invoices.

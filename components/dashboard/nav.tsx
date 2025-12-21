@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Wallet, TrendingUp, Calendar, Settings, Receipt } from 'lucide-react'
+import { Wallet, TrendingUp, Calendar, Settings, Receipt, FileText } from 'lucide-react'
+import { ScenarioButton } from '@/components/scenarios/scenario-button'
 
 export function DashboardNav() {
   const pathname = usePathname()
@@ -11,7 +12,8 @@ export function DashboardNav() {
     { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
-    { href: '/dashboard/bills', label: 'Bills', icon: Receipt },
+    { href: '/dashboard/bills', label: 'Bills', icon: FileText },
+    { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
 
@@ -71,6 +73,9 @@ export function DashboardNav() {
               </Link>
             )
           })}
+
+          {/* Desktop-only: Scenario tester lives in the nav */}
+          <ScenarioButton variant="nav" source="dashboard" />
         </nav>
       </div>
 
