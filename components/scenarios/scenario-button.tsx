@@ -11,9 +11,10 @@ export interface ScenarioButtonProps {
   variant?: ScenarioButtonVariant;
   className?: string;
   source?: 'calendar' | 'dashboard' | 'mobile-nav';
+  label?: string;
 }
 
-export function ScenarioButton({ variant = 'fab', className, source }: ScenarioButtonProps) {
+export function ScenarioButton({ variant = 'fab', className, source, label }: ScenarioButtonProps) {
   const [open, setOpen] = useState(false);
 
   if (variant === 'card') {
@@ -69,6 +70,7 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
   }
 
   if (variant === 'nav') {
+    const buttonLabel = label ?? 'Afford it?';
     return (
       <>
         <button
@@ -79,14 +81,17 @@ export function ScenarioButton({ variant = 'fab', className, source }: ScenarioB
             'text-sm font-medium rounded-md whitespace-nowrap',
             'transition-colors',
             'inline-flex items-center gap-2',
-            'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100',
-            'focus:outline-none focus:ring-2 focus:ring-teal-300/60 focus:ring-offset-2 focus:ring-offset-white',
+            // Make it feel like a native "primary action" in the nav (more discoverable than a plain tab)
+            'bg-teal-50 text-teal-800 hover:bg-teal-100 hover:text-teal-900',
+            'border border-teal-200/80',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
             className
           )}
-          aria-label="Scenarios"
+          aria-label="Can I Afford It?"
+          title="Can I Afford It?"
         >
           <Calculator className="w-4 h-4" />
-          <span>Scenarios</span>
+          <span>{buttonLabel}</span>
         </button>
 
         <ScenarioModal open={open} onClose={() => setOpen(false)} source={source ?? 'dashboard'} />

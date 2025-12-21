@@ -75,7 +75,7 @@ export function DashboardNav() {
           })}
 
           {/* Desktop-only: Scenario tester lives in the nav */}
-          <ScenarioButton variant="nav" source="dashboard" />
+          <ScenarioButton variant="nav" source="dashboard" label="Afford it?" />
         </nav>
       </div>
 

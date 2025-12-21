@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,7 @@ function tomorrowISO(): string {
 export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
+  const [mounted, setMounted] = useState(false);
 
   const [step, setStep] = useState<'form' | 'result'>('form');
   const [isWorking, setIsWorking] = useState(false);
@@ -56,12 +58,17 @@ export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
   const [saved, setSaved] = useState<ScenarioRow[]>([]);
   const [loadingSaved, setLoadingSaved] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Prevent body scroll while open
   useEffect(() => {
     if (!open) return;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = prev;
     };
   }, [open]);
 
@@ -231,15 +238,19 @@ export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
 
   const headerSubtitle = step === 'form' ? 'Scenario tester' : 'Impact results';
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4 pt-safe pb-safe"
       onClick={onClose}
     >
       <div
         className={cn(
-          'w-full sm:max-w-xl sm:mx-4',
-          'h-[92vh] sm:h-auto',
+          'w-full sm:max-w-xl',
+          // Keep the modal from "sticking" to the top on shorter viewports:
+          // - mobile: bottom-sheet feel with a comfortable top gap
+          // - desktop: cap height and scroll inside the modal
+          'h-[85dvh] sm:h-auto',
+          'max-h-[85dvh]',
           'bg-zinc-900 border border-zinc-800',
           'rounded-t-2xl sm:rounded-lg shadow-xl overflow-hidden flex flex-col',
           'animate-in fade-in duration-150'
@@ -463,6 +474,10 @@ export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
       </div>
     </div>
   );
+
+  // Portal ensures `position: fixed` behaves correctly even when triggered from within
+  // sticky/backdrop-filter ancestors (e.g., desktop header/nav).
+  return mounted ? createPortal(modal, document.body) : null;
 }
 
 
