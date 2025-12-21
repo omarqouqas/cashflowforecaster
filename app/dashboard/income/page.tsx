@@ -1,11 +1,18 @@
+// app/dashboard/income/page.tsx
+// ============================================
+// Income Page - With Feature Gating
+// ============================================
+
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Tables } from '@/types/supabase';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Plus, TrendingUp, ArrowLeft, Sparkles } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import { IncomeCard } from '@/components/income/income-card';
+import { getUserUsageStats } from '@/lib/stripe/feature-gate';
+import { GatedAddButton } from '@/components/subscription/gated-add-button';
 
 type Income = Tables<'income'>;
 
@@ -17,11 +24,17 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  const { data: incomes, error } = await supabase
-    .from('income')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+  // Fetch income and usage stats in parallel
+  const [incomeResult, usageStats] = await Promise.all([
+    supabase
+      .from('income')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+    getUserUsageStats(user.id),
+  ]);
+
+  const { data: incomes, error } = incomeResult;
 
   if (error) {
     console.error('Error fetching income:', error);
@@ -32,10 +45,8 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   // Calculate total monthly income
   const calculateMonthlyIncome = (incomesList: Income[]): number => {
     return incomesList.reduce((total, income) => {
-      // Treat NULL as active (legacy rows) – only exclude explicitly deactivated rows.
       if (income.is_active === false) return total;
 
-      // Convert all frequencies to monthly equivalent
       switch (income.frequency) {
         case 'weekly':
           return total + (income.amount * 52) / 12;
@@ -44,9 +55,9 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
         case 'monthly':
           return total + income.amount;
         case 'irregular':
-          return total; // Don't include irregular
+          return total;
         case 'one-time':
-          return total; // Don't include one-time
+          return total;
         default:
           return total;
       }
@@ -55,6 +66,11 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
 
   const monthlyTotal = calculateMonthlyIncome(incomes || []);
   const activeIncomes = incomes?.filter((i) => i.is_active !== false) || [];
+
+  // Feature gating
+  const { current: incomeCount, limit: incomeLimit } = usageStats.income;
+  const isAtLimit = incomeLimit !== Infinity && incomeCount >= incomeLimit;
+  const isNearLimit = incomeLimit !== Infinity && incomeCount >= incomeLimit - 2 && !isAtLimit;
 
   return (
     <>
@@ -72,18 +88,79 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Income Sources</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Income Sources</h2>
+            {/* Usage indicator */}
+            {incomeLimit !== Infinity && (
+              <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                isAtLimit 
+                  ? 'bg-amber-100 text-amber-700' 
+                  : isNearLimit
+                    ? 'bg-amber-50 text-amber-600'
+                    : 'bg-zinc-100 text-zinc-600'
+              }`}>
+                {incomeCount}/{incomeLimit}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Track your regular and one-time income
           </p>
         </div>
-        <Link href="/dashboard/income/new">
-          <Button variant="primary">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Income
-          </Button>
-        </Link>
+        <GatedAddButton
+          href="/dashboard/income/new"
+          feature="income"
+          currentCount={incomeCount}
+          limit={incomeLimit}
+        />
       </div>
+
+      {/* Upgrade Banner - Show when at or near limit */}
+      {(isAtLimit || isNearLimit) && (
+        <div className={`rounded-lg p-4 mb-6 ${
+          isAtLimit 
+            ? 'bg-amber-50 border border-amber-200' 
+            : 'bg-blue-50 border border-blue-200'
+        }`}>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${
+                isAtLimit ? 'bg-amber-100' : 'bg-blue-100'
+              }`}>
+                <Sparkles className={`w-5 h-5 ${
+                  isAtLimit ? 'text-amber-600' : 'text-blue-600'
+                }`} />
+              </div>
+              <div>
+                <p className={`font-medium ${
+                  isAtLimit ? 'text-amber-900' : 'text-blue-900'
+                }`}>
+                  {isAtLimit 
+                    ? "You've reached your income sources limit" 
+                    : `${incomeLimit - incomeCount} income sources remaining`}
+                </p>
+                <p className={`text-sm ${
+                  isAtLimit ? 'text-amber-700' : 'text-blue-700'
+                }`}>
+                  {isAtLimit 
+                    ? 'Upgrade to Pro for unlimited income tracking' 
+                    : 'Upgrade anytime for unlimited tracking'}
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/#pricing"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isAtLimit
+                  ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
+              Upgrade
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Success Messages */}
       {success === 'income-created' && (
@@ -181,4 +258,3 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
     </>
   );
 }
-

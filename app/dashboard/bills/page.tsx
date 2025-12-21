@@ -1,12 +1,19 @@
+// app/dashboard/bills/page.tsx
+// ============================================
+// Bills Page - With Feature Gating
+// ============================================
+
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Tables } from '@/types/supabase';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Receipt, ArrowLeft, Edit } from 'lucide-react';
+import { Plus, Receipt, ArrowLeft, Edit, Sparkles } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { DeleteBillButton } from '@/components/bills/delete-bill-button';
 import { ActiveToggleButton } from '@/components/ui/active-toggle-button';
+import { getUserUsageStats } from '@/lib/stripe/feature-gate';
+import { GatedAddButton } from '@/components/subscription/gated-add-button';
 
 type Bill = Tables<'bills'>;
 
@@ -18,11 +25,17 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  const { data: bills, error } = await supabase
-    .from('bills')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+  // Fetch bills and usage stats in parallel
+  const [billsResult, usageStats] = await Promise.all([
+    supabase
+      .from('bills')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+    getUserUsageStats(user.id),
+  ]);
+
+  const { data: bills, error } = billsResult;
 
   if (error) {
     console.error('Error fetching bills:', error);
@@ -35,7 +48,6 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
     return billsList.reduce((total, bill) => {
       if (!bill.is_active) return total;
 
-      // Convert all frequencies to monthly equivalent
       switch (bill.frequency) {
         case 'weekly':
           return total + (bill.amount * 52) / 12;
@@ -48,7 +60,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
         case 'annually':
           return total + bill.amount / 12;
         case 'one-time':
-          return total; // Don't include one-time
+          return total;
         default:
           return total;
       }
@@ -57,6 +69,11 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
   const monthlyTotal = calculateMonthlyBills(bills || []);
   const activeBills = bills?.filter((b) => b.is_active) || [];
+
+  // Feature gating
+  const { current: billsCount, limit: billsLimit } = usageStats.bills;
+  const isAtLimit = billsLimit !== Infinity && billsCount >= billsLimit;
+  const isNearLimit = billsLimit !== Infinity && billsCount >= billsLimit - 2 && !isAtLimit;
 
   return (
     <>
@@ -74,18 +91,79 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Bills</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Bills</h2>
+            {/* Usage indicator */}
+            {billsLimit !== Infinity && (
+              <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                isAtLimit 
+                  ? 'bg-amber-100 text-amber-700' 
+                  : isNearLimit
+                    ? 'bg-amber-50 text-amber-600'
+                    : 'bg-zinc-100 text-zinc-600'
+              }`}>
+                {billsCount}/{billsLimit}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Track your recurring and one-time bills
           </p>
         </div>
-        <Link href="/dashboard/bills/new">
-          <Button variant="primary">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Bill
-          </Button>
-        </Link>
+        <GatedAddButton
+          href="/dashboard/bills/new"
+          feature="bills"
+          currentCount={billsCount}
+          limit={billsLimit}
+        />
       </div>
+
+      {/* Upgrade Banner - Show when at or near limit */}
+      {(isAtLimit || isNearLimit) && (
+        <div className={`rounded-lg p-4 mb-6 ${
+          isAtLimit 
+            ? 'bg-amber-50 border border-amber-200' 
+            : 'bg-blue-50 border border-blue-200'
+        }`}>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${
+                isAtLimit ? 'bg-amber-100' : 'bg-blue-100'
+              }`}>
+                <Sparkles className={`w-5 h-5 ${
+                  isAtLimit ? 'text-amber-600' : 'text-blue-600'
+                }`} />
+              </div>
+              <div>
+                <p className={`font-medium ${
+                  isAtLimit ? 'text-amber-900' : 'text-blue-900'
+                }`}>
+                  {isAtLimit 
+                    ? "You've reached your bills limit" 
+                    : `${billsLimit - billsCount} bills remaining`}
+                </p>
+                <p className={`text-sm ${
+                  isAtLimit ? 'text-amber-700' : 'text-blue-700'
+                }`}>
+                  {isAtLimit 
+                    ? 'Upgrade to Pro for unlimited bill tracking' 
+                    : 'Upgrade anytime for unlimited tracking'}
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/#pricing"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isAtLimit
+                  ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
+              Upgrade
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Success Messages */}
       {success === 'bill-created' && (
@@ -234,4 +312,3 @@ function BillCard({ bill }: { bill: Bill }) {
     </div>
   );
 }
-

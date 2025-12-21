@@ -1,3 +1,8 @@
+// app/dashboard/income/new/page.tsx
+// ============================================
+// New Income Page - With Feature Gating
+// ============================================
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -12,6 +17,8 @@ import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
+import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
+import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
@@ -37,6 +44,10 @@ export default function NewIncomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Feature gating
+  const { canAddIncome, usage, limits, isLoading: subscriptionLoading } = useSubscriptionWithUsage();
 
   const {
     register,
@@ -63,7 +74,20 @@ export default function NewIncomePage() {
     fetchAccounts();
   }, []);
 
+  // Show upgrade modal if at limit
+  useEffect(() => {
+    if (!subscriptionLoading && !canAddIncome) {
+      setShowUpgradeModal(true);
+    }
+  }, [subscriptionLoading, canAddIncome]);
+
   const onSubmit = async (data: IncomeFormData) => {
+    // Double-check limit before submitting
+    if (!canAddIncome) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -76,6 +100,19 @@ export default function NewIncomePage() {
       const message = 'You must be logged in';
       showError(message);
       setError(message);
+      setIsLoading(false);
+      return;
+    }
+
+    // Server-side limit check
+    const { count } = await supabase
+      .from('income')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    if (limits.maxIncome !== Infinity && (count ?? 0) >= limits.maxIncome) {
+      showError("You've reached your income sources limit. Upgrade to Pro for unlimited tracking.");
+      setShowUpgradeModal(true);
       setIsLoading(false);
       return;
     }
@@ -104,6 +141,42 @@ export default function NewIncomePage() {
     setIsLoading(false);
   };
 
+  // Show loading state while checking subscription
+  if (subscriptionLoading) {
+    return (
+      <div className="max-w-lg mx-auto">
+        <Link
+          href="/dashboard/income"
+          className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Income
+        </Link>
+
+        <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Income Source</h1>
+
+        <div className="border border-zinc-200 bg-white rounded-lg p-6">
+          <div className="flex flex-col items-center justify-center gap-4 py-10">
+            <svg
+              className="animate-spin h-8 w-8 text-zinc-900"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            <p className="text-zinc-500">Loading…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-lg mx-auto">
       <Link
@@ -115,6 +188,13 @@ export default function NewIncomePage() {
       </Link>
 
       <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Income Source</h1>
+
+      {/* Usage indicator */}
+      {limits.maxIncome !== Infinity && (
+        <div className="mb-4 text-sm text-zinc-500">
+          {usage.incomeCount}/{limits.maxIncome} income sources used
+        </div>
+      )}
 
       <div className="border border-zinc-200 bg-white rounded-lg p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -272,7 +352,7 @@ export default function NewIncomePage() {
             </button>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !canAddIncome}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Saving...' : 'Save'}
@@ -280,7 +360,21 @@ export default function NewIncomePage() {
           </div>
         </form>
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradePrompt
+        isOpen={showUpgradeModal}
+        onClose={() => {
+          setShowUpgradeModal(false);
+          // If they close without upgrading and are at limit, go back
+          if (!canAddIncome) {
+            router.push('/dashboard/income');
+          }
+        }}
+        feature="income"
+        currentCount={usage.incomeCount}
+        limit={limits.maxIncome}
+      />
     </div>
   );
 }
-
