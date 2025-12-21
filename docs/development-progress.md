@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 19, 2025
+**Last Updated:** December 21, 2025
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 21
-- **Commits:** ~65+
-- **Database Tables:** 12 (added `subscriptions`)
+- **Days in Development:** 22
+- **Commits:** ~75+
+- **Database Tables:** 12
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Runway Collect Complete + Google OAuth Complete + Stripe Integration Complete 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete 🎉
 
 **Completed Phases:**
 
@@ -32,19 +32,175 @@
 - ✅ Phase 9: Payment Reminders (Day 19) - COMPLETE
 - ✅ Phase 10: Landing Page Polish + Google OAuth (Day 20) - COMPLETE
 - ✅ Phase 11: Stripe Integration (Day 21) - COMPLETE
+- ✅ Phase 12: Feature Gating + Analytics (Day 22) - COMPLETE
 
 **Current Focus:**
 
-- Analytics setup (PostHog)
-- User feedback collection
-- Marketing / user acquisition
 - Reddit launch prep
+- User acquisition
+- Switch Stripe to live mode
+- User feedback collection
+
+---
+
+## Day 22: Feature Gating + PostHog Analytics (December 21, 2025)
+
+### Features Completed Today
+
+#### PostHog Analytics Integration ✅
+
+- [x] PostHog SDK installed and configured (`posthog-js@1.195.1`)
+- [x] Provider component wrapping app layout
+- [x] User identification on authentication
+- [x] Core event tracking implemented:
+  - `user_signed_up` - New user registration
+  - `user_logged_in` - User authentication
+  - `onboarding_started` / `onboarding_completed` - Wizard flow
+  - `account_created` / `income_created` / `bill_created` - Data entry
+  - `calendar_viewed` - Core feature usage
+  - `scenario_tested` - "Can I Afford It?" usage
+  - `invoice_created` / `invoice_sent` / `reminder_sent` - Runway Collect
+  - `upgrade_prompt_shown` / `upgrade_initiated` - Conversion tracking
+  - `subscription_created` / `subscription_cancelled` - Revenue events
+- [x] Feature flags ready for A/B testing
+- [x] Session recording enabled
+
+#### Feature Gating System ✅
+
+- [x] **Client-side hooks** (`lib/hooks/use-subscription.ts`):
+  - `useSubscription()` - Get current tier and status
+  - `useUsage()` - Get bills/income counts
+  - `useSubscriptionWithUsage()` - Combined hook for forms
+- [x] **Server-side utilities** (`lib/stripe/feature-gate.ts`):
+  - `canAddBill()` / `canAddIncome()` - Limit checks
+  - `canUseInvoicing()` / `canUseBankSync()` - Feature access
+  - `getUserUsageStats()` - Current usage counts
+- [x] **Upgrade prompt components** (`components/subscription/`):
+  - `UpgradePrompt` - Modal with billing toggle and Stripe checkout
+  - `UpgradeBanner` - Inline warning when approaching/at limits
+  - `UsageIndicator` - Badge showing "3/10 bills"
+  - `GatedAddButton` - Smart button that gates or navigates
+
+#### Bills Page Gating ✅
+
+- [x] Usage indicator badge in header ("3/10")
+- [x] Upgrade banner when at limit (amber) or near limit (blue, 2 remaining)
+- [x] GatedAddButton opens upgrade modal when at limit
+- [x] Server-side validation in form submission
+- [x] Auto-redirect from /bills/new if at limit
+
+#### Income Page Gating ✅
+
+- [x] Same pattern as bills page
+- [x] Usage indicator, upgrade banner, gated button
+- [x] Server-side validation in form submission
+- [x] Auto-redirect from /income/new if at limit
+
+#### Invoices Page Gating (Pro Feature) ✅
+
+- [x] Full-page upgrade prompt for Free users
+- [x] Server-side redirect on /invoices/new, /invoices/[id], /invoices/[id]/edit
+- [x] Server actions gated (`createInvoice`, `updateInvoice`, `deleteInvoice`)
+- [x] API routes gated (send email, PDF download)
+- [x] `InvoicingUpgradePrompt` component with feature list
+
+### New Files Created
+
+```
+lib/hooks/use-subscription.ts              # Client-side subscription hooks
+lib/stripe/feature-gate.ts                 # Server-side gating utilities
+components/subscription/upgrade-prompt.tsx  # Modal + banner + indicator
+components/subscription/gated-add-button.tsx # Smart gated navigation
+components/invoices/invoicing-upgrade-prompt.tsx # Full-page Pro upsell
+components/invoices/new-invoice-form.tsx   # Extracted client form
+lib/posthog/provider.tsx                   # PostHog context provider
+lib/posthog/client.ts                      # PostHog initialization
+```
+
+### Files Modified
+
+```
+app/layout.tsx                             # Added PostHogProvider
+app/dashboard/bills/page.tsx               # Added usage indicator, banner, gated button
+app/dashboard/bills/new/page.tsx           # Added limit check, upgrade modal
+app/dashboard/income/page.tsx              # Added usage indicator, banner, gated button
+app/dashboard/income/new/page.tsx          # Added limit check, upgrade modal
+app/dashboard/invoices/page.tsx            # Added Pro gate, upgrade prompt
+app/dashboard/invoices/new/page.tsx        # Converted to server component with gate
+app/dashboard/invoices/[id]/page.tsx       # Added Pro gate redirect
+app/dashboard/invoices/[id]/edit/page.tsx  # Added Pro gate redirect
+lib/actions/invoices.ts                    # Added canUseInvoicing() checks
+lib/actions/send-reminder.ts               # Added canUseInvoicing() check
+app/api/invoices/[id]/send/route.ts        # Added 403 for Free users
+app/api/invoices/[id]/pdf/route.ts         # Added 403 for Free users
+```
+
+### Environment Variables Added
+
+```bash
+# PostHog
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+### Technical Implementation Details
+
+#### Feature Gating Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      User Request                           │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Page Component                           │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Server: getUserUsageStats() / canUseInvoicing()     │   │
+│  │ - Fetch subscription tier                            │   │
+│  │ - Count current bills/income                         │   │
+│  │ - Return limits and usage                            │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+            ┌─────────────────┴─────────────────┐
+            ▼                                   ▼
+┌───────────────────────┐           ┌───────────────────────┐
+│   Has Access / Room   │           │  At Limit / No Access │
+│                       │           │                       │
+│ - Show normal UI      │           │ - Show upgrade banner │
+│ - GatedAddButton      │           │ - GatedAddButton      │
+│   navigates to form   │           │   opens modal         │
+└───────────────────────┘           └───────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Form Submission                          │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Server Action: canAddBill() / canAddIncome()        │   │
+│  │ - Double-check limits (belt and suspenders)         │   │
+│  │ - Return error if at limit                          │   │
+│  │ - Insert if allowed                                 │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Tier Limits Configuration
+
+| Feature | Free | Pro | Premium |
+|---------|------|-----|---------|
+| Bills | 10 | Unlimited | Unlimited |
+| Income Sources | 10 | Unlimited | Unlimited |
+| Forecast Days | 60 | 90 | 365 |
+| Invoicing | ❌ | ✅ | ✅ |
+| Bank Sync | ❌ | ❌ | ✅ |
+| SMS Alerts | ❌ | ❌ | ✅ |
 
 ---
 
 ## Day 21: Stripe Integration (December 19, 2025)
 
-### Features Completed Today
+### Features Completed
 
 #### Stripe Checkout Integration ✅
 
@@ -66,124 +222,27 @@
   - `invoice.payment_succeeded`
   - `invoice.payment_failed`
 - [x] Fixed 307 redirect issue with `skipTrailingSlashRedirect` in next.config
-- [x] Fixed date extraction for Stripe API 2025-11-17.clover (dates moved to `items.data[0]`)
+- [x] Fixed date extraction for Stripe API 2025-11-17.clover
 
 #### Subscriptions Database ✅
 
 - [x] New `subscriptions` table with RLS
 - [x] Fields: user_id, stripe_customer_id, stripe_subscription_id, tier, status, price_id, interval, current_period_start, current_period_end, cancel_at_period_end
-- [x] Single source of truth for all billing data (not using `users` table for billing)
+- [x] Single source of truth for all billing data
 
 #### Customer Portal ✅
 
 - [x] Stripe Customer Portal configured
 - [x] "Manage" button in Settings page
 - [x] Users can update payment method, view invoices, cancel subscription
-- [x] Return URL configured to `/dashboard/settings`
 
 #### Subscription Status Component ✅
 
 - [x] `components/subscription/subscription-status.tsx` component
 - [x] Shows tier badge (Free/Pro/Premium) with appropriate icon
 - [x] Shows status (Active/Trial/Past Due/Canceled)
-- [x] Shows renewal date ("Renews on Jan 18, 2026")
-- [x] "Manage" button for paid users
-- [x] "Upgrade to Pro" CTA for free users
+- [x] Shows renewal date
 - [x] Warning banner for past_due status
-- [x] Cancel notice when `cancel_at_period_end` is true
-
-#### Pricing Section Updates ✅
-
-- [x] Landing page pricing cards trigger Stripe Checkout
-- [x] "Current Plan" shown for user's active tier (disabled button)
-- [x] "Go to Dashboard" for free tier when logged in
-- [x] Loading states during checkout redirect
-- [x] Proper authentication check before checkout
-
-#### Helper Functions ✅
-
-- [x] `lib/stripe/subscription.ts` with:
-  - `getUserSubscription()` - Get user's current subscription
-  - `userHasAccess()` - Check tier access
-  - `canUseInvoicing()` - Pro+ feature check
-  - `canUseBankSync()` - Premium feature check
-  - `getUserLimits()` - Get tier limits
-  - `hasReachedBillsLimit()` / `hasReachedIncomeLimit()`
-
-### New Files Created
-
-```
-lib/stripe/client.ts                    # Stripe SDK initialization
-lib/stripe/config.ts                    # Pricing tiers, price IDs, limits
-lib/stripe/subscription.ts              # Subscription helper functions
-lib/actions/stripe.ts                   # Server actions (checkout, portal)
-app/api/webhooks/stripe/route.ts        # Webhook handler
-components/subscription/subscription-status.tsx  # Settings subscription card
-```
-
-### Database Changes
-
-```sql
--- New table
-CREATE TABLE subscriptions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
-  stripe_customer_id text UNIQUE,
-  stripe_subscription_id text UNIQUE,
-  status text DEFAULT 'free' CHECK (status IN ('free', 'active', 'canceled', 'past_due', 'trialing', 'inactive')),
-  tier text DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'premium')),
-  price_id text,
-  interval text CHECK (interval IN ('month', 'year')),
-  current_period_start timestamptz,
-  current_period_end timestamptz,
-  cancel_at_period_end boolean DEFAULT false,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
--- RLS policies
-ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own subscription"
-  ON subscriptions FOR SELECT
-  USING (auth.uid() = user_id);
-```
-
-### Environment Variables Added
-
-```bash
-# Stripe
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-
-# Price IDs (server-side)
-STRIPE_PRICE_PRO_MONTHLY=price_xxx
-STRIPE_PRICE_PRO_YEARLY=price_xxx
-STRIPE_PRICE_PREMIUM_MONTHLY=price_xxx
-STRIPE_PRICE_PREMIUM_YEARLY=price_xxx
-
-# Price IDs (client-side)
-NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY=price_xxx
-NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY=price_xxx
-NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY=price_xxx
-NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_YEARLY=price_xxx
-```
-
-### Files Modified
-
-```
-app/dashboard/settings/page.tsx         # Added SubscriptionStatus component
-app/page.tsx                            # Pricing section with checkout
-components/pricing/pricing-section.tsx  # Stripe checkout integration
-next.config.mjs                         # Added skipTrailingSlashRedirect
-```
-
-### Technical Challenges Solved
-
-1. **307 Redirect on Webhooks** - Vercel's trailing slash redirect was intercepting webhook requests. Fixed with `skipTrailingSlashRedirect: true` in next.config.
-2. **Stripe API Date Format Change** - In API version `2025-11-17.clover`, period dates moved from `subscription.current_period_start` to `subscription.items.data[0].current_period_start`. Updated extraction logic.
-3. **Environment Variables in API Routes** - `NEXT_PUBLIC_*` vars aren't available server-side at runtime. Added duplicate non-prefixed vars for webhook handler.
-4. **TypeScript Subscription Types** - Stripe SDK types don't include period dates in newer versions. Used `as any` workaround with safe extraction.
 
 ---
 
@@ -202,9 +261,7 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 - [x] **Vercel Deployment:** Live and working
 - [x] **Custom Domain:** cashflowforecaster.io connected
 - [x] **SSL Certificate:** Auto via Vercel
-- [x] **Runway Collect Phase 1:** Invoicing complete
-- [x] **Runway Collect Phase 2:** Email sending complete
-- [x] **Runway Collect Phase 3:** Payment reminders complete
+- [x] **Runway Collect:** Invoicing + email + reminders complete
 - [x] **Onboarding Wizard:** Complete
 - [x] **Pricing Section:** Redesigned with tiers
 - [x] **Calendar Polish:** Dark theme, today indicator, low balance warnings
@@ -212,44 +269,74 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 - [x] **"Can I Afford It?" Scenarios:** Core differentiator feature
 - [x] **Google OAuth:** Configured and working
 - [x] **Stripe Integration:** Checkout, webhooks, portal, subscription management
+- [x] **PostHog Analytics:** User tracking, conversion funnel, feature usage
+- [x] **Feature Gating:** Bills/income limits, invoicing Pro gate
 
 ### 📋 Next Up
 
-- [ ] **Analytics:** PostHog (for tracking user behavior)
-- [ ] **Error Monitoring:** Sentry (for debugging)
-- [ ] **Feature Gating:** Enforce tier limits in UI
 - [ ] **Go Live:** Switch Stripe to live mode
+- [ ] **Reddit Launch:** Post to r/freelance, r/smallbusiness
+- [ ] **Error Monitoring:** Sentry integration
+- [ ] **Bill Collision Warnings:** UX improvement for same-day bills
 
 ---
 
-## Stripe Integration - Complete Feature Set ✅
+## Feature Gating - Complete Feature Set ✅
 
-### Checkout Flow ✅
+### Quantity Limits (Bills/Income)
 
-- User clicks "Get Started" on Pro/Premium card
-- Redirected to Stripe Checkout
-- After payment, redirected to success page
-- Webhook updates subscription in database
-- User sees "Current Plan" on pricing cards
+| User Action | Free (at limit) | Free (under limit) | Pro/Premium |
+|-------------|-----------------|-------------------|-------------|
+| View list page | See "10/10" badge + amber banner | See "3/10" badge | No limits shown |
+| Click Add button | Opens upgrade modal | Navigates to form | Navigates to form |
+| Submit form | Error + upgrade modal | Success | Success |
+| Direct URL to /new | Redirects to list | Shows form | Shows form |
 
-### Subscription Management ✅
+### Feature Gates (Invoicing)
 
-- Settings page shows current subscription
-- "Manage" button opens Stripe Customer Portal
-- Users can update payment method
-- Users can view invoice history
-- Users can cancel subscription
+| User Action | Free | Pro/Premium |
+|-------------|------|-------------|
+| Visit /invoices | Full-page upgrade prompt | Normal invoice list |
+| Visit /invoices/new | Redirect to /invoices | Normal form |
+| API: create invoice | 403 Forbidden | Success |
+| API: send invoice | 403 Forbidden | Success |
+| API: download PDF | 403 Forbidden | Success |
 
-### Webhook Events Handled ✅
+---
 
-| Event | Action |
-|-------|--------|
-| `checkout.session.completed` | Create/update subscription |
-| `customer.subscription.created` | Store subscription details |
-| `customer.subscription.updated` | Update tier/status/dates |
-| `customer.subscription.deleted` | Downgrade to free |
-| `invoice.payment_succeeded` | Mark active, update dates |
-| `invoice.payment_failed` | Mark past_due |
+## PostHog Analytics - Tracked Events ✅
+
+### Authentication Events
+- `user_signed_up` - email, method (email/google)
+- `user_logged_in` - method
+
+### Onboarding Events
+- `onboarding_started`
+- `onboarding_step_completed` - step (1-4)
+- `onboarding_completed` - accounts_count, income_count, bills_count
+
+### Core Feature Events
+- `account_created` - type (checking/savings)
+- `income_created` - frequency, amount_range
+- `bill_created` - frequency, category
+- `calendar_viewed` - days_shown
+- `scenario_tested` - amount_range, result (affordable/not_affordable)
+
+### Invoicing Events (Pro)
+- `invoice_created` - amount_range
+- `invoice_sent` - amount_range
+- `reminder_sent` - reminder_type (friendly/firm/final)
+
+### Conversion Events
+- `upgrade_prompt_shown` - trigger (bills_limit/income_limit/invoicing)
+- `upgrade_initiated` - tier, interval (month/year)
+- `subscription_created` - tier, interval, mrr
+- `subscription_cancelled` - tier, reason
+
+### Engagement Events
+- `feature_used` - feature_name
+- `page_viewed` - path (auto-captured)
+- `session_started` (auto-captured)
 
 ---
 
@@ -258,7 +345,7 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 ### Completed ✅
 
 | Feature | Status | Notes |
-| :---- | :---- | :---- |
+|---------|--------|-------|
 | 60-day cash flow calendar | ✅ | Core feature |
 | Accounts CRUD | ✅ | Multiple accounts supported |
 | Income CRUD | ✅ | Recurring + one-time |
@@ -274,17 +361,20 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 | "Can I Afford It?" scenarios | ✅ | Core differentiator |
 | Google OAuth | ✅ | One-click signup |
 | Landing page polish | ✅ | Header, footer, how it works |
-| **Stripe payments** | ✅ | **Checkout, webhooks, portal** |
-| **Subscription management** | ✅ | **Settings page integration** |
+| Stripe payments | ✅ | Checkout, webhooks, portal |
+| Subscription management | ✅ | Settings page integration |
+| **PostHog analytics** | ✅ | **Full event tracking** |
+| **Feature gating** | ✅ | **Bills/income limits, invoicing gate** |
 
 ### Upcoming 📋
 
 | Feature | Priority | Est. Time |
-| :---- | :---- | :---- |
-| PostHog analytics | HIGH | 1-2 hours |
-| Feature gating enforcement | HIGH | 2-3 hours |
+|---------|----------|-----------|
 | Stripe live mode | HIGH | 1 hour |
-| Magic Link auth | LOW | 30 min |
+| Reddit launch | HIGH | 2 hours |
+| Bill collision warnings | MEDIUM | 2-3 hours |
+| Sentry error monitoring | MEDIUM | 1-2 hours |
+| Weekly check-in prompts | LOW | 3-4 hours |
 | Email parser | LOW | 6-8 hours |
 | Plaid bank sync | LOW | 8-10 hours |
 
@@ -293,7 +383,7 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 ## Development Velocity
 
 | Phase | Days | Hours | Status |
-| :---- | :---- | :---- | :---- |
+|-------|------|-------|--------|
 | Foundation | 1-3 | 10-12 | ✅ Complete |
 | Authentication | 4-5 | 5-7 | ✅ Complete |
 | Core Data Models | 6-8 | 6-9 | ✅ Complete |
@@ -306,34 +396,36 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 | Post-Launch Polish | 18 | 5-6 | ✅ Complete |
 | Payment Reminders | 19 | 3-4 | ✅ Complete |
 | Landing + OAuth | 20 | 3-4 | ✅ Complete |
-| **Stripe Integration** | **21** | **6-8** | ✅ **Complete** |
+| Stripe Integration | 21 | 6-8 | ✅ Complete |
+| **Feature Gating + Analytics** | **22** | **5-6** | ✅ **Complete** |
 
-**Cumulative:** ~80-95 hours over 21 days
+**Cumulative:** ~90-105 hours over 22 days
 
-**Average:** ~4 hours per day
+**Average:** ~4.5 hours per day
 
 ---
 
 ## Lessons Learned
 
+### Day 22: Feature Gating + Analytics
+
+- **Belt-and-suspenders approach is essential** - Client-side checks for UX, server-side checks for security
+- **Upgrade modals need billing toggle** - Users want to see yearly savings before committing
+- **Usage indicators reduce frustration** - Showing "3/10" prevents surprise limit errors
+- **PostHog events should be specific** - `bill_created` with frequency metadata is more useful than generic `item_created`
+- **Feature gates differ by type** - Quantity limits (bills) vs binary access (invoicing) need different UX patterns
+
 ### Day 21: Stripe Integration
 
 - **Webhook debugging is tricky** - 307 redirects, signature verification, and date extraction all required careful debugging
-- **Stripe API versions matter** - The `2025-11-17.clover` API moved period dates inside `items.data[0]`, breaking older extraction logic
-- **Environment variables need both versions** - `NEXT_PUBLIC_*` for client, non-prefixed for server API routes
-- **Single source of truth is essential** - Using `subscriptions` table exclusively (not `users`) prevents sync issues
+- **Stripe API versions matter** - The `2025-11-17.clover` API moved period dates inside `items.data[0]`
+- **Single source of truth is essential** - Using `subscriptions` table exclusively prevents sync issues
 - **Test with Stripe CLI locally** - `stripe listen --forward-to localhost:3000/api/webhooks/stripe` saves hours
 
 ### Day 20: Landing Page + Google OAuth
 
 - **OAuth reduces friction significantly** - One-click Google signup removes the biggest barrier
 - **Landing page storytelling matters** - "How It Works" + feature mockups help visitors understand value
-- **Hero screenshot should show the problem being solved** - Overdraft Warning banner is the emotional hook
-
-### Day 19: Payment Reminders
-
-- **Escalating tone matters** - Friendly → Firm → Final gives users a natural progression
-- **Follow-up filtering is key** - Badge + filter makes it easy to see what needs attention
 
 ---
 
@@ -348,20 +440,23 @@ next.config.mjs                         # Added skipTrailingSlashRedirect
 - ✅ Build and deployment stable
 - ✅ Google OAuth for frictionless signup
 - ✅ Landing page with clear value proposition
-- ✅ **Stripe payments fully integrated**
-- ✅ **Subscription management in settings**
-- ✅ **Customer portal for self-service**
+- ✅ Stripe payments fully integrated
+- ✅ Subscription management in settings
+- ✅ Customer portal for self-service
+- ✅ **PostHog tracking conversion funnel**
+- ✅ **Feature gating enforcing tier limits**
+- ✅ **Upgrade prompts driving conversions**
 
 ## What's Next
 
-1. **PostHog analytics** - Track user behavior and conversion funnel
-2. **Feature gating** - Enforce Pro/Premium limits in UI
-3. **Go live with Stripe** - Switch to live mode, real payments
-4. **User acquisition** - Reddit posts, Product Hunt prep
-5. **User feedback** - See what real users need
+1. **Go live with Stripe** - Switch to live mode, real payments
+2. **Reddit launch** - Post to target subreddits
+3. **Monitor analytics** - Watch conversion funnel in PostHog
+4. **User feedback** - Iterate based on real usage
+5. **Bill collision warnings** - Next UX improvement
 
 ---
 
-**Status:** Stripe integration complete! Ready to accept real payments. 🚀💳
+**Status:** Feature gating and analytics complete! Ready for user acquisition. 🚀📊
 
 **This is a living document. Update after each development session.**

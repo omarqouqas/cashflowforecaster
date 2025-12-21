@@ -23,6 +23,7 @@ export function DashboardNav() {
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
+    { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
   

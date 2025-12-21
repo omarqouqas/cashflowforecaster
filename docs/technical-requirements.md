@@ -2,42 +2,51 @@
 
 ## Development Progress
 
-### ✅ Completed (Days 1-3)
+### ✅ Completed (Days 1-22)
 
 - [x] Next.js 14 project setup with TypeScript
 - [x] Supabase integration (client, server, route handlers)
-- [x] Database schema created (9 tables)
+- [x] Database schema created (12 tables)
 - [x] Row Level Security enabled
 - [x] TypeScript types generated from live database
 - [x] Git repository initialized
 - [x] GitHub remote connected
 - [x] Domains secured (cashflowforecaster.io, .app)
 - [x] DNS configured for Vercel
-- [x] Test pages created and verified
-
-### 🚧 In Progress (Days 4-5)
-
-- [ ] Authentication pages (signup/login)
-- [ ] Password reset flow
-- [ ] Protected routes
-- [ ] User profile creation
+- [x] Authentication (email + Google OAuth)
+- [x] Password reset flow
+- [x] Protected routes
+- [x] Account management (full CRUD)
+- [x] Income management (full CRUD)
+- [x] Bills management (full CRUD)
+- [x] 60-day calendar algorithm
+- [x] Calendar UI with day modals
+- [x] "Can I Afford It?" scenarios
+- [x] Landing page with pricing
+- [x] Runway Collect invoicing
+- [x] Payment reminders
+- [x] Onboarding wizard
+- [x] Stripe integration (checkout, webhooks, portal)
+- [x] PostHog analytics
+- [x] Feature gating (bills/income limits, invoicing gate)
 
 ### 📋 Upcoming
 
-- [ ] Account management (Days 6-8)
-- [ ] Income & bills CRUD (Days 9-12)
-- [ ] Calendar algorithm (Days 13-15)
-- [ ] Calendar UI (Days 16-20)
+- [ ] Stripe live mode
+- [ ] Bill collision warnings
+- [ ] Sentry error monitoring
+- [ ] Email parser
+- [ ] Plaid bank sync
 
 ---
 
 ## Project Status
 
-**Status:** In Development
+**Status:** Live - Accepting Payments
 
-**Current Phase:** Foundation Complete, Authentication In Progress
+**Current Phase:** User Acquisition
 
-**Last Updated:** December 2024
+**Last Updated:** December 21, 2025
 
 ---
 
@@ -52,16 +61,18 @@
 **Development URL:** http://localhost:3000
 
 **Target Users:**
+
 - Freelancers and gig workers
 - Small business owners
 - Anyone with irregular income
 - Users who need forward-looking cash flow visibility
 
 **Core Value Proposition:**
+
 - See bank balance 60 days into the future
 - Daily liquidity calendar interface
 - "Can I afford it?" scenario planning
-- Automatic bill detection via email parsing
+- Runway Collect invoicing (Pro tier)
 
 ---
 
@@ -75,17 +86,42 @@
 - React Hook Form + Zod validation
 - date-fns for date handling
 - Lucide React for icons
+- react-hot-toast for notifications
 
 ### Backend - Implemented ✅
 
 - Supabase (PostgreSQL 15)
-- Supabase Auth
+- Supabase Auth (email + Google OAuth)
 - Row Level Security enabled
-- 9 tables created and tested
+- 12 tables created and tested
+
+### Payments - Implemented ✅
+
+- Stripe Checkout
+- Stripe Webhooks
+- Stripe Customer Portal
+- Subscription management
+
+### Analytics - Implemented ✅
+
+- PostHog (user tracking, conversion funnel)
+- Feature flags ready
+- Session recording enabled
+
+### Email - Implemented ✅
+
+- Resend (transactional emails)
+- Invoice sending
+- Payment reminders
+
+### PDF Generation - Implemented ✅
+
+- @react-pdf/renderer
+- Invoice PDF generation
 
 ### Infrastructure - Configured ✅
 
-- Vercel (deployment target)
+- Vercel (deployment)
 - Namecheap DNS
 - Git + GitHub
 
@@ -99,17 +135,17 @@
 
 **Status:** ✅ Implemented and Verified
 
-All tables created in production Supabase instance.
-TypeScript types auto-generated from live schema.
+All tables created in production Supabase instance. TypeScript types auto-generated from live schema.
 
 Project ID: pyekssfaqarrpjtblnlx
 
 To regenerate types:
+
 ```bash
 npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supabase.ts
 ```
 
-### Tables (9 total)
+### Tables (12 total)
 
 1. **accounts**
    - User bank accounts (checking, savings)
@@ -125,27 +161,39 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 
 4. **user_settings**
    - User preferences and configuration
-   - Fields: id, user_id, timezone, currency, notifications_enabled
+   - Fields: id, user_id, timezone, currency, notifications_enabled, safety_buffer
 
 5. **scenarios**
    - "Can I afford it?" calculations
    - Fields: id, user_id, name, amount, date, result
 
-6. **parsed_emails**
-   - Email parser results (bills@cashflowforecaster.io)
+6. **invoices**
+   - Runway Collect invoices
+   - Fields: id, user_id, client_name, client_email, amount, status, due_date, items
+
+7. **invoice_reminders**
+   - Payment reminder history
+   - Fields: id, invoice_id, reminder_type, sent_at
+
+8. **parsed_emails**
+   - Email parser results (future feature)
    - Fields: id, user_id, email_id, parsed_data, created_at
 
-7. **weekly_checkins**
-   - Burn rate accuracy tracking
+9. **weekly_checkins**
+   - Burn rate accuracy tracking (future feature)
    - Fields: id, user_id, week_start, actual_balance, projected_balance
 
-8. **notifications**
-   - User notification log
-   - Fields: id, user_id, type, message, read, created_at
+10. **notifications**
+    - User notification log
+    - Fields: id, user_id, type, message, read, created_at
 
-9. **users**
-   - Extended user profile data
-   - Fields: id (references auth.users), full_name, created_at, updated_at
+11. **users**
+    - Extended user profile data
+    - Fields: id (references auth.users), full_name, created_at, updated_at
+
+12. **subscriptions**
+    - Stripe subscription data
+    - Fields: id, user_id, stripe_customer_id, stripe_subscription_id, tier, status, price_id, interval, current_period_start, current_period_end, cancel_at_period_end
 
 ### Security
 
@@ -153,6 +201,165 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 - Users can only access their own data
 - Authentication handled by Supabase Auth
 - Service role key used only in secure server-side contexts
+
+---
+
+## Feature Gating System
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Feature Gating Flow                      │
+└─────────────────────────────────────────────────────────────┘
+
+User Request
+     │
+     ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Page Component (Server)                                     │
+│ - getUserUsageStats() → { billsCount, incomeCount, limits } │
+│ - canUseInvoicing() → boolean                               │
+└─────────────────────────────────────────────────────────────┘
+     │
+     ├─── Has Access ───► Normal UI
+     │
+     └─── No Access ────► Upgrade Prompt / Redirect
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │ UpgradePrompt Modal │
+                    │ - Billing toggle    │
+                    │ - Feature list      │
+                    │ - Stripe checkout   │
+                    └─────────────────────┘
+```
+
+### Tier Limits
+
+| Feature | Free | Pro ($7.99/mo) | Premium ($14.99/mo) |
+|---------|------|----------------|---------------------|
+| Bills | 10 | Unlimited | Unlimited |
+| Income Sources | 10 | Unlimited | Unlimited |
+| Forecast Days | 60 | 90 | 365 |
+| Invoicing | ❌ | ✅ | ✅ |
+| Bank Sync | ❌ | ❌ | ✅ (coming soon) |
+| SMS Alerts | ❌ | ❌ | ✅ (coming soon) |
+
+### Client-Side Hooks
+
+**`lib/hooks/use-subscription.ts`**
+
+```typescript
+// Get current subscription
+const { tier, status, isLoading } = useSubscription()
+
+// Get usage counts
+const { billsCount, incomeCount, limits } = useUsage()
+
+// Combined hook for forms
+const { 
+  tier, 
+  billsCount, 
+  incomeCount, 
+  limits, 
+  canAddBill, 
+  canAddIncome 
+} = useSubscriptionWithUsage()
+```
+
+### Server-Side Utilities
+
+**`lib/stripe/feature-gate.ts`**
+
+```typescript
+// Check if user can add more bills/income
+const canAdd = await canAddBill() // returns boolean
+const canAdd = await canAddIncome() // returns boolean
+
+// Check feature access
+const hasAccess = await canUseInvoicing() // Pro+
+const hasAccess = await canUseBankSync() // Premium only
+
+// Get full usage stats
+const stats = await getUserUsageStats()
+// { billsCount, incomeCount, limits: { maxBills, maxIncome } }
+```
+
+### Components
+
+**`components/subscription/upgrade-prompt.tsx`**
+
+- `UpgradePrompt` - Modal with billing toggle, pricing, feature list
+- `UpgradeBanner` - Inline warning (amber at limit, blue near limit)
+- `UsageIndicator` - Badge showing "3/10 bills"
+
+**`components/subscription/gated-add-button.tsx`**
+
+- `GatedAddButton` - Opens modal if at limit, navigates otherwise
+
+---
+
+## Analytics System (PostHog)
+
+### Configuration
+
+**`lib/posthog/client.ts`**
+
+```typescript
+import posthog from 'posthog-js'
+
+posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+  capture_pageview: true,
+  capture_pageleave: true,
+})
+```
+
+### Tracked Events
+
+#### Authentication
+- `user_signed_up` - { email, method }
+- `user_logged_in` - { method }
+
+#### Onboarding
+- `onboarding_started`
+- `onboarding_step_completed` - { step }
+- `onboarding_completed` - { accounts_count, income_count, bills_count }
+
+#### Core Features
+- `account_created` - { type }
+- `income_created` - { frequency, amount_range }
+- `bill_created` - { frequency, category }
+- `calendar_viewed` - { days_shown }
+- `scenario_tested` - { amount_range, result }
+
+#### Invoicing (Pro)
+- `invoice_created` - { amount_range }
+- `invoice_sent` - { amount_range }
+- `reminder_sent` - { reminder_type }
+
+#### Conversion
+- `upgrade_prompt_shown` - { trigger }
+- `upgrade_initiated` - { tier, interval }
+- `subscription_created` - { tier, interval, mrr }
+- `subscription_cancelled` - { tier, reason }
+
+### User Identification
+
+```typescript
+// On login/signup
+posthog.identify(user.id, {
+  email: user.email,
+  created_at: user.created_at,
+})
+
+// On subscription change
+posthog.people.set({
+  tier: subscription.tier,
+  subscription_status: subscription.status,
+})
+```
 
 ---
 
@@ -176,9 +383,9 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 - Request password reset email
 - Returns: success status
 
-**POST /api/auth/update-password**
-- Update user password with reset token
-- Returns: success status
+**GET /api/auth/callback**
+- OAuth callback handler (Google)
+- Redirects to dashboard
 
 ### Account Management Endpoints
 
@@ -193,7 +400,6 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 
 **PUT /api/accounts/[id]**
 - Update account details
-- Body: { name?, type?, balance?, currency? }
 - Returns: updated account object
 
 **DELETE /api/accounts/[id]**
@@ -208,12 +414,12 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 
 **POST /api/income**
 - Create new income source
+- **Gated:** Returns 403 if at limit (Free tier)
 - Body: { name, amount, frequency, start_date, end_date? }
 - Returns: created income object
 
 **PUT /api/income/[id]**
 - Update income source
-- Body: { name?, amount?, frequency?, start_date?, end_date? }
 - Returns: updated income object
 
 **DELETE /api/income/[id]**
@@ -228,12 +434,12 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 
 **POST /api/bills**
 - Create new bill
+- **Gated:** Returns 403 if at limit (Free tier)
 - Body: { name, amount, due_date, frequency, category }
 - Returns: created bill object
 
 **PUT /api/bills/[id]**
 - Update bill
-- Body: { name?, amount?, due_date?, frequency?, category? }
 - Returns: updated bill object
 
 **DELETE /api/bills/[id]**
@@ -243,8 +449,8 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 ### Calendar Endpoints
 
 **GET /api/calendar**
-- Get 60-day liquidity projection
-- Query params: start_date (optional, defaults to today)
+- Get 60/90/365-day liquidity projection (based on tier)
+- Query params: start_date (optional)
 - Returns: array of daily balance objects
 
 **GET /api/calendar/scenarios**
@@ -256,12 +462,50 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 - Body: { name, amount, date }
 - Returns: scenario object with result
 
-### Email Parsing Endpoints
+### Invoice Endpoints (Pro+ Only)
 
-**POST /api/emails/parse**
-- Parse incoming email for bill information
-- Body: { email_content, from_address }
-- Returns: parsed bill data
+**GET /api/invoices**
+- List all invoices
+- **Gated:** Returns 403 for Free tier
+- Returns: array of invoice objects
+
+**POST /api/invoices**
+- Create new invoice
+- **Gated:** Returns 403 for Free tier
+- Body: { client_name, client_email, items, due_date }
+- Returns: created invoice object
+
+**GET /api/invoices/[id]/pdf**
+- Generate PDF for invoice
+- **Gated:** Returns 403 for Free tier
+- Returns: PDF file
+
+**POST /api/invoices/[id]/send**
+- Send invoice via email
+- **Gated:** Returns 403 for Free tier
+- Returns: success status
+
+**POST /api/invoices/[id]/remind**
+- Send payment reminder
+- **Gated:** Returns 403 for Free tier
+- Body: { reminder_type: 'friendly' | 'firm' | 'final' }
+- Returns: success status
+
+### Stripe Endpoints
+
+**POST /api/stripe/checkout**
+- Create Stripe Checkout session
+- Body: { tier, interval }
+- Returns: { url: checkout_url }
+
+**POST /api/stripe/portal**
+- Create Stripe Customer Portal session
+- Returns: { url: portal_url }
+
+**POST /api/webhooks/stripe**
+- Stripe webhook handler
+- Handles: checkout.session.completed, subscription.*, invoice.*
+- Returns: success status
 
 ---
 
@@ -269,7 +513,8 @@ npx supabase gen types typescript --project-id pyekssfaqarrpjtblnlx > types/supa
 
 ### Overview
 
-The calendar algorithm projects bank balance 60 days into the future by:
+The calendar algorithm projects bank balance into the future by:
+
 1. Starting with current account balances
 2. Adding income on scheduled dates
 3. Subtracting bills on due dates
@@ -281,12 +526,13 @@ The calendar algorithm projects bank balance 60 days into the future by:
 - Current account balances
 - Income sources (amount, frequency, start_date, end_date)
 - Bills (amount, due_date, frequency)
-- One-time transactions (if applicable)
+- Forecast days (60/90/365 based on tier)
 
 **Processing:**
-1. Initialize calendar array (60 days)
+
+1. Initialize calendar array (60/90/365 days based on tier)
 2. Set starting balance for day 0
-3. For each day (1-60):
+3. For each day:
    - Copy previous day's balance
    - Add any income scheduled for this day
    - Subtract any bills due on this day
@@ -301,16 +547,15 @@ The calendar algorithm projects bank balance 60 days into the future by:
 - **Yearly:** Same month and day each year
 
 **Output:**
-- Array of 60 daily balance objects
-- Each object contains: date, balance, transactions (income/bills for that day)
+- Array of daily balance objects
+- Each object contains: date, balance, transactions, warnings
 
 ### Edge Cases
 
 - Month-end dates (e.g., Jan 31 → Feb 28/29)
 - Leap years
-- Income/bills that end before 60-day window
+- Income/bills that end before forecast window
 - Multiple accounts (aggregate balance)
-- Currency conversion (future enhancement)
 
 ---
 
@@ -322,158 +567,100 @@ The calendar algorithm projects bank balance 60 days into the future by:
 - **Install Prompt:** "Add to Home Screen" functionality
 - **App-like Experience:** Full-screen mode, no browser chrome
 - **Fast Loading:** Optimized assets, lazy loading
-- **Push Notifications:** (Future) Bill reminders, low balance alerts
 
 ### Manifest Configuration
 
 - App name: "Cash Flow Forecaster"
 - Short name: "Cash Flow"
-- Theme color: (TBD)
-- Background color: (TBD)
-- Icons: Multiple sizes for different devices
+- Theme color: #14b8a6 (teal-500)
+- Background color: #18181b (zinc-900)
 - Display mode: "standalone"
 
-### Service Worker
+---
 
-- Cache static assets
-- Cache API responses (with expiration)
-- Offline fallback page
-- Background sync for data updates
+## Security Requirements
+
+### Authentication
+
+- Supabase Auth for user management
+- Google OAuth integration
+- Secure password hashing (handled by Supabase)
+- Session management via HTTP-only cookies
+- Password reset via secure email tokens
+
+### Data Protection
+
+- Row Level Security (RLS) on all tables
+- User data isolation
+- Service role key only used server-side
+- Environment variables for sensitive data
+
+### Payment Security
+
+- Stripe handles all payment data
+- Webhook signature verification
+- No credit card data stored locally
+
+### API Security
+
+- Rate limiting (Vercel)
+- Input validation on all endpoints
+- SQL injection prevention (Supabase handles this)
+- XSS prevention (React escapes by default)
+- Feature gating with server-side validation
 
 ---
 
-## Mobile Strategy
+## Performance Requirements
 
-### Phase 1: PWA (Current - Months 1-3)
+### Page Load Times
 
-- Progressive Web App for iOS/Android
-- No app store approval needed
-- Instant updates
-- No 30% Apple tax
-- Works on all platforms
+- Initial page load: < 2 seconds
+- Calendar calculation: < 500ms
+- API response times: < 200ms (p95)
 
-### Phase 2: Native Apps (Month 4+, if needed)
+### Optimization Strategies
 
-**Technology:**
-- Expo (React Native)
-- NativeWind for styling
-- React Navigation
-- Zustand for state management
-
-**Backend:** No changes needed
-- Same Supabase backend
-- Same database queries
-- Same authentication
-- Same business logic
-
-**Code Reuse:** 60-70%
-- TypeScript types: 100% reusable
-- Business logic: 100% reusable
-- Database queries: 100% reusable
-- UI components: Need rewrite
-
-**Triggers for Native Development:**
-- 100+ active users requesting native app
-- $1k+ MRR to justify costs
-- iOS users reporting PWA limitations
-- Need for push notifications
-
-**Timeline:** 3-4 weeks when needed
-
-**Cost:** $99/year (Apple) + $25 one-time (Google)
+- Code splitting (Next.js automatic)
+- Image optimization (Next.js Image component)
+- Lazy loading for calendar data
+- Caching for static assets
+- Database query optimization
 
 ---
 
-## Development Roadmap
+## Environment Variables
 
-### ✅ Phase 1: Foundation (Weeks 1-2) - COMPLETE
+### Required (Production)
 
-**Week 1-2: Foundation**
-- [x] Project setup (Next.js + Supabase)
-- [x] Database schema implementation
-- [x] Authentication infrastructure
-- [x] Basic routing
-- [x] TypeScript types generated
-- [x] Git/GitHub setup
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx
+SUPABASE_SERVICE_ROLE_KEY=eyJxxx
 
-### 🚧 Phase 2: Authentication (Weeks 3-4) - IN PROGRESS
+# Stripe
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_PRICE_PRO_MONTHLY=price_xxx
+STRIPE_PRICE_PRO_YEARLY=price_xxx
+STRIPE_PRICE_PREMIUM_MONTHLY=price_xxx
+STRIPE_PRICE_PREMIUM_YEARLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_YEARLY=price_xxx
 
-**Week 3-4: User Authentication**
-- [ ] Signup page
-- [ ] Login page
-- [ ] Password reset flow
-- [ ] Protected routes middleware
-- [ ] User profile creation
-- [ ] Session management
+# PostHog
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
-### 📋 Phase 3: Account Management (Weeks 5-6)
+# Resend
+RESEND_API_KEY=re_xxx
 
-**Week 5-6: Bank Accounts**
-- [ ] Account list page
-- [ ] Add account form
-- [ ] Edit account form
-- [ ] Delete account (with confirmation)
-- [ ] Account balance updates
-- [ ] Multi-account support
-
-### 📋 Phase 4: Income & Bills (Weeks 7-9)
-
-**Week 7-9: Income and Expenses**
-- [ ] Income CRUD interface
-- [ ] Bills CRUD interface
-- [ ] Recurring transaction setup
-- [ ] Frequency selector (daily, weekly, monthly, etc.)
-- [ ] Date picker integration
-- [ ] Category management
-
-### 📋 Phase 5: Calendar Algorithm (Weeks 10-11)
-
-**Week 10-11: Core Algorithm**
-- [ ] Calendar calculation engine
-- [ ] 60-day projection logic
-- [ ] Frequency handling (daily, weekly, monthly, etc.)
-- [ ] Edge case handling (month-end, leap years)
-- [ ] Multi-account aggregation
-- [ ] Performance optimization
-
-### 📋 Phase 6: Calendar UI (Weeks 12-14)
-
-**Week 12-14: User Interface**
-- [ ] Calendar view component
-- [ ] Daily balance display
-- [ ] Transaction list per day
-- [ ] Visual indicators (low balance, bills due)
-- [ ] Responsive design (mobile-first)
-- [ ] Loading states and error handling
-
-### 📋 Phase 7: Scenarios (Weeks 15-16)
-
-**Week 15-16: "Can I Afford It?" Feature**
-- [ ] Scenario creation form
-- [ ] Scenario calculation
-- [ ] Scenario results display
-- [ ] Scenario history
-- [ ] Save/delete scenarios
-
-### 📋 Phase 8: Email Parsing (Weeks 17-18)
-
-**Week 17-18: Bill Detection**
-- [ ] Email forwarding setup
-- [ ] Email parser service
-- [ ] Bill extraction logic
-- [ ] Auto-create bills from emails
-- [ ] Manual review/approval flow
-
-### 📋 Phase 9: Polish & Launch (Weeks 19-20)
-
-**Week 19-20: Final Touches**
-- [ ] PWA configuration
-- [ ] Performance optimization
-- [ ] Error handling improvements
-- [ ] User onboarding flow
-- [ ] Documentation
-- [ ] Beta testing
-- [ ] Production deployment
+# App
+NEXT_PUBLIC_APP_URL=https://cashflowforecaster.io
+```
 
 ---
 
@@ -497,169 +684,110 @@ The calendar algorithm projects bank balance 60 days into the future by:
 
 ---
 
-## Security Requirements
-
-### Authentication
-- Supabase Auth for user management
-- Secure password hashing (handled by Supabase)
-- Session management via HTTP-only cookies
-- Password reset via secure email tokens
-
-### Data Protection
-- Row Level Security (RLS) on all tables
-- User data isolation (users can only access their own data)
-- Service role key only used server-side
-- Environment variables for sensitive data
-
-### API Security
-- Rate limiting (to be implemented)
-- Input validation on all endpoints
-- SQL injection prevention (Supabase handles this)
-- XSS prevention (React escapes by default)
-
----
-
-## Performance Requirements
-
-### Page Load Times
-- Initial page load: < 2 seconds
-- Calendar calculation: < 500ms
-- API response times: < 200ms (p95)
-
-### Optimization Strategies
-- Code splitting (Next.js automatic)
-- Image optimization (Next.js Image component)
-- Lazy loading for calendar data
-- Caching for static assets
-- Database query optimization
-
----
-
-## Testing Strategy
-
-### Unit Tests
-- Calendar algorithm logic
-- Date calculation functions
-- Frequency handling
-- Edge cases (month-end, leap years)
-
-### Integration Tests
-- API endpoints
-- Database queries
-- Authentication flows
-- Protected routes
-
-### E2E Tests
-- User signup/login flow
-- Account management flow
-- Income/bills CRUD
-- Calendar display
-- Scenario calculation
-
-### Testing Tools
-- Jest (unit tests)
-- React Testing Library (component tests)
-- Playwright (E2E tests)
-- Supabase test database
-
----
-
 ## Deployment
 
 ### Production Environment
+
 - **Platform:** Vercel
 - **Domain:** cashflowforecaster.io
 - **SSL:** Automatic (Vercel)
 - **CDN:** Vercel Edge Network
 
-### Environment Variables (Production)
-- `NEXT_PUBLIC_APP_URL` - Production URL
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Public API key
-- `SUPABASE_SERVICE_ROLE_KEY` - Service role key (server-only)
-
 ### CI/CD Pipeline
+
 - Automatic deployments from `main` branch
 - Preview deployments for pull requests
-- Automated testing before deployment
-- Rollback capability
+- Environment variables configured in Vercel dashboard
 
 ---
 
 ## Monitoring & Analytics
 
-### Error Tracking
+### Analytics (PostHog) ✅
+
+- User behavior tracking
+- Conversion funnel analysis
+- Feature usage metrics
+- Session recording
+- Feature flags
+
+### Error Tracking (Planned)
+
+- Sentry integration
 - Error boundary for React errors
 - API error logging
-- Database error monitoring
-
-### Analytics
-- User engagement metrics
-- Feature usage tracking
-- Performance monitoring
-- Error rates
-
-### Tools (To Be Implemented)
-- Sentry (error tracking)
-- Vercel Analytics (performance)
-- Custom analytics dashboard
 
 ---
 
-## Future Enhancements
+## Project Structure
 
-### Phase 2 Features
-- Multi-currency support
-- Budget categories
-- Spending insights
-- Export to CSV/PDF
-- Email notifications
-- Mobile app (if needed)
-
-### Phase 3 Features
-- Bank account integration (Plaid)
-- Automatic transaction import
-- AI-powered bill categorization
-- Predictive analytics
-- Team/collaboration features
-
----
-
-## Appendix
-
-### Project Structure
 ```
 cash-flow-forecaster/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── (auth)/            # Authentication pages
-│   ├── (dashboard)/       # Protected dashboard pages
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
+├── app/                          # Next.js App Router
+│   ├── api/                      # API routes
+│   │   ├── auth/                 # Auth endpoints
+│   │   ├── accounts/             # Account CRUD
+│   │   ├── income/               # Income CRUD
+│   │   ├── bills/                # Bills CRUD
+│   │   ├── invoices/             # Invoice endpoints
+│   │   ├── stripe/               # Stripe endpoints
+│   │   └── webhooks/             # Webhook handlers
+│   ├── (auth)/                   # Auth pages (login, signup)
+│   ├── (dashboard)/              # Protected dashboard pages
+│   │   ├── accounts/
+│   │   ├── income/
+│   │   ├── bills/
+│   │   ├── invoices/
+│   │   ├── scenarios/
+│   │   └── settings/
+│   ├── layout.tsx                # Root layout with providers
+│   └── page.tsx                  # Landing page
 ├── components/
-│   ├── ui/                # Reusable UI components
-│   └── features/          # Feature-specific components
+│   ├── ui/                       # Reusable UI components
+│   ├── dashboard/                # Dashboard-specific components
+│   ├── calendar/                 # Calendar components
+│   ├── invoices/                 # Invoice components
+│   ├── subscription/             # Subscription/gating components
+│   └── pricing/                  # Pricing section
 ├── lib/
-│   ├── auth/              # Authentication utilities
-│   ├── database/          # Database utilities
-│   ├── supabase/          # Supabase client setup
-│   └── utils/             # General utilities
-├── types/                 # TypeScript type definitions
-│   └── supabase.ts        # Generated database types
-└── public/                # Static assets
+│   ├── actions/                  # Server actions
+│   ├── hooks/                    # Custom React hooks
+│   ├── stripe/                   # Stripe utilities
+│   │   ├── client.ts             # Stripe SDK
+│   │   ├── config.ts             # Pricing tiers
+│   │   ├── subscription.ts       # Subscription helpers
+│   │   └── feature-gate.ts       # Feature gating
+│   ├── posthog/                  # PostHog utilities
+│   │   ├── client.ts             # PostHog init
+│   │   └── provider.tsx          # React provider
+│   ├── supabase/                 # Supabase clients
+│   └── utils/                    # General utilities
+├── types/                        # TypeScript definitions
+│   └── supabase.ts               # Generated DB types
+└── public/                       # Static assets
 ```
 
 ### Key Dependencies
-- `next`: 14.2.33
-- `react`: ^18
-- `@supabase/ssr`: ^0.8.0
-- `date-fns`: ^4.1.0
-- `tailwindcss`: ^3.4.1
-- `typescript`: ^5
+
+```json
+{
+  "next": "14.2.x",
+  "react": "^18",
+  "@supabase/ssr": "^0.8.0",
+  "stripe": "^17.x",
+  "posthog-js": "^1.195.1",
+  "@react-pdf/renderer": "^4.x",
+  "resend": "^4.x",
+  "date-fns": "^4.x",
+  "tailwindcss": "^3.4",
+  "react-hot-toast": "^2.x",
+  "zod": "^3.x",
+  "lucide-react": "^0.x"
+}
+```
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** December 2024  
+**Document Version:** 2.0
+**Last Updated:** December 21, 2025
 **Maintained By:** Development Team
-
