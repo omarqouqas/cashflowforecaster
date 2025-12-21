@@ -70,6 +70,17 @@ export default async function SettingsPage() {
             cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
           />
 
+          {/* Invoices (moved off the primary nav) */}
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
+            <h2 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Invoices</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              View and manage your invoices.
+            </p>
+            <Link href="/dashboard/invoices">
+              <Button variant="outline">Open Invoices</Button>
+            </Link>
+          </div>
+
           {/* Account Information Card */}
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
             <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">

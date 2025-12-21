@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Wallet, TrendingUp, FileText, Calendar, Settings, Receipt, CircleDollarSign } from 'lucide-react'
-import { ScenarioButton } from '@/components/scenarios/scenario-button'
+import { Wallet, TrendingUp, Calendar, Settings, Receipt } from 'lucide-react'
 
 export function DashboardNav() {
   const pathname = usePathname()
@@ -12,18 +11,25 @@ export function DashboardNav() {
     { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
-    { href: '/dashboard/bills', label: 'Bills', icon: FileText },
-    { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
+    { href: '/dashboard/bills', label: 'Bills', icon: Receipt },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
 
-  // Mobile bottom nav - only the most important items
+  const isLinkActive = (href: string) => {
+    // Treat /dashboard as "Home" (calendar) for active state
+    if (href === '/dashboard/calendar') {
+      return pathname === '/dashboard' || pathname.startsWith('/dashboard/calendar')
+    }
+
+    return pathname.startsWith(href)
+  }
+
+  // Mobile bottom nav - 5 primary items (avoid truncation on iPhone)
   const mobileLinks = [
-    { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
+    { href: '/dashboard/calendar', label: 'Home', icon: Calendar },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
-    { href: '/dashboard/bills', label: 'Bills', icon: FileText },
-    { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
+    { href: '/dashboard/bills', label: 'Bills', icon: Receipt },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
   
@@ -34,7 +40,7 @@ export function DashboardNav() {
         <nav className="flex gap-1 px-4 py-2 overflow-x-auto scrollbar-hide">
           {links.map((link) => {
             const Icon = link.icon
-            const isActive = pathname.startsWith(link.href)
+            const isActive = isLinkActive(link.href)
             const isCalendar = link.href === '/dashboard/calendar'
 
             return (
@@ -74,12 +80,13 @@ export function DashboardNav() {
           <div className="flex items-center justify-between gap-1 h-16">
             {mobileLinks.map((link) => {
               const Icon = link.icon
-              const isActive = pathname.startsWith(link.href)
+              const isActive = isLinkActive(link.href)
 
               return (
                 <Link
                   key={link.href}
                   href={link.href}
+                  aria-label={link.label}
                   className={[
                     'flex flex-col items-center justify-center',
                     'flex-1 h-full min-w-0',
@@ -88,40 +95,19 @@ export function DashboardNav() {
                   ].join(' ')}
                 >
                   <Icon className="w-6 h-6" />
-                  <span className="text-[11px] mt-1 font-medium truncate w-full text-center px-1">{link.label}</span>
+                  <span className="sr-only">{link.label}</span>
+                  <span
+                    aria-hidden="true"
+                    className="mt-1 text-[10px] leading-none font-medium truncate max-w-[56px] hidden min-[375px]:block"
+                  >
+                    {link.label}
+                  </span>
                 </Link>
               )
             })}
-
-            {/* "Can I Afford It?" Button - Special treatment */}
-            <ScenarioButton 
-              variant="mobile-nav" 
-              source="mobile-nav"
-              className="flex flex-col items-center justify-center flex-1 h-full min-w-0 text-teal-400 active:text-teal-300"
-            />
           </div>
         </nav>
       </div>
     </>
-  )
-}
-
-// Fallback if ScenarioButton doesn't support mobile-nav variant yet
-// You may need to update ScenarioButton to handle this variant
-// For now, here's a simple standalone version:
-
-export function MobileAffordButton() {
-  return (
-    <button
-      type="button"
-      className="flex flex-col items-center justify-center w-16 h-full text-teal-400 active:text-teal-300"
-      onClick={() => {
-        // Trigger your scenario modal
-        // This depends on how ScenarioButton works
-      }}
-    >
-      <CircleDollarSign className="w-6 h-6" />
-      <span className="text-xs mt-1 font-medium">Afford?</span>
-    </button>
   )
 }

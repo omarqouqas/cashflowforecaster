@@ -60,18 +60,25 @@ export default async function CalendarPage() {
           <p className="text-sm text-zinc-400">60-day projection</p>
         </div>
 
-        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
-          <div className="text-center py-10">
-            <CalendarIcon className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
-            <p className="text-zinc-400">Add an account to generate your forecast.</p>
-            <div className="mt-6">
-              <Link
-                href="/dashboard/accounts/new"
-                className="inline-flex items-center justify-center w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] transition-colors"
-              >
-                Add account
-              </Link>
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+          <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center py-10">
+            <div className="w-20 h-20 bg-teal-500/10 rounded-full flex items-center justify-center mb-6">
+              <CalendarIcon className="w-10 h-10 text-teal-500" />
             </div>
+
+            <h2 className="text-xl font-semibold text-zinc-100 mb-2">Your forecast starts here</h2>
+            <p className="text-zinc-400 mb-8 max-w-xs">
+              Add a bank account with your current balance to see your cash flow 60 days into the future.
+            </p>
+
+            <Link
+              href="/dashboard/accounts/new"
+              className="w-full max-w-xs bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors min-h-[44px] inline-flex items-center justify-center"
+            >
+              Add your first account
+            </Link>
+
+            <p className="text-zinc-500 text-sm mt-6">Takes less than 2 minutes to set up</p>
           </div>
         </div>
       </div>
