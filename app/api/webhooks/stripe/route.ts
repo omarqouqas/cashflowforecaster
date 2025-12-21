@@ -2,6 +2,7 @@
 // ============================================
 // Stripe Webhook Handler - Fixed for API 2025-11-17.clover
 // Period dates are now inside subscription.items.data[0]
+// Fixed: Now checks both cancel_at_period_end AND cancel_at timestamp
 // ============================================
 
 import { headers } from 'next/headers';
@@ -163,6 +164,22 @@ function extractPeriodDates(subscription: any): { start: string | null; end: str
 }
 
 /**
+ * Check if subscription is scheduled for cancellation
+ * Stripe uses either cancel_at_period_end (boolean) OR cancel_at (timestamp)
+ */
+function isSubscriptionCanceling(subscription: any): boolean {
+  // Check the boolean flag
+  if (subscription.cancel_at_period_end === true) {
+    return true;
+  }
+  // Check if there's a cancel_at timestamp set
+  if (subscription.cancel_at !== null && subscription.cancel_at !== undefined) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Handle successful checkout completion
  */
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -210,6 +227,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Extract period dates (now from items.data[0])
   const periodDates = extractPeriodDates(subscription);
   
+  // Check if subscription is scheduled for cancellation
+  const isCanceling = isSubscriptionCanceling(subscription);
+  
   // Update subscriptions table
   const { error } = await supabaseAdmin
     .from('subscriptions')
@@ -223,7 +243,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       interval: interval,
       current_period_start: periodDates.start,
       current_period_end: periodDates.end,
-      cancel_at_period_end: subscription.cancel_at_period_end ?? false,
+      cancel_at_period_end: isCanceling,
     }, {
       onConflict: 'user_id',
     });
@@ -233,7 +253,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     throw error;
   }
   
-  console.log(`Checkout completed for user ${userId}, tier: ${tier}, period_end: ${periodDates.end}`);
+  console.log(`Checkout completed for user ${userId}, tier: ${tier}, period_end: ${periodDates.end}, canceling: ${isCanceling}`);
 }
 
 /**
@@ -308,6 +328,20 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   // Extract period dates (now from items.data[0])
   const periodDates = extractPeriodDates(subscription);
   
+  // Check if subscription is scheduled for cancellation
+  // Stripe uses either cancel_at_period_end (boolean) OR cancel_at (timestamp)
+  const isCanceling = isSubscriptionCanceling(subscription);
+  
+  console.log('Subscription change detected:', {
+    subscriptionId: subscription.id,
+    userId,
+    status,
+    tier,
+    cancel_at_period_end: subscription.cancel_at_period_end,
+    cancel_at: subscription.cancel_at,
+    isCanceling,
+  });
+  
   const { error } = await supabaseAdmin
     .from('subscriptions')
     .upsert({
@@ -320,7 +354,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
       interval: interval,
       current_period_start: periodDates.start,
       current_period_end: periodDates.end,
-      cancel_at_period_end: subscription.cancel_at_period_end ?? false,
+      cancel_at_period_end: isCanceling,
     }, {
       onConflict: 'user_id',
     });
@@ -330,7 +364,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
     throw error;
   }
   
-  console.log(`Subscription updated for user ${userId}: ${status}, tier: ${tier}, period_end: ${periodDates.end}`);
+  console.log(`Subscription updated for user ${userId}: ${status}, tier: ${tier}, period_end: ${periodDates.end}, canceling: ${isCanceling}`);
 }
 
 /**
@@ -402,12 +436,16 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     });
     const periodDates = extractPeriodDates(subscription);
     
+    // Check if still canceling (in case they resubscribed)
+    const isCanceling = isSubscriptionCanceling(subscription);
+    
     const { error } = await supabaseAdmin
       .from('subscriptions')
       .update({ 
         status: 'active',
         current_period_start: periodDates.start,
         current_period_end: periodDates.end,
+        cancel_at_period_end: isCanceling,
       })
       .eq('user_id', data.user_id);
     
@@ -416,7 +454,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
       throw error;
     }
     
-    console.log(`Payment succeeded for user ${data.user_id}, period_end: ${periodDates.end}`);
+    console.log(`Payment succeeded for user ${data.user_id}, period_end: ${periodDates.end}, canceling: ${isCanceling}`);
   }
 }
 
