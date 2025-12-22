@@ -11,13 +11,13 @@
 ## Quick Stats
 
 - **Days in Development:** 22
-- **Commits:** ~75+
+- **Commits:** ~80+
 - **Database Tables:** 12
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live ✅ 🎉
 
 **Completed Phases:**
 
@@ -33,17 +33,17 @@
 - ✅ Phase 10: Landing Page Polish + Google OAuth (Day 20) - COMPLETE
 - ✅ Phase 11: Stripe Integration (Day 21) - COMPLETE
 - ✅ Phase 12: Feature Gating + Analytics (Day 22) - COMPLETE
+- ✅ Phase 13: Stripe Live Mode (Day 22) - COMPLETE
 
 **Current Focus:**
 
 - Reddit launch prep
 - User acquisition
-- Switch Stripe to live mode
 - User feedback collection
 
 ---
 
-## Day 22: Feature Gating + PostHog Analytics (December 21, 2025)
+## Day 22: Feature Gating + PostHog Analytics + Stripe Live (December 21, 2025)
 
 ### Features Completed Today
 
@@ -104,6 +104,40 @@
 - [x] API routes gated (send email, PDF download)
 - [x] `InvoicingUpgradePrompt` component with feature list
 
+#### Stripe Live Mode ✅
+
+- [x] Switched from test mode to live mode
+- [x] Created live products and prices in Stripe Dashboard
+- [x] Updated Vercel environment variables with live keys
+- [x] Created live webhook endpoint (`www.cashflowforecaster.io/api/webhooks/stripe`)
+- [x] Fixed webhook 307 redirect issue (www vs non-www)
+- [x] Fixed cancellation detection bug (`cancel_at` vs `cancel_at_period_end`)
+- [x] Tested full subscription lifecycle:
+  - ✅ New subscription checkout
+  - ✅ Payment processing
+  - ✅ Webhook delivery (200 OK)
+  - ✅ Database updates
+  - ✅ Cancellation flow
+  - ✅ Reactivation flow
+- [x] Real payments processed and refunded successfully
+
+### Webhook Bug Fix
+
+**Issue:** Stripe Customer Portal uses `cancel_at` (timestamp) instead of `cancel_at_period_end` (boolean) when users cancel.
+
+**Solution:** Added `isSubscriptionCanceling()` helper function that checks both:
+```typescript
+function isSubscriptionCanceling(subscription: any): boolean {
+  if (subscription.cancel_at_period_end === true) {
+    return true;
+  }
+  if (subscription.cancel_at !== null && subscription.cancel_at !== undefined) {
+    return true;
+  }
+  return false;
+}
+```
+
 ### New Files Created
 
 ```
@@ -133,11 +167,20 @@ lib/actions/invoices.ts                    # Added canUseInvoicing() checks
 lib/actions/send-reminder.ts               # Added canUseInvoicing() check
 app/api/invoices/[id]/send/route.ts        # Added 403 for Free users
 app/api/invoices/[id]/pdf/route.ts         # Added 403 for Free users
+app/api/webhooks/stripe/route.ts           # Fixed cancel_at detection
 ```
 
-### Environment Variables Added
+### Environment Variables Updated (Live Mode)
 
 ```bash
+# Stripe (now live keys)
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx (live endpoint)
+STRIPE_PRICE_PRO_MONTHLY=price_1SgrBzGdM5Eg7nghDemJuPNH
+STRIPE_PRICE_PRO_YEARLY=price_1SgrBzGdM5Eg7nghf3mVp20I
+STRIPE_PRICE_PREMIUM_MONTHLY=price_1SgrCAGdM5Eg7nghyhBz6FTD
+STRIPE_PRICE_PREMIUM_YEARLY=price_1SgrCAGdM5Eg7nghKj8Pm1Im
+
 # PostHog
 NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
@@ -148,20 +191,20 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 #### Feature Gating Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      User Request                           │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                      User Request                               │
+└─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Page Component                           │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ Server: getUserUsageStats() / canUseInvoicing()     │   │
-│  │ - Fetch subscription tier                            │   │
-│  │ - Count current bills/income                         │   │
-│  │ - Return limits and usage                            │   │
-│  └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    Page Component                               │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ Server: getUserUsageStats() / canUseInvoicing()         │   │
+│  │ - Fetch subscription tier                               │   │
+│  │ - Count current bills/income                            │   │
+│  │ - Return limits and usage                               │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
                               │
             ┌─────────────────┴─────────────────┐
             ▼                                   ▼
@@ -174,15 +217,15 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 └───────────────────────┘           └───────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Form Submission                          │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ Server Action: canAddBill() / canAddIncome()        │   │
-│  │ - Double-check limits (belt and suspenders)         │   │
-│  │ - Return error if at limit                          │   │
-│  │ - Insert if allowed                                 │   │
-│  └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    Form Submission                              │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ Server Action: canAddBill() / canAddIncome()            │   │
+│  │ - Double-check limits (belt and suspenders)             │   │
+│  │ - Return error if at limit                              │   │
+│  │ - Insert if allowed                                     │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 #### Tier Limits Configuration
@@ -195,6 +238,17 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 | Invoicing | ❌ | ✅ | ✅ |
 | Bank Sync | ❌ | ❌ | ✅ |
 | SMS Alerts | ❌ | ❌ | ✅ |
+
+#### Subscription Lifecycle (Tested in Production)
+
+| Action | Stripe Event | Webhook Handler | Database Update |
+|--------|--------------|-----------------|-----------------|
+| Subscribe | `checkout.session.completed` | `handleCheckoutCompleted` | tier: pro, status: active |
+| Cancel | `customer.subscription.updated` | `handleSubscriptionChange` | cancel_at_period_end: true |
+| Reactivate | `customer.subscription.updated` | `handleSubscriptionChange` | cancel_at_period_end: false |
+| Period ends | `customer.subscription.deleted` | `handleSubscriptionCanceled` | tier: free, status: canceled |
+| Payment fails | `invoice.payment_failed` | `handlePaymentFailed` | status: past_due |
+| Payment succeeds | `invoice.payment_succeeded` | `handlePaymentSucceeded` | status: active |
 
 ---
 
@@ -243,6 +297,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - [x] Shows status (Active/Trial/Past Due/Canceled)
 - [x] Shows renewal date
 - [x] Warning banner for past_due status
+- [x] Cancellation notice with end date when `cancel_at_period_end: true`
 
 ---
 
@@ -269,12 +324,12 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - [x] **"Can I Afford It?" Scenarios:** Core differentiator feature
 - [x] **Google OAuth:** Configured and working
 - [x] **Stripe Integration:** Checkout, webhooks, portal, subscription management
+- [x] **Stripe Live Mode:** Real payments processing
 - [x] **PostHog Analytics:** User tracking, conversion funnel, feature usage
 - [x] **Feature Gating:** Bills/income limits, invoicing Pro gate
 
 ### 📋 Next Up
 
-- [ ] **Go Live:** Switch Stripe to live mode
 - [ ] **Reddit Launch:** Post to r/freelance, r/smallbusiness
 - [ ] **Error Monitoring:** Sentry integration
 - [ ] **Bill Collision Warnings:** UX improvement for same-day bills
@@ -363,14 +418,14 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 | Landing page polish | ✅ | Header, footer, how it works |
 | Stripe payments | ✅ | Checkout, webhooks, portal |
 | Subscription management | ✅ | Settings page integration |
-| **PostHog analytics** | ✅ | **Full event tracking** |
-| **Feature gating** | ✅ | **Bills/income limits, invoicing gate** |
+| PostHog analytics | ✅ | Full event tracking |
+| Feature gating | ✅ | Bills/income limits, invoicing gate |
+| **Stripe live mode** | ✅ | **Real payments processing** |
 
 ### Upcoming 📋
 
 | Feature | Priority | Est. Time |
 |---------|----------|-----------|
-| Stripe live mode | HIGH | 1 hour |
 | Reddit launch | HIGH | 2 hours |
 | Bill collision warnings | MEDIUM | 2-3 hours |
 | Sentry error monitoring | MEDIUM | 1-2 hours |
@@ -397,9 +452,10 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 | Payment Reminders | 19 | 3-4 | ✅ Complete |
 | Landing + OAuth | 20 | 3-4 | ✅ Complete |
 | Stripe Integration | 21 | 6-8 | ✅ Complete |
-| **Feature Gating + Analytics** | **22** | **5-6** | ✅ **Complete** |
+| Feature Gating + Analytics | 22 | 5-6 | ✅ Complete |
+| **Stripe Live Mode** | **22** | **1-2** | ✅ **Complete** |
 
-**Cumulative:** ~90-105 hours over 22 days
+**Cumulative:** ~95-110 hours over 22 days
 
 **Average:** ~4.5 hours per day
 
@@ -407,13 +463,16 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 ## Lessons Learned
 
-### Day 22: Feature Gating + Analytics
+### Day 22: Feature Gating + Analytics + Stripe Live
 
 - **Belt-and-suspenders approach is essential** - Client-side checks for UX, server-side checks for security
 - **Upgrade modals need billing toggle** - Users want to see yearly savings before committing
 - **Usage indicators reduce frustration** - Showing "3/10" prevents surprise limit errors
 - **PostHog events should be specific** - `bill_created` with frequency metadata is more useful than generic `item_created`
 - **Feature gates differ by type** - Quantity limits (bills) vs binary access (invoicing) need different UX patterns
+- **Stripe live vs test requires separate webhook endpoints** - Must update webhook URL when switching modes
+- **www vs non-www matters for webhooks** - 307 redirects break webhook signature verification
+- **Stripe uses `cancel_at` timestamp, not just `cancel_at_period_end` boolean** - Customer Portal cancellations set `cancel_at` instead
 
 ### Day 21: Stripe Integration
 
@@ -441,22 +500,24 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - ✅ Google OAuth for frictionless signup
 - ✅ Landing page with clear value proposition
 - ✅ Stripe payments fully integrated
+- ✅ **Stripe live mode - real payments working**
 - ✅ Subscription management in settings
 - ✅ Customer portal for self-service
-- ✅ **PostHog tracking conversion funnel**
-- ✅ **Feature gating enforcing tier limits**
-- ✅ **Upgrade prompts driving conversions**
+- ✅ PostHog tracking conversion funnel
+- ✅ Feature gating enforcing tier limits
+- ✅ Upgrade prompts driving conversions
+- ✅ **Full subscription lifecycle tested (subscribe → cancel → reactivate)**
 
 ## What's Next
 
-1. **Go live with Stripe** - Switch to live mode, real payments
-2. **Reddit launch** - Post to target subreddits
-3. **Monitor analytics** - Watch conversion funnel in PostHog
-4. **User feedback** - Iterate based on real usage
-5. **Bill collision warnings** - Next UX improvement
+1. **Reddit launch** - Post to target subreddits
+2. **Monitor analytics** - Watch conversion funnel in PostHog
+3. **User feedback** - Iterate based on real usage
+4. **Bill collision warnings** - Next UX improvement
+5. **Sentry error monitoring** - Catch production errors
 
 ---
 
-**Status:** Feature gating and analytics complete! Ready for user acquisition. 🚀📊
+**Status:** 🚀 **FULLY LAUNCH-READY** - Live payments, feature gating, analytics all working in production!
 
 **This is a living document. Update after each development session.**

@@ -312,7 +312,10 @@ export default async function Home() {
                 <Link href="#" className="hover:text-zinc-200 transition-colors">
                   Terms
                 </Link>
-                <Link href="#" className="hover:text-zinc-200 transition-colors">
+                <Link
+                  href="mailto:support@cashflowforecaster.io"
+                  className="hover:text-zinc-200 transition-colors"
+                >
                   Contact
                 </Link>
               </div>
