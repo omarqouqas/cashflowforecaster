@@ -306,10 +306,10 @@ export default async function Home() {
             <div className="md:text-center">
               <p className="text-zinc-300 font-medium">Links</p>
               <div className="mt-3 flex flex-col md:items-center gap-2 text-zinc-400">
-                <Link href="#" className="hover:text-zinc-200 transition-colors">
+                <Link href="/privacy" className="hover:text-zinc-200 transition-colors">
                   Privacy
                 </Link>
-                <Link href="#" className="hover:text-zinc-200 transition-colors">
+                <Link href="/terms" className="hover:text-zinc-200 transition-colors">
                   Terms
                 </Link>
                 <Link
