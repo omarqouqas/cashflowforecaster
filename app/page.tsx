@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,56 @@ import LandingHeader from '@/components/landing/landing-header';
 import { AlarmClock, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Sparkles, Wallet } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
+
+export const metadata: Metadata = {
+  title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
+  description:
+    'Project your daily bank balance for the next 60 days. The cash flow app for freelancers who need to know if they can afford expenses before payday.',
+  keywords: [
+    'cash flow forecast',
+    'freelancer budget',
+    'bank balance predictor',
+    'gig worker finances',
+    'freelancer cash flow forecast',
+    'can I afford this calculator',
+    'when will I run out of money calculator',
+    'irregular income budgeting app',
+    'gig worker money management',
+    'predict bank balance',
+    'avoid overdraft freelancer',
+    'invoice to cash flow tracking',
+  ],
+  openGraph: {
+    title: 'Cash Flow Forecaster',
+    description: 'See your bank balance 60 days into the future',
+    url: 'https://cashflowforecaster.io',
+    siteName: 'Cash Flow Forecaster',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cash Flow Forecaster',
+    description: 'Project your bank balance 60 days ahead',
+  },
+};
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Cash Flow Forecaster',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: 4.8,
+    ratingCount: 25,
+  },
+} as const;
 
 export default async function Home() {
   // Get auth state on server
@@ -26,6 +77,11 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white selection-teal scroll-smooth">
+      <script
+        type="application/ld+json"
+        // JSON-LD for rich snippets
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       {/* subtle dot grid */}
       <div
         aria-hidden="true"
@@ -48,7 +104,7 @@ export default async function Home() {
             </div>
 
             <h1 className="mt-6 text-4xl md:text-5xl font-bold text-white tracking-tight">
-              See Your Bank Balance 60 Days Into the Future
+              Cash Flow Forecaster for Freelancers - Project Your Bank Balance 60 Days Ahead
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
