@@ -358,15 +358,15 @@ export default async function Home() {
         </section>
 
         <footer className="px-6 py-12 border-t border-zinc-900">
-          <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+          <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
             <div>
               <p className="text-white font-semibold">Cash Flow Forecaster</p>
               <p className="mt-2 text-zinc-400">Made for freelancers, by a freelancer.</p>
             </div>
 
-            <div className="md:text-center">
+            <div className="md:text-right">
               <p className="text-zinc-300 font-medium">Links</p>
-              <div className="mt-3 flex flex-col md:items-center gap-2 text-zinc-400">
+              <div className="mt-3 flex flex-col md:items-end gap-2 text-zinc-400">
                 <Link href="/privacy" className="hover:text-zinc-200 transition-colors">
                   Privacy
                 </Link>
@@ -378,18 +378,6 @@ export default async function Home() {
                   className="hover:text-zinc-200 transition-colors"
                 >
                   Contact
-                </Link>
-              </div>
-            </div>
-
-            <div className="md:text-right">
-              <p className="text-zinc-300 font-medium">Social</p>
-              <div className="mt-3 flex md:justify-end gap-3 text-zinc-400">
-                <Link href="#" className="hover:text-zinc-200 transition-colors">
-                  X
-                </Link>
-                <Link href="#" className="hover:text-zinc-200 transition-colors">
-                  LinkedIn
                 </Link>
               </div>
             </div>
