@@ -11,7 +11,7 @@
 ## Quick Stats
 
 - **Days in Development:** 23
-- **Commits:** 89
+- **Commits:** 90
 - **Database Tables:** 12
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
@@ -47,6 +47,12 @@
 
 ### Features Completed (last 24 hours)
 
+#### FAQ Section + FAQPage Schema ✅
+
+- [x] Added an FAQ accordion section on the landing page (`components/landing/faq-section.tsx`)
+- [x] Added FAQPage JSON-LD structured data for rich results
+- [x] Wired FAQ section into the home page (`app/page.tsx`)
+
 #### Terms + Privacy Pages ✅
 
 - [x] Added full Terms and Privacy page content components:
@@ -64,14 +70,12 @@
   - `app/sitemap.ts` (sitemap at `/sitemap.xml`)
   - `app/robots.ts` (robots at `/robots.txt`)
 
-### In Progress / Local Changes (uncommitted)
+#### Performance + Quality Tweaks ✅
 
-- [ ] **FAQ Section**: added a new `components/landing/faq-section.tsx` accordion + FAQPage JSON-LD schema; currently wired into `app/page.tsx` locally.
-- [ ] **Performance polish**:
-  - Added explicit `sizes` on the hero image (`app/page.tsx`) to improve responsive loading behavior.
-  - Lighthouse report saved locally (`lighthouse-report.html`) for follow-up iteration.
-- [ ] **Analytics provider optimization**: created `lib/posthog/provider-optimized.tsx` (deferred PostHog init via `requestIdleCallback`) but it is not yet wired into the app (current provider is `app/providers/posthog-provider.tsx`).
-- [ ] **ESLint**: added `@next/next/no-img-element` enforcement (`.eslintrc.json`).
+- [x] Added explicit `sizes` on the hero image (`app/page.tsx`) to improve responsive loading behavior.
+- [x] Generated a Lighthouse report for follow-up iteration (`lighthouse-report.html`).
+- [x] Added `@next/next/no-img-element` enforcement (`.eslintrc.json`).
+- [x] Added an optional PostHog provider variant to defer initialization (`lib/posthog/provider-optimized.tsx`) (not yet wired; current provider is `app/providers/posthog-provider.tsx`).
 
 ### Files Changed (last 24 hours)
 
@@ -84,28 +88,23 @@ app/privacy/page.tsx
 app/privacy/privacy-page.tsx
 app/terms/page.tsx
 app/terms/terms-page.tsx
+components/landing/faq-section.tsx
+lib/posthog/provider-optimized.tsx
+lighthouse-report.html
 ```
 
 **Modified:**
 
 ```
 app/page.tsx
-```
-
-**Uncommitted local changes:**
-
-```
 .eslintrc.json
-app/page.tsx
-components/landing/faq-section.tsx
-lib/posthog/provider-optimized.tsx
-lighthouse-report.html
+docs/development-progress.md
 ```
 
 ### Next Up
 
-- [ ] Commit the FAQ + Lighthouse/perf tweaks (or drop what you don’t want to ship)
 - [ ] Decide whether to switch to the optimized PostHog provider (and verify event capture/pageview behavior)
+- [ ] Use the Lighthouse report to prioritize 1-2 quick landing page wins (LCP/CLS/unused JS)
 - [ ] Continue launch prep (Reddit post + early user feedback loop)
 
 ---
