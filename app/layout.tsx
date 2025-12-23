@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppToaster } from '@/components/ui/toaster';
 import { PostHogProvider } from './providers/posthog-provider';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -57,6 +58,7 @@ export default function RootLayout({
           {children}
         </PostHogProvider>
         <AppToaster />
+        <Analytics />
       </body>
     </html>
   );
