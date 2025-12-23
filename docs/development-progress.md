@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 21, 2025
+**Last Updated:** December 22, 2025
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,8 +10,8 @@
 
 ## Quick Stats
 
-- **Days in Development:** 22
-- **Commits:** ~80+
+- **Days in Development:** 23
+- **Commits:** 89
 - **Database Tables:** 12
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
@@ -40,6 +40,73 @@
 - Reddit launch prep
 - User acquisition
 - User feedback collection
+
+---
+
+## Day 23: Landing Page SEO + Legal Pages + FAQ Structured Data (December 22, 2025)
+
+### Features Completed (last 24 hours)
+
+#### Terms + Privacy Pages ✅
+
+- [x] Added full Terms and Privacy page content components:
+  - `app/terms/terms-page.tsx`
+  - `app/privacy/privacy-page.tsx`
+- [x] Added route wrappers:
+  - `app/terms/page.tsx`
+  - `app/privacy/page.tsx`
+- [x] Linked Terms + Privacy from the landing page footer (`app/page.tsx`)
+
+#### SEO Foundations ✅
+
+- [x] Improved landing page SEO metadata (title/description/keywords + social metadata)
+- [x] Added first-class Next.js metadata routes:
+  - `app/sitemap.ts` (sitemap at `/sitemap.xml`)
+  - `app/robots.ts` (robots at `/robots.txt`)
+
+### In Progress / Local Changes (uncommitted)
+
+- [ ] **FAQ Section**: added a new `components/landing/faq-section.tsx` accordion + FAQPage JSON-LD schema; currently wired into `app/page.tsx` locally.
+- [ ] **Performance polish**:
+  - Added explicit `sizes` on the hero image (`app/page.tsx`) to improve responsive loading behavior.
+  - Lighthouse report saved locally (`lighthouse-report.html`) for follow-up iteration.
+- [ ] **Analytics provider optimization**: created `lib/posthog/provider-optimized.tsx` (deferred PostHog init via `requestIdleCallback`) but it is not yet wired into the app (current provider is `app/providers/posthog-provider.tsx`).
+- [ ] **ESLint**: added `@next/next/no-img-element` enforcement (`.eslintrc.json`).
+
+### Files Changed (last 24 hours)
+
+**Added:**
+
+```
+app/robots.ts
+app/sitemap.ts
+app/privacy/page.tsx
+app/privacy/privacy-page.tsx
+app/terms/page.tsx
+app/terms/terms-page.tsx
+```
+
+**Modified:**
+
+```
+app/page.tsx
+```
+
+**Uncommitted local changes:**
+
+```
+.eslintrc.json
+app/page.tsx
+components/landing/faq-section.tsx
+lib/posthog/provider-optimized.tsx
+lighthouse-report.html
+```
+
+### Next Up
+
+- [ ] Commit the FAQ + Lighthouse/perf tweaks (or drop what you don’t want to ship)
+- [ ] Decide whether to switch to the optimized PostHog provider (and verify event capture/pageview behavior)
+- [ ] Continue launch prep (Reddit post + early user feedback loop)
 
 ---
 

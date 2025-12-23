@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import PricingSection from '@/components/pricing/pricing-section';
 import LandingHeader from '@/components/landing/landing-header';
+import { FAQSection } from '@/components/landing/faq-section';
 import { AlarmClock, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Sparkles, Wallet } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
@@ -145,6 +146,7 @@ export default async function Home() {
                   alt="Cash Flow Forecaster dashboard preview"
                   width={1600}
                   height={900}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 896px"
                   priority
                   className="w-full h-auto"
                 />
@@ -330,6 +332,9 @@ export default async function Home() {
           isLoggedIn={!!user} 
           currentTier={currentTier} 
         />
+
+        {/* FAQ Section */}
+        <FAQSection />
 
         <section className="px-6 py-16">
           <div className="mx-auto max-w-6xl text-center">
