@@ -105,13 +105,15 @@ export default async function Home() {
             </div>
 
             <h1 className="mt-6 text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Cash Flow Forecaster for Freelancers - Project Your Bank Balance 60 Days Ahead
+              &quot;Can I afford rent on the 1st?&quot;
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              Stop guessing if you can afford it. Project your daily balance and spot overdrafts weeks
-              before they happen. Perfect for freelancers, gig workers, and anyone living paycheck to
-              paycheck.
+              Freelancing is hard enough. Your finances shouldn&apos;t keep you guessing.
+            </p>
+
+            <p className="mt-2 text-sm text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+              See your projected bank balance 60 days into the future.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
