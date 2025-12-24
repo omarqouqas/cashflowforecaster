@@ -21,7 +21,9 @@ export async function GET(request: Request) {
       )
     }
 
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    // Redirect to a client page so we can safely set localStorage (SSR-safe),
+    // then send the user to the intended destination.
+    return NextResponse.redirect(new URL('/auth/oauth-success?next=/dashboard', request.url))
   } catch {
     return NextResponse.redirect(
       new URL('/auth/login?error=oauth_error', request.url)

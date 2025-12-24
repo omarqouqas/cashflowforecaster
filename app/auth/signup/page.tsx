@@ -81,6 +81,14 @@ export default function SignupPage() {
         setError(formatErrorMessage(signUpError.message));
       } else {
         setSuccess('Account created successfully! Please check your email to verify your account.');
+        // Mark that the user has created an account (client-side only)
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('hasSignedUp', 'true');
+          } catch {
+            // Ignore storage failures (privacy mode, blocked storage, etc.)
+          }
+        }
         // Optionally redirect after a delay
         setTimeout(() => {
           router.push('/dashboard');

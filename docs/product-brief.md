@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.0  
-**Last Updated:** December 21, 2025  
+**Version:** 4.1  
+**Last Updated:** December 24, 2025  
 **Status:** Live - Accepting Payments - Feature Complete  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -18,7 +18,7 @@
 
 **One-Liner:** "See your bank balance 60 days into the future."
 
-**Hook:** "Project your daily balance for the next 60 days."
+**Hook:** "Project your daily balance for the next 60 days — and know what you can safely spend each day."
 
 Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance 60 days into the future. Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
 
@@ -34,6 +34,11 @@ Cash Flow Forecaster projects bank balance 60 days into the future using a daily
 - Recurring bills (with due dates)
 
 The app calculates and displays a 60-day calendar showing projected daily balances, color-coded to highlight low-balance days. Users can test "Can I afford it?" scenarios before making purchases.
+
+**New (Dashboard Guidance):** The dashboard now surfaces the most actionable insights up front:
+- A **Daily Budget** (or **Daily Shortfall**) until the next income
+- A supportive **“Your Path Forward”** card when the forecast goes negative (deficit + concrete options)
+- A forecast-aware status subtitle (in the green / low-balance days / first overdraft risk date)
 
 ### Target Market
 
@@ -130,6 +135,13 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
    - Mobile-responsive dark theme design
    - Today indicator with auto-scroll
    - Overdraft warning banners
+
+1b. **Dashboard Guidance & Daily Budgeting** ✅
+   - **Daily Budget / Daily Shortfall**: a per-day spending budget until the next upcoming income (nearest income source).
+   - **Your Path Forward**: shown only when the forecast goes negative; provides calm, actionable options:
+     - Bring in $X before the first negative day, **or**
+     - Reduce spending by $Y/day (with copy adjustments for 0–1 day edge cases).
+   - Forecast-aware status messaging: “in the green”, “low-balance days”, or “may overdraft on [date]”.
 
 2. **Account Management** ✅
    - Multiple bank accounts
@@ -555,6 +567,6 @@ User Request
 ---
 
 **Document Version:** 4.0  
-**Last Updated:** December 21, 2025  
+**Last Updated:** December 24, 2025  
 **Status:** Live - Feature Complete - Ready for User Acquisition 🎉  
 **Next Review:** January 2025

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import PricingSection from '@/components/pricing/pricing-section';
 import LandingHeader from '@/components/landing/landing-header';
 import { FAQSection } from '@/components/landing/faq-section';
+import { GetStartedCTA } from '@/components/landing/get-started-cta';
 import { AlarmClock, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Sparkles, Wallet } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
@@ -117,14 +117,7 @@ export default async function Home() {
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
-              <Link href="/auth/signup">
-                <Button
-                  variant="primary"
-                  className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950"
-                >
-                  Get Started Free
-                </Button>
-              </Link>
+              <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
 
               <p className="text-sm text-zinc-400">No credit card required • Free forever plan</p>
 
@@ -347,14 +340,7 @@ export default async function Home() {
               Join freelancers who finally know where their money is going.
             </p>
             <div className="mt-6 flex justify-center">
-              <Link href="/auth/signup">
-                <Button
-                  variant="primary"
-                  className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950"
-                >
-                  Get Started Free
-                </Button>
-              </Link>
+              <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
             </div>
           </div>
         </section>
