@@ -67,8 +67,8 @@ export default async function CalendarPage() {
         </div>
 
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-zinc-400">60-day projection</p>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-zinc-100">Cash Flow Calendar</h1>
+          <p className="text-sm text-slate-600 dark:text-zinc-400">60-day projection</p>
         </div>
 
         <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
@@ -120,8 +120,8 @@ export default async function CalendarPage() {
         </div>
 
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-zinc-400">60-day projection</p>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-zinc-100">Cash Flow Calendar</h1>
+          <p className="text-sm text-slate-600 dark:text-zinc-400">60-day projection</p>
         </div>
 
         <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 rounded-md px-4 py-3 mb-6">

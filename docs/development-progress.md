@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 22, 2025
+**Last Updated:** December 24, 2025
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -40,6 +40,64 @@
 - Reddit launch prep
 - User acquisition
 - User feedback collection
+- Dashboard UX polish (freelancer-friendly day-to-day guidance)
+
+---
+
+## Day 25: Dashboard Guidance Cards + Mobile Responsiveness (December 24, 2025)
+
+### Features Completed (last 24 hours)
+
+#### Dashboard: Daily Budget + Path Forward guidance ✅
+
+- [x] Added a **Daily Budget** card (or **Daily Shortfall** when negative) to help users understand day-to-day spending runway until their next income.
+  - Uses existing forecast data (accounts + income + bills) — no new API calls.
+  - Negative budgets are reframed as a shortfall (e.g. “$235/day short”).
+- [x] Added a supportive **“Your Path Forward”** card when the 60-day forecast goes negative:
+  - Finds the first negative-balance day, calculates deficit and suggested actions.
+  - Copy tweaks for edge cases (e.g. if only 1 day left: “Cut $X from spending tomorrow”).
+
+#### Dashboard: Forecast-aware welcome messaging ✅
+
+- [x] Replaced the static dashboard subtitle with dynamic messaging based on the 60-day forecast:
+  - ✅ In the green (teal)
+  - ⚠️ Low-balance days (amber)
+  - ❗ Negative day/overdraft risk (rose)
+- [x] Always shows a **“View full calendar →”** link under the subtitle.
+
+#### Dashboard: Improved information hierarchy + reduced redundancy ✅
+
+- [x] Removed the old “Low balance warning” card (redundant with the new subtitle + forecast card).
+- [x] Reordered dashboard sections so the most actionable items appear first.
+- [x] Made the **60‑Day Forecast** card more compact.
+
+#### Mobile UX polish ✅
+
+- [x] Improved dashboard mobile responsiveness:
+  - Stats row is responsive (2x2 on mobile/tablet, 4 across on desktop).
+  - Reduced mobile padding (px-4 feel on small screens).
+  - Hides “No outstanding invoices” on mobile to reduce clutter.
+  - Ensures “Your Path Forward” stays readable/visible on small screens.
+
+#### Calendar: navigation consistency ✅
+
+- [x] Added **“← Back to Dashboard”** breadcrumb at the top of the Calendar page, matching other dashboard sub-pages.
+
+### Files Changed (last 24 hours)
+
+**Modified:**
+
+```
+app/dashboard/page.tsx
+app/dashboard/calendar/page.tsx
+docs/development-progress.md
+```
+
+### Next Up
+
+- [ ] Reddit launch: ship a short walkthrough post (focus on freelancer “daily budget” + runway)
+- [ ] Monitor PostHog funnels for dashboard engagement (daily budget card click-through, scenario usage)
+- [ ] Consider lightweight automated tests for forecast-derived cards (edge cases around dates/timezones)
 
 ---
 
