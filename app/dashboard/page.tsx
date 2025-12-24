@@ -2,13 +2,12 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { SuccessMessage } from '@/components/ui/success-message';
 import Link from 'next/link';
-import { Calendar, Receipt, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Calendar, Receipt, CheckCircle2, Lightbulb } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
 import { getInvoiceSummary } from '@/lib/actions/invoices';
-import { differenceInCalendarDays, startOfDay } from 'date-fns';
-import { LOW_BALANCE_THRESHOLD } from '@/lib/calendar/constants';
+import { differenceInCalendarDays, startOfDay, format } from 'date-fns';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 
 interface DashboardPageProps {
@@ -70,22 +69,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     }
   }
 
-  const lowBalanceWarning = (() => {
-    if (!calendarData) return null;
-
-    const today = startOfDay(new Date());
-    const upcoming = calendarData.days
-      .map((day) => ({
-        day,
-        daysFromNow: differenceInCalendarDays(startOfDay(day.date), today),
-      }))
-      .filter((x) => x.daysFromNow >= 0 && x.daysFromNow < 14)
-      .filter((x) => x.day.balance < LOW_BALANCE_THRESHOLD)
-      .sort((a, b) => a.day.balance - b.day.balance)[0];
-
-    if (!upcoming) return null;
-    return { amount: upcoming.day.balance, date: upcoming.day.date };
-  })();
+  // (Removed) Low balance warning card — now covered by the dynamic subtitle + forecast card.
 
   // Calculate monthly income equivalent
   const calculateMonthlyIncome = (incomes: any[]) => {
@@ -136,6 +120,111 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const monthlyBills = calculateMonthlyBills(bills);
   const activeBillsCount = bills.filter(b => b.is_active).length;
 
+  // Forecast status (for dynamic dashboard subtitle)
+  const forecastStatus = (() => {
+    if (!calendarData) return null;
+
+    const days = calendarData.days ?? [];
+    const negativeDays = days.filter((d) => d.balance < 0);
+    const lowBalanceDays = days.filter((d) => d.balance >= 0 && d.balance < safetyBuffer);
+
+    return {
+      negativeCount: negativeDays.length,
+      lowBalanceCount: lowBalanceDays.length,
+      firstNegativeDate: negativeDays[0]?.date ?? null,
+    };
+  })();
+
+  // Daily Spending Budget until next income
+  const dailyBudgetData = (() => {
+    if (!calendarData) return null;
+
+    const today = startOfDay(new Date());
+
+    const nextIncome = calendarData.days
+      .map((day) => ({
+        day,
+        daysFromNow: differenceInCalendarDays(startOfDay(day.date), today),
+      }))
+      .filter((x) => x.daysFromNow >= 0)
+      .filter((x) => (x.day.income?.length ?? 0) > 0)
+      .sort((a, b) => a.daysFromNow - b.daysFromNow)[0];
+
+    if (!nextIncome) return null;
+
+    const nextIncomeDate = nextIncome.day.date;
+    const daysUntilIncome = nextIncome.daysFromNow;
+
+    // Bills due between now and the income date (excluding the income day itself)
+    const billsDueUntilIncome = calendarData.days
+      .map((day) => ({
+        day,
+        daysFromNow: differenceInCalendarDays(startOfDay(day.date), today),
+        daysFromIncome: differenceInCalendarDays(startOfDay(day.date), startOfDay(nextIncomeDate)),
+      }))
+      .filter((x) => x.daysFromNow >= 0)
+      .filter((x) => x.daysFromIncome < 0)
+      .reduce((sum, x) => sum + (x.day.bills ?? []).reduce((s, b) => s + (b.amount ?? 0), 0), 0);
+
+    const remainingAfterBills = totalBalance - billsDueUntilIncome;
+    const divisorDays = Math.max(1, daysUntilIncome);
+    const dailyBudget = remainingAfterBills / divisorDays;
+
+    return {
+      nextIncomeDate,
+      daysUntilIncome,
+      billsDueUntilIncome,
+      remainingAfterBills,
+      dailyBudget,
+    };
+  })();
+
+  const dailyBudgetColorClass = (() => {
+    if (!dailyBudgetData) return 'text-zinc-900';
+    if (dailyBudgetData.dailyBudget >= 50) return 'text-teal-500';
+    if (dailyBudgetData.dailyBudget >= 20) return 'text-amber-500';
+    return 'text-rose-500';
+  })();
+
+  const formatCurrencyNoCents = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // "Get Back on Track" guidance card (only when forecast goes negative)
+  const pathForwardData = (() => {
+    if (!calendarData) return null;
+
+    const today = startOfDay(new Date());
+
+    const firstNegative = calendarData.days
+      .map((day) => ({
+        day,
+        daysFromNow: differenceInCalendarDays(startOfDay(day.date), today),
+      }))
+      .filter((x) => x.daysFromNow >= 0)
+      .filter((x) => x.day.balance < 0)
+      .sort((a, b) => a.daysFromNow - b.daysFromNow)[0];
+
+    if (!firstNegative) return null;
+
+    const problemDate = firstNegative.day.date;
+    const daysUntil = firstNegative.daysFromNow;
+    const deficit = Math.abs(firstNegative.day.balance);
+    const divisorDays = Math.max(1, daysUntil);
+    const dailyReduction = deficit / divisorDays;
+
+    return {
+      problemDate,
+      daysUntil,
+      deficit,
+      dailyReduction,
+    };
+  })();
+
   // Helper function to get balance color based on status
   const getBalanceColor = (balance: number, buffer: number) => {
     if (balance >= buffer * 2) return 'text-green-600 dark:text-green-400';
@@ -145,7 +234,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 border border-slate-200 dark:border-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 sm:p-6 border border-slate-200 dark:border-slate-700">
           {/* Success Message */}
           {message === 'password-updated' && (
             <div className="mb-6">
@@ -156,35 +245,183 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
             Welcome to Cash Flow Forecaster!
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Your 60-day cash flow calendar will appear here soon.
-          </p>
+          <div className="mb-6">
+            <p
+              className={[
+                'text-sm font-medium',
+                forecastStatus?.negativeCount
+                  ? 'text-rose-500'
+                  : forecastStatus?.lowBalanceCount
+                    ? 'text-amber-500'
+                    : forecastStatus
+                      ? 'text-teal-500'
+                      : 'text-gray-600 dark:text-gray-400',
+              ].join(' ')}
+            >
+              {forecastStatus?.negativeCount ? (
+                <>
+                  You may overdraft on {forecastStatus.firstNegativeDate ? formatDate(forecastStatus.firstNegativeDate) : 'a future day'}
+                  . Let&apos;s fix that.
+                </>
+              ) : forecastStatus?.lowBalanceCount ? (
+                <>Heads up — {forecastStatus.lowBalanceCount} low-balance day{forecastStatus.lowBalanceCount === 1 ? '' : 's'} in the next 60 days.</>
+              ) : forecastStatus ? (
+                <>✓ You&apos;re in the green for the next 60 days.</>
+              ) : (
+                <>Your 60-day cash flow calendar will appear here soon.</>
+              )}
+            </p>
+            <Link href="/dashboard/calendar" className="text-teal-500 text-sm hover:underline">
+              View full calendar →
+            </Link>
+          </div>
 
-          {/* Low balance warning (next 14 days) */}
-          {lowBalanceWarning && (
+          {/* Path Forward (first negative day in forecast) */}
+          {pathForwardData && (
             <div className="mb-6">
-              <div className="bg-amber-500/10 border border-amber-500/50 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-amber-400">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span className="font-medium">Low balance warning</span>
+              <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4 sm:p-5">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="w-5 h-5 text-teal-600 dark:text-teal-300" />
+                      <span className="font-semibold text-slate-900 dark:text-zinc-100">
+                        Your Path Forward
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-slate-700 dark:text-zinc-200 mt-2">
+                      To stay in the green by {format(pathForwardData.problemDate, 'MMM d')}, you could:
+                    </p>
+
+                    <div className="mt-3 space-y-2 text-sm">
+                      <p className="text-slate-800 dark:text-zinc-100">
+                        •{' '}
+                        <span className="font-semibold text-teal-700 dark:text-teal-200">
+                          Bring in {formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}
+                        </span>{' '}
+                        before then
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <div className="h-px flex-1 bg-teal-500/20" />
+                        <span className="text-xs uppercase tracking-wide text-teal-700/80 dark:text-teal-200/80">
+                          or
+                        </span>
+                        <div className="h-px flex-1 bg-teal-500/20" />
+                      </div>
+                      <p className="text-slate-800 dark:text-zinc-100">
+                        •{' '}
+                        <span className="font-semibold text-teal-700 dark:text-teal-200">
+                          {pathForwardData.daysUntil <= 1
+                            ? `Cut ${formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}`
+                            : `Cut ${formatCurrencyNoCents(Math.ceil(pathForwardData.dailyReduction), currency)}/day`}
+                        </span>{' '}
+                        {pathForwardData.daysUntil === 0
+                          ? 'from spending today'
+                          : pathForwardData.daysUntil === 1
+                            ? `from spending tomorrow`
+                            : 'from spending'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
+                    <ScenarioButton variant="nav" source="dashboard" label="Test a Scenario →" />
+                    <p className="hidden sm:block text-xs text-slate-600 dark:text-zinc-300 max-w-[200px] text-right">
+                      Try a “what if” purchase and see the impact.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-slate-700 dark:text-zinc-300 text-sm mt-1">
-                  Your balance may drop to {formatCurrency(lowBalanceWarning.amount, currency)} on{' '}
-                  {formatDate(lowBalanceWarning.date)}
-                </p>
-                <Link href="/dashboard/calendar" className="text-teal-500 text-sm hover:underline">
-                  View calendar →
-                </Link>
               </div>
             </div>
           )}
+
+          {/* Quick Stats (responsive 2x2 on mobile/tablet, 4 across on desktop) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+            {/* Daily Budget / Shortfall */}
+            <Link href="/dashboard/calendar" className="h-full">
+              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
+                  {dailyBudgetData && dailyBudgetData.dailyBudget < 0 ? 'Daily Shortfall' : 'Daily Budget'}
+                </p>
+                <div className="mt-2">
+                  <p className={`text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight ${dailyBudgetColorClass}`}>
+                    {dailyBudgetData
+                      ? dailyBudgetData.dailyBudget < 0
+                        ? `${formatCurrencyNoCents(Math.ceil(Math.abs(dailyBudgetData.dailyBudget)), currency)}/day short`
+                        : `${formatCurrencyNoCents(Math.floor(dailyBudgetData.dailyBudget), currency)}/day`
+                      : '—'}
+                  </p>
+                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                    {dailyBudgetData
+                      ? dailyBudgetData.dailyBudget < 0
+                        ? `Need extra income before ${format(dailyBudgetData.nextIncomeDate, 'MMM d')}`
+                        : dailyBudgetData.daysUntilIncome === 0
+                          ? `until income today`
+                          : `until ${format(dailyBudgetData.nextIncomeDate, 'MMM d')} (${dailyBudgetData.daysUntilIncome}d)`
+                      : 'Add income to calculate'}
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Accounts Card */}
+            <Link href="/dashboard/accounts" className="h-full">
+              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Accounts</p>
+                <div className="mt-2">
+                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-zinc-900">
+                    {formatCurrency(totalBalance, currency)}
+                  </p>
+                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                    {accountCount > 0
+                      ? `Across ${accountCount} ${accountCount === 1 ? 'account' : 'accounts'}`
+                      : 'Add your bank accounts'}
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Income Card */}
+            <Link href="/dashboard/income" className="h-full">
+              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Income</p>
+                <div className="mt-2">
+                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-600">
+                    {formatCurrency(monthlyIncome, currency)}
+                  </p>
+                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                    {incomeCount > 0
+                      ? `From ${incomeCount} ${incomeCount === 1 ? 'source' : 'sources'}`
+                      : 'Track income sources'}
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Bills Card */}
+            <Link href="/dashboard/bills" className="h-full">
+              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
+                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Bills</p>
+                <div className="mt-2">
+                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-600">
+                    {formatCurrency(monthlyBills, currency)}
+                  </p>
+                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                    {activeBillsCount > 0
+                      ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
+                      : 'Track your bills'}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </div>
 
           {/* Calendar card (kept separate from the 3 summary cards grid) */}
           {calendarData && (
             <div className="mb-6">
               <Link href="/dashboard/calendar">
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-4">
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-5 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
+                  <div className="flex justify-between items-start mb-3">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                       <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
@@ -216,12 +453,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           )}
 
           {/* "Can I Afford It?" scenario tester */}
-          <div className="mb-6">
-            <ScenarioButton variant="card" source="dashboard" />
+          <div className="my-6">
+            <ScenarioButton variant="card" source="dashboard" className="p-4 sm:p-6" />
           </div>
 
           {/* Outstanding invoices */}
-          <div className="mb-6">
+          <div className={invoiceSummary.unpaidCount === 0 ? 'hidden sm:block mb-6' : 'mb-6'}>
             <div className="border border-zinc-200 bg-white rounded-lg p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -263,60 +500,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Summary cards (Minimalist Utility) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            {/* Accounts Card */}
-            <Link href="/dashboard/accounts">
-              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Accounts</p>
-                <div className="mt-2">
-                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-900">
-                    {formatCurrency(totalBalance, currency)}
-                  </p>
-                  <p className="text-sm text-zinc-500 mt-1">
-                    {accountCount > 0
-                      ? `Across ${accountCount} ${accountCount === 1 ? 'account' : 'accounts'}`
-                      : 'Add your bank accounts'}
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Income Card */}
-            <Link href="/dashboard/income">
-              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Income</p>
-                <div className="mt-2">
-                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-emerald-600">
-                    {formatCurrency(monthlyIncome, currency)}
-                  </p>
-                  <p className="text-sm text-zinc-500 mt-1">
-                    {incomeCount > 0
-                      ? `From ${incomeCount} ${incomeCount === 1 ? 'source' : 'sources'}`
-                      : 'Track income sources'}
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Bills Card */}
-            <Link href="/dashboard/bills">
-              <div className="border border-zinc-200 bg-white rounded-lg p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Bills</p>
-                <div className="mt-2">
-                  <p className="text-3xl font-semibold tabular-nums tracking-tight text-rose-600">
-                    {formatCurrency(monthlyBills, currency)}
-                  </p>
-                  <p className="text-sm text-zinc-500 mt-1">
-                    {activeBillsCount > 0
-                      ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
-                      : 'Track your bills'}
-                  </p>
-                </div>
-              </div>
-            </Link>
           </div>
         </div>
   );

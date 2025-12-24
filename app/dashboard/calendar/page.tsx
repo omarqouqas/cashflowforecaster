@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Tables } from '@/types/supabase'
 import generateCalendar from '@/lib/calendar/generate'
 import Link from 'next/link'
-import { Calendar as CalendarIcon } from 'lucide-react'
+import { ArrowLeft, Calendar as CalendarIcon } from 'lucide-react'
 import { CalendarContainer } from '@/components/calendar/calendar-container'
 import { ScenarioButton } from '@/components/scenarios/scenario-button'
 
@@ -55,6 +55,17 @@ export default async function CalendarPage() {
   if (accounts.length === 0) {
     return (
       <div>
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back to Dashboard
+          </Link>
+        </div>
+
         <div className="mb-6">
           <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
           <p className="text-sm text-zinc-400">60-day projection</p>
@@ -97,6 +108,17 @@ export default async function CalendarPage() {
   if (!calendarData) {
     return (
       <div>
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back to Dashboard
+          </Link>
+        </div>
+
         <div className="mb-6">
           <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
           <p className="text-sm text-zinc-400">60-day projection</p>
@@ -138,6 +160,17 @@ export default async function CalendarPage() {
 
   return (
     <div>
+      {/* Breadcrumb */}
+      <div className="mb-6">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back to Dashboard
+        </Link>
+      </div>
+
       <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
         {/* Page Header */}
         <div className="px-4 py-4 border-b border-zinc-800">
