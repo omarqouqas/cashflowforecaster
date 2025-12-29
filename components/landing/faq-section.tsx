@@ -14,6 +14,10 @@ const faqs: FAQItem[] = [
     answer: "Cash Flow Forecaster uses a simple but powerful algorithm. You enter your current account balance, recurring income (with frequencies like weekly, bi-weekly, or monthly), and recurring bills with their due dates. The app then projects your balance day-by-day for the next 60 days, showing you exactly when money comes in and goes out. It's like having a financial crystal ball that answers 'Will I have enough on the 15th?' with precision."
   },
   {
+    question: "What's included in the weekly email digest?",
+    answer: "Every week, you'll receive an email summarizing your upcoming cash flow: total income expected, bills due, your lowest balance day, and any alerts like bill collisions or overdraft risks. You can customize which day and time you receive it in your settings."
+  },
+  {
     question: "How is this different from Mint or YNAB?",
     answer: "Traditional budgeting apps like Mint and YNAB focus on tracking where your money went—they're backward-looking. Cash Flow Forecaster is forward-looking. Instead of categorizing past expenses, we show you your projected daily balance for the next 60 days. The calendar interface answers the real question freelancers have: 'Can I afford this expense before my next paycheck arrives?' Plus, our 'Can I Afford It?' feature lets you test hypothetical purchases and see exactly how they'd impact your future balance."
   },

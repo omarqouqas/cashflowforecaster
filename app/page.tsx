@@ -5,14 +5,14 @@ import PricingSection from '@/components/pricing/pricing-section';
 import LandingHeader from '@/components/landing/landing-header';
 import { FAQSection } from '@/components/landing/faq-section';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
-import { AlarmClock, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Sparkles, Wallet } from 'lucide-react';
+import { AlarmClock, AlertTriangle, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Lock, Mail, Shield, Sparkles, Wallet } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 
 export const metadata: Metadata = {
   title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
   description:
-    'Project your daily bank balance for the next 60 days. The cash flow app for freelancers who need to know if they can afford expenses before payday.',
+    'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
   keywords: [
     'cash flow forecast',
     'freelancer budget',
@@ -29,7 +29,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Cash Flow Forecaster',
-    description: 'See your bank balance 60 days into the future',
+    description:
+      'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
     url: 'https://cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
@@ -37,7 +38,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Cash Flow Forecaster',
-    description: 'Project your bank balance 60 days ahead',
+    description:
+      'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
   },
 };
 
@@ -112,8 +114,11 @@ export default async function Home() {
               Freelancing is hard enough. Your finances shouldn&apos;t keep you guessing.
             </p>
 
-            <p className="mt-2 text-sm text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              See your projected bank balance 60 days into the future.
+            <p className="mt-2 text-zinc-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto px-4 leading-relaxed">
+              Project your daily balance for the next 60 days.
+              <span className="block mt-2 text-sm sm:text-base md:text-lg text-zinc-500">
+                Weekly forecasts in your inbox. Bill collision alerts. Never get caught off guard.
+              </span>
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -155,11 +160,11 @@ export default async function Home() {
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">How it works</h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                A simple 3-step flow to get clarity on what's safe to spend—today and 60 days from now.
+                A simple 4-step flow to get clarity on what's safe to spend—today and 60 days from now.
               </p>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
@@ -206,6 +211,21 @@ export default async function Home() {
                 <h3 className="mt-4 font-semibold text-white">See Your Future</h3>
                 <p className="mt-2 text-zinc-400">Get a 60-day calendar projection with low days highlighted.</p>
               </div>
+
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-teal-300" />
+                  </div>
+                  <div className="text-sm text-zinc-300">
+                    <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-teal-500 text-zinc-950 font-semibold">
+                      4
+                    </span>
+                  </div>
+                </div>
+                <h3 className="mt-4 font-semibold text-white">Stay Informed</h3>
+                <p className="mt-2 text-zinc-400">Get weekly digests and alerts delivered to your inbox.</p>
+              </div>
             </div>
           </div>
         </section>
@@ -221,7 +241,8 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+            {/* Top row - 3 feature cards */}
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col">
                 <div className="flex items-center justify-between">
                   <div className="h-10 w-10 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
@@ -319,6 +340,81 @@ export default async function Home() {
                 </div>
               </div>
             </div>
+
+            {/* Bottom row - 2 cards centered */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto items-stretch">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col">
+                <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Mail className="w-6 h-6 text-teal-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-zinc-100 mb-2">Weekly Cash Flow Digest</h3>
+                <p className="text-zinc-400">
+                  Start every week knowing exactly what&apos;s coming. Get a summary of your upcoming income, bills,
+                  and any days to watch out for — delivered to your inbox.
+                </p>
+
+                {/* Mini visual: email-style preview */}
+                <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+                  <div className="flex items-center gap-2 text-sm text-zinc-200">
+                    <Mail className="h-4 w-4 text-teal-300" />
+                    <span className="font-medium">Your week ahead</span>
+                  </div>
+                  <div className="mt-3 rounded-lg bg-zinc-900/40 border border-zinc-800 p-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-zinc-400">Income</span>
+                      <span className="font-semibold text-emerald-400">+$3,200</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                      <span className="text-zinc-400">Bills</span>
+                      <span className="font-semibold text-rose-300">-$1,847</span>
+                    </div>
+                    <div className="mt-3 h-px bg-zinc-800" />
+                    <div className="mt-3 flex items-center justify-between text-sm">
+                      <span className="text-zinc-300">Net</span>
+                      <span className="font-semibold text-teal-200">+$1,353</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col">
+                <div className="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-zinc-100 mb-2">Bill Collision Alerts</h3>
+                <p className="text-zinc-400">
+                  Multiple bills hitting the same day? We&apos;ll warn you before it happens, so you can plan ahead
+                  and avoid surprise cash crunches.
+                </p>
+
+                {/* Mini visual: collision day preview */}
+                <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+                  <div className="flex items-center gap-2 text-sm text-zinc-200">
+                    <AlertTriangle className="h-4 w-4 text-amber-400" />
+                    <span className="font-medium">Thu, Jan 16</span>
+                  </div>
+                  <div className="mt-3 rounded-lg bg-zinc-900/40 border border-zinc-800 p-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-zinc-300">Rent</span>
+                      <span className="font-semibold text-zinc-100">$1,500</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                      <span className="text-zinc-300">Car Ins.</span>
+                      <span className="font-semibold text-zinc-100">$247</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                      <span className="text-zinc-300">Electric</span>
+                      <span className="font-semibold text-zinc-100">$85</span>
+                    </div>
+                    <div className="mt-3 h-px bg-zinc-800" />
+                    <div className="mt-3 flex items-center justify-between text-sm">
+                      <span className="text-zinc-400">Total</span>
+                      <span className="font-semibold text-amber-200">$1,832 due</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -341,6 +437,25 @@ export default async function Home() {
             </p>
             <div className="mt-6 flex justify-center">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
+            </div>
+          </div>
+        </section>
+
+        <section className="px-6 py-12 border-t border-zinc-900">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-zinc-400 text-sm">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-teal-500" />
+                <span>Bank-level security</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-teal-500" />
+                <span>Weekly digests, zero spam</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-teal-500" />
+                <span>We never store bank credentials</span>
+              </div>
             </div>
           </div>
         </section>

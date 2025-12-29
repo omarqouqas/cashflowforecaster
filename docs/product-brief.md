@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.1  
-**Last Updated:** December 24, 2025  
+**Version:** 4.2  
+**Last Updated:** December 29, 2025  
 **Status:** Live - Accepting Payments - Feature Complete  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -197,6 +197,12 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
     - Feature usage metrics
     - Session recording
 
+11. **Weekly Email Digest (Engagement / Retention)** ✅
+    - Weekly summary of the next 7 days (income, bills, net change)
+    - Alerts: low balance, overdraft risk, bill collisions
+    - User-configurable schedule (day + time) with timezone support
+    - Unsubscribe link + open/click tracking
+
 ### Premium Features (Post-MVP)
 
 11. **Email Parser** (Planned)
@@ -386,6 +392,26 @@ User Request
 | `upgrade_initiated` | tier, interval | Conversion funnel |
 | `subscription_created` | tier, interval, mrr | Revenue |
 
+### Weekly Digest (Retention Loop)
+
+| Event | Properties | Purpose |
+|-------|------------|---------|
+| `digest_sent` | user_id, has_alerts, bill_count, income_count | Retention |
+| `digest_opened` | user_id | Retention |
+| `digest_clicked` | user_id, link | Retention |
+| `digest_settings_updated` | enabled, day, time | Retention |
+| `digest_unsubscribed` | user_id, method | Compliance / Retention |
+
+---
+
+## Email Digest Implementation Notes (Production)
+
+- **Schedule**: Vercel Cron hits `/api/cron/weekly-digest` hourly; the server checks each user’s timezone + preferred day/time.
+- **Security**:
+  - Cron endpoint requires `CRON_SECRET` bearer auth
+  - Unsubscribe / click / open tokens are HMAC-signed (recommended: `EMAIL_TOKEN_SECRET`)
+  - Cron/unsubscribe use a Supabase service-role client (never exposed to browser)
+
 ---
 
 ## Go-to-Market Strategy
@@ -504,7 +530,8 @@ User Request
 - [ ] Sentry error monitoring
 - [ ] Multi-currency support
 - [ ] Export to CSV/PDF
-- [ ] Email notifications
+- [x] Weekly email digest
+- [ ] Email notifications (other than digest)
 
 ### Phase 3 Features (Months 5-8)
 
@@ -567,6 +594,6 @@ User Request
 ---
 
 **Document Version:** 4.0  
-**Last Updated:** December 24, 2025  
+**Last Updated:** December 29, 2025  
 **Status:** Live - Feature Complete - Ready for User Acquisition 🎉  
 **Next Review:** January 2025

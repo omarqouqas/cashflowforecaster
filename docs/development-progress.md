@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 24, 2025
+**Last Updated:** December 29, 2025
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -34,6 +34,7 @@
 - ✅ Phase 11: Stripe Integration (Day 21) - COMPLETE
 - ✅ Phase 12: Feature Gating + Analytics (Day 22) - COMPLETE
 - ✅ Phase 13: Stripe Live Mode (Day 22) - COMPLETE
+- ✅ Phase 14: Weekly Email Digest (Day 26) - COMPLETE
 
 **Current Focus:**
 
@@ -41,6 +42,7 @@
 - User acquisition
 - User feedback collection
 - Dashboard UX polish (freelancer-friendly day-to-day guidance)
+- Retention loop: weekly email digest (monitor open/click + settings adoption)
 
 ---
 
@@ -100,6 +102,78 @@ docs/development-progress.md
 - [ ] Consider lightweight automated tests for forecast-derived cards (edge cases around dates/timezones)
 
 ---
+
+## Day 26: Weekly Email Digest (December 29, 2025)
+
+### Features Completed (today)
+
+#### Weekly email digest (Resend) ✅
+
+- [x] Added **weekly email digest preferences** to `user_settings`:
+  - `email_digest_enabled` (default true)
+  - `email_digest_day` (0=Sun … 6=Sat, default Monday)
+  - `email_digest_time` (default 08:00)
+  - `last_digest_sent_at` (anti-duplicate)
+- [x] Implemented digest data generation using the existing **calendar projection + collision detection**:
+  - Week-at-a-glance totals (income, bills, net)
+  - Lowest balance and date
+  - Alerts: low balance, overdraft risk, bill collisions
+  - Upcoming bills (top 5 largest) + all income in the week
+- [x] Built a responsive, inline-styled digest email template (600px max width, dark-friendly, mobile-friendly)
+  - Conditional “Heads up” section
+  - “No bills due” / “No income expected” empty states
+- [x] Added hourly cron job (`/api/cron/weekly-digest`) to send digests based on **user timezone + preferred day/time**
+  - Protected by `CRON_SECRET`
+  - Concurrency-limited sending
+- [x] Added signed unsubscribe + tracking endpoints:
+  - `digest_opened` (tracking pixel)
+  - `digest_clicked` (redirect link)
+  - `digest_unsubscribed` (unsubscribe page)
+  - `digest_sent` (server-side event on send)
+- [x] Added Settings UI: “Email Preferences” card with toggle + day + time selectors
+
+### Environment Variables Added
+
+```bash
+CRON_SECRET=your-secure-random-string
+# Optional (recommended): used for signed email tokens; falls back to CRON_SECRET if unset
+EMAIL_TOKEN_SECRET=your-secure-random-string
+```
+
+### Files Changed / Added (today)
+
+**Added:**
+
+```
+supabase/migrations/202512290001_add_digest_settings.sql
+lib/email/generate-digest-data.ts
+lib/email/send-digest.ts
+lib/email/digest-token.ts
+lib/posthog/server.ts
+lib/supabase/admin.ts
+components/emails/weekly-digest.tsx
+components/settings/email-digest-form.tsx
+app/api/cron/weekly-digest/route.ts
+app/api/cron/weekly-digest/send/route.ts
+app/api/email/unsubscribe/route.ts
+app/api/email/track/route.ts
+app/api/email/click/route.ts
+lib/actions/update-digest-settings.ts
+vercel.json
+```
+
+**Modified:**
+
+```
+app/dashboard/settings/page.tsx
+types/supabase.ts
+```
+
+### Next Up
+
+- [ ] Verify deliverability + rendering across Gmail/Outlook/Apple Mail (mobile + desktop)
+- [ ] Confirm Vercel Cron is enabled in production and cron auth header is set correctly
+- [ ] Monitor digest funnel in PostHog (sent → opened → clicked → return visit)
 
 ## Day 23: Landing Page SEO + Legal Pages + FAQ Structured Data (December 22, 2025)
 

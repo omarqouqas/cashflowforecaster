@@ -39,6 +39,8 @@ const TIERS: TierConfig[] = [
     description: 'For getting clarity fast',
     features: [
       { text: '60-day cash flow forecast' },
+      { text: 'Weekly Email Digest' },
+      { text: 'Bill Collision Alerts' },
       { text: 'Manual entry only' },
       { text: 'Up to 10 bills & income sources' },
       { text: 'Basic calendar view' },
@@ -54,6 +56,8 @@ const TIERS: TierConfig[] = [
     popular: true,
     features: [
       { text: 'Everything in Free' },
+      { text: 'Weekly Email Digest' },
+      { text: 'Bill Collision Alerts' },
       { text: 'Runway Collect invoicing' },
       { text: 'Generate & download PDF invoices' },
       { text: 'Unlimited bills & income sources' },
@@ -69,6 +73,8 @@ const TIERS: TierConfig[] = [
     description: 'For power users and couples',
     features: [
       { text: 'Everything in Pro' },
+      { text: 'Weekly Email Digest' },
+      { text: 'Bill Collision Alerts' },
       { text: 'Bank sync via Plaid', kind: 'coming_soon', badgeText: 'Coming soon' },
       { text: 'SMS alerts for low balance' },
       { text: 'Couples mode', kind: 'coming_soon', badgeText: 'Coming soon' },
