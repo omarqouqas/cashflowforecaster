@@ -12,6 +12,7 @@ import { CalendarData, CalendarDay } from './types';
 import { calculateIncomeOccurrences } from './calculate-income';
 import { calculateBillOccurrences } from './calculate-bills';
 import { addDays, isSameDay, getStatusColor, getTodayAtNoon } from './utils';
+import { detectBillCollisions } from './detect-collisions';
 import { Tables } from '@/types/supabase';
 
 const CALENDAR_VERBOSE =
@@ -194,13 +195,17 @@ export default function generateCalendar(
       next14Days.length === 0 ? startingBalance : Math.min(...next14Days.map((d) => d.balance));
     const safeToSpend = Math.max(0, lowestIn14Days - safetyBuffer);
 
-    // Step 8: Return CalendarData
+    // Step 8: Detect bill collisions (multiple bills due on the same day)
+    const collisions = detectBillCollisions(days);
+
+    // Step 9: Return CalendarData
     return {
       days,
       startingBalance,
       lowestBalance,
       lowestBalanceDay,
       safeToSpend,
+      collisions,
     };
   } catch (error) {
     console.error('Error generating calendar:', error);

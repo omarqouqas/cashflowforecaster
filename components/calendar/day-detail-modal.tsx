@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format } from 'date-fns';
-import { AlertTriangle, Clock, X } from 'lucide-react';
+import { AlertTriangle, Clock, Layers, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getBalanceStatus } from '@/lib/calendar/constants';
@@ -84,6 +84,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
   const totalIncome = day.income.reduce((sum, t) => sum + t.amount, 0);
   const totalBills = day.bills.reduce((sum, t) => sum + t.amount, 0);
   const netChange = totalIncome - totalBills;
+  const hasBillCollision = day.bills.length >= 2;
 
   const balanceStatus = getBalanceStatus(day.balance);
   const showWarning = balanceStatus === 'low' || balanceStatus === 'negative';
@@ -168,6 +169,18 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
                 />
                 <p className={cn('text-sm', isOverdraft ? 'text-rose-200' : 'text-amber-200')}>
                   ⚠️ {isOverdraft ? 'Overdraft risk' : 'Low balance day'} - consider adjusting bills or adding income
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Collision Banner (inside scrollable content) */}
+          {hasBillCollision && (
+            <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <Layers className="w-4 h-4 text-amber-400 mt-0.5" aria-hidden="true" />
+                <p className="text-sm text-amber-200">
+                  ⚠️ Multiple bills due today - {day.bills.length} bills totaling {formatCurrency(totalBills)}
                 </p>
               </div>
             </div>

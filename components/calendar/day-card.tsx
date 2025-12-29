@@ -3,7 +3,7 @@
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format } from 'date-fns';
-import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DayCardProps {
@@ -76,6 +76,7 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
   const totalIncome = day.income.reduce((sum, t) => sum + t.amount, 0);
   const totalBills = day.bills.reduce((sum, t) => sum + t.amount, 0);
   const totalTransactions = day.income.length + day.bills.length;
+  const hasBillCollision = day.bills.length >= 2;
 
   return (
     <button
@@ -86,6 +87,7 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
         colors.bg,
         colors.border,
         colors.hover,
+        hasBillCollision && 'border-l-4 border-l-amber-400/70',
         isToday && 'ring-1 ring-teal-500/50 border-teal-500',
         isLowestDay && 'ring-2 ring-rose-500/50'
       )}
@@ -93,6 +95,15 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
     >
       {/* Status dot indicator - top right */}
       <div className={cn('absolute top-2 right-2 w-2 h-2 rounded-full', colors.indicator)} />
+
+      {/* Collision indicator (small, non-overlapping) */}
+      {hasBillCollision && (
+        <div className="absolute top-2 left-2 z-10">
+          <div className="bg-amber-500/15 border border-amber-500/30 rounded-full p-1">
+            <Layers className="w-3 h-3 text-amber-300" aria-hidden="true" />
+          </div>
+        </div>
+      )}
 
       {/* AlertTriangle badge for lowest balance day */}
       {isLowestDay && (

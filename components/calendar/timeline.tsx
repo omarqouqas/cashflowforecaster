@@ -4,7 +4,7 @@ import { CalendarDay } from '@/lib/calendar/types'
 import { formatCurrency } from '@/lib/utils/format'
 import { getBalanceStatus } from '@/lib/calendar/constants'
 import { isToday } from 'date-fns'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Layers } from 'lucide-react'
 
 export interface CalendarTimelineProps {
   days: CalendarDay[]
@@ -57,6 +57,7 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
 
   const hasIncome = incomeTotal > 0
   const hasBills = billsTotal > 0
+  const hasBillCollision = (day.bills?.length ?? 0) >= 2
 
   const balanceStatus = getBalanceStatus(day.balance)
   const isNegative = balanceStatus === 'negative'
@@ -166,6 +167,9 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
       <div className="text-right flex-shrink-0">
         <div className="flex flex-col items-end">
           <div className={`flex items-center gap-1.5 text-base tabular-nums ${balanceClass}`}>
+            {hasBillCollision && (
+              <Layers className="w-4 h-4 text-amber-300" aria-hidden="true" />
+            )}
             {showWarning && (
               <AlertTriangle
                 className={`w-4 h-4 ${isNegative ? 'text-rose-400' : 'text-amber-400'}`}

@@ -156,6 +156,7 @@ export default async function CalendarPage() {
     safetyBuffer,
     safeToSpend, // NEW
     currency,
+    collisions: calendarData.collisions,
   }
 
   return (

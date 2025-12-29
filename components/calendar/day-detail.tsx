@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangle, Clock, X } from 'lucide-react'
+import { AlertTriangle, Clock, Layers, X } from 'lucide-react'
 import { CalendarDay } from '@/lib/calendar/types'
 import { formatCurrency } from '@/lib/utils/format'
 import { getBalanceStatus } from '@/lib/calendar/constants'
@@ -41,6 +41,8 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
   const balanceStatus = getBalanceStatus(day.balance)
   const showWarning = balanceStatus === 'low' || balanceStatus === 'negative'
   const isOverdraft = balanceStatus === 'negative'
+  const hasBillCollision = day.bills.length >= 2
+  const collisionTotal = day.bills.reduce((sum, b) => sum + (b.amount ?? 0), 0)
 
   return (
     <div className="bg-zinc-900 border-t border-b border-zinc-800 px-4 py-4 shadow-inner">
@@ -73,6 +75,18 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
             />
             <p className={`text-sm ${isOverdraft ? 'text-rose-200' : 'text-amber-200'}`}>
               ⚠️ {isOverdraft ? 'Overdraft risk' : 'Low balance day'} - consider adjusting bills or adding income
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Collision Banner (inside content) */}
+      {hasBillCollision && (
+        <div className="mt-3 rounded-lg border border-amber-500/50 bg-amber-500/10 p-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <Layers className="w-4 h-4 text-amber-400 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-amber-200">
+              ⚠️ Multiple bills due today - {day.bills.length} bills totaling {formatCurrency(collisionTotal)}
             </p>
           </div>
         </div>

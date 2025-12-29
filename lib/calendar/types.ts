@@ -2,6 +2,8 @@
  * Calendar-related type definitions for cash flow forecasting.
  */
 
+import type { CollisionSummary } from './detect-collisions';
+
 /**
  * Represents a transaction (income or bill) in the calendar.
  * 
@@ -66,5 +68,8 @@ export interface CalendarData {
    * their safety buffer before the next income (or within a 14-day horizon).
    */
   safeToSpend: number;
+
+  /** Bill collision data (multiple bills due on the same day) */
+  collisions: CollisionSummary;
 }
 

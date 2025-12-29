@@ -5,7 +5,9 @@ import { TimelineRow } from './timeline'
 import { DayDetail } from './day-detail'
 import { StickyCalendarHeader } from './sticky-header'
 import { LowBalanceWarning } from './low-balance-warning'
+import { BillCollisionWarning } from './bill-collision-warning'
 import type { CalendarDay, Transaction } from '@/lib/calendar/types'
+import type { CollisionSummary } from '@/lib/calendar/detect-collisions'
 import { isToday } from 'date-fns'
 
 interface CalendarContainerProps {
@@ -21,6 +23,7 @@ interface CalendarContainerProps {
     endingBalance: number
     safetyBuffer: number
     currency?: string
+    collisions: CollisionSummary
   }
 }
 
@@ -47,6 +50,17 @@ function normalizeDay(day: CalendarDay): CalendarDay {
   }
 }
 
+function normalizeCollisions(collisions: CollisionSummary): CollisionSummary {
+  return {
+    ...collisions,
+    collisions: (collisions?.collisions ?? []).map((c) => ({
+      ...c,
+      date: toDate((c as any).date),
+    })),
+    highestCollisionDate: collisions?.highestCollisionDate ? toDate((collisions as any).highestCollisionDate) : null,
+  }
+}
+
 function formatMinutesAgo(from: Date, now: Date): string {
   const diffMs = Math.max(0, now.getTime() - from.getTime())
   const mins = Math.floor(diffMs / 60_000)
@@ -63,6 +77,10 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
   const [now, setNow] = useState(() => new Date())
 
   const days = useMemo(() => calendarData.days.map(normalizeDay), [calendarData.days])
+  const collisions = useMemo(
+    () => normalizeCollisions(calendarData.collisions),
+    [calendarData.collisions],
+  )
   const startingBalance = calendarData.startingBalance
   const lowestBalanceDate = useMemo(() => toDate(calendarData.lowestBalanceDate), [calendarData.lowestBalanceDate])
 
@@ -203,6 +221,9 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
           currency={calendarData.currency}
         />
       )}
+
+      {/* Bill Collision Warning */}
+      <BillCollisionWarning collisions={collisions} currency={calendarData.currency} />
 
       <div
         ref={scrollRef}
