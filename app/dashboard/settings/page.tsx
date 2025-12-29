@@ -11,6 +11,7 @@ import { ChevronRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
+import { EmailDigestForm } from '@/components/settings/email-digest-form';
 import { SubscriptionStatus } from '@/components/subscription/subscription-status';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 
@@ -26,12 +27,15 @@ export default async function SettingsPage() {
   // Fetch current user settings
   const { data: settings } = await supabase
     .from('user_settings')
-    .select('safety_buffer, timezone')
+    .select('safety_buffer, timezone, email_digest_enabled, email_digest_day, email_digest_time')
     .eq('user_id', user.id)
     .single();
 
   const safetyBuffer = settings?.safety_buffer ?? 500;
   const timezone = settings?.timezone ?? null;
+  const digestEnabled = settings?.email_digest_enabled ?? true;
+  const digestDay = settings?.email_digest_day ?? 1;
+  const digestTime = settings?.email_digest_time ?? '08:00:00';
 
   // Fetch subscription status
   const subscription = await getUserSubscription(user.id);
@@ -140,6 +144,9 @@ export default async function SettingsPage() {
 
           {/* Timezone Card */}
           <TimezoneForm initialValue={timezone} />
+
+          {/* Email Preferences */}
+          <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} initialTime={digestTime} />
 
           {/* Safety Buffer Card */}
           <SafetyBufferForm initialValue={safetyBuffer} />

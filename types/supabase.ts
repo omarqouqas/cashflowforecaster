@@ -521,6 +521,10 @@ export type Database = {
           daily_burn_rate: number | null
           date_format: string | null
           default_account_id: string | null
+          email_digest_day: number | null
+          email_digest_enabled: boolean | null
+          email_digest_time: string | null
+          last_digest_sent_at: string | null
           notification_preferences: Json | null
           onboarding_complete: boolean
           safety_buffer: number | null
@@ -535,6 +539,10 @@ export type Database = {
           daily_burn_rate?: number | null
           date_format?: string | null
           default_account_id?: string | null
+          email_digest_day?: number | null
+          email_digest_enabled?: boolean | null
+          email_digest_time?: string | null
+          last_digest_sent_at?: string | null
           notification_preferences?: Json | null
           onboarding_complete?: boolean
           safety_buffer?: number | null
@@ -549,6 +557,10 @@ export type Database = {
           daily_burn_rate?: number | null
           date_format?: string | null
           default_account_id?: string | null
+          email_digest_day?: number | null
+          email_digest_enabled?: boolean | null
+          email_digest_time?: string | null
+          last_digest_sent_at?: string | null
           notification_preferences?: Json | null
           onboarding_complete?: boolean
           safety_buffer?: number | null
