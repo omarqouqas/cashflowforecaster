@@ -27,7 +27,7 @@ export default async function SettingsPage() {
   // Fetch current user settings
   const { data: settings } = await supabase
     .from('user_settings')
-    .select('safety_buffer, timezone, email_digest_enabled, email_digest_day, email_digest_time')
+    .select('safety_buffer, timezone, email_digest_enabled, email_digest_day')
     .eq('user_id', user.id)
     .single();
 
@@ -35,7 +35,6 @@ export default async function SettingsPage() {
   const timezone = settings?.timezone ?? null;
   const digestEnabled = settings?.email_digest_enabled ?? true;
   const digestDay = settings?.email_digest_day ?? 1;
-  const digestTime = settings?.email_digest_time ?? '08:00:00';
 
   // Fetch subscription status
   const subscription = await getUserSubscription(user.id);
@@ -146,7 +145,7 @@ export default async function SettingsPage() {
           <TimezoneForm initialValue={timezone} />
 
           {/* Email Preferences */}
-          <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} initialTime={digestTime} />
+          <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
 
           {/* Safety Buffer Card */}
           <SafetyBufferForm initialValue={safetyBuffer} />

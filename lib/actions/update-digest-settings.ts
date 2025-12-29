@@ -10,9 +10,8 @@ import { captureServerEvent } from '@/lib/posthog/server';
 const DigestSettingsSchema = z.object({
   emailDigestEnabled: z.coerce.boolean(),
   emailDigestDay: z.coerce.number().min(0).max(6),
-  emailDigestTime: z
-    .string()
-    .regex(/^\d{2}:\d{2}$/),
+  // Keep column in DB for future upgrades. Optional for now (Vercel Hobby cron runs daily).
+  emailDigestTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
 });
 
 export async function updateDigestSettings(
@@ -33,17 +32,27 @@ export async function updateDigestSettings(
     }
 
     const { emailDigestEnabled, emailDigestDay, emailDigestTime } = parsed.data;
-    const timeForDb = `${emailDigestTime}:00`;
+
+    const upsertRow: {
+      user_id: string;
+      email_digest_enabled: boolean;
+      email_digest_day: number;
+      email_digest_time?: string;
+    } = {
+      user_id: user.id,
+      email_digest_enabled: emailDigestEnabled,
+      email_digest_day: emailDigestDay,
+    };
+
+    // Only update time if provided (backwards compatible + preserves existing value)
+    if (emailDigestTime) {
+      upsertRow.email_digest_time = `${emailDigestTime}:00`;
+    }
 
     const { error } = await supabase
       .from('user_settings')
       .upsert(
-        {
-          user_id: user.id,
-          email_digest_enabled: emailDigestEnabled,
-          email_digest_day: emailDigestDay,
-          email_digest_time: timeForDb,
-        },
+        upsertRow,
         { onConflict: 'user_id' }
       );
 
@@ -54,7 +63,7 @@ export async function updateDigestSettings(
       properties: {
         enabled: emailDigestEnabled,
         day: emailDigestDay,
-        time: emailDigestTime,
+        ...(emailDigestTime ? { time: emailDigestTime } : {}),
       },
     });
 

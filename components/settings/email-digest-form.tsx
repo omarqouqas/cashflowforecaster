@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils/cn';
 import { updateDigestSettings } from '@/lib/actions/update-digest-settings';
@@ -9,15 +9,7 @@ import { Button } from '@/components/ui/button';
 type Props = {
   initialEnabled?: boolean | null;
   initialDay?: number | null;
-  initialTime?: string | null; // "HH:MM:SS" or "HH:MM"
 };
-
-function normalizeTime(value: string | null | undefined): string {
-  if (!value) return '08:00';
-  const m = /^(\d{2}):(\d{2})/.exec(value.trim());
-  if (!m) return '08:00';
-  return `${m[1]}:${m[2]}`;
-}
 
 const DAYS: Array<{ value: number; label: string }> = [
   { value: 0, label: 'Sunday' },
@@ -29,27 +21,16 @@ const DAYS: Array<{ value: number; label: string }> = [
   { value: 6, label: 'Saturday' },
 ];
 
-const TIMES: Array<{ value: string; label: string }> = [
-  { value: '06:00', label: '6:00 AM' },
-  { value: '07:00', label: '7:00 AM' },
-  { value: '08:00', label: '8:00 AM' },
-  { value: '09:00', label: '9:00 AM' },
-  { value: '10:00', label: '10:00 AM' },
-  { value: '11:00', label: '11:00 AM' },
-];
-
-export function EmailDigestForm({ initialEnabled, initialDay, initialTime }: Props) {
+export function EmailDigestForm({ initialEnabled, initialDay }: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const defaultEnabled = initialEnabled ?? true;
   const defaultDay = typeof initialDay === 'number' ? initialDay : 1;
-  const defaultTime = useMemo(() => normalizeTime(initialTime ?? null), [initialTime]);
 
   const [enabled, setEnabled] = useState<boolean>(defaultEnabled);
   const [day, setDay] = useState<number>(defaultDay);
-  const [time, setTime] = useState<string>(defaultTime);
 
   async function save() {
     setError(null);
@@ -58,7 +39,6 @@ export function EmailDigestForm({ initialEnabled, initialDay, initialTime }: Pro
     const fd = new FormData();
     fd.set('emailDigestEnabled', String(enabled));
     fd.set('emailDigestDay', String(day));
-    fd.set('emailDigestTime', time);
 
     const res = await updateDigestSettings(fd);
     if (!res.success) {
@@ -81,7 +61,7 @@ export function EmailDigestForm({ initialEnabled, initialDay, initialTime }: Pro
           <div>
             <p className="text-slate-900 dark:text-zinc-100 font-medium">Weekly Digest</p>
             <p className="text-sm text-slate-600 dark:text-zinc-400">
-              Get a summary of your upcoming week on your preferred schedule
+              Get a summary of your upcoming week on your preferred day
             </p>
           </div>
 
@@ -125,31 +105,6 @@ export function EmailDigestForm({ initialEnabled, initialDay, initialTime }: Pro
                 {DAYS.map((d) => (
                   <option key={d.value} value={d.value}>
                     {d.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* Time Selector */}
-        {enabled && (
-          <div className="py-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-              <label className="text-slate-900 dark:text-zinc-100 font-medium">Time</label>
-              <select
-                className={cn(
-                  'text-base',
-                  'min-h-[44px] w-full sm:w-[220px] rounded-md border border-slate-200 dark:border-zinc-800',
-                  'bg-white dark:bg-zinc-950 px-3 py-2 text-slate-900 dark:text-zinc-100',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500'
-                )}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              >
-                {TIMES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
                   </option>
                 ))}
               </select>
