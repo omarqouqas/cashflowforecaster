@@ -11,7 +11,10 @@ const DigestSettingsSchema = z.object({
   emailDigestEnabled: z.coerce.boolean(),
   emailDigestDay: z.coerce.number().min(0).max(6),
   // Keep column in DB for future upgrades. Optional for now (Vercel Hobby cron runs daily).
-  emailDigestTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  emailDigestTime: z.preprocess(
+    (v) => (v === null || v === undefined || v === '' ? undefined : v),
+    z.string().regex(/^\d{2}:\d{2}$/).optional()
+  ),
 });
 
 export async function updateDigestSettings(
