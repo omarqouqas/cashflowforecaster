@@ -6,17 +6,6 @@ import { sendWeeklyDigest } from '@/lib/email/send-digest';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes
 
-function parseTimeHHMMSS(value: string | null): { hour: number; minute: number } | null {
-  if (!value) return null;
-  const m = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value.trim());
-  if (!m) return null;
-  const hour = Number(m[1]);
-  const minute = Number(m[2]);
-  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
-  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
-  return { hour, minute };
-}
-
 function getLocalParts(now: Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone,
@@ -55,7 +44,6 @@ function shouldSendDigestNow(input: {
 
   const timeZone = (input.timezone || 'UTC').trim() || 'UTC';
   const desiredDay = input.email_digest_day ?? 1;
-  const desiredTime = parseTimeHHMMSS(input.email_digest_time ?? '08:00:00') ?? { hour: 8, minute: 0 };
 
   let local: { dow: number | null; hour: number; minute: number };
   try {
