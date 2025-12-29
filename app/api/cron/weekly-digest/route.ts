@@ -67,8 +67,10 @@ function shouldSendDigestNow(input: {
   if (local.dow === null) return false;
   if (local.dow !== desiredDay) return false;
 
-  // Cron runs hourly; send if we're inside the configured hour
-  if (local.hour !== desiredTime.hour) return false;
+  // On Vercel Hobby, cron can only run once per day.
+  // In that mode, we treat "time" as best-effort and send on the configured weekday.
+  // (If you need precise hour-level scheduling across timezones, use an hourly scheduler on Vercel Pro
+  //  or trigger this endpoint from an external scheduler.)
 
   // Safety: prevent duplicates if called multiple times in the same hour
   if (input.last_digest_sent_at) {
