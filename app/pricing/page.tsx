@@ -35,7 +35,7 @@ export default async function PricingPage({
             Simple, Transparent Pricing
           </h1>
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-            Choose the plan that fits your needs. Start free, upgrade when you're ready.
+            Choose the plan that fits your needs. Start free, upgrade when you&apos;re ready.
           </p>
         </div>
 
@@ -84,7 +84,7 @@ export default async function PricingPage({
             />
             <FAQItem
               question="What happens when I upgrade?"
-              answer="Your new features activate immediately. We'll prorate the cost based on the remaining time in your current billing cycle."
+              answer="Your new features activate immediately. We&apos;ll prorate the cost based on the remaining time in your current billing cycle."
             />
             <FAQItem
               question="Is my payment information secure?"
@@ -92,7 +92,7 @@ export default async function PricingPage({
             />
             <FAQItem
               question="What if I need help?"
-              answer="Free users get 48-hour email support. Pro users get priority 24-hour support. We're here to help you succeed."
+              answer="Free users get 48-hour email support. Pro users get priority 24-hour support. We&apos;re here to help you succeed."
             />
           </div>
         </div>

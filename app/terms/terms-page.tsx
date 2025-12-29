@@ -33,7 +33,7 @@ export default function TermsPage() {
               1. Acceptance of Terms
             </h2>
             <p>
-              By accessing or using Cash Flow Forecaster ("the Service"), you
+              By accessing or using Cash Flow Forecaster (&quot;the Service&quot;), you
               agree to be bound by these Terms of Service. If you do not agree
               to these terms, please do not use the Service.
             </p>
@@ -135,7 +135,7 @@ export default function TermsPage() {
               financial advice. Projections are estimates based on the
               information you provide and may not reflect actual future
               balances. We are not responsible for any financial decisions made
-              based on the Service's projections. Always consult a qualified
+              based on the Service&apos;s projections. Always consult a qualified
               financial professional for financial advice.
             </p>
           </section>

@@ -33,10 +33,10 @@ export default function PrivacyPage() {
               1. Introduction
             </h2>
             <p>
-              Cash Flow Forecaster ("we", "our", or "us") is committed to
+              Cash Flow Forecaster (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to
               protecting your privacy. This Privacy Policy explains how we
               collect, use, disclose, and safeguard your information when you
-              use our web application at cashflowforecaster.io (the "Service").
+              use our web application at cashflowforecaster.io (the &quot;Service&quot;).
             </p>
           </section>
 
@@ -315,7 +315,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">
-              10. Children's Privacy
+              10. Children&apos;s Privacy
             </h2>
             <p>
               The Service is not intended for children under 13 years of age. We
@@ -344,7 +344,7 @@ export default function PrivacyPage() {
             <p>
               We may update this Privacy Policy from time to time. We will
               notify you of significant changes by email or through the Service.
-              The "Last updated" date at the top indicates when the policy was
+              The &quot;Last updated&quot; date at the top indicates when the policy was
               last revised.
             </p>
           </section>

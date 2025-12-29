@@ -148,7 +148,7 @@ export function SubscriptionStatus({
         <div className="mt-4 p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
           <p className="text-sm text-zinc-400">
             Your subscription will end on {format(currentPeriodEnd, 'MMM d, yyyy')}. 
-            You'll be downgraded to the Free plan after that.
+            You&apos;ll be downgraded to the Free plan after that.
           </p>
           <button
             onClick={handleManageSubscription}

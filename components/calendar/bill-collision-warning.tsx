@@ -12,9 +12,15 @@ export interface BillCollisionWarningProps {
 }
 
 export function BillCollisionWarning({ collisions, currency = 'USD' }: BillCollisionWarningProps) {
-  if (!collisions?.hasCollisions) return null
-
   const [expanded, setExpanded] = useState(false)
+
+  const listToShow = useMemo(() => {
+    const all = collisions?.collisions ?? []
+    if (expanded) return all
+    return all.slice(0, 3) // mobile-friendly default
+  }, [collisions?.collisions, expanded])
+
+  if (!collisions?.hasCollisions) return null
 
   const isCritical = collisions.criticalCount > 0
   const highlight =
@@ -28,12 +34,6 @@ export function BillCollisionWarning({ collisions, currency = 'USD' }: BillColli
   const dateLabel = format(highlight.date, 'EEE, MMM d')
   const amountLabel = formatCurrency(totalAmount, currency)
   const otherDaysCount = Math.max(0, collisions.collisions.length - 1)
-
-  const listToShow = useMemo(() => {
-    const all = collisions.collisions ?? []
-    if (expanded) return all
-    return all.slice(0, 3) // mobile-friendly default
-  }, [collisions.collisions, expanded])
 
   return (
     <div

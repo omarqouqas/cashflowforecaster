@@ -52,9 +52,12 @@ export function verifyDigestEmailToken(
     const decoded = base64UrlDecodeToString(token);
     const parts = decoded.split('.');
     if (parts.length !== 4) return null;
-    const [version, userId, issuedAtRaw, sig] = parts;
+    const version = parts[0];
+    const userId = parts[1];
+    const issuedAtRaw = parts[2];
+    const sig = parts[3];
+    if (!version || !userId || !issuedAtRaw || !sig) return null;
     if (version !== 'v1') return null;
-    if (!userId) return null;
 
     const issuedAtMs = Number(issuedAtRaw);
     if (!Number.isFinite(issuedAtMs) || issuedAtMs <= 0) return null;

@@ -59,7 +59,7 @@ export function StepAccount({
     <div className="relative">
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
         <div>
-          <h2 className="text-xl font-semibold text-zinc-50">What's your current balance?</h2>
+          <h2 className="text-xl font-semibold text-zinc-50">What&apos;s your current balance?</h2>
           <p className="mt-1 text-sm text-zinc-400">
             Enter your main checking account balance to start forecasting.
           </p>
@@ -67,7 +67,7 @@ export function StepAccount({
 
         <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <p className="text-sm text-zinc-300">
-            💡 Use today's balance from your bank app. You can add more accounts later.
+            💡 Use today&apos;s balance from your bank app. You can add more accounts later.
           </p>
         </div>
 

@@ -98,7 +98,7 @@ export function UpgradePrompt({ isOpen, onClose, feature, currentCount, limit }:
           
           {currentCount !== undefined && limit !== undefined && (
             <p className="mt-2 text-white/90">
-              You're using <span className="font-semibold">{currentCount}</span> of{' '}
+              You&apos;re using <span className="font-semibold">{currentCount}</span> of{' '}
               <span className="font-semibold">{limit}</span> available.
             </p>
           )}

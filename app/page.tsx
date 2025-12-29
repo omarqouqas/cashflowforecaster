@@ -160,7 +160,7 @@ export default async function Home() {
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">How it works</h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                A simple 4-step flow to get clarity on what's safe to spend—today and 60 days from now.
+                A simple 4-step flow to get clarity on what&apos;s safe to spend—today and 60 days from now.
               </p>
             </div>
 
@@ -237,7 +237,7 @@ export default async function Home() {
                 Features built for real-life cash flow
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                Test "can I afford it?", send invoices, and get warned early—without spreadsheets.
+                Test &quot;can I afford it?&quot;, send invoices, and get warned early—without spreadsheets.
               </p>
             </div>
 
@@ -252,7 +252,7 @@ export default async function Home() {
                     Scenario Tester
                   </span>
                 </div>
-                <h3 className="mt-4 font-semibold text-white">"Can I Afford It?"</h3>
+                <h3 className="mt-4 font-semibold text-white">Can I Afford It?</h3>
                 <p className="mt-2 text-zinc-400">
                   Try a purchase, bill, or income change and instantly see how it affects your next 60 days.
                 </p>
