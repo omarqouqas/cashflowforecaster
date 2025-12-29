@@ -2,13 +2,25 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import type { ButtonProps } from '@/components/ui/button';
 
 type Props = {
   className?: string;
   label?: string;
+  variant?: ButtonProps['variant'];
+  size?: ButtonProps['size'];
+  fullWidth?: ButtonProps['fullWidth'];
+  onClick?: () => void;
 };
 
-export function GetStartedCTA({ className, label = 'Get Started Free' }: Props) {
+export function GetStartedCTA({
+  className,
+  label = 'Get Started Free',
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
+  onClick,
+}: Props) {
   const router = useRouter();
 
   const handleGetStarted = () => {
@@ -31,8 +43,13 @@ export function GetStartedCTA({ className, label = 'Get Started Free' }: Props) 
   return (
     <Button
       type="button"
-      variant="primary"
-      onClick={handleGetStarted}
+      variant={variant}
+      size={size}
+      fullWidth={fullWidth}
+      onClick={() => {
+        onClick?.();
+        handleGetStarted();
+      }}
       className={className}
     >
       {label}

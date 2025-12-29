@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GetStartedCTA } from '@/components/landing/get-started-cta';
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
@@ -37,15 +38,11 @@ export default function LandingHeader() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/auth/signup">
-            <Button
-              variant="primary"
-              size="md"
-              className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950"
-            >
-              Get Started
-            </Button>
-          </Link>
+          <GetStartedCTA
+            label="Get Started"
+            size="md"
+            className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950"
+          />
         </div>
 
         <button
@@ -80,16 +77,13 @@ export default function LandingHeader() {
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
-              <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                <Button
-                  variant="primary"
-                  size="md"
-                  fullWidth
-                  className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950"
-                >
-                  Get Started
-                </Button>
-              </Link>
+              <GetStartedCTA
+                label="Get Started"
+                size="md"
+                fullWidth
+                onClick={() => setOpen(false)}
+                className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950"
+              />
               <Link
                 href="/auth/login"
                 onClick={() => setOpen(false)}
