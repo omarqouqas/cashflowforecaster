@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { SuccessMessage } from '@/components/ui/success-message';
 import Link from 'next/link';
-import { Calendar, Receipt, CheckCircle2, Lightbulb } from 'lucide-react';
+import { Calendar, Receipt, CheckCircle2, Lightbulb, Upload } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
@@ -411,6 +411,25 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
                       : 'Track your bills'}
                   </p>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Import Transactions (secondary CTA) */}
+          <div className="mb-6">
+            <Link href="/dashboard/import" className="block">
+              <div className="border border-zinc-200 bg-white rounded-lg p-5 hover:bg-zinc-50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Upload className="w-5 h-5 text-zinc-700" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-zinc-900">Import Transactions</p>
+                    <p className="text-sm text-zinc-600 mt-1">
+                      Upload a bank CSV to quickly add bills and income
+                    </p>
+                  </div>
                 </div>
               </div>
             </Link>

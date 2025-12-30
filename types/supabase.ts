@@ -72,6 +72,7 @@ export type Database = {
           name: string
           notes: string | null
           recurrence_day: number | null
+          source_import_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -88,6 +89,7 @@ export type Database = {
           name: string
           notes?: string | null
           recurrence_day?: number | null
+          source_import_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -104,6 +106,7 @@ export type Database = {
           name?: string
           notes?: string | null
           recurrence_day?: number | null
+          source_import_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -120,6 +123,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bills_source_import_id_fkey"
+            columns: ["source_import_id"]
+            isOneToOne: false
+            referencedRelation: "imported_transactions"
             referencedColumns: ["id"]
           },
         ]
@@ -139,6 +149,7 @@ export type Database = {
           notes: string | null
           recurrence_day: number | null
           recurrence_weekday: number | null
+          source_import_id: string | null
           status: string | null
           status_updated_at: string | null
           updated_at: string | null
@@ -158,6 +169,7 @@ export type Database = {
           notes?: string | null
           recurrence_day?: number | null
           recurrence_weekday?: number | null
+          source_import_id?: string | null
           status?: string | null
           status_updated_at?: string | null
           updated_at?: string | null
@@ -177,6 +189,7 @@ export type Database = {
           notes?: string | null
           recurrence_day?: number | null
           recurrence_weekday?: number | null
+          source_import_id?: string | null
           status?: string | null
           status_updated_at?: string | null
           updated_at?: string | null
@@ -199,6 +212,67 @@ export type Database = {
           },
           {
             foreignKeyName: "income_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "income_source_import_id_fkey"
+            columns: ["source_import_id"]
+            isOneToOne: false
+            referencedRelation: "imported_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imported_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string | null
+          mapped_columns: Json | null
+          posted_at: string
+          raw: Json
+          source_file_name: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id?: string | null
+          mapped_columns?: Json | null
+          posted_at: string
+          raw: Json
+          source_file_name?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string | null
+          mapped_columns?: Json | null
+          posted_at?: string
+          raw?: Json
+          source_file_name?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imported_transactions_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imported_transactions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -253,6 +327,7 @@ export type Database = {
           invoice_number: string
           last_reminder_at: string | null
           paid_at: string | null
+          paid_source_import_id: string | null
           reminder_count: number
           sent_at: string | null
           status: string | null
@@ -271,6 +346,7 @@ export type Database = {
           invoice_number: string
           last_reminder_at?: string | null
           paid_at?: string | null
+          paid_source_import_id?: string | null
           reminder_count?: number
           sent_at?: string | null
           status?: string | null
@@ -289,6 +365,7 @@ export type Database = {
           invoice_number?: string
           last_reminder_at?: string | null
           paid_at?: string | null
+          paid_source_import_id?: string | null
           reminder_count?: number
           sent_at?: string | null
           status?: string | null
@@ -296,7 +373,15 @@ export type Database = {
           user_id?: string
           viewed_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoices_paid_source_import_id_fkey"
+            columns: ["paid_source_import_id"]
+            isOneToOne: false
+            referencedRelation: "imported_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
