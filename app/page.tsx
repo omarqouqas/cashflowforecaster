@@ -5,7 +5,7 @@ import PricingSection from '@/components/pricing/pricing-section';
 import LandingHeader from '@/components/landing/landing-header';
 import { FAQSection } from '@/components/landing/faq-section';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
-import { AlarmClock, AlertTriangle, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileText, Lock, Mail, Shield, Sparkles, Wallet } from 'lucide-react';
+import { AlarmClock, AlertTriangle, BadgeDollarSign, Bell, Calendar, CheckCircle2, CreditCard, FileSpreadsheet, FileText, Lock, Mail, Shield, Sparkles, Wallet } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 
@@ -341,8 +341,8 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Bottom row - 2 cards centered */}
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto items-stretch">
+            {/* Bottom row - 3 feature cards (completes a 3x2 grid) */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col">
                 <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center mb-4">
                   <Mail className="w-6 h-6 text-teal-500" />
@@ -410,6 +410,35 @@ export default async function Home() {
                     <div className="mt-3 flex items-center justify-between text-sm">
                       <span className="text-zinc-400">Total</span>
                       <span className="font-semibold text-amber-200">$1,832 due</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col">
+                <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <FileSpreadsheet className="w-6 h-6 text-teal-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-zinc-100 mb-2">Import from your bank</h3>
+                <p className="text-zinc-400">
+                  Upload a CSV export and quickly add bills &amp; income—no manual entry required.
+                </p>
+
+                {/* Mini visual: file upload preview */}
+                <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-9 w-9 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/20 flex items-center justify-center flex-shrink-0">
+                        <FileSpreadsheet className="h-4 w-4 text-teal-300" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-zinc-200 truncate">transactions.csv</p>
+                        <p className="text-xs text-zinc-500">Uploaded</p>
+                      </div>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 border border-zinc-800 px-3 py-1 text-xs text-zinc-300 flex-shrink-0">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-teal-300" />
+                      24 transactions found
                     </div>
                   </div>
                 </div>
