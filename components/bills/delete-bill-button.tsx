@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2 } from 'lucide-react'
 import { showError, showSuccess } from '@/lib/toast'
@@ -15,8 +16,10 @@ export function DeleteBillButton({ billId, billName }: DeleteBillButtonProps) {
   const [isConfirming, setIsConfirming] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
 
   const handleDelete = async () => {
+    const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
     setIsDeleting(true)
 
     const supabase = createClient()
@@ -29,8 +32,12 @@ export function DeleteBillButton({ billId, billName }: DeleteBillButtonProps) {
       setIsConfirming(false)
     } else {
       showSuccess('Deleted successfully')
-      router.push('/dashboard/bills')
+      // Avoid same-route navigation (which can jump to top). Refresh data in-place and restore scroll.
+      if (pathname !== '/dashboard/bills') {
+        router.push('/dashboard/bills')
+      }
       router.refresh()
+      requestAnimationFrame(() => window.scrollTo({ top: scrollY }))
     }
   }
 

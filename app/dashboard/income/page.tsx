@@ -3,6 +3,8 @@
 // Income Page - With Feature Gating
 // ============================================
 
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Tables } from '@/types/supabase';

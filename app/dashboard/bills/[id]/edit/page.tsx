@@ -173,8 +173,9 @@ export default function EditBillPage() {
       setError(updateError.message);
     } else {
       showSuccess('Changes saved');
-      router.refresh();
-      router.push('/dashboard/bills');
+      router.push('/dashboard/bills?success=bill-updated');
+      // Ensure the destination page re-fetches fresh server data.
+      setTimeout(() => router.refresh(), 0);
     }
 
     setIsSubmitting(false);

@@ -127,8 +127,9 @@ export default function EditIncomePage() {
       setError(updateError.message);
     } else {
       showSuccess('Changes saved');
-      router.refresh();
-      router.push('/dashboard/income');
+      router.push('/dashboard/income?success=income-updated');
+      // Ensure the destination page re-fetches fresh server data.
+      setTimeout(() => router.refresh(), 0);
     }
 
     setIsSubmitting(false);

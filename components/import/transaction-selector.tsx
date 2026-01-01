@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatCurrency } from '@/lib/utils/format';
@@ -28,6 +28,40 @@ type Props = {
   incomeLimit: number | null; // null = unlimited
   onRequestUpgrade?: (feature: 'bills' | 'income' | 'general') => void;
 };
+
+function pad2(n: number) {
+  return String(n).padStart(2, '0');
+}
+
+function toYyyyMmDdLocal(d: Date) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+function firstDayOfCurrentMonthLocal() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+}
+
+function parseIsoDateToLocalDate(iso: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return null;
+  return new Date(year, month - 1, day);
+}
+
+function formatIsoDateHuman(iso: string): string | null {
+  const d = parseIsoDateToLocalDate(iso);
+  if (!d) return null;
+  // Force unambiguous month name formatting (MMM D, YYYY)
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(d);
+}
 
 function ActionSelect({
   value,
@@ -66,6 +100,9 @@ export function TransactionSelector({
   const [query, setQuery] = useState('');
   const [direction, setDirection] = useState<'all' | 'in' | 'out'>('all');
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
+  const [minImportDate, setMinImportDate] = useState<string>(() =>
+    toYyyyMmDdLocal(firstDayOfCurrentMonthLocal())
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,14 +112,28 @@ export function TransactionSelector({
   const suggestedActionFor = (amount: number): Exclude<ImportAction, 'ignore'> =>
     amount >= 0 ? 'income' : 'bill';
 
+  const dateFilteredTransactions = useMemo(() => {
+    const cutoff = (minImportDate || '').trim();
+    if (!cutoff) return transactions;
+    // `transaction_date` is already YYYY-MM-DD; lexical compare is safe for this format.
+    return transactions.filter((t) => t.transaction_date >= cutoff);
+  }, [transactions, minImportDate]);
+
+  const cutoffHuman = useMemo(() => {
+    const cutoff = (minImportDate || '').trim();
+    if (!cutoff) return null;
+    return formatIsoDateHuman(cutoff);
+  }, [minImportDate]);
+
   const enriched = useMemo(() => {
-    return transactions.map((t) => {
-      const selected = Boolean(selectedIds[t.id]);
-      // Default action suggestion by sign (without auto-selecting)
+    return dateFilteredTransactions.map((t) => {
+      // Default action suggestion by sign
       const action = actions[t.id] ?? suggestedActionFor(t.amount);
+      // Auto-select rows whose effective action is not "ignore" unless the user explicitly toggled selection.
+      const selected = selectedIds[t.id] ?? action !== 'ignore';
       return { ...t, selected, action };
     });
-  }, [transactions, selectedIds, actions]);
+  }, [dateFilteredTransactions, selectedIds, actions]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -94,6 +145,8 @@ export function TransactionSelector({
       return t.description.toLowerCase().includes(q);
     });
   }, [enriched, query, direction, showSelectedOnly]);
+
+  const visibleRows = useMemo(() => filtered.slice(0, 1000), [filtered]);
 
   const selectedRows = useMemo(() => enriched.filter((t) => t.selected), [enriched]);
   const actionableSelected = useMemo(
@@ -149,7 +202,7 @@ export function TransactionSelector({
 
   const selectAllVisible = () => {
     setError(null);
-    const ids = filtered.map((t) => t.id);
+    const ids = visibleRows.map((t) => t.id);
     setSelectedIds((prev) => {
       const next = { ...prev };
       for (const id of ids) next[id] = true;
@@ -169,7 +222,7 @@ export function TransactionSelector({
 
   const deselectAllVisible = () => {
     setError(null);
-    const ids = filtered.map((t) => t.id);
+    const ids = visibleRows.map((t) => t.id);
     setSelectedIds((prev) => {
       const next = { ...prev };
       for (const id of ids) next[id] = false;
@@ -181,6 +234,20 @@ export function TransactionSelector({
       return next;
     });
   };
+
+  const headerSelectAllRef = useRef<HTMLInputElement | null>(null);
+  const selectedVisibleCount = useMemo(
+    () => visibleRows.reduce((acc, t) => acc + (t.selected ? 1 : 0), 0),
+    [visibleRows]
+  );
+  const allVisibleSelected = visibleRows.length > 0 && selectedVisibleCount === visibleRows.length;
+  const someVisibleSelected = selectedVisibleCount > 0 && !allVisibleSelected;
+
+  useEffect(() => {
+    if (headerSelectAllRef.current) {
+      headerSelectAllRef.current.indeterminate = someVisibleSelected;
+    }
+  }, [someVisibleSelected]);
 
   const trimToRemaining = () => {
     const billsKeep = limits.billsRemaining === Infinity ? Infinity : limits.billsRemaining;
@@ -290,6 +357,30 @@ export function TransactionSelector({
 
       <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2">
+          <label className="text-sm text-zinc-700 block mb-1.5">
+            Only import transactions after:
+          </label>
+          <Input
+            type="date"
+            value={minImportDate}
+            onChange={(e) => setMinImportDate(e.target.value)}
+          />
+          {cutoffHuman && (
+            <p className="text-xs text-zinc-500 mt-1.5">
+              Filtering from <span className="font-medium text-zinc-700">{cutoffHuman}</span>
+            </p>
+          )}
+        </div>
+        <div className="flex items-end">
+          <div className="text-sm text-zinc-600">
+            Showing <span className="font-semibold">{dateFilteredTransactions.length}</span> of{' '}
+            <span className="font-semibold">{transactions.length}</span> transactions (filtered by date)
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="sm:col-span-2">
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -392,14 +483,30 @@ export function TransactionSelector({
           <thead className="bg-zinc-50">
             <tr>
               <th className="text-left px-3 py-2 w-[44px]"> </th>
-              <th className="text-left px-3 py-2 w-[130px]">Date</th>
+              <th className="text-left px-3 py-2 w-[130px]">
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={headerSelectAllRef}
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    disabled={visibleRows.length === 0}
+                    onChange={(e) => {
+                      if (e.target.checked) selectAllVisible();
+                      else deselectAllVisible();
+                    }}
+                    className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+                    aria-label="Select all visible transactions"
+                  />
+                  <span>Date</span>
+                </div>
+              </th>
               <th className="text-left px-3 py-2">Description</th>
               <th className="text-right px-3 py-2 w-[140px]">Amount</th>
               <th className="text-left px-3 py-2 w-[220px]">Action</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.slice(0, 1000).map((t) => {
+            {visibleRows.map((t) => {
               const amountColor = t.amount >= 0 ? 'text-emerald-700' : 'text-rose-700';
               return (
                 <tr key={t.id} className="border-t border-zinc-100">
