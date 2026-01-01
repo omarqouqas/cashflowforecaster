@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** December 29, 2025
+**Last Updated:** January 1, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -45,6 +45,49 @@
 - Retention loop: weekly email digest (monitor open/click + settings adoption)
 
 ---
+
+## Day 27: CSV Import UX Fixes + List Refresh Bugs (January 1, 2026)
+
+### Shipped (last 24 hours)
+
+#### CSV import: review table usability ✅
+
+- [x] Added a **date cutoff filter** before the review table (default: first day of current month)
+  - Filters parsed transactions client-side before review
+  - Shows: “Showing X of Y transactions (filtered by date)”
+- [x] Added a **Select-all checkbox** in the table header (next to Date)
+  - Checked = select all visible rows (respects filters + 1000-row cap)
+  - Indeterminate = some selected
+- [x] Reduced date confusion for international users
+  - Keeps native date input (browser locale)
+  - Shows one clear line: “Filtering from Dec 1, 2025” (month name format)
+- [x] Default row selection: rows are **auto-checked** on initial load when action is Income/Bill
+
+#### Deletion UX: prevent scroll-to-top ✅
+
+- [x] Preserved scroll position after deleting items in:
+  - Bills list
+  - Income list
+
+#### Edit UX: no hard refresh needed ✅
+
+- [x] Fixed bills/income name updates so lists reflect changes immediately after save (no Ctrl+R)
+
+### Files Changed (last 24 hours)
+
+**Modified:**
+
+```
+components/import/transaction-selector.tsx
+components/bills/delete-bill-button.tsx
+components/income/delete-income-button.tsx
+app/dashboard/bills/page.tsx
+app/dashboard/income/page.tsx
+app/dashboard/bills/[id]/edit/page.tsx
+app/dashboard/income/[id]/edit/page.tsx
+docs/development-progress.md
+docs/product-brief.md
+```
 
 ## Day 25: Dashboard Guidance Cards + Mobile Responsiveness (December 24, 2025)
 

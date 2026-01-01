@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.2  
-**Last Updated:** December 29, 2025  
+**Version:** 4.3  
+**Last Updated:** January 1, 2026  
 **Status:** Live - Accepting Payments - Feature Complete  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -160,6 +160,13 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
    - Category organization
    - All frequencies supported (weekly through yearly)
    - **Gated:** 10 limit for Free tier
+
+4b. **CSV Transaction Import (One-time Bills/Income)** ✅
+   - Upload CSV and map columns (date, description, amount)
+   - Review table with search + in/out filters + “selected only”
+   - Date cutoff filter (defaults to first day of current month)
+   - Select-all checkbox in table header (supports indeterminate state)
+   - Unambiguous date helper text (e.g. “Filtering from Dec 1, 2025”)
 
 5. **Scenario Testing** ✅
    - "Can I afford it?" calculator
