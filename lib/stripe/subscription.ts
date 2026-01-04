@@ -101,7 +101,7 @@ export async function canUseInvoicing(userId?: string): Promise<boolean> {
 /**
  * Check if user can use bank sync feature (Premium only)
  */
-export async function canUseBankSync(userId?: string): Promise<boolean> {
+export async function canUseBankSync(_userId?: string): Promise<boolean> {
   // Premium is sunset pre-launch and bank sync is not available yet.
   return false;
 }

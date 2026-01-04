@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 1, 2026
+**Last Updated:** January 4, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -85,6 +85,64 @@ app/dashboard/bills/page.tsx
 app/dashboard/income/page.tsx
 app/dashboard/bills/[id]/edit/page.tsx
 app/dashboard/income/[id]/edit/page.tsx
+docs/development-progress.md
+docs/product-brief.md
+```
+
+---
+
+## Day 28: Pricing Simplification (Sunset Premium) + Forecast Length Fix + Landing CTA Polish (January 4, 2026)
+
+### Shipped (last 24 hours)
+
+#### Pricing: Sunset Premium, fold 365-day forecast into Pro ✅
+
+- [x] **Removed Premium tier** from all user-facing pricing surfaces (landing + /pricing).
+- [x] **Pro now includes 365-day forecasts (12 months ahead)** (previously marketed as Premium).
+- [x] Kept `premium` tier **only for backwards compatibility** (legacy subscriptions / Stripe price IDs retained), but:
+  - Premium is **not purchasable** via UI
+  - Checkout blocks `premium` tier server-side
+
+#### Forecast generation: marketing matches product ✅
+
+- [x] Updated calendar generation to support **tier-based forecast length** (no longer hardcoded to 60 days):
+  - Free: 60 days
+  - Pro: 365 days
+- [x] Applied the same forecast window across:
+  - Dashboard forecast summaries
+  - Calendar page projection
+  - Scenario testing
+  - Weekly digest generation
+
+#### Landing page CTA + pricing UX polish ✅
+
+- [x] Standardized logged-out CTA copy: **“Get Started Free”**.
+- [x] Added Pro CTA helper text (logged out): **“Start free, upgrade anytime”**.
+- [x] Fixed pricing card CTA alignment by anchoring CTA sections to the bottom of equal-height cards.
+
+### Files Changed (Day 28)
+
+**Modified:**
+
+```
+app/page.tsx
+app/dashboard/page.tsx
+app/dashboard/calendar/page.tsx
+components/landing/landing-header.tsx
+components/landing/pricing-section.tsx
+components/landing/faq-section.tsx
+components/pricing/pricing-section.tsx
+components/pricing/pricing-card.tsx
+components/subscription/upgrade-prompt.tsx
+components/subscription/pro-feature-gate.tsx
+app/terms/terms-page.tsx
+lib/calendar/generate.ts
+lib/actions/scenarios.ts
+lib/actions/stripe.ts
+lib/email/generate-digest-data.ts
+lib/stripe/config.ts
+lib/stripe/feature-gate.ts
+lib/stripe/subscription.ts
 docs/development-progress.md
 docs/product-brief.md
 ```
@@ -471,14 +529,14 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 #### Tier Limits Configuration
 
-| Feature | Free | Pro | Premium |
-|---------|------|-----|---------|
-| Bills | 10 | Unlimited | Unlimited |
-| Income Sources | 10 | Unlimited | Unlimited |
-| Forecast Days | 60 | 90 | 365 |
-| Invoicing | ❌ | ✅ | ✅ |
-| Bank Sync | ❌ | ❌ | ✅ |
-| SMS Alerts | ❌ | ❌ | ✅ |
+| Feature | Free | Pro |
+|---------|------|-----|
+| Bills | 10 | Unlimited |
+| Income Sources | 10 | Unlimited |
+| Forecast Days | 60 | 365 |
+| Invoicing | ❌ | ✅ |
+| Bank Sync | ❌ | (planned) |
+| SMS Alerts | ❌ | (planned) |
 
 #### Subscription Lifecycle (Tested in Production)
 

@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
 **Version:** 4.3  
-**Last Updated:** January 1, 2026  
+**Last Updated:** January 4, 2026  
 **Status:** Live - Accepting Payments - Feature Complete  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -108,7 +108,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Auto-redirect for new users
 
 ### Phase 8: Stripe Integration ✅ COMPLETE (Day 21)
-- Stripe Checkout for Pro/Premium tiers
+- Stripe Checkout for paid tiers (Pro)
 - Webhook handler for subscription lifecycle
 - Customer Portal for self-service management
 - Subscription status in Settings page
@@ -129,7 +129,9 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 ### Core Features (MVP) ✅ ALL COMPLETE
 
 1. **Daily Liquidity Calendar** ✅
-   - 60/90/365-day forward projection (tier-based)
+   - Tier-based forward projection:
+     - Free: 60 days
+     - Pro: 365 days (12 months ahead)
    - Color-coded balance indicators (green/amber/rose)
    - Daily transaction list with detail modals
    - Mobile-responsive dark theme design
@@ -210,7 +212,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
     - User-configurable schedule (day + time) with timezone support
     - Unsubscribe link + open/click tracking
 
-### Premium Features (Post-MVP)
+### Premium Features (Post-MVP / Planned)
 
 11. **Email Parser** (Planned)
     - Forward bills to bills@cashflowforecaster.io
@@ -244,25 +246,27 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ### Pricing Tiers (Live)
 
-| Feature | Free | Pro ($7.99/mo) | Premium ($14.99/mo) |
-|---------|------|----------------|---------------------|
-| Bills | 10 | Unlimited | Unlimited |
-| Income Sources | 10 | Unlimited | Unlimited |
-| Forecast Days | 60 | 90 | 365 |
-| Calendar View | ✅ | ✅ | ✅ |
-| "Can I Afford It?" | ✅ | ✅ | ✅ |
-| Onboarding Wizard | ✅ | ✅ | ✅ |
-| Runway Collect | ❌ | ✅ | ✅ |
-| PDF Invoices | ❌ | ✅ | ✅ |
-| Payment Reminders | ❌ | ✅ | ✅ |
-| Bank Sync | ❌ | ❌ | ✅ (coming soon) |
-| SMS Alerts | ❌ | ❌ | ✅ (coming soon) |
-| Couples Mode | ❌ | ❌ | ✅ (coming soon) |
-| Support | 48hr email | 24hr priority | 24hr priority |
+Premium is **sunset pre-launch** (kept only for backwards compatibility / Stripe price IDs). The live offering is now:
+
+| Feature | Free ($0) | Pro ($7.99/mo) |
+|---------|-----------|----------------|
+| Bills | 10 | Unlimited |
+| Income Sources | 10 | Unlimited |
+| Forecast Days | 60 | 365 |
+| Calendar View | ✅ | ✅ |
+| "Can I Afford It?" | ✅ | ✅ |
+| Onboarding Wizard | ✅ | ✅ |
+| Runway Collect invoicing | ❌ | ✅ |
+| PDF Invoices | ❌ | ✅ |
+| Payment Reminders | ❌ | ✅ |
+| Support | 48hr email | 24hr priority |
 
 **Yearly Pricing:**
 - Pro: $79/year (2 months free)
-- Premium: $149/year (2 months free)
+
+### Pricing Tiers (Planned / Reintroduce Later)
+
+We’ll reintroduce a Premium tier when bank sync (Plaid) is ready and provides real, immediate value.
 
 ### Revenue Projections
 
