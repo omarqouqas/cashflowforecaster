@@ -23,6 +23,11 @@ export async function createCheckoutSession(
   interval: BillingInterval
 ): Promise<{ url: string } | { error: string }> {
   try {
+    // Premium is sunset pre-launch: keep legacy subscriptions, but do not allow new purchases.
+    if (tier === 'premium') {
+      return { error: 'Premium is not available yet. Please choose Pro.' };
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     

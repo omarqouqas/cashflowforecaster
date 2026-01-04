@@ -38,7 +38,6 @@ export default function LandingHeader() {
 
         <div className="hidden md:flex items-center gap-3">
           <GetStartedCTA
-            label="Get Started"
             size="md"
             className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950"
           />
@@ -77,7 +76,6 @@ export default function LandingHeader() {
 
             <div className="flex flex-col gap-2 pt-2">
               <GetStartedCTA
-                label="Get Started"
                 size="md"
                 fullWidth
                 onClick={() => setOpen(false)}

@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X, Zap, Crown } from 'lucide-react';
+import { Check, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { PRICING_TIERS, formatPrice, type BillingInterval } from '@/lib/stripe/config';
 
@@ -30,18 +30,8 @@ export function PricingSection() {
       iconBg: 'bg-teal-500/20',
       buttonStyle: 'bg-teal-500 text-white hover:bg-teal-600',
       href: '/auth/signup?plan=pro',
-      buttonText: 'Get Started',
+      buttonText: 'Get Started Free',
       popular: true,
-    },
-    {
-      key: 'premium' as const,
-      icon: Crown,
-      iconColor: 'text-amber-400',
-      iconBg: 'bg-amber-500/20',
-      buttonStyle: 'bg-amber-500 text-white hover:bg-amber-600',
-      href: '/auth/signup?plan=premium',
-      buttonText: 'Get Started',
-      comingSoon: ['Bank sync via Plaid', 'Couples mode'],
     },
   ];
 
@@ -85,7 +75,7 @@ export function PricingSection() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {tiers.map((tier) => {
             const config = PRICING_TIERS[tier.key];
             const price = billingInterval === 'month'
@@ -100,7 +90,7 @@ export function PricingSection() {
                   tier.popular
                     ? 'border-teal-500 ring-2 ring-teal-500/20'
                     : 'border-zinc-800'
-                }`}
+                } flex flex-col h-full`}
               >
                 {/* Popular Badge */}
                 {tier.popular && (
@@ -133,21 +123,6 @@ export function PricingSection() {
                   )}
                 </div>
 
-                {/* CTA Button */}
-                <Link
-                  href={tier.href}
-                  className={`block w-full py-3 px-4 rounded-lg font-medium transition-colors text-center ${tier.buttonStyle}`}
-                >
-                  {tier.buttonText}
-                </Link>
-
-                {/* "Coming soon" note for paid tiers */}
-                {tier.key !== 'free' && (
-                  <p className="text-xs text-zinc-500 text-center mt-2">
-                    {tier.key === 'pro' ? 'Pro features available now' : 'Premium features coming soon'}
-                  </p>
-                )}
-
                 {/* Features */}
                 <ul className="mt-6 space-y-3">
                   {config.features.map((feature, index) => (
@@ -174,25 +149,39 @@ export function PricingSection() {
                       </li>
                     </>
                   )}
-                  {tier.key === 'pro' && (
-                    <li className="flex items-start gap-3 text-sm text-zinc-600">
-                      <X className="w-5 h-5 flex-shrink-0" />
-                      <span>Bank sync (Premium only)</span>
-                    </li>
-                  )}
+                  {tier.key === 'pro' && null}
                 </ul>
 
-                {/* Coming Soon Tags */}
-                {tier.comingSoon && (
-                  <div className="mt-4 pt-4 border-t border-zinc-800">
-                    <p className="text-xs text-zinc-500 flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 bg-zinc-800 rounded text-zinc-400">
-                        Coming soon
-                      </span>
-                      {tier.comingSoon.join(' & ')}
+                {/* CTA (anchored to bottom so buttons align across cards) */}
+                <div className="mt-auto pt-6">
+                  <Link
+                    href={tier.href}
+                    className={`block w-full py-3 px-4 rounded-lg font-medium transition-colors text-center ${tier.buttonStyle}`}
+                  >
+                    {tier.buttonText}
+                  </Link>
+
+                  {tier.key === 'pro' && (
+                    <p className="text-zinc-400 text-sm text-center mt-2">
+                      Start free, upgrade anytime
                     </p>
-                  </div>
-                )}
+                  )}
+
+                  {tier.key === 'free' && (
+                    <p className="text-zinc-400 text-sm text-center mt-2">
+                      {'\u00A0'}
+                    </p>
+                  )}
+
+                  {/* "Coming soon" note for paid tiers */}
+                  {tier.key !== 'free' && (
+                    <p className="text-xs text-zinc-500 text-center mt-2">
+                      Pro features available now
+                    </p>
+                  )}
+                </div>
+
+                {/* No Premium tier pre-launch */}
               </div>
             );
           })}

@@ -7,6 +7,7 @@ import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
 import { getInvoiceSummary } from '@/lib/actions/invoices';
+import { getForecastDaysLimit } from '@/lib/stripe/subscription';
 import { differenceInCalendarDays, startOfDay, format } from 'date-fns';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 
@@ -20,7 +21,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const supabase = await createClient();
 
   // Fetch accounts, income, bills, and user settings in parallel
-  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult] = await Promise.all([
+  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult, forecastDays] = await Promise.all([
     supabase
       .from('accounts')
       .select('*')
@@ -42,6 +43,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .eq('user_id', user.id)
       .single(),
     getInvoiceSummary(),
+    getForecastDaysLimit(user.id),
   ]);
 
   const accounts = accountsResult.data || [];
@@ -63,7 +65,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   let calendarData = null;
   if (accounts.length > 0) {
     try {
-      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined);
+      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined, forecastDays);
     } catch (error) {
       console.error('Error generating calendar:', error);
     }
@@ -264,11 +266,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   . Let&apos;s fix that.
                 </>
               ) : forecastStatus?.lowBalanceCount ? (
-                <>Heads up — {forecastStatus.lowBalanceCount} low-balance day{forecastStatus.lowBalanceCount === 1 ? '' : 's'} in the next 60 days.</>
+                <>Heads up — {forecastStatus.lowBalanceCount} low-balance day{forecastStatus.lowBalanceCount === 1 ? '' : 's'} in the next {forecastDays} days.</>
               ) : forecastStatus ? (
-                <>✓ You&apos;re in the green for the next 60 days.</>
+                <>✓ You&apos;re in the green for the next {forecastDays} days.</>
               ) : (
-                <>Your 60-day cash flow calendar will appear here soon.</>
+                <>Your {forecastDays}-day cash flow calendar will appear here soon.</>
               )}
             </p>
             <Link href="/dashboard/calendar" className="text-teal-500 text-sm hover:underline">
@@ -454,7 +456,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   </div>
 
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    60-Day Forecast
+                    {forecastDays}-Day Forecast
                   </h3>
 
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">

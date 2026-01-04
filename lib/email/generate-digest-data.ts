@@ -2,6 +2,7 @@ import 'server-only';
 
 import generateCalendar from '@/lib/calendar/generate';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { PRICING_TIERS, normalizeSubscriptionTier, type SubscriptionTier } from '@/lib/stripe/config';
 
 export interface DigestData {
   user: {
@@ -50,7 +51,11 @@ function sum(nums: number[]): number {
 export async function generateDigestData(userId: string): Promise<DigestData | null> {
   const supabase = createAdminClient();
 
-  const [{ data: userRow, error: userErr }, { data: settingsRow, error: settingsErr }] =
+  const [
+    { data: userRow, error: userErr },
+    { data: settingsRow, error: settingsErr },
+    { data: subscriptionRow, error: subscriptionErr },
+  ] =
     await Promise.all([
       supabase
         .from('users')
@@ -64,14 +69,31 @@ export async function generateDigestData(userId: string): Promise<DigestData | n
         )
         .eq('user_id', userId)
         .maybeSingle(),
+      supabase
+        .from('subscriptions')
+        .select('tier,status')
+        .eq('user_id', userId)
+        .maybeSingle(),
     ]);
 
   if (userErr) throw new Error(userErr.message);
   if (!userRow) return null;
   if (settingsErr) throw new Error(settingsErr.message);
+  if (subscriptionErr) throw new Error(subscriptionErr.message);
 
   const timezone = settingsRow?.timezone ?? null;
   const safetyBuffer = settingsRow?.safety_buffer ?? 500;
+
+  const activeTier: SubscriptionTier = (() => {
+    const tier = normalizeSubscriptionTier(subscriptionRow?.tier, 'free');
+    const status = (subscriptionRow?.status ?? '').toLowerCase();
+    const isActive = status === 'active' || status === 'trialing';
+    if (!isActive) return 'free';
+    // Premium is sunset pre-launch; treat legacy premium as Pro-equivalent for entitlements.
+    return tier === 'premium' ? 'pro' : tier;
+  })();
+
+  const forecastDays = PRICING_TIERS[activeTier].limits.forecastDays;
 
   const [accountsRes, incomeRes, billsRes] = await Promise.all([
     supabase.from('accounts').select('*').eq('user_id', userId),
@@ -90,7 +112,7 @@ export async function generateDigestData(userId: string): Promise<DigestData | n
   const income = incomeRes.data ?? [];
   const bills = billsRes.data ?? [];
 
-  const calendar = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined);
+  const calendar = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays);
   const weekDays = calendar.days.slice(0, 7);
   const startDay = weekDays[0];
   const endDay = weekDays[weekDays.length - 1];

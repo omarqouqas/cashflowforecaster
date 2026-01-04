@@ -149,6 +149,9 @@ export async function canUseBankSync(userId: string): Promise<FeatureGateResult>
  */
 export async function getForecastDaysLimit(userId: string): Promise<number> {
   const tier = await getUserTier(userId);
+  // Premium is not offered pre-launch, but legacy Premium subscribers should not break.
+  // Treat premium as pro-equivalent for forecast entitlement.
+  if (tier === 'premium') return PRICING_TIERS.pro.limits.forecastDays;
   return PRICING_TIERS[tier].limits.forecastDays;
 }
 

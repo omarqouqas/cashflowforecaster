@@ -124,7 +124,7 @@ export default async function Home() {
             <div className="mt-8 flex flex-col items-center gap-3">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
 
-              <p className="text-sm text-zinc-400">No credit card required • Free forever plan</p>
+              <p className="text-sm text-zinc-400">Set up in under 3 minutes • No credit card required • Free forever plan</p>
 
               <p className="text-sm text-zinc-300">
                 Already have an account?{' '}

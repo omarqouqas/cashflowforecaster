@@ -151,10 +151,20 @@ export function PricingCard({
   // Determine if we should use a button (onClick) or a link (href)
   const useButton = !!cta.onClick || cta.loading || cta.disabled;
 
+  const includedFeatures = React.useMemo(
+    () => features.filter((f) => (f.kind ?? 'included') === 'included'),
+    [features]
+  );
+
+  const comingSoonFeatures = React.useMemo(
+    () => features.filter((f) => f.kind === 'coming_soon'),
+    [features]
+  );
+
   return (
     <div
       className={[
-        'relative rounded-xl border bg-zinc-900 p-6',
+        'relative rounded-xl border bg-zinc-900 p-6 flex flex-col h-full',
         popular
           ? 'border-teal-500/40 ring-2 ring-teal-500/50 shadow-[0_20px_80px_-40px_rgba(20,184,166,0.55)]'
           : 'border-zinc-800',
@@ -199,36 +209,42 @@ export function PricingCard({
       </div>
 
       <ul className="mt-6 space-y-3">
-        {features.map((feature) => {
-          const kind = feature.kind ?? 'included';
-          const isSoon = kind === 'coming_soon';
+        {includedFeatures.map((feature) => (
+          <li key={feature.text} className="flex items-start gap-3">
+            <span className="mt-0.5">
+              <CheckIcon className="h-5 w-5 text-teal-500" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm text-zinc-200">{feature.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
 
-          return (
-            <li key={feature.text} className="flex items-start gap-3">
-              <span className="mt-0.5">
-                {isSoon ? (
+      {comingSoonFeatures.length > 0 && (
+        <div className="mt-6 rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
+          <p className="text-xs font-semibold tracking-wide text-zinc-400">Coming soon</p>
+          <ul className="mt-3 space-y-3">
+            {comingSoonFeatures.map((feature) => (
+              <li key={feature.text} className="flex items-start gap-3">
+                <span className="mt-0.5">
                   <SoonIcon className="h-5 w-5 text-zinc-600" />
-                ) : (
-                  <CheckIcon className="h-5 w-5 text-teal-500" />
-                )}
-              </span>
-
-              <div className="min-w-0">
-                <p className={isSoon ? 'text-sm text-zinc-500' : 'text-sm text-zinc-200'}>
-                  {feature.text}{' '}
-                  {isSoon && (
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm text-zinc-500">
+                    {feature.text}{' '}
                     <span className="ml-2 inline-flex items-center rounded-full bg-zinc-800 px-2 py-0.5 text-[11px] font-medium text-zinc-400 ring-1 ring-zinc-700">
                       {feature.badgeText ?? 'Coming soon'}
                     </span>
-                  )}
-                </p>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <div className="mt-7">
+      <div className="mt-auto pt-7">
         {useButton ? (
           <button
             onClick={cta.onClick}

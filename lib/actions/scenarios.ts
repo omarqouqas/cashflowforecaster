@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth/session';
 import generateCalendar from '@/lib/calendar/generate';
+import { getForecastDaysLimit } from '@/lib/stripe/subscription';
 import { parseLocalDate } from '@/lib/calendar/utils';
 import { calculateScenario as calculateScenarioImpact } from '@/lib/calendar/calculate-scenario';
 import type { Tables } from '@/types/supabase';
@@ -146,7 +147,8 @@ export async function calculateScenario(
       return { ok: false, error: 'Please select a future date.' };
     }
 
-    const calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined);
+    const forecastDays = await getForecastDaysLimit(user.id);
+    const calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays);
     const calendarEnd = calendarData.days[calendarData.days.length - 1]?.date;
     if (!calendarEnd) return { ok: false, error: 'Failed to generate calendar.' };
 

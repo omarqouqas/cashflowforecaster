@@ -102,7 +102,8 @@ export async function canUseInvoicing(userId?: string): Promise<boolean> {
  * Check if user can use bank sync feature (Premium only)
  */
 export async function canUseBankSync(userId?: string): Promise<boolean> {
-  return userHasAccess('premium', userId);
+  // Premium is sunset pre-launch and bank sync is not available yet.
+  return false;
 }
 
 /**
@@ -167,4 +168,13 @@ export async function hasReachedIncomeLimit(userId?: string): Promise<boolean> {
 export async function getForecastDaysLimit(userId?: string): Promise<number> {
   const limits = await getUserLimits(userId);
   return limits.forecastDays;
+}
+
+/**
+ * Legacy support: premium tier is not offered pre-launch. If a user has a legacy
+ * premium subscription, treat them as Pro-equivalent for entitlements.
+ */
+export async function getEffectiveTier(userId?: string): Promise<SubscriptionTier> {
+  const subscription = await getUserSubscription(userId);
+  return subscription.tier === 'premium' ? 'pro' : subscription.tier;
 }

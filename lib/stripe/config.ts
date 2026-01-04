@@ -3,6 +3,8 @@
 // Stripe Configuration for Cash Flow Forecaster
 // ============================================
 
+// NOTE: Keep 'premium' for backwards compatibility with any legacy subscriptions.
+// Premium is not currently offered in the UI/checkout flows pre-launch.
 export type SubscriptionTier = 'free' | 'pro' | 'premium';
 export type BillingInterval = 'month' | 'year';
 
@@ -127,7 +129,7 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
       'Everything in Free',
       'Runway Collect invoicing',
       'Unlimited bills & income',
-      '90-day calendar forecast',
+      '365-day forecast (12 months ahead)',
       'Scenario testing',
       'Payment reminders',
       'Priority support (24hr)',
@@ -135,7 +137,7 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
     limits: {
       maxBills: Infinity,
       maxIncome: Infinity,
-      forecastDays: 90,
+      forecastDays: 365,
       invoicesEnabled: true,
       bankSyncEnabled: false,
       smsAlertsEnabled: false,
@@ -147,25 +149,20 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
     },
   },
   premium: {
-    name: 'Premium',
-    description: 'Full power for growing businesses',
+    // Legacy tier (not offered pre-launch). Treat as Pro for access/limits.
+    name: 'Premium (Legacy)',
+    description: 'Legacy subscription (not offered pre-launch)',
     features: [
       'Everything in Pro',
-      'Bank sync via Plaid',
-      'SMS alerts',
-      'Couples mode',
-      '12 months history',
-      'Multi-account support',
-      'Dedicated support',
     ],
     limits: {
       maxBills: Infinity,
       maxIncome: Infinity,
       forecastDays: 365,
       invoicesEnabled: true,
-      bankSyncEnabled: true,
-      smsAlertsEnabled: true,
-      couplesModeEnabled: true,
+      bankSyncEnabled: false,
+      smsAlertsEnabled: false,
+      couplesModeEnabled: false,
     },
     prices: {
       monthly: { amount: 1499, priceId: STRIPE_PRICE_IDS.premium.monthly },

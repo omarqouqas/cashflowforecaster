@@ -81,11 +81,7 @@ export default function TermsPage() {
               </li>
               <li>
                 <strong className="text-white">Pro ($7.99/month):</strong>{" "}
-                Unlimited bills/income, 90-day forecasts, invoicing
-              </li>
-              <li>
-                <strong className="text-white">Premium ($14.99/month):</strong>{" "}
-                365-day forecasts, all features
+                Unlimited bills/income, 365-day forecasts, invoicing
               </li>
             </ul>
             <p className="mt-3">

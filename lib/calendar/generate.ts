@@ -90,7 +90,8 @@ export default function generateCalendar(
   income: IncomeRecord[],
   bills: BillRecord[],
   safetyBuffer: number = 500,
-  timezone?: string
+  timezone?: string,
+  forecastDays: number = 60
 ): CalendarData {
   try {
     // Step 1: Calculate starting balance
@@ -101,11 +102,12 @@ export default function generateCalendar(
       .filter((a) => a.is_spendable !== false)
       .reduce((sum, a) => sum + a.current_balance, 0);
 
-    // Step 2: Generate 60-day date array
+    // Step 2: Generate forecast date array
     const today = getTodayAtNoonForTimezone(timezone);
 
     const dates: Date[] = [];
-    for (let i = 0; i < 60; i++) {
+    const daysToGenerate = Number.isFinite(forecastDays) && forecastDays > 0 ? Math.floor(forecastDays) : 60;
+    for (let i = 0; i < daysToGenerate; i++) {
       dates.push(addDays(today, i));
     }
 
@@ -114,13 +116,13 @@ export default function generateCalendar(
       throw new Error('Failed to generate calendar dates: endDate is undefined');
     }
 
-    // Step 3: Calculate all income occurrences for the entire 60-day period
+    // Step 3: Calculate all income occurrences for the entire forecast period
     const allIncomeOccurrences = income
       .filter(inc => inc.is_active !== false)
       .flatMap(inc => calculateIncomeOccurrences(inc, today, endDate));
     if (CALENDAR_VERBOSE) console.log('Total income occurrences:', allIncomeOccurrences.length);
 
-    // Step 4: Calculate all bill occurrences for the entire 60-day period
+    // Step 4: Calculate all bill occurrences for the entire forecast period
     const allBillOccurrences = bills
       .filter(bill => bill.is_active !== false)
       .flatMap(bill => calculateBillOccurrences(bill, today, endDate));

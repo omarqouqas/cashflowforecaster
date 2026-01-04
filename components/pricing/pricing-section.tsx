@@ -52,37 +52,16 @@ const TIERS: TierConfig[] = [
     tier: 'pro',
     priceMonthly: 7.99,
     priceYearly: 79,
-    description: 'For freelancers who invoice clients',
+    description: 'For freelancers who want year-round clarity',
     popular: true,
     features: [
       { text: 'Everything in Free' },
-      { text: 'CSV Import' },
-      { text: 'Weekly Email Digest' },
-      { text: 'Bill Collision Alerts' },
+      { text: '365-day forecast (12 months ahead)' },
       { text: 'Runway Collect invoicing' },
       { text: 'Generate & download PDF invoices' },
       { text: 'Unlimited bills & income sources' },
-      { text: '90-day forecast' },
       { text: 'Priority support (24hr)' },
     ],
-  },
-  {
-    name: 'Premium',
-    tier: 'premium',
-    priceMonthly: 14.99,
-    priceYearly: 149,
-    description: 'For power users and couples',
-    features: [
-      { text: 'Everything in Pro' },
-      { text: 'CSV Import' },
-      { text: 'Weekly Email Digest' },
-      { text: 'Bill Collision Alerts' },
-      { text: 'Bank sync via Plaid', kind: 'coming_soon', badgeText: 'Coming soon' },
-      { text: 'SMS alerts for low balance' },
-      { text: 'Couples mode', kind: 'coming_soon', badgeText: 'Coming soon' },
-      { text: '12 months history' },
-    ],
-    ctaSubtext: 'Premium features coming soon',
   },
 ];
 
@@ -91,6 +70,7 @@ export default function PricingSection({
   currentTier = 'free' 
 }: PricingSectionProps) {
   const router = useRouter();
+  const effectiveTier: SubscriptionTier = currentTier === 'premium' ? 'pro' : currentTier;
   const [period, setPeriod] = React.useState<BillingPeriod>('monthly');
   const [priceTransitioning, setPriceTransitioning] = React.useState(false);
   const [loadingTier, setLoadingTier] = React.useState<SubscriptionTier | null>(null);
@@ -142,7 +122,7 @@ export default function PricingSection({
   // Build CTA for each tier
   const buildCta = (tierConfig: TierConfig): PricingCta => {
     const { tier } = tierConfig;
-    const isCurrentTier = currentTier === tier;
+    const isCurrentTier = effectiveTier === tier;
     const isLoading = loadingTier === tier;
 
     // Current plan - disabled
@@ -157,15 +137,18 @@ export default function PricingSection({
     // Free tier
     if (tier === 'free') {
       return {
-        label: isLoggedIn ? 'Go to Dashboard' : 'Get Started',
+        label: isLoggedIn ? 'Upgrade to Pro' : 'Get Started Free',
         variant: 'solid',
-        onClick: handleFreeTier,
+        onClick: () => {
+          if (!isLoggedIn) return handleFreeTier();
+          void handleSubscribe('pro');
+        },
       };
     }
 
-    // Pro/Premium tiers - trigger Stripe checkout
+    // Pro tier - trigger Stripe checkout (or signup)
     return {
-      label: isLoading ? 'Loading...' : 'Get Started',
+      label: isLoading ? 'Loading...' : isLoggedIn ? 'Upgrade to Pro' : 'Get Started Free',
       variant: 'solid',
       onClick: () => handleSubscribe(tier as Exclude<SubscriptionTier, 'free'>),
       loading: isLoading,
@@ -199,7 +182,7 @@ export default function PricingSection({
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           {TIERS.map((tierConfig) => (
             <PricingCard
               key={tierConfig.name}
@@ -209,7 +192,14 @@ export default function PricingSection({
               description={tierConfig.description}
               features={tierConfig.features}
               popular={tierConfig.popular}
-              ctaSubtext={tierConfig.ctaSubtext}
+              ctaSubtext={
+                tierConfig.ctaSubtext ??
+                (tierConfig.tier === 'pro' && !isLoggedIn
+                  ? 'Start free, upgrade anytime'
+                  : tierConfig.tier === 'free' && !isLoggedIn
+                    ? '\u00A0'
+                    : undefined)
+              }
               period={period}
               priceTransitioning={priceTransitioning}
               cta={buildCta(tierConfig)}

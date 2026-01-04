@@ -2,6 +2,7 @@ import { requireAuth } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import { Tables } from '@/types/supabase'
 import generateCalendar from '@/lib/calendar/generate'
+import { getForecastDaysLimit } from '@/lib/stripe/subscription'
 import Link from 'next/link'
 import { ArrowLeft, Calendar as CalendarIcon } from 'lucide-react'
 import { CalendarContainer } from '@/components/calendar/calendar-container'
@@ -14,6 +15,8 @@ type Bill = Tables<'bills'>
 export default async function CalendarPage() {
   const user = await requireAuth()
   const supabase = await createClient()
+
+  const forecastDays = await getForecastDaysLimit(user.id)
 
   // Fetch active data for current user
   const [accountsResult, incomeResult, billsResult, settingsResult] = await Promise.all([
@@ -68,7 +71,7 @@ export default async function CalendarPage() {
 
         <div className="mb-6">
           <h1 className="text-xl font-semibold text-slate-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-slate-600 dark:text-zinc-400">60-day projection</p>
+          <p className="text-sm text-slate-600 dark:text-zinc-400">{forecastDays}-day projection</p>
         </div>
 
         <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
@@ -79,7 +82,7 @@ export default async function CalendarPage() {
 
             <h2 className="text-xl font-semibold text-zinc-100 mb-2">Your forecast starts here</h2>
             <p className="text-zinc-400 mb-8 max-w-xs">
-              Add a bank account with your current balance to see your cash flow 60 days into the future.
+              Add a bank account with your current balance to see your cash flow {forecastDays} days into the future.
             </p>
 
             <Link
@@ -100,7 +103,7 @@ export default async function CalendarPage() {
   let calendarError: string | null = null
 
   try {
-    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined)
+    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays)
   } catch (e) {
     calendarError = e instanceof Error ? e.message : 'Failed to generate calendar'
   }
@@ -121,7 +124,7 @@ export default async function CalendarPage() {
 
         <div className="mb-6">
           <h1 className="text-xl font-semibold text-slate-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-slate-600 dark:text-zinc-400">60-day projection</p>
+          <p className="text-sm text-slate-600 dark:text-zinc-400">{forecastDays}-day projection</p>
         </div>
 
         <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 rounded-md px-4 py-3 mb-6">
@@ -176,7 +179,7 @@ export default async function CalendarPage() {
         {/* Page Header */}
         <div className="px-4 py-4 border-b border-zinc-800">
           <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-zinc-400">60-day projection</p>
+          <p className="text-sm text-zinc-400">{forecastDays}-day projection</p>
         </div>
 
         {fetchErrors.length > 0 && (

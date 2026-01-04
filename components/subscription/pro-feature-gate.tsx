@@ -44,12 +44,16 @@ export function ProFeatureGate({
   upgradeInterval = 'month',
   upgradeTierOverride,
 }: ProFeatureGateProps) {
-  if (hasTierAccess(currentTier, requiredTier)) {
+  // Premium is sunset pre-launch: treat legacy premium as pro-equivalent for gating.
+  const effectiveCurrentTier: SubscriptionTier = currentTier === 'premium' ? 'pro' : currentTier;
+  const effectiveRequiredTier: SubscriptionTier = requiredTier === 'premium' ? 'pro' : requiredTier;
+
+  if (hasTierAccess(effectiveCurrentTier, effectiveRequiredTier)) {
     return <>{children}</>;
   }
 
   const upgradeTier: Exclude<SubscriptionTier, 'free'> =
-    upgradeTierOverride ?? (requiredTier === 'premium' ? 'premium' : 'pro');
+    upgradeTierOverride ?? 'pro';
 
   return (
     <div
@@ -66,10 +70,10 @@ export function ProFeatureGate({
             Upgrade required
           </p>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-            {featureName} is available on the {requiredTier === 'pro' ? 'Pro' : 'Premium'} plan.
+            {featureName} is available on the Pro plan.
           </p>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Current plan: {currentTier}
+            Current plan: {effectiveCurrentTier}
           </p>
         </div>
 
