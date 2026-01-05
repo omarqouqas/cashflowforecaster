@@ -27,7 +27,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between Free and Pro?",
-    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, and a 60-day forecast. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), and adds Runway Collect—our professional invoicing feature with PDF generation and payment reminders."
+    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, and a 60-day forecast. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), and adds Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
   },
   {
     question: "Can I connect my bank account?",
@@ -35,15 +35,15 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Who is Cash Flow Forecaster built for?",
-    answer: "We built this for freelancers, gig workers, and anyone with irregular income. If you've ever wondered 'Can I pay rent on the 1st?' or 'Am I safe until my next invoice pays?', this is for you. Traditional budgeting apps assume you get a steady paycheck on the 1st and 15th—we don't. Whether you're a graphic designer, Uber driver, consultant, or side hustler, Cash Flow Forecaster helps you see your financial future clearly."
+    answer: "We built this for freelancers, gig workers, and anyone with irregular income. If you've ever wondered 'Can I pay rent on the 1st?' or 'Am I safe until my next invoice pays?', this is for you. Traditional budgeting apps assume you get a steady paycheck on the 1st and 15th—we don't. Great fit for graphic designers, freelance writers, marketing consultants, web developers, and side-gig hustlers. Not built for complex accounting or businesses with full-time bookkeepers—we keep it simple on purpose."
   },
   {
     question: "What is Runway Collect?",
-    answer: "Runway Collect is our built-in invoicing system for Pro users. Create professional invoices, generate PDFs, and email them directly to clients-all from your dashboard. When you create an invoice, it automatically appears as expected income in your cash flow forecast. You can also send payment reminders (friendly, firm, or final) to chase down late payments. It's invoicing that actually connects to your cash flow planning."
+    answer: "Runway Collect is our built-in invoicing system for Pro users. Create professional invoices, generate PDFs, and email them directly to clients—from your dashboard. When you create an invoice, it automatically appears as expected income in your cash flow forecast. You can also send payment reminders (friendly, firm, or final) to chase down late payments. It's invoicing that actually connects to your cash flow planning."
   },
   {
     question: "Can I try it before I pay?",
-    answer: "Yes! Our Free tier is fully functional—not a limited trial. You get 10 bills, 10 income sources, 60-day forecasting, and the 'Can I Afford It?' scenario tester. Many users find the Free tier covers everything they need. If you want unlimited entries, longer forecasts, or invoicing, you can upgrade anytime. There's no credit card required to sign up."
+    answer: "Yes! Our Free tier is fully functional—not a limited trial. You get 10 bills, 10 income sources, 60-day forecasting, and the 'Can I Afford It?' scenario tester. If you want unlimited entries, a longer forecast, or invoicing (Runway Collect), you can upgrade anytime. There's no credit card required to sign up."
   }
 ]
 

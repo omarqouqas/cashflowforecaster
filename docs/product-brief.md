@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.3  
-**Last Updated:** January 4, 2026  
-**Status:** Live - Accepting Payments - Feature Complete  
+**Version:** 4.4  
+**Last Updated:** January 5, 2026  
+**Status:** Live - Accepting Payments - Landing Page Optimized  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -16,15 +16,21 @@
 - Primary: cashflowforecaster.io
 - Redirect: cashflowforecaster.app
 
-**One-Liner:** "See your bank balance 60 days into the future."
+**One-Liner:** "Stop guessing if you can cover rent."
 
-**Hook:** "Project your daily balance for the next 60 days — and know what you can safely spend each day."
+**Hook:** "See your exact bank balance for the next 60 days — with every invoice, bill, and payday mapped out."
 
 Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance 60 days into the future. Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
 
 ### Problem Statement
 
 Millions of freelancers and gig workers struggle with cash flow uncertainty. They don't know if they can afford an expense because they can't predict when money will arrive. Traditional budgeting apps (YNAB, Mint, Monarch) focus on tracking past spending, not projecting future liquidity. This leaves a critical gap for people who need forward-looking visibility.
+
+**Research-Backed Pain Points:**
+- 47% of freelancers cite income instability as their #1 financial worry
+- 39% of freelancers say income inconsistency is their second-biggest challenge (2025)
+- 80% of self-employed workers with gigs as primary income couldn't handle an unexpected $1,000 expense
+- Gig workers collectively pay $15 billion in overdraft fees annually
 
 ### Solution
 
@@ -35,24 +41,114 @@ Cash Flow Forecaster projects bank balance 60 days into the future using a daily
 
 The app calculates and displays a 60-day calendar showing projected daily balances, color-coded to highlight low-balance days. Users can test "Can I afford it?" scenarios before making purchases.
 
-**New (Dashboard Guidance):** The dashboard now surfaces the most actionable insights up front:
-- A **Daily Budget** (or **Daily Shortfall**) until the next income
-- A supportive **“Your Path Forward”** card when the forecast goes negative (deficit + concrete options)
-- A forecast-aware status subtitle (in the green / low-balance days / first overdraft risk date)
+**Dashboard Guidance Features:**
+- **Daily Budget / Daily Shortfall:** Per-day spending budget until next income
+- **"Your Path Forward" card:** Shown when forecast goes negative; provides calm, actionable options
+- **Forecast-aware status:** "In the green," "low-balance days," or "may overdraft on [date]"
 
-### Target Market
+---
 
-**Primary:** Freelancers and gig workers ($30-60k annual income)
-- Graphic designers, writers, consultants
-- Uber/Lyft drivers, delivery workers
-- Part-time contractors
+## Target Market
 
-**Secondary:** Small business owners
-- Solo entrepreneurs
-- Side hustlers
-- Anyone with irregular income
+### Primary Persona: "The Anxious Creative"
 
-**Market Size:** 57 million freelancers in the US alone, with 36% reporting cash flow as their #1 challenge.
+| Attribute | Detail |
+|-----------|--------|
+| **Age** | 25–35 years old |
+| **Income** | $45,000–$90,000/year |
+| **Location** | US urban metros (NYC, LA, Miami, Austin, Nashville, Denver) |
+| **Professions** | Graphic designers, freelance writers/copywriters, web developers, marketing consultants, video editors/photographers |
+| **Client Load** | 3–8 active clients at any time |
+| **Payment Terms** | Net-15 to Net-30 invoices |
+| **Behavior** | Has tried YNAB or spreadsheets, found them tedious; has experienced overdraft fees |
+| **Core Question** | "Will I have enough in my account when rent hits on the 1st?" |
+
+**Why This Persona:**
+- Old enough to have real bills (rent, car payments, potential family)
+- Young enough to be tech-comfortable with PWAs
+- At the income level where cash flow anxiety peaks
+- Not wealthy enough for "set it and forget it" finances
+- Too busy to track manually, but too financially stretched to ignore
+
+### Secondary Persona: "The Side-Gig Hustler"
+
+| Attribute | Detail |
+|-----------|--------|
+| **Age** | 22–32 years old |
+| **Income** | $25,000–$50,000/year |
+| **Professions** | Rideshare drivers (Uber/Lyft), delivery workers (DoorDash, Instacart), TaskRabbit/Handy workers, part-time freelancers |
+| **Pain Point** | High anxiety around cash timing; often hit with overdraft fees |
+| **Strategy** | Target with free tier messaging; potential for Pro conversion over time |
+
+**Why This Persona:**
+- High volume, high pain around cash flow
+- Great for free tier adoption and word-of-mouth
+- Some will convert to Pro as income grows
+
+### Geographic Focus
+
+| Tier | Markets | Freelancer Population |
+|------|---------|----------------------|
+| **Tier 1 (Highest Volume)** | New York, Los Angeles, Chicago | NYC: 589k, LA: 429k, Chicago: 211k |
+| **Tier 2 (High Growth)** | Miami, Austin, Houston, Orlando, Tampa, Dallas | Miami: 270k; fastest-growing markets |
+| **Tier 3 (Emerging)** | Nashville, Denver, Atlanta, Charlotte, Raleigh | High creative freelancer concentration |
+
+### Market Size
+
+- **76.4 million** freelancers in the US (2025)
+- **70+ million** Americans in the gig economy (36% of workforce)
+- **70%** of freelancers are under age 35
+- Freelance platforms market: **$5.6 billion** (2024), projected **$13.8 billion** by 2030
+- Projected: Over **50%** of US workforce will freelance by 2027
+
+### Demographics
+
+- **Age Distribution:** 70% between 18-34, only 10% over 45
+- **Gender:** 60% male, 40% female in US freelance market
+- **Education:** 80% have bachelor's degree or higher
+
+---
+
+## Value Proposition
+
+### Three Pillars of Cash Flow Clarity
+
+**Pillar 1: Know Your Number Today**
+- 60-day forward balance projection (365 days for Pro)
+- Daily "safe to spend" visibility
+- Color-coded low-balance warnings (amber/rose)
+- Overdraft prevention before it happens
+
+**Pillar 2: Get Paid Faster (Pro)**
+- Runway Collect professional invoicing
+- Automated payment reminders (friendly/firm/final)
+- Invoice-to-forecast sync — see expected income immediately
+- PDF generation and direct email delivery
+
+**Pillar 3: Never Get Blindsided**
+- Weekly email digest with cash flow summary
+- Bill collision alerts (multiple bills same day)
+- Upcoming expense warnings
+- Monday morning financial clarity
+
+### Landing Page Messaging
+
+**Hero:**
+- **Headline:** "Stop Guessing If You Can Cover Rent"
+- **Subhead:** "See your exact bank balance for the next 60 days — with every invoice, bill, and payday mapped out. Built for freelancers with irregular income."
+- **Badge:** "Built for freelancers with irregular income"
+
+**Stat Callout:**
+- "Built for the **47%** of freelancers who say income instability is their #1 financial worry."
+
+**Who It's For Section:**
+- **Graphic Designers:** "Waiting on client approvals and Net-30 payments"
+- **Freelance Writers:** "Juggling multiple clients with different payment schedules"
+- **Marketing Consultants:** "Managing retainers and project-based work"
+- **Web Developers:** "Balancing milestone payments across projects"
+
+**Exclusion Statement:**
+- "Not built for: Businesses with full-time bookkeepers or anyone who needs complex accounting. We keep it simple on purpose."
 
 ---
 
@@ -95,6 +191,14 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Pricing section with tier comparison
 - Footer with links
 
+### Phase 5b: Landing Page Revamp ✅ COMPLETE (Day 29)
+- Refined hero positioning ("Stop Guessing If You Can Cover Rent")
+- Three-pillar structure (Know your number / Get paid faster / Never get blindsided)
+- "Who It's For" section with four personas
+- Added "Who It's For" to header navigation
+- Mid-page CTA between personas and pricing
+- Prominent stat callout (47% income instability worry)
+
 ### Phase 6: Runway Collect ✅ COMPLETE (Days 17-19)
 - Invoice generator with PDF export
 - Email sending via Resend
@@ -128,111 +232,103 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 ### Core Features (MVP) ✅ ALL COMPLETE
 
-1. **Daily Liquidity Calendar** ✅
-   - Tier-based forward projection:
-     - Free: 60 days
-     - Pro: 365 days (12 months ahead)
-   - Color-coded balance indicators (green/amber/rose)
-   - Daily transaction list with detail modals
-   - Mobile-responsive dark theme design
-   - Today indicator with auto-scroll
-   - Overdraft warning banners
+**1. Daily Liquidity Calendar ✅**
+- Tier-based forward projection:
+  - Free: 60 days
+  - Pro: 365 days (12 months ahead)
+- Color-coded balance indicators (green/amber/rose)
+- Daily transaction list with detail modals
+- Mobile-responsive dark theme design
+- Today indicator with auto-scroll
+- Overdraft warning banners
 
-1b. **Dashboard Guidance & Daily Budgeting** ✅
-   - **Daily Budget / Daily Shortfall**: a per-day spending budget until the next upcoming income (nearest income source).
-   - **Your Path Forward**: shown only when the forecast goes negative; provides calm, actionable options:
-     - Bring in $X before the first negative day, **or**
-     - Reduce spending by $Y/day (with copy adjustments for 0–1 day edge cases).
-   - Forecast-aware status messaging: “in the green”, “low-balance days”, or “may overdraft on [date]”.
+**2. Dashboard Guidance & Daily Budgeting ✅**
+- Daily Budget / Daily Shortfall until next income
+- "Your Path Forward" card when forecast goes negative
+- Forecast-aware status messaging
 
-2. **Account Management** ✅
-   - Multiple bank accounts
-   - Starting balance tracking
-   - Account aggregation
+**3. Account Management ✅**
+- Multiple bank accounts
+- Starting balance tracking
+- Account aggregation
 
-3. **Income Sources** ✅
-   - Recurring income (weekly, bi-weekly, monthly, etc.)
-   - One-time income
-   - Start/end date support
-   - **Gated:** 10 limit for Free tier
+**4. Income Sources ✅**
+- Recurring income (weekly, bi-weekly, monthly, etc.)
+- One-time income
+- Start/end date support
+- **Gated:** 10 limit for Free tier
 
-4. **Bill Management** ✅
-   - Recurring bills (rent, utilities, subscriptions)
-   - Due date tracking
-   - Category organization
-   - All frequencies supported (weekly through yearly)
-   - **Gated:** 10 limit for Free tier
+**5. Bill Management ✅**
+- Recurring bills (rent, utilities, subscriptions)
+- Due date tracking
+- Category organization
+- All frequencies supported (weekly through yearly)
+- **Gated:** 10 limit for Free tier
 
-4b. **CSV Transaction Import (One-time Bills/Income)** ✅
-   - Upload CSV and map columns (date, description, amount)
-   - Review table with search + in/out filters + “selected only”
-   - Date cutoff filter (defaults to first day of current month)
-   - Select-all checkbox in table header (supports indeterminate state)
-   - Unambiguous date helper text (e.g. “Filtering from Dec 1, 2025”)
+**6. CSV Transaction Import ✅**
+- Upload CSV and map columns (date, description, amount)
+- Review table with search + filters
+- Date cutoff filter (defaults to first day of current month)
+- Select-all checkbox with indeterminate state
 
-5. **Scenario Testing** ✅
-   - "Can I afford it?" calculator
-   - Test hypothetical expenses
-   - See impact on future balance
-   - Save scenarios for reference
+**7. Scenario Testing ✅**
+- "Can I afford it?" calculator
+- Test hypothetical expenses
+- See impact on future balance
+- Save scenarios for reference
 
-6. **Runway Collect (Pro)** ✅
-   - Create professional invoices
-   - Generate & download PDFs
-   - Email invoices directly
-   - Payment reminder system (friendly/firm/final)
-   - Auto-sync with cash flow forecasts
-   - **Gated:** Pro+ only
+**8. Runway Collect (Pro) ✅**
+- Create professional invoices
+- Generate & download PDFs
+- Email invoices directly
+- Payment reminder system (friendly/firm/final)
+- Auto-sync with cash flow forecasts
+- **Gated:** Pro+ only
 
-7. **Onboarding Wizard** ✅
-   - 4-step guided setup
-   - Pre-populated suggestions
-   - Immediate value demonstration
+**9. Onboarding Wizard ✅**
+- 4-step guided setup
+- Pre-populated suggestions
+- Immediate value demonstration
 
-8. **Stripe Payments** ✅
-   - Secure checkout via Stripe
-   - Customer portal for subscription management
-   - Automatic tier upgrades/downgrades
+**10. Stripe Payments ✅**
+- Secure checkout via Stripe
+- Customer portal for subscription management
+- Automatic tier upgrades/downgrades
 
-9. **Feature Gating** ✅
-   - Usage indicators ("3/10 bills")
-   - Upgrade banners (amber at limit, blue near limit)
-   - Upgrade modals with billing toggle
-   - Server-side validation
+**11. Feature Gating ✅**
+- Usage indicators ("3/10 bills")
+- Upgrade banners (amber at limit, blue near limit)
+- Upgrade modals with billing toggle
+- Server-side validation
 
-10. **Analytics (PostHog)** ✅
-    - User behavior tracking
-    - Conversion funnel analysis
-    - Feature usage metrics
-    - Session recording
+**12. Analytics (PostHog) ✅**
+- User behavior tracking
+- Conversion funnel analysis
+- Feature usage metrics
+- Session recording
 
-11. **Weekly Email Digest (Engagement / Retention)** ✅
-    - Weekly summary of the next 7 days (income, bills, net change)
-    - Alerts: low balance, overdraft risk, bill collisions
-    - User-configurable schedule (day + time) with timezone support
-    - Unsubscribe link + open/click tracking
+**13. Weekly Email Digest ✅**
+- Weekly summary of next 7 days (income, bills, net change)
+- Alerts: low balance, overdraft risk, bill collisions
+- User-configurable schedule (day + time) with timezone support
+- Unsubscribe link + open/click tracking
 
 ### Premium Features (Post-MVP / Planned)
 
-11. **Email Parser** (Planned)
-    - Forward bills to bills@cashflowforecaster.io
-    - Automatic bill extraction
-    - One-click bill creation
+**14. Email Parser** (Planned)
+- Forward bills to bills@cashflowforecaster.io
+- Automatic bill extraction
+- One-click bill creation
 
-12. **Bank Sync (Premium)** (Planned)
-    - Plaid integration
-    - Automatic transaction import
-    - Real-time balance updates
+**15. Bank Sync (Premium)** (Planned)
+- Plaid integration
+- Automatic transaction import
+- Real-time balance updates
 
-13. **Notifications** (Planned)
-    - Low balance alerts
-    - Bill due reminders
-    - SMS alerts (Premium)
-
-14. **Couples Mode (Premium)** (Planned)
-    - Shared accounts
-    - Partner visibility
-    - Joint planning
+**16. Notifications** (Planned)
+- Low balance alerts
+- Bill due reminders
+- SMS alerts (Premium)
 
 ---
 
@@ -241,12 +337,11 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 ### Pricing Strategy
 
 **Target Conversion Rate:** 10-15% (free to paid)
-
 **Revenue Goal:** $1,000 MRR by Month 6
 
 ### Pricing Tiers (Live)
 
-Premium is **sunset pre-launch** (kept only for backwards compatibility / Stripe price IDs). The live offering is now:
+*Note: Premium tier is sunset (kept only for backwards compatibility). Live offering is Free + Pro.*
 
 | Feature | Free ($0) | Pro ($7.99/mo) |
 |---------|-----------|----------------|
@@ -255,8 +350,11 @@ Premium is **sunset pre-launch** (kept only for backwards compatibility / Stripe
 | Forecast Days | 60 | 365 |
 | Calendar View | ✅ | ✅ |
 | "Can I Afford It?" | ✅ | ✅ |
+| Weekly Email Digest | ✅ | ✅ |
+| Bill Collision Alerts | ✅ | ✅ |
+| CSV Import | ✅ | ✅ |
 | Onboarding Wizard | ✅ | ✅ |
-| Runway Collect invoicing | ❌ | ✅ |
+| Runway Collect Invoicing | ❌ | ✅ |
 | PDF Invoices | ❌ | ✅ |
 | Payment Reminders | ❌ | ✅ |
 | Support | 48hr email | 24hr priority |
@@ -264,31 +362,14 @@ Premium is **sunset pre-launch** (kept only for backwards compatibility / Stripe
 **Yearly Pricing:**
 - Pro: $79/year (2 months free)
 
-### Pricing Tiers (Planned / Reintroduce Later)
-
-We’ll reintroduce a Premium tier when bank sync (Plaid) is ready and provides real, immediate value.
-
 ### Revenue Projections
 
-**Month 1-2:** Beta (free users only)
-- Goal: 100 beta users
-- Revenue: $0
-- Focus: Feedback and bug fixes
-
-**Month 3:** Public Launch
-- Goal: 500 users (50 paying)
-- Revenue: $400/month
-- Focus: Product Hunt launch
-
-**Month 6:** Growth Phase
-- Goal: 1,000 users (100 paying)
-- Revenue: $800/month
-- Focus: Content marketing, SEO
-
-**Month 12:** Scale Phase
-- Goal: 5,000 users (500 paying)
-- Revenue: $4,000/month
-- Focus: Paid ads, partnerships
+| Phase | Timeline | Users | Paying | MRR | Focus |
+|-------|----------|-------|--------|-----|-------|
+| Beta | Month 1-2 | 100 | 0 | $0 | Feedback, bug fixes |
+| Launch | Month 3 | 500 | 50 | $400 | Product Hunt, Reddit |
+| Growth | Month 6 | 1,000 | 100 | $800 | Content marketing, SEO |
+| Scale | Month 12 | 5,000 | 500 | $4,000 | Paid ads, partnerships |
 
 ---
 
@@ -310,7 +391,7 @@ We’ll reintroduce a Premium tier when bank sync (Plaid) is ready and provides 
 1. **accounts** - User bank accounts
 2. **income** - Income sources
 3. **bills** - Recurring expenses
-4. **user_settings** - User preferences (timezone, safety buffer)
+4. **user_settings** - User preferences (timezone, safety buffer, digest settings)
 5. **scenarios** - "Can I afford it?" calculations
 6. **invoices** - Runway Collect invoices
 7. **invoice_reminders** - Payment reminder history
@@ -386,11 +467,6 @@ User Request
 - Upgrade prompt → Checkout initiated rate
 - Checkout → Subscription created rate
 
-**Feature Adoption:**
-- `scenario_tested` - Core differentiator usage
-- `invoice_created` - Pro feature adoption
-- `reminder_sent` - Pro feature depth
-
 ### Key Events Tracked
 
 | Event | Properties | Purpose |
@@ -403,25 +479,14 @@ User Request
 | `upgrade_initiated` | tier, interval | Conversion funnel |
 | `subscription_created` | tier, interval, mrr | Revenue |
 
-### Weekly Digest (Retention Loop)
+### Weekly Digest Events
 
 | Event | Properties | Purpose |
 |-------|------------|---------|
-| `digest_sent` | user_id, has_alerts, bill_count, income_count | Retention |
+| `digest_sent` | user_id, has_alerts | Retention |
 | `digest_opened` | user_id | Retention |
 | `digest_clicked` | user_id, link | Retention |
-| `digest_settings_updated` | enabled, day, time | Retention |
-| `digest_unsubscribed` | user_id, method | Compliance / Retention |
-
----
-
-## Email Digest Implementation Notes (Production)
-
-- **Schedule**: Vercel Cron hits `/api/cron/weekly-digest` hourly; the server checks each user’s timezone + preferred day/time.
-- **Security**:
-  - Cron endpoint requires `CRON_SECRET` bearer auth
-  - Unsubscribe / click / open tokens are HMAC-signed (recommended: `EMAIL_TOKEN_SECRET`)
-  - Cron/unsubscribe use a Supabase service-role client (never exposed to browser)
+| `digest_unsubscribed` | user_id | Compliance |
 
 ---
 
@@ -434,7 +499,8 @@ User Request
 - ✅ Stripe integration complete
 - ✅ Feature gating complete
 - ✅ Analytics tracking live
-- 📋 Reddit launch (r/freelance, r/povertyfinance, r/smallbusiness)
+- ✅ Landing page optimized
+- 📋 Reddit launch
 - 📋 Invite 100 beta users
 - 📋 Collect feedback
 
@@ -460,18 +526,134 @@ User Request
 
 ### Reddit Launch Plan
 
-**Target Subreddits:**
-- r/freelance (1.2M members)
-- r/povertyfinance (2.1M members)
-- r/smallbusiness (1.5M members)
-- r/Entrepreneur (2.2M members)
-- r/sidehustle (500K members)
+**Primary Subreddits (Target: Anxious Creatives)**
+
+| Subreddit | Members | Strategy |
+|-----------|---------|----------|
+| r/freelance | 1.2M | Lead with pain point, offer free tier |
+| r/graphic_design | 4.5M | Speak to Net-30 payment pain |
+| r/freelanceWriters | 200K | Focus on juggling multiple clients |
+| r/webdev | 2.1M | Milestone payment challenges |
+| r/marketing | 1.2M | Retainer + project income mix |
+
+**Secondary Subreddits (Target: Side-Gig Hustlers)**
+
+| Subreddit | Members | Strategy |
+|-----------|---------|----------|
+| r/uberdrivers | 200K | Daily/weekly pay timing issues |
+| r/doordash | 400K | Gig income unpredictability |
+| r/sidehustle | 500K | Supplemental income management |
+| r/povertyfinance | 2.1M | Overdraft prevention angle |
 
 **Post Strategy:**
-- Share personal story (struggling with cash flow)
-- Show the problem being solved (overdraft screenshot)
-- Offer free tier (no spam)
-- Ask for feedback (genuine engagement)
+- Lead with personal story (struggling with cash flow as a freelancer)
+- Use the hook: "Stop guessing if you can cover rent"
+- Show the problem being solved (overdraft screenshot or calendar preview)
+- Offer free tier (no credit card required)
+- Ask for genuine feedback
+- Use platform-specific discount codes (REDDIT50, TWITTER50, LINKEDIN50)
+
+**Messaging Angle by Subreddit:**
+- **r/freelance:** "Built for the 47% of freelancers who say income instability is their #1 worry"
+- **r/graphic_design:** "Waiting on client approvals and Net-30 payments? See your balance 60 days ahead."
+- **r/uberdrivers:** "Know if you can cover rent before your next payout hits"
+
+---
+
+## SEO & Content Strategy
+
+### Keyword Strategy (Priority Tiers)
+
+**Tier 1 — High Intent (Bottom Funnel) — Focus Here First**
+- `cash flow app for freelancers`
+- `freelance income forecaster`
+- `irregular income budget tool`
+- `YNAB alternative for freelancers`
+- `predict bank balance app`
+
+**Tier 2 — Problem-Aware (Middle Funnel)**
+- `how to budget with irregular income`
+- `freelancer overdraft prevention`
+- `will I run out of money before client pays`
+- `cash flow planning for self-employed`
+- `stop living paycheck to paycheck freelancer`
+
+**Tier 3 — Profession-Specific**
+- `cash flow tool for graphic designers`
+- `financial planning for freelance writers`
+- `budget app for marketing consultants`
+- `money management for web developers`
+
+**Tier 4 — Location-Specific (Blog Content)**
+- `freelance financial planning NYC`
+- `Austin freelancer budget tips`
+- `cash flow help for LA creatives`
+- `Miami freelancer money management`
+
+**Tier 5 — Competitor Comparison**
+- `YNAB vs Cash Flow Forecaster`
+- `Mint alternative irregular income`
+- `why QuickBooks doesn't work for freelancers`
+- `best budgeting app for irregular income`
+
+### Content Roadmap
+
+**Phase 1: Launch Content (Month 1)**
+1. "How to Budget When Your Income Changes Every Month" (pillar post)
+2. "Why Traditional Budgeting Apps Fail Freelancers" (comparison angle)
+3. "The Freelancer's Guide to Never Overdrafting Again" (pain-point focused)
+
+**Phase 2: SEO Content (Months 2-3)**
+4. "YNAB Alternative for Freelancers: A Complete Comparison" (competitor page)
+5. "Cash Flow Planning for Graphic Designers" (profession-specific)
+6. "Financial Planning for Freelance Writers" (profession-specific)
+
+**Phase 3: Location Content (Months 3-4)**
+7. "NYC Freelancer Financial Survival Guide"
+8. "Austin Freelancer Budget Tips"
+9. "Cash Flow Tips for LA Creatives"
+
+### Planned SEO Pages
+
+| Page | URL | Target Keyword |
+|------|-----|----------------|
+| YNAB Comparison | `/compare/ynab` | YNAB alternative for freelancers |
+| Mint Comparison | `/compare/mint` | Mint alternative irregular income |
+| For Designers | `/for/graphic-designers` | cash flow tool for graphic designers |
+| For Writers | `/for/freelance-writers` | financial planning for freelance writers |
+
+---
+
+## Competitive Positioning
+
+**Positioning Statement:**
+"The YNAB alternative for irregular income — forward-looking instead of backward-looking."
+
+### Competitive Comparison
+
+| Aspect | Cash Flow Forecaster | YNAB | Monarch Money | Mint |
+|--------|---------------------|------|---------------|------|
+| **Focus** | Future balance prediction | Past spending tracking | Wealth optimization | Expense categorization |
+| **UI** | Calendar (60-day view) | Category budgets | Dashboard/graphs | Transaction feed |
+| **Target User** | $45-90k freelancers | $80k+ households | $100k+ households | General consumers |
+| **Price** | $7.99/mo | $14.99/mo | $14.99/mo | Free (ads) |
+| **Unique Value** | Runway Collect invoicing | Envelope budgeting | AI insights | Bank sync |
+| **Time Orientation** | Forward-looking | Backward-looking | Current state | Backward-looking |
+
+### Why We Win
+
+1. **Forward-Looking vs. Backward-Looking:** YNAB and Mint track where money went; we show where it will be
+2. **Calendar Mental Model:** Freelancers think in dates ("Can I pay rent on the 1st?"), not categories
+3. **Invoice-to-Forecast Sync:** Unique feature — invoices automatically appear as expected income
+4. **Price Point:** $7.99 vs. $14.99 for YNAB/Monarch — 47% cheaper
+5. **Simplicity:** No complex accounting features — just cash flow clarity
+
+### Market Gap Confirmed
+
+- No competitor focuses specifically on forward-looking cash flow for freelancers
+- Calendar interface is unique and matches how freelancers think about money
+- Invoice-to-forecast sync is a unique differentiator
+- Underserved market: successful freelancers ($45-90k) who are "too busy to track, but too big to fail"
 
 ---
 
@@ -499,72 +681,20 @@ User Request
 - Scenario tests per user
 - Invoice creation rate (Pro users)
 - Upgrade prompt → checkout rate
+- Weekly digest open rate
 
 ### Target Metrics (Month 6)
 
-- **Users:** 1,000 total, 100 paying
-- **MRR:** $800
-- **Retention:** 40% Day 7, 20% Day 30
-- **Conversion:** 10% free-to-paid
-- **CAC:** < $10
-- **Churn:** < 5%/month
-
----
-
-## Competitive Positioning
-
-**Our Status:** Live, accepting payments, feature-gated, analytics-enabled
-
-**Competitive Advantage:**
-
-| Aspect | Cash Flow Forecaster | YNAB | Monarch Money |
-|--------|---------------------|------|---------------|
-| **Focus** | Future balance prediction | Past spending tracking | Wealth optimization |
-| **UI** | Calendar (intuitive) | Category budgets | Dashboard/graphs |
-| **Target** | $30-60k freelancers | $80k+ households | $100k+ households |
-| **Price** | $7.99/mo | $14.99/mo | $14.99/mo |
-| **Unique** | Runway Collect invoicing | Envelope budgeting | AI insights |
-
-**Market Gap Confirmed:**
-- No competitor focuses on forward-looking cash flow
-- Calendar metaphor is unique and intuitive
-- Invoice-to-forecast sync is unique differentiator
-- Underserved market ($30-60k income)
-
----
-
-## Future Roadmap
-
-### Phase 2 Features (Months 2-4)
-
-- [ ] Bill collision warnings
-- [ ] Sentry error monitoring
-- [ ] Multi-currency support
-- [ ] Export to CSV/PDF
-- [x] Weekly email digest
-- [ ] Email notifications (other than digest)
-
-### Phase 3 Features (Months 5-8)
-
-- [ ] Email parser (bills@cashflowforecaster.io)
-- [ ] Bank account integration (Plaid)
-- [ ] AI-powered bill categorization
-- [ ] Predictive analytics
-- [ ] Weekly check-in prompts
-
-### Phase 4 Features (Months 9-12)
-
-- [ ] Couples mode
-- [ ] Team/collaboration features
-- [ ] API for integrations
-- [ ] Mobile app (if needed)
-
-### Long-Term Vision (Year 2+)
-
-- B2B version (small businesses)
-- White-label solution
-- International expansion
-- Partnerships with freelancer platforms
+| Metric | Target |
+|--------|--------|
+| Total Users | 1,000 |
+| Paying Users | 100 |
+| MRR | $800 |
+| Day 7 Retention | 40% |
+| Day 30 Retention | 20% |
+| Free-to-Paid Conversion | 10% |
+| CAC | < $10 |
+| Monthly Churn | < 5% |
 
 ---
 
@@ -595,6 +725,40 @@ User Request
 
 ---
 
+## Future Roadmap
+
+### Phase 2 Features (Months 2-4)
+
+- [ ] Bill collision warnings (enhanced)
+- [ ] Sentry error monitoring
+- [ ] Multi-currency support
+- [ ] Export to CSV/PDF
+- [ ] Email notifications (beyond digest)
+
+### Phase 3 Features (Months 5-8)
+
+- [ ] Email parser (bills@cashflowforecaster.io)
+- [ ] Bank account integration (Plaid)
+- [ ] AI-powered bill categorization
+- [ ] Predictive analytics
+- [ ] Weekly check-in prompts
+
+### Phase 4 Features (Months 9-12)
+
+- [ ] Couples mode
+- [ ] Team/collaboration features
+- [ ] API for integrations
+- [ ] Mobile app (if needed)
+
+### Long-Term Vision (Year 2+)
+
+- B2B version (small businesses)
+- White-label solution
+- International expansion (UK, Canada first)
+- Partnerships with freelancer platforms (Upwork, Fiverr)
+
+---
+
 ## Contact Information
 
 **Product:** Cash Flow Forecaster  
@@ -604,7 +768,55 @@ User Request
 
 ---
 
-**Document Version:** 4.0  
-**Last Updated:** December 29, 2025  
-**Status:** Live - Feature Complete - Ready for User Acquisition 🎉  
-**Next Review:** January 2025
+## Changelog
+
+### Version 4.4 (January 5, 2026)
+- Refined target market based on comprehensive market research (Claude, Gemini, ChatGPT synthesis)
+- Updated value proposition to three-pillar structure
+- Added SEO keyword strategy (5 tiers)
+- Added geographic focus with market size data
+- Updated Reddit launch plan with subreddit-specific messaging
+- Enhanced competitive positioning with YNAB/Mint/Monarch comparison
+- Landing page revamped with new hero, three pillars, "Who It's For" section
+- Added "Who It's For" to header navigation
+- Added research-backed statistics (47% income instability, $15B overdraft fees, etc.)
+
+### Version 4.3 (January 4, 2026)
+- Pricing simplification: sunset Premium tier, fold 365-day forecast into Pro
+- Forecast generation now tier-based (Free: 60 days, Pro: 365 days)
+- Landing page CTA polish
+
+### Version 4.2 (January 1, 2026)
+- CSV import UX fixes
+- List refresh bugs fixed
+- Date cutoff filter for transaction import
+
+### Version 4.1 (December 29, 2025)
+- Weekly email digest implementation
+- Dashboard guidance cards (Daily Budget, Your Path Forward)
+
+### Version 4.0 (December 21, 2025)
+- Stripe live mode enabled
+- Feature gating complete
+- PostHog analytics integration
+
+### Version 3.0 (December 19, 2025)
+- Stripe integration (checkout, webhooks, portal)
+- Subscription management
+
+### Version 2.0 (December 17, 2025)
+- Runway Collect invoicing
+- Payment reminders
+- Onboarding wizard
+
+### Version 1.0 (December 15, 2025)
+- Initial MVP launch
+- Calendar, accounts, income, bills
+- Scenario testing
+
+---
+
+**Document Version:** 4.4  
+**Last Updated:** January 5, 2026  
+**Status:** Live - Feature Complete - Landing Page Optimized - Ready for User Acquisition 🎉  
+**Next Review:** February 2026

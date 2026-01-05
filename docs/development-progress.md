@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 4, 2026
+**Last Updated:** January 5, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -143,6 +143,41 @@ lib/email/generate-digest-data.ts
 lib/stripe/config.ts
 lib/stripe/feature-gate.ts
 lib/stripe/subscription.ts
+docs/development-progress.md
+docs/product-brief.md
+```
+
+---
+
+## Day 29: Landing Page Revamp (Refined Value Prop) + Three-Pillar Structure + “Who It’s For” Nav (January 5, 2026)
+
+### Shipped (today)
+
+#### Landing page: refined positioning + structure ✅
+
+- [x] Updated hero messaging for the core pain: **“Stop Guessing If You Can Cover Rent”**
+  - Added badge: **“Built for freelancers with irregular income”**
+  - Kept CTA: **“Get Started Free”**
+- [x] Replaced the old feature grid with a **3‑pillar layout**:
+  - **Know Your Number Today** (60‑day clarity + safe‑to‑spend framing)
+  - **Get Paid Faster** (Runway Collect: invoicing + reminders + forecast sync)
+  - **Never Get Blindsided** (weekly digest + bill collision warnings)
+- [x] Added “Who It’s For” persona section + anchor navigation
+  - Added header nav link: **Who It’s For** → `#who-its-for` (desktop + mobile)
+  - Added ID to the section: `id="who-its-for"`
+- [x] Added a prominent stat callout: **“Built for the 47% of freelancers who say income instability is their #1 financial worry.”**
+- [x] Added a mid‑page CTA between “Who It’s For” and Pricing:
+  - “Ready to stop guessing?” + **Get Started Free**
+- [x] Updated FAQs where needed to stay consistent with the live offering (Free vs Pro, Who it’s for, Runway Collect copy)
+
+### Files Changed (Day 29)
+
+**Modified:**
+
+```
+app/page.tsx
+components/landing/landing-header.tsx
+components/landing/faq-section.tsx
 docs/development-progress.md
 docs/product-brief.md
 ```
