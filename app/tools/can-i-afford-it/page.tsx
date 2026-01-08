@@ -20,20 +20,18 @@ export const metadata: Metadata = {
     canonical: 'https://cashflowforecaster.io/tools/can-i-afford-it',
   },
   openGraph: {
-    title: 'Free “Can I Afford It?” Calculator',
+    title: 'Can I Afford It? Free Cash Flow Calculator (Day-by-Day)',
     description:
       'Try a purchase and see your projected bank balance day-by-day. Built on the same forward-looking cash flow logic as Cash Flow Forecaster.',
     url: 'https://cashflowforecaster.io/tools/can-i-afford-it',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
-    images: [{ url: '/hero-dashboard.png' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free “Can I Afford It?” Calculator',
+    title: 'Can I Afford It? Free Cash Flow Calculator (Day-by-Day)',
     description:
       'A free cash flow projection calculator to check a purchase against bills + next income.',
-    images: ['/hero-dashboard.png'],
   },
 };
 
