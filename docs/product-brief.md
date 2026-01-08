@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.4  
-**Last Updated:** January 5, 2026  
+**Version:** 4.5  
+**Last Updated:** January 8, 2026  
 **Status:** Live - Accepting Payments - Landing Page Optimized  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -770,6 +770,14 @@ User Request
 
 ## Changelog
 
+### Version 4.5 (January 8, 2026)
+- Social sharing improvements:
+  - Added dynamic OG image at `/opengraph-image` and Twitter image at `/twitter-image`
+  - Updated homepage metadata (stronger social titles + canonical URL)
+  - Fixed tool OG image routing for `/tools/can-i-afford-it` (removed static metadata image overrides so route `opengraph-image.tsx` is used)
+- Dev stability:
+  - Resolved Windows-specific Next/OG rendering issues by standardizing OG image routes on Edge runtime
+
 ### Version 4.4 (January 5, 2026)
 - Refined target market based on comprehensive market research (Claude, Gemini, ChatGPT synthesis)
 - Updated value proposition to three-pillar structure
@@ -816,7 +824,7 @@ User Request
 
 ---
 
-**Document Version:** 4.4  
-**Last Updated:** January 5, 2026  
+**Document Version:** 4.5  
+**Last Updated:** January 8, 2026  
 **Status:** Live - Feature Complete - Landing Page Optimized - Ready for User Acquisition 🎉  
 **Next Review:** February 2026

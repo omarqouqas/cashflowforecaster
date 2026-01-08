@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 5, 2026
+**Last Updated:** January 8, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -178,6 +178,47 @@ docs/product-brief.md
 app/page.tsx
 components/landing/landing-header.tsx
 components/landing/faq-section.tsx
+docs/development-progress.md
+docs/product-brief.md
+```
+
+---
+
+## Day 30: Social Sharing (OG/Twitter) Fixes + Dynamic OG Images (January 8, 2026)
+
+### Shipped (last 24 hours)
+
+#### Tool OG image fix: `/tools/can-i-afford-it` ✅
+
+- [x] Fixed the wrong OG image being used (was showing `/hero-dashboard.png`)
+  - Removed `openGraph.images` + `twitter.images` overrides from the route metadata so Next can use `opengraph-image.tsx`
+- [x] Stabilized the route OG image generator in dev
+  - Fixed `@vercel/og` layout strictness error (multi-child `<div>` requires explicit `display`)
+
+#### Landing page OG/Twitter metadata + dynamic images ✅
+
+- [x] Added a dynamic OG image at the app root (`/opengraph-image`)
+- [x] Added a matching dynamic Twitter image (`/twitter-image`)
+- [x] Updated homepage social titles and canonical URL
+- [x] Removed global static OG/Twitter image overrides that were forcing `/hero-dashboard.png`
+- [x] Updated landing OG image copy to be more freelancer-focused
+
+#### Windows dev stability (Next/OG) ✅
+
+- [x] Resolved Windows-specific OG rendering errors caused by invalid `file:` URL font paths and unsupported font formats
+  - Standardized OG image routes on **Edge runtime** for reliability on Windows paths with spaces
+
+### Files Changed (Day 30)
+
+**Modified:**
+
+```
+app/layout.tsx
+app/page.tsx
+app/opengraph-image.tsx
+app/twitter-image.tsx
+app/tools/can-i-afford-it/page.tsx
+app/tools/can-i-afford-it/opengraph-image.tsx
 docs/development-progress.md
 docs/product-brief.md
 ```
