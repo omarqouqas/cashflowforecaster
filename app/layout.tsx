@@ -14,18 +14,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
     description: "Freelancers: see your bank balance 60 days ahead. Know exactly when you'll run low before it happens. The calendar that stops you from bouncing rent.",
-    images: [
-      {
-        url: '/hero-dashboard.png',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
     description:
       "Freelancers: see your bank balance 60 days ahead. Know exactly when you'll run low before it happens. The calendar that stops you from bouncing rent.",
-    images: ['/hero-dashboard.png'],
   },
   // PWA metadata
   manifest: '/manifest.json',

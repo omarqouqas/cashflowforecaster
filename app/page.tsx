@@ -45,8 +45,11 @@ export const metadata: Metadata = {
     'avoid overdraft freelancer',
     'invoice to cash flow tracking',
   ],
+  alternates: {
+    canonical: 'https://cashflowforecaster.io',
+  },
   openGraph: {
-    title: 'Cash Flow Forecaster',
+    title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
     description:
       'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
     url: 'https://cashflowforecaster.io',
@@ -55,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cash Flow Forecaster',
+    title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
     description:
       'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
   },
