@@ -69,6 +69,7 @@ export default async function PricingPage({
           <PricingSection 
             isLoggedIn={!!user} 
             currentTier={currentSubscription?.tier ?? 'free'}
+            showHeader={false}
           />
         </Suspense>
 

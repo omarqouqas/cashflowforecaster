@@ -17,6 +17,7 @@ import type { SubscriptionTier } from '@/lib/stripe/config';
 interface PricingSectionProps {
   isLoggedIn?: boolean;
   currentTier?: SubscriptionTier;
+  showHeader?: boolean;
 }
 
 // Tier configuration without CTA (we'll add that dynamically)
@@ -67,7 +68,8 @@ const TIERS: TierConfig[] = [
 
 export default function PricingSection({ 
   isLoggedIn = false, 
-  currentTier = 'free' 
+  currentTier = 'free',
+  showHeader = true,
 }: PricingSectionProps) {
   const router = useRouter();
   const effectiveTier: SubscriptionTier = currentTier === 'premium' ? 'pro' : currentTier;
@@ -158,29 +160,40 @@ export default function PricingSection({
   return (
     <section
       id="pricing"
-      aria-labelledby="pricing-heading"
+      aria-labelledby={showHeader ? 'pricing-heading' : undefined}
+      aria-label={!showHeader ? 'Pricing' : undefined}
       className="px-6 py-16 bg-zinc-950 border-y border-zinc-900"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="text-center">
-          <h2 
-            id="pricing-heading" 
-            className="text-3xl md:text-4xl font-semibold text-white tracking-tight"
-          >
-            Simple, transparent pricing
-          </h2>
-          <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-            Start free. Upgrade when you want invoicing, longer forecasts, and priority support.
-          </p>
+        {showHeader ? (
+          <div className="text-center">
+            <h2 
+              id="pricing-heading" 
+              className="text-3xl md:text-4xl font-semibold text-white tracking-tight"
+            >
+              Simple, transparent pricing
+            </h2>
+            <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
+              Start free. Upgrade when you want invoicing, longer forecasts, and priority support.
+            </p>
 
-          <div className="mt-8">
+            <div className="mt-8">
+              <BillingToggle 
+                value={period} 
+                onChange={setPeriod} 
+                yearlyBadgeText="2 months free" 
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center mb-10">
             <BillingToggle 
               value={period} 
               onChange={setPeriod} 
               yearlyBadgeText="2 months free" 
             />
           </div>
-        </div>
+        )}
 
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           {TIERS.map((tierConfig) => (
