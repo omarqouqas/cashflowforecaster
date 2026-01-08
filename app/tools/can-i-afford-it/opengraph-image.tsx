@@ -113,7 +113,7 @@ export default async function OpenGraphImage() {
               fontWeight: 700,
             }}
           >
-            Try it free ->
+            Try it free {'->'}
           </div>
         </div>
       </div>
