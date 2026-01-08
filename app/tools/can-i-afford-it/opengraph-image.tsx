@@ -105,6 +105,7 @@ export default async function OpenGraphImage() {
 
           <div
             style={{
+              display: 'flex',
               padding: '12px 16px',
               borderRadius: 12,
               background: '#14b8a6',
@@ -113,7 +114,7 @@ export default async function OpenGraphImage() {
               fontWeight: 700,
             }}
           >
-            Try it free {'->'}
+            Try it free →
           </div>
         </div>
       </div>
