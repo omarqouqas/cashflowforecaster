@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
-import { BadgeDollarSign, ArrowRight } from 'lucide-react';
+import { BadgeDollarSign, DollarSign, ArrowRight } from 'lucide-react';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 
 const TOOLS = [
@@ -14,6 +14,14 @@ const TOOLS = [
       'Enter your current balance, upcoming bills, next income, and a purchase to see your projected lowest point.',
     href: '/tools/can-i-afford-it',
     icon: BadgeDollarSign,
+  },
+  {
+    slug: 'freelance-rate-calculator',
+    title: 'Freelance Rate Calculator',
+    description:
+      'Calculate your minimum hourly rate based on income goals, expenses, and realistic billable hours.',
+    href: '/tools/freelance-rate-calculator',
+    icon: DollarSign,
   },
 ] as const;
 

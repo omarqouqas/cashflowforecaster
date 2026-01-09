@@ -9,12 +9,19 @@ const emailSchema = z.string().email('Enter a valid email');
 
 type Props = {
   payload: Record<string, any>;
+  events?: {
+    sent?: string;
+    failed?: string;
+  };
 };
 
-export function EmailCaptureForm({ payload }: Props) {
+export function EmailCaptureForm({ payload, events }: Props) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState<string | null>(null);
+
+  const sentEvent = events?.sent ?? 'tool_can_i_afford_it_email_sent';
+  const failedEvent = events?.failed ?? 'tool_can_i_afford_it_email_failed';
 
   const submit = async () => {
     setMessage(null);
@@ -46,7 +53,7 @@ export function EmailCaptureForm({ payload }: Props) {
       setMessage('Sent! Check your inbox.');
 
       try {
-        posthog.capture('tool_can_i_afford_it_email_sent', {
+        posthog.capture(sentEvent, {
           email_domain: parsed.data.split('@')[1] ?? null,
         });
       } catch {}
@@ -55,7 +62,7 @@ export function EmailCaptureForm({ payload }: Props) {
       setStatus('error');
       setMessage(msg);
       try {
-        posthog.capture('tool_can_i_afford_it_email_failed', { message: msg });
+        posthog.capture(failedEvent, { message: msg });
       } catch {}
     }
   };

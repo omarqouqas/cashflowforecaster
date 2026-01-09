@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: 'https://cashflowforecaster.io', lastModified, priority: 1.0 },
     { url: 'https://cashflowforecaster.io/tools', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/tools/can-i-afford-it', lastModified, priority: 0.8 },
+    { url: 'https://cashflowforecaster.io/tools/freelance-rate-calculator', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/auth/login', lastModified, priority: 0.5 },
     { url: 'https://cashflowforecaster.io/auth/signup', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/pricing', lastModified, priority: 0.7 },
