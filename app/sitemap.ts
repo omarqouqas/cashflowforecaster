@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: 'https://cashflowforecaster.io/tools/can-i-afford-it', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/tools/freelance-rate-calculator', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/tools/invoice-payment-predictor', lastModified, priority: 0.8 },
+    { url: 'https://cashflowforecaster.io/tools/income-variability-calculator', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/auth/login', lastModified, priority: 0.5 },
     { url: 'https://cashflowforecaster.io/auth/signup', lastModified, priority: 0.8 },
     { url: 'https://cashflowforecaster.io/pricing', lastModified, priority: 0.7 },

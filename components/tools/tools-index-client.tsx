@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
-import { BadgeDollarSign, Calendar, DollarSign, ArrowRight } from 'lucide-react';
+import { BadgeDollarSign, Calendar, DollarSign, ArrowRight, TrendingUp } from 'lucide-react';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 
 const TOOLS = [
@@ -30,6 +30,14 @@ const TOOLS = [
       "Calculate when you'll actually get paid based on invoice date, payment terms, and client history.",
     href: '/tools/invoice-payment-predictor',
     icon: Calendar,
+  },
+  {
+    slug: 'income-variability-calculator',
+    title: 'Income Variability Calculator',
+    description:
+      'Measure how stable your freelance income is. Get your variability score and emergency fund recommendation.',
+    href: '/tools/income-variability-calculator',
+    icon: TrendingUp,
   },
 ] as const;
 

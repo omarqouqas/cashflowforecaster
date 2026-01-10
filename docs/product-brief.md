@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.6  
-**Last Updated:** January 9, 2026  
+**Version:** 4.7  
+**Last Updated:** January 10, 2026  
 **Status:** Live - Accepting Payments - Landing Page Optimized  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -281,6 +281,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - `/tools/can-i-afford-it` — quick cash flow projection
 - `/tools/freelance-rate-calculator` — freelance hourly rate calculator
 - `/tools/invoice-payment-predictor` — invoice payment date predictor (Net terms + weekends + client lateness)
+- `/tools/income-variability-calculator` — measure freelance income stability (CV%), danger months, and emergency fund target
 
 **8. Runway Collect (Pro) ✅**
 - Create professional invoices
@@ -789,6 +790,13 @@ User Request
   - Adjusts for weekends and slow-paying clients
   - Supports multiple invoices list + optional amounts
 - Fixed free tool email capture so `/api/tools/email-results` sends the correct subject/body for **invoice-payment-predictor**
+
+### Version 4.7 (January 10, 2026)
+- Added a fourth free tool: **Income Variability Calculator**
+  - Measures income volatility using coefficient of variation (CV%)
+  - Flags “danger months” below a monthly expense threshold (optional input)
+  - Recommends an emergency fund target based on volatility level (low/medium/high)
+- Fixed email capture subject/body for **income-variability-calculator** in `/api/tools/email-results`
 
 ### Version 4.4 (January 5, 2026)
 - Refined target market based on comprehensive market research (Claude, Gemini, ChatGPT synthesis)

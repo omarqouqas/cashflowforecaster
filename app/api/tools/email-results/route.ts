@@ -260,6 +260,133 @@ export async function POST(request: Request) {
         </div>
       </div>
     `.trim();
+  } else if (tool === 'income-variability-calculator') {
+    subject = 'Your Income Variability Calculator results';
+    toolUrl = 'https://cashflowforecaster.io/tools/income-variability-calculator';
+
+    const variabilityLevel = safeText((result as any)?.variabilityLevel, 16) || '—';
+    const variabilityScore = (result as any)?.variabilityScore;
+    const averageIncome = (result as any)?.averageIncome;
+    const medianIncome = (result as any)?.medianIncome;
+    const standardDeviation = (result as any)?.standardDeviation;
+    const incomeRange = (result as any)?.incomeRange;
+    const rangeAsPercentage = (result as any)?.rangeAsPercentage;
+    const percentileBetterThan = (result as any)?.percentileBetterThan;
+
+    const dangerZoneThreshold = (result as any)?.dangerZoneThreshold;
+    const monthsBelowDanger = (result as any)?.monthsBelowDanger;
+    const dangerPercentage = (result as any)?.dangerPercentage;
+    const dangerMonths: Array<any> = Array.isArray((result as any)?.dangerMonths) ? (result as any).dangerMonths : [];
+
+    const recommendedEmergencyMonths = (result as any)?.recommendedEmergencyMonths;
+    const recommendedEmergencyFund = (result as any)?.recommendedEmergencyFund;
+
+    const levelTone =
+      variabilityLevel === 'high' ? '#fda4af' : variabilityLevel === 'medium' ? '#fbbf24' : '#5eead4';
+    const levelEmoji = variabilityLevel === 'high' ? '⚠️' : variabilityLevel === 'medium' ? '⚠️' : '✅';
+
+    html = `
+      <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:#09090b; color:#e4e4e7; padding:24px; border-radius:16px;">
+        <div style="max-width:640px; margin:0 auto;">
+          <h1 style="margin:0 0 8px; font-size:22px; line-height:1.2; color:#ffffff;">
+            Income Variability Calculator
+          </h1>
+          <p style="margin:0 0 16px; color:#a1a1aa;">
+            Here are your income stability results (based on the months you entered).
+          </p>
+
+          <div style="border:1px solid #27272a; background:rgba(24,24,27,0.7); border-radius:14px; padding:16px; margin:16px 0;">
+            <p style="margin:0 0 10px; font-size:14px;">
+              <strong style="color:${levelTone};">
+                ${levelEmoji} Variability: ${safeText(String(variabilityLevel).toUpperCase(), 16)}
+              </strong>
+            </p>
+            <table style="width:100%; border-collapse:collapse; font-size:14px;">
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Coefficient of variation</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;"><strong>${safeText(String(variabilityScore ?? '—'), 24)}%</strong></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Average monthly income</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;">${formatCurrency(averageIncome)}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Median monthly income</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;">${formatCurrency(medianIncome)}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Standard deviation</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;">${formatCurrency(standardDeviation)}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Income range</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;">${formatCurrency(incomeRange)} <span style="color:#71717a;">(${safeText(String(rangeAsPercentage ?? ''), 24)}% of avg)</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Benchmark</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;">More stable than ${safeText(String(percentileBetterThan ?? '—'), 24)}%</td>
+              </tr>
+            </table>
+          </div>
+
+          ${
+            dangerZoneThreshold
+              ? `<div style="border:1px solid rgba(244,63,94,0.25); background:rgba(244,63,94,0.08); border-radius:14px; padding:16px; margin:16px 0;">
+                  <p style="margin:0 0 10px; font-size:14px; font-weight:700; color:#ffffff;">Danger zone analysis</p>
+                  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                    <tr>
+                      <td style="padding:6px 0; color:#a1a1aa;">Expense threshold</td>
+                      <td style="padding:6px 0; text-align:right; color:#ffffff;">${formatCurrency(dangerZoneThreshold)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 0; color:#a1a1aa;">Months below threshold</td>
+                      <td style="padding:6px 0; text-align:right; color:#ffffff;">${safeText(String(monthsBelowDanger ?? '—'), 24)} (${safeText(String(dangerPercentage ?? '—'), 24)}%)</td>
+                    </tr>
+                  </table>
+                  ${
+                    dangerMonths.length
+                      ? `<p style="margin:10px 0 0; font-size:12px; color:#a1a1aa;">
+                          Danger months: <span style="color:#ffffff;">${dangerMonths
+                            .map((m) => safeText(m?.label, 36))
+                            .slice(0, 12)
+                            .join(', ')}${dangerMonths.length > 12 ? '…' : ''}</span>
+                        </p>`
+                      : ''
+                  }
+                </div>`
+              : ''
+          }
+
+          <div style="border:1px solid #27272a; border-radius:14px; padding:16px; margin:16px 0;">
+            <p style="margin:0 0 10px; font-size:14px; font-weight:700; color:#ffffff;">Emergency fund target</p>
+            <table style="width:100%; border-collapse:collapse; font-size:14px;">
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Recommended months</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;">${safeText(String(recommendedEmergencyMonths ?? '—'), 24)}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0; color:#a1a1aa;">Recommended amount</td>
+                <td style="padding:6px 0; text-align:right; color:#ffffff;"><strong>${formatCurrency(recommendedEmergencyFund)}</strong></td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin:18px 0;">
+            <a href="${signupUrl}"
+               style="display:inline-block; background:#14b8a6; color:#09090b; text-decoration:none; font-weight:700; padding:12px 16px; border-radius:10px;">
+              Start forecasting free
+            </a>
+            <div style="margin-top:10px;">
+              <a href="${toolUrl}" style="color:#5eead4; text-decoration:none; font-size:13px;">Re-run this tool</a>
+            </div>
+          </div>
+
+          <p style="margin:0; color:#71717a; font-size:12px;">
+            Disclaimer: This calculator provides estimates based on the income data you provide. For personalized advice, consult a professional.
+          </p>
+        </div>
+      </div>
+    `.trim();
   } else {
     // Default: Can I Afford It tool (backwards compatible)
     const canAfford = !!result?.canAfford;

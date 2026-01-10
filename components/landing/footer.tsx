@@ -59,6 +59,17 @@ export function LandingFooter() {
             >
               Invoice Payment Predictor
             </Link>
+            <Link
+              href="/tools/income-variability-calculator"
+              className="hover:text-zinc-200 transition-colors"
+              onClick={() => {
+                try {
+                  posthog.capture('footer_free_tools_clicked', { link: '/tools/income-variability-calculator' });
+                } catch {}
+              }}
+            >
+              Income Variability Calculator
+            </Link>
           </div>
         </div>
 

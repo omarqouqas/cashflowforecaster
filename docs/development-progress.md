@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 9, 2026
+**Last Updated:** January 10, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -43,6 +43,69 @@
 - User feedback collection
 - Dashboard UX polish (freelancer-friendly day-to-day guidance)
 - Retention loop: weekly email digest (monitor open/click + settings adoption)
+
+---
+
+## Day 32: Free Tool #4 — Income Variability Calculator + Chart Fix + Email Results Template (January 10, 2026)
+
+### Shipped (today)
+
+#### New free tool: Income Variability Calculator ✅
+
+- [x] Added a new free tool at `/tools/income-variability-calculator`
+  - Inputs: 6–12 months income history (min 3), optional monthly expenses
+  - Outputs: variability score (CV%), stability level (low/medium/high), stats breakdown, danger zone analysis, benchmark percentile, emergency fund target
+  - Simple bar chart (no chart library): month bars + average line + optional expense threshold line
+- [x] SEO + social sharing
+  - Route metadata (title/description/keywords/canonical)
+  - Dedicated dynamic OG image for the tool
+- [x] PostHog tracking implemented for tool funnel
+  - `tool_variability_calculator_viewed`
+  - `tool_variability_calculator_form_interaction`
+  - `tool_variability_calculator_month_added`
+  - `tool_variability_calculator_calculated`
+  - `tool_variability_calculator_email_sent`
+  - `tool_variability_calculator_cta_clicked`
+
+#### Bug fixes ✅
+
+- [x] Fixed Income Variability calculator form runtime crash (Zod chaining issue)
+  - Root cause: `.refine()` returns `ZodEffects`, so `.min()` must be chained before `.refine()`
+- [x] Fixed bar chart not rendering (bars had 0px height)
+  - Root cause: percentage heights require an explicit-height container
+- [x] Fixed email capture subject/body for the new tool
+  - Root cause: `/api/tools/email-results` fell back to “Can I Afford It?” template for unknown tool slugs
+  - Added `income-variability-calculator` email branch (correct subject + content)
+
+#### Navigation & discovery ✅
+
+- [x] Added the new tool to:
+  - `/tools` index
+  - Landing footer “Free Tools”
+  - Sitemap
+
+### Files Changed / Added (today)
+
+**Added:**
+
+```
+app/tools/income-variability-calculator/page.tsx
+app/tools/income-variability-calculator/opengraph-image.tsx
+components/tools/variability-calculator.tsx
+components/tools/variability-calculator-form.tsx
+components/tools/variability-calculator-result.tsx
+components/tools/income-bar-chart.tsx
+lib/tools/calculate-income-variability.ts
+```
+
+**Modified:**
+
+```
+app/sitemap.ts
+components/tools/tools-index-client.tsx
+components/landing/footer.tsx
+app/api/tools/email-results/route.ts
+```
 
 ---
 
