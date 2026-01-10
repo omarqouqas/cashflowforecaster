@@ -48,6 +48,17 @@ export function LandingFooter() {
             >
               Freelance Rate Calculator
             </Link>
+            <Link
+              href="/tools/invoice-payment-predictor"
+              className="hover:text-zinc-200 transition-colors"
+              onClick={() => {
+                try {
+                  posthog.capture('footer_free_tools_clicked', { link: '/tools/invoice-payment-predictor' });
+                } catch {}
+              }}
+            >
+              Invoice Payment Predictor
+            </Link>
           </div>
         </div>
 

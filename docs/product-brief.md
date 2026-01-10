@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.5  
-**Last Updated:** January 8, 2026  
+**Version:** 4.6  
+**Last Updated:** January 9, 2026  
 **Status:** Live - Accepting Payments - Landing Page Optimized  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -276,6 +276,11 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Test hypothetical expenses
 - See impact on future balance
 - Save scenarios for reference
+
+**7b. Free Tools (No Login) ✅**
+- `/tools/can-i-afford-it` — quick cash flow projection
+- `/tools/freelance-rate-calculator` — freelance hourly rate calculator
+- `/tools/invoice-payment-predictor` — invoice payment date predictor (Net terms + weekends + client lateness)
 
 **8. Runway Collect (Pro) ✅**
 - Create professional invoices
@@ -777,6 +782,13 @@ User Request
   - Fixed tool OG image routing for `/tools/can-i-afford-it` (removed static metadata image overrides so route `opengraph-image.tsx` is used)
 - Dev stability:
   - Resolved Windows-specific Next/OG rendering issues by standardizing OG image routes on Edge runtime
+
+### Version 4.6 (January 9, 2026)
+- Added a third free tool: **Invoice Payment Predictor**
+  - Predicts expected payment date from invoice date + terms (Net-7…Net-90/custom)
+  - Adjusts for weekends and slow-paying clients
+  - Supports multiple invoices list + optional amounts
+- Fixed free tool email capture so `/api/tools/email-results` sends the correct subject/body for **invoice-payment-predictor**
 
 ### Version 4.4 (January 5, 2026)
 - Refined target market based on comprehensive market research (Claude, Gemini, ChatGPT synthesis)

@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 8, 2026
+**Last Updated:** January 9, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -221,6 +221,67 @@ app/tools/can-i-afford-it/page.tsx
 app/tools/can-i-afford-it/opengraph-image.tsx
 docs/development-progress.md
 docs/product-brief.md
+```
+
+---
+
+## Day 31: Free Tool #3 — Invoice Payment Predictor + Email Results Fix (January 9, 2026)
+
+### Shipped (today)
+
+#### New free tool: Invoice Payment Date Predictor ✅
+
+- [x] Added a new free tool at `/tools/invoice-payment-predictor`
+  - Inputs: invoice date, payment terms (Net-7…Net-90, custom), weekend adjustment, client payment history
+  - Outputs: expected payment date + day-of-week + days from today + breakdown
+  - Bonus: add multiple invoices and view a sorted list + total amount (if provided)
+- [x] SEO + social sharing
+  - Route metadata (title/description/keywords/canonical)
+  - Dedicated dynamic OG image for the tool
+- [x] PostHog tracking implemented for core tool funnel
+  - `tool_payment_predictor_viewed`
+  - `tool_payment_predictor_form_interaction`
+  - `tool_payment_predictor_calculated`
+  - `tool_payment_predictor_invoice_added`
+  - `tool_payment_predictor_email_sent`
+  - `tool_payment_predictor_cta_clicked`
+
+#### Email capture: correct subject + template per tool ✅
+
+- [x] Fixed `/api/tools/email-results` fallback behavior causing the new tool’s email to use the “Can I Afford It?” subject/body
+  - Added a dedicated `invoice-payment-predictor` email branch (correct subject + content)
+
+#### Navigation & discovery ✅
+
+- [x] Added the new tool to:
+  - `/tools` index
+  - Landing footer “Free Tools”
+  - Sitemap
+
+#### UI polish ✅
+
+- [x] Aligned “Optional details” inputs (label height consistency) so the two fields line up cleanly.
+
+### Files Changed / Added (today)
+
+**Added:**
+
+```
+app/tools/invoice-payment-predictor/page.tsx
+app/tools/invoice-payment-predictor/opengraph-image.tsx
+components/tools/payment-predictor.tsx
+components/tools/payment-predictor-form.tsx
+components/tools/payment-predictor-result.tsx
+lib/tools/calculate-payment-date.ts
+```
+
+**Modified:**
+
+```
+app/sitemap.ts
+components/tools/tools-index-client.tsx
+components/landing/footer.tsx
+app/api/tools/email-results/route.ts
 ```
 
 ## Day 25: Dashboard Guidance Cards + Mobile Responsiveness (December 24, 2025)

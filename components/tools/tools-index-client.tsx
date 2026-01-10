@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
-import { BadgeDollarSign, DollarSign, ArrowRight } from 'lucide-react';
+import { BadgeDollarSign, Calendar, DollarSign, ArrowRight } from 'lucide-react';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 
 const TOOLS = [
@@ -22,6 +22,14 @@ const TOOLS = [
       'Calculate your minimum hourly rate based on income goals, expenses, and realistic billable hours.',
     href: '/tools/freelance-rate-calculator',
     icon: DollarSign,
+  },
+  {
+    slug: 'invoice-payment-predictor',
+    title: 'Invoice Payment Predictor',
+    description:
+      "Calculate when you'll actually get paid based on invoice date, payment terms, and client history.",
+    href: '/tools/invoice-payment-predictor',
+    icon: Calendar,
   },
 ] as const;
 
