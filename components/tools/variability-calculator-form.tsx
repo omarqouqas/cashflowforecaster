@@ -95,7 +95,7 @@ export function VariabilityCalculatorForm({ defaultValues, onCalculate, onFirstI
     mode: 'onSubmit',
   });
 
-  const { fields, append, remove, prepend } = useFieldArray({
+  const { fields, remove, prepend } = useFieldArray({
     control,
     name: 'incomes',
   });
