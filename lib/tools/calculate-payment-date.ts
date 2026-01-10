@@ -113,10 +113,28 @@ function nextMondayDateOnly(dateOnly: string): { dateOnly: string; deltaDays: nu
 
 function daysBetweenDateOnly(a: string, b: string): number {
   // Compute using UTC day numbers to avoid DST issues.
-  const [ay, am, ad] = a.split('-').map((x) => Number(x));
-  const [by, bm, bd] = b.split('-').map((x) => Number(x));
-  const aUtc = Date.UTC(ay, (am ?? 1) - 1, ad ?? 1);
-  const bUtc = Date.UTC(by, (bm ?? 1) - 1, bd ?? 1);
+  const aParts = a.split('-');
+  const bParts = b.split('-');
+
+  const ay = Number(aParts[0]);
+  const am = Number(aParts[1]);
+  const ad = Number(aParts[2]);
+
+  const by = Number(bParts[0]);
+  const bm = Number(bParts[1]);
+  const bd = Number(bParts[2]);
+
+  // Fall back to a sane epoch if parsing fails (should not happen for valid YYYY-MM-DD inputs).
+  const aUtc = Date.UTC(
+    Number.isFinite(ay) ? ay : 1970,
+    (Number.isFinite(am) ? am : 1) - 1,
+    Number.isFinite(ad) ? ad : 1
+  );
+  const bUtc = Date.UTC(
+    Number.isFinite(by) ? by : 1970,
+    (Number.isFinite(bm) ? bm : 1) - 1,
+    Number.isFinite(bd) ? bd : 1
+  );
   const oneDay = 24 * 60 * 60 * 1000;
   return Math.round((bUtc - aUtc) / oneDay);
 }
