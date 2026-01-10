@@ -47,9 +47,15 @@ function calculateStandardDeviation(values: number[], mean: number): number {
 }
 
 function calculateMedian(values: number[]): number {
+  if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  if (sorted.length % 2 !== 0) {
+    return sorted[mid]!;
+  }
+  const a = sorted[mid - 1]!;
+  const b = sorted[mid]!;
+  return (a + b) / 2;
 }
 
 function getVariabilityLevel(cv: number): VariabilityLevel {
