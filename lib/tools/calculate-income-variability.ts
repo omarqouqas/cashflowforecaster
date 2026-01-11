@@ -90,6 +90,28 @@ function calculatePercentile(cv: number): number {
 
 export function calculateIncomeVariability(input: VariabilityCalculatorInput): VariabilityCalculatorResult {
   const { incomes, monthlyExpenses } = input;
+  if (incomes.length === 0) {
+    const emptyMonth: MonthlyIncome = { id: '', label: '—', amount: 0 };
+    return {
+      variabilityLevel: 'low',
+      variabilityScore: 0,
+      averageIncome: 0,
+      medianIncome: 0,
+      standardDeviation: 0,
+      highestMonth: emptyMonth,
+      lowestMonth: emptyMonth,
+      incomeRange: 0,
+      rangeAsPercentage: 0,
+      dangerZoneThreshold: monthlyExpenses && monthlyExpenses > 0 ? monthlyExpenses : null,
+      monthsBelowDanger: 0,
+      dangerPercentage: 0,
+      dangerMonths: [],
+      percentileBetterThan: 95,
+      recommendedEmergencyMonths: 2,
+      recommendedEmergencyFund: 0,
+      incomeData: [],
+    };
+  }
   const amounts = incomes.map((i) => i.amount);
 
   const sum = amounts.reduce((a, b) => a + b, 0);
@@ -101,8 +123,8 @@ export function calculateIncomeVariability(input: VariabilityCalculatorInput): V
   const variabilityLevel = getVariabilityLevel(variabilityScore);
 
   const sortedByAmount = [...incomes].sort((a, b) => b.amount - a.amount);
-  const highestMonth = sortedByAmount[0];
-  const lowestMonth = sortedByAmount[sortedByAmount.length - 1];
+  const highestMonth = sortedByAmount[0]!;
+  const lowestMonth = sortedByAmount[sortedByAmount.length - 1]!;
   const incomeRange = highestMonth.amount - lowestMonth.amount;
   const rangeAsPercentage = averageIncome > 0 ? (incomeRange / averageIncome) * 100 : 0;
 
