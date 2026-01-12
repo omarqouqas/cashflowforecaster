@@ -26,6 +26,7 @@ export function IdentifyUser() {
           email: user.email,
           name: user.user_metadata?.full_name,
           tier,
+          created_at: user.created_at, // Used for survey targeting (e.g., 7 days after signup)
           auth_provider: user.app_metadata?.provider as 'email' | 'google',
         })
       }

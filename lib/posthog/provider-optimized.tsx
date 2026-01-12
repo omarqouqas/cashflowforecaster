@@ -27,6 +27,9 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
           request_batching: true,
           // Don't block on slow networks
           disable_session_recording: false,
+          // Enable surveys for NPS and feedback collection
+          // Docs: https://posthog.com/docs/surveys/installation
+          disable_surveys: false,
           loaded: () => {
             setIsInitialized(true)
           }
