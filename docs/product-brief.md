@@ -1,7 +1,7 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.7  
-**Last Updated:** January 10, 2026  
+**Version:** 4.8  
+**Last Updated:** January 12, 2026  
 **Status:** Live - Accepting Payments - Landing Page Optimized  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
@@ -18,7 +18,7 @@
 
 **One-Liner:** "Stop guessing if you can cover rent."
 
-**Hook:** "See your exact bank balance for the next 60 days — with every invoice, bill, and payday mapped out."
+**Hook:** "Your personal cash flow calendar for the next 60 days — with every invoice, bill, and payday mapped out."
 
 Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance 60 days into the future. Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
 
@@ -135,7 +135,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 **Hero:**
 - **Headline:** "Stop Guessing If You Can Cover Rent"
-- **Subhead:** "See your exact bank balance for the next 60 days — with every invoice, bill, and payday mapped out. Built for freelancers with irregular income."
+- **Subhead:** "Your personal cash flow calendar for the next 60 days — with every invoice, bill, and payday mapped out. Built for freelancers with irregular income."
 - **Badge:** "Built for freelancers with irregular income"
 
 **Stat Callout:**
@@ -623,6 +623,7 @@ User Request
 
 | Page | URL | Target Keyword |
 |------|-----|----------------|
+| Cash Flow Calendar Apps Comparison | `/compare/cash-flow-calendar-apps` | cash flow calendar apps for freelancers |
 | YNAB Comparison | `/compare/ynab` | YNAB alternative for freelancers |
 | Mint Comparison | `/compare/mint` | Mint alternative irregular income |
 | For Designers | `/for/graphic-designers` | cash flow tool for graphic designers |
@@ -776,6 +777,22 @@ User Request
 
 ## Changelog
 
+### Version 4.8 (January 12, 2026)
+- SEO positioning update:
+  - Added “cash flow calendar” keyword targeting across global + homepage metadata
+  - Updated landing page copy to naturally include “cash flow calendar” without changing the core hook/CTA
+- New SEO pages:
+  - Added `/compare` index page
+  - Added `/compare/cash-flow-calendar-apps` comparison page + dedicated OG image
+- Internal linking:
+  - Added “Compare” to landing header navigation
+  - Added footer compare link (“Compare Cash Flow Apps”)
+  - Updated sitemap priorities and standardized sitemap URLs to `https://www.cashflowforecaster.io`
+- UX polish:
+  - Made “Safety buffer” clickable (links to Settings) with a mobile-friendly tap target
+- Build stability:
+  - Fixed Vercel build failure caused by Unicode regex flag usage in comparison page rendering
+
 ### Version 4.5 (January 8, 2026)
 - Social sharing improvements:
   - Added dynamic OG image at `/opengraph-image` and Twitter image at `/twitter-image`
@@ -844,7 +861,7 @@ User Request
 
 ---
 
-**Document Version:** 4.5  
-**Last Updated:** January 8, 2026  
+**Document Version:** 4.8  
+**Last Updated:** January 12, 2026  
 **Status:** Live - Feature Complete - Landing Page Optimized - Ready for User Acquisition 🎉  
 **Next Review:** February 2026

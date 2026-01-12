@@ -4,7 +4,7 @@ import { VariabilityCalculator } from '@/components/tools/variability-calculator
 import { TrendingUp, AlertTriangle, PiggyBank } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Freelance Income Variability Calculator - How Stable Is Your Income? | Cash Flow Forecaster',
+  title: 'Income Variability Calculator | Cash Flow Forecaster',
   description:
     'Free calculator to measure your freelance income variability. Enter your monthly income history to see your stability score, danger zones, and recommended emergency fund.',
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     canonical: 'https://cashflowforecaster.io/tools/income-variability-calculator',
   },
   openGraph: {
-    title: 'Freelance Income Variability Calculator - How Stable Is Your Income?',
+    title: 'Income Variability Calculator | Cash Flow Forecaster',
     description:
       'Measure your income stability. See your variability score, identify danger zones, and get emergency fund recommendations.',
     url: 'https://cashflowforecaster.io/tools/income-variability-calculator',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Freelance Income Variability Calculator - How Stable Is Your Income?',
+    title: 'Income Variability Calculator | Cash Flow Forecaster',
     description: 'Free calculator to measure freelance income variability and get personalized recommendations.',
   },
 };

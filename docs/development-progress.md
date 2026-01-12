@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 10, 2026
+**Last Updated:** January 12, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -43,6 +43,69 @@
 - User feedback collection
 - Dashboard UX polish (freelancer-friendly day-to-day guidance)
 - Retention loop: weekly email digest (monitor open/click + settings adoption)
+
+---
+
+## Day 33: Cash Flow Calendar SEO + Comparison Pages + UX Polish (January 12, 2026)
+
+### Shipped (last 24 hours)
+
+#### SEO: target "cash flow calendar" ✅
+
+- [x] Updated global + homepage metadata to target cash flow calendar keywords (without keyword stuffing)
+  - Updated titles/descriptions/keywords in:
+    - `app/layout.tsx`
+    - `app/page.tsx`
+- [x] Updated landing page hero + feature copy to naturally include “cash flow calendar” (3 on-page mentions)
+
+#### New SEO pages: Compare ✅
+
+- [x] Added new comparison page:
+  - `/compare/cash-flow-calendar-apps`
+  - Includes comparison table, “Why Cash Flow Forecaster” section, FAQPage JSON-LD, internal links only
+  - Mentions competitor “Cash Flow Calendar” by name only (no external links)
+- [x] Added dynamic OG image for the comparison page:
+  - `/compare/cash-flow-calendar-apps/opengraph-image`
+- [x] Added `/compare` index page to avoid 404s and improve internal linking
+
+#### Internal linking + discovery ✅
+
+- [x] Added compare link in landing header nav (“Compare”)
+- [x] Added footer “Compare” column linking to the comparison page
+- [x] Updated sitemap to include `/compare` and `/compare/cash-flow-calendar-apps` with correct priorities
+  - Standardized sitemap URLs to use `https://www.cashflowforecaster.io` via a `baseUrl` constant
+
+#### UX polish: Safety buffer editable ✅
+
+- [x] Made “Safety buffer” clickable (mobile-friendly) and linked to `/dashboard/settings`
+  - Added padding + pencil icon to signal editability
+
+#### Build fix ✅
+
+- [x] Fixed Vercel build failure caused by a Unicode regex flag in the comparison page (removed regex usage)
+
+### Files Changed / Added (today)
+
+**Added:**
+
+```
+app/compare/page.tsx
+app/compare/cash-flow-calendar-apps/page.tsx
+app/compare/cash-flow-calendar-apps/opengraph-image.tsx
+```
+
+**Modified:**
+
+```
+app/layout.tsx
+app/page.tsx
+app/sitemap.ts
+components/landing/footer.tsx
+components/landing/landing-header.tsx
+components/calendar/sticky-header.tsx
+docs/development-progress.md
+docs/product-brief.md
+```
 
 ---
 
