@@ -129,16 +129,16 @@ export default async function OpenGraphImage() {
           <div
             style={{
               display: 'flex',
-              padding: '14px 28px',
+              padding: '16px 32px',
               borderRadius: 12,
               background: '#14b8a6',
               color: '#09090b',
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: 750,
               whiteSpace: 'nowrap',
             }}
           >
-            Start Free →
+            Get Started Free →
           </div>
         </div>
       </div>
