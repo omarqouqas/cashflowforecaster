@@ -28,10 +28,14 @@ import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 
 export const metadata: Metadata = {
-  title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
+  title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
   description:
-    'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
+    'A cash flow calendar app for freelancers with irregular income—see your bank balance 60 days ahead with bill alerts and simple scenarios.',
   keywords: [
+    'cash flow calendar',
+    'cash flow calendar app',
+    'budget calendar app',
+    'cash flow calendar for freelancers',
     'cash flow forecast',
     'freelancer budget',
     'bank balance predictor',
@@ -49,18 +53,18 @@ export const metadata: Metadata = {
     canonical: 'https://cashflowforecaster.io',
   },
   openGraph: {
-    title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
+    title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
+      'A cash flow calendar app for freelancers with irregular income—see your bank balance 60 days ahead with bill alerts and simple scenarios.',
     url: 'https://cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
+    title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'See your bank balance 60 days into the future. Cash flow forecasting for freelancers with weekly email digests, bill collision alerts, and scenario planning.',
+      'A cash flow calendar app for freelancers with irregular income—see your bank balance 60 days ahead with bill alerts and simple scenarios.',
   },
 };
 
@@ -133,7 +137,7 @@ export default async function Home() {
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              See your exact bank balance for the next 60 days — with every invoice, bill, and payday mapped out.
+              Your personal cash flow calendar for the next 60 days — with every invoice, bill, and payday mapped out.
               Built for freelancers with irregular income.
             </p>
 
@@ -236,7 +240,7 @@ export default async function Home() {
                   </div>
                 </div>
                 <h3 className="mt-4 font-semibold text-white">See Your Future</h3>
-                <p className="mt-2 text-zinc-400">Get a 60-day calendar projection with low days highlighted.</p>
+                <p className="mt-2 text-zinc-400">Get a 60-day cash flow calendar projection with low days highlighted.</p>
               </div>
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
@@ -281,7 +285,7 @@ export default async function Home() {
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
                     See your &quot;safe to spend&quot; amount right now — based on what&apos;s coming in and going out over the
-                    next 60 days. No more checking your bank app ten times a day.
+                    next 60 days in your cash flow calendar. No more checking your bank app ten times a day.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">

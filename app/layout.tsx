@@ -8,18 +8,30 @@ import { Analytics } from '@vercel/analytics/next';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
-  description: "Freelancers: see your bank balance 60 days ahead. Know exactly when you'll run low before it happens. The calendar that stops you from bouncing rent.",
-  keywords: 'cash flow forecast, budget calendar, financial planning, income tracking, bill tracking, freelancer budget',
+  title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
+  description:
+    'Cash flow calendar for freelancers with irregular income—see your bank balance 60 days ahead and avoid overdrafts before they happen.',
+  keywords: [
+    'cash flow calendar',
+    'cash flow calendar app',
+    'budget calendar app',
+    'cash flow calendar for freelancers',
+    'cash flow forecasting',
+    'freelancer budgeting',
+    'irregular income budgeting',
+    'bank balance forecast',
+    'bill tracking',
+  ],
   openGraph: {
-    title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
-    description: "Freelancers: see your bank balance 60 days ahead. Know exactly when you'll run low before it happens. The calendar that stops you from bouncing rent.",
+    title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
+    description:
+      'Cash flow calendar for freelancers with irregular income—see your bank balance 60 days ahead and avoid overdrafts before they happen.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cash Flow Forecaster - See Your Bank Balance 60 Days Ahead',
+    title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      "Freelancers: see your bank balance 60 days ahead. Know exactly when you'll run low before it happens. The calendar that stops you from bouncing rent.",
+      'Cash flow calendar for freelancers with irregular income—see your bank balance 60 days ahead and avoid overdrafts before they happen.',
   },
   // PWA metadata
   manifest: '/manifest.json',

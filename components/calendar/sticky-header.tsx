@@ -1,5 +1,7 @@
 import { formatCurrency } from '@/lib/utils/format'
 import { InfoTooltip } from '@/components/ui/tooltip'
+import Link from 'next/link'
+import { Pencil } from 'lucide-react'
 
 export interface StickyHeaderProps {
   startingBalance: number
@@ -241,14 +243,24 @@ export function StickyCalendarHeader({
                 {formatCurrency(totalBills, currency)}
               </p>
               <p className="text-sm text-zinc-400 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
-              <p className="text-sm text-zinc-400 mt-1">Safety buffer: {formatCurrency(safetyBuffer, currency)}</p>
+              <Link
+                href="/dashboard/settings"
+                className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 text-sm py-1 px-2 -mx-2 rounded hover:bg-zinc-800/50 transition-colors mt-1"
+              >
+                Safety buffer: {formatCurrency(safetyBuffer, currency)}
+                <Pencil className="w-3 h-3" aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </details>
 
-        <p className="hidden sm:block mt-3 text-sm text-zinc-400">
+        <Link
+          href="/dashboard/settings"
+          className="hidden sm:inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 text-sm py-1 px-2 -mx-2 rounded hover:bg-zinc-800/50 transition-colors mt-3"
+        >
           Safety buffer: {formatCurrency(safetyBuffer, currency)}
-        </p>
+          <Pencil className="w-3 h-3" aria-hidden="true" />
+        </Link>
       </div>
     </div>
   )
