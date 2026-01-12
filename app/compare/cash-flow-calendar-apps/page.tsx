@@ -87,7 +87,8 @@ function ValueCell({ value }: { value: string }) {
   const iconColor =
     value.startsWith('✅') ? 'text-emerald-300' : value.startsWith('❌') ? 'text-rose-300' : value.startsWith('⚠️') ? 'text-amber-300' : 'text-zinc-300';
 
-  const label = value.replace(/^✅\s*|^❌\s*|^⚠️\s*/u, '');
+  const marker = value.startsWith('✅') ? '✅' : value.startsWith('❌') ? '❌' : value.startsWith('⚠️') ? '⚠️' : null;
+  const label = marker ? value.slice(marker.length).trimStart() : value;
 
   return (
     <div className="flex items-start gap-2">
