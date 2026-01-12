@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: 'https://cashflowforecaster.io', lastModified, priority: 1.0 },
     { url: 'https://cashflowforecaster.io/pricing', lastModified, priority: 0.8 },
+    { url: 'https://cashflowforecaster.io/compare', lastModified, priority: 0.7 },
     { url: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps', lastModified, priority: 0.7 },
     { url: 'https://cashflowforecaster.io/tools', lastModified, priority: 0.6 },
     { url: 'https://cashflowforecaster.io/tools/can-i-afford-it', lastModified, priority: 0.6 },
