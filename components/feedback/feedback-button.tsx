@@ -5,22 +5,23 @@ import { MessageSquare } from 'lucide-react';
 import { FeedbackModal } from './feedback-modal';
 
 /**
- * Floating feedback button that appears in the bottom-right corner of the dashboard.
+ * Floating feedback button that appears in the bottom-left corner of the dashboard.
  * Opens a modal for users to submit feedback.
+ * Positioned on the left to avoid conflicts with PostHog surveys and navigation tabs.
  */
 export function FeedbackButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button - Bottom Left */}
       <button
         onClick={() => setIsModalOpen(true)}
         className={[
-          // Positioning - bottom right, above mobile nav on mobile
+          // Positioning - bottom left, above mobile nav on mobile
           'fixed z-40',
-          'bottom-24 right-4', // Mobile: above bottom nav
-          'md:bottom-6 md:right-6', // Desktop: normal positioning
+          'bottom-24 left-4', // Mobile: above bottom nav
+          'md:bottom-6 md:left-6', // Desktop: normal positioning
           // Styling - zinc-800 bg with teal-500 accent on hover
           'flex items-center gap-2 px-4 py-3',
           'bg-zinc-800 hover:bg-zinc-700',
