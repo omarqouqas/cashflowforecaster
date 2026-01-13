@@ -12,7 +12,7 @@
 
 - **Days in Development:** 23
 - **Commits:** 90
-- **Database Tables:** 12
+- **Database Tables:** 13
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
@@ -35,14 +35,101 @@
 - ✅ Phase 12: Feature Gating + Analytics (Day 22) - COMPLETE
 - ✅ Phase 13: Stripe Live Mode (Day 22) - COMPLETE
 - ✅ Phase 14: Weekly Email Digest (Day 26) - COMPLETE
+- ✅ Phase 15: User Feedback System (Day 33) - COMPLETE
 
 **Current Focus:**
 
 - Reddit launch prep
 - User acquisition
-- User feedback collection
+- Monitor NPS survey responses (PostHog)
 - Dashboard UX polish (freelancer-friendly day-to-day guidance)
 - Retention loop: weekly email digest (monitor open/click + settings adoption)
+
+---
+
+## Day 34: User Feedback System + Semi-Monthly Frequency + UI Polish (January 12, 2026)
+
+### Shipped (today)
+
+#### PostHog NPS Survey ✅
+
+- [x] Enabled PostHog surveys in provider config (`disable_surveys: false`)
+- [x] Added `created_at` property to PostHog user identification for date-based targeting
+- [x] Configured NPS survey in PostHog dashboard:
+  - Trigger: 7 days after signup (`created_at` property)
+  - Questions: NPS score (0-10) + conditional follow-up based on score
+  - Targeting: Dashboard pages only
+
+#### In-App Feedback Widget ✅
+
+- [x] Created `feedback` database table with RLS:
+  - Columns: `user_id`, `user_email`, `type` (bug/suggestion/question/other), `message`, `page_url`, `user_agent`, `status`, `created_at`
+  - RLS policy: users can insert their own feedback
+- [x] Created Zod schema (`lib/validations/feedback.ts`)
+- [x] Created Server Action (`lib/actions/feedback.ts`):
+  - Validates input with Zod
+  - Inserts to database
+  - Sends email notification via Resend
+  - Tracks event in PostHog
+- [x] Created FeedbackModal component with react-hook-form + zod
+- [x] Created FeedbackButton (floating button, bottom-left)
+- [x] Added to dashboard layout
+- [x] Styled with zinc-800 bg + teal-500 accent on hover
+
+#### Semi-Monthly Frequency ✅
+
+- [x] Added "semi-monthly" (twice a month) as a new frequency option
+- [x] Updated income calculation logic (`lib/calendar/calculate-income.ts`)
+  - Handles 1st/15th or 15th/30th patterns based on initial date
+- [x] Updated bills calculation logic (`lib/calendar/calculate-bills.ts`)
+- [x] Updated income forms (new + edit pages)
+- [x] Updated bills forms (new + edit pages)
+- [x] Updated onboarding income step
+- [x] Created database migration to update check constraints
+- [x] Updated TypeScript types in `lib/actions/onboarding.ts`
+
+#### UI Polish ✅
+
+- [x] Changed "Rent" category label to "Rent/Mortgage" in UI:
+  - Bills list page
+  - Bills forms (new + edit)
+  - Onboarding bills step
+- [x] Moved feedback button from bottom-right to bottom-left to avoid conflicts with:
+  - PostHog NPS survey (bottom-right)
+  - Calendar "Can I Afford It?" tab
+  - Mobile navigation
+
+### Files Changed / Added (today)
+
+**Added:**
+
+```
+supabase/migrations/20260113000000_feedback.sql
+supabase/migrations/20260113000001_add_semi_monthly_frequency.sql
+lib/validations/feedback.ts
+lib/actions/feedback.ts
+components/feedback/feedback-modal.tsx
+components/feedback/feedback-button.tsx
+```
+
+**Modified:**
+
+```
+lib/posthog/provider-optimized.tsx
+components/analytics/identify-user.tsx
+types/supabase.ts
+lib/calendar/calculate-income.ts
+lib/calendar/calculate-bills.ts
+lib/actions/onboarding.ts
+app/dashboard/income/new/page.tsx
+app/dashboard/income/[id]/edit/page.tsx
+app/dashboard/bills/new/page.tsx
+app/dashboard/bills/[id]/edit/page.tsx
+app/dashboard/bills/page.tsx
+app/dashboard/layout.tsx
+components/onboarding/step-income.tsx
+components/onboarding/step-bills.tsx
+```
 
 ---
 
@@ -944,6 +1031,9 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - `invoice_sent` - amount_range
 - `reminder_sent` - reminder_type (friendly/firm/final)
 
+### Feedback Events
+- `feedback_submitted` - type (bug/suggestion/question/other), message_length
+
 ### Conversion Events
 - `upgrade_prompt_shown` - trigger (bills_limit/income_limit/invoicing)
 - `upgrade_initiated` - tier, interval (month/year)
@@ -954,6 +1044,9 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - `feature_used` - feature_name
 - `page_viewed` - path (auto-captured)
 - `session_started` (auto-captured)
+
+### Survey Events (PostHog Surveys)
+- NPS survey responses (7 days after signup)
 
 ---
 
@@ -1069,12 +1162,15 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - ✅ Feature gating enforcing tier limits
 - ✅ Upgrade prompts driving conversions
 - ✅ **Full subscription lifecycle tested (subscribe → cancel → reactivate)**
+- ✅ **PostHog NPS survey (7 days after signup)**
+- ✅ **In-app feedback widget**
+- ✅ **Semi-monthly frequency support**
 
 ## What's Next
 
 1. **Reddit launch** - Post to target subreddits
-2. **Monitor analytics** - Watch conversion funnel in PostHog
-3. **User feedback** - Iterate based on real usage
+2. **Monitor NPS survey responses** - Watch for feedback patterns in PostHog
+3. **User feedback** - Iterate based on real usage + in-app feedback
 4. **Bill collision warnings** - Next UX improvement
 5. **Sentry error monitoring** - Catch production errors
 

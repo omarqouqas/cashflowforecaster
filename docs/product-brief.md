@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.8  
+**Version:** 4.9  
 **Last Updated:** January 12, 2026  
-**Status:** Live - Accepting Payments - Landing Page Optimized  
+**Status:** Live - Accepting Payments - User Feedback System Active  
 **Product URL:** https://cashflowforecaster.io  
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -253,7 +253,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Account aggregation
 
 **4. Income Sources ✅**
-- Recurring income (weekly, bi-weekly, monthly, etc.)
+- Recurring income (weekly, bi-weekly, semi-monthly, monthly, etc.)
 - One-time income
 - Start/end date support
 - **Gated:** 10 limit for Free tier
@@ -312,12 +312,20 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Conversion funnel analysis
 - Feature usage metrics
 - Session recording
+- NPS surveys (triggered 7 days after signup)
 
 **13. Weekly Email Digest ✅**
 - Weekly summary of next 7 days (income, bills, net change)
 - Alerts: low balance, overdraft risk, bill collisions
 - User-configurable schedule (day + time) with timezone support
 - Unsubscribe link + open/click tracking
+
+**14. In-App Feedback Widget ✅**
+- Floating feedback button on dashboard pages
+- Feedback types: bug report, suggestion, question, other
+- Email notification to support team via Resend
+- PostHog event tracking for feedback submissions
+- User email captured for follow-up
 
 ### Premium Features (Post-MVP / Planned)
 
@@ -392,7 +400,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - **Deployment:** Vercel
 - **Version Control:** Git + GitHub
 
-### Database Schema (12 tables)
+### Database Schema (13 tables)
 
 1. **accounts** - User bank accounts
 2. **income** - Income sources
@@ -406,6 +414,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 10. **notifications** - User notifications
 11. **users** - Extended user profiles
 12. **subscriptions** - Stripe subscription data
+13. **feedback** - User feedback submissions (bug reports, suggestions, questions)
 
 ### Feature Gating Architecture
 
@@ -493,6 +502,18 @@ User Request
 | `digest_opened` | user_id | Retention |
 | `digest_clicked` | user_id, link | Retention |
 | `digest_unsubscribed` | user_id | Compliance |
+
+### Feedback Events
+
+| Event | Properties | Purpose |
+|-------|------------|---------|
+| `feedback_submitted` | type, message_length | Product feedback |
+
+### Survey Events (PostHog Surveys)
+
+| Event | Properties | Purpose |
+|-------|------------|---------|
+| NPS Survey | score (0-10), follow_up_text | User satisfaction |
 
 ---
 
@@ -777,6 +798,20 @@ User Request
 
 ## Changelog
 
+### Version 4.9 (January 12, 2026)
+- User feedback system:
+  - Added PostHog NPS survey (triggered 7 days after signup)
+  - Added in-app feedback widget (floating button on dashboard)
+  - Created `feedback` database table with RLS
+  - Server Action for feedback submission with email notification
+- Income/Bills enhancements:
+  - Added "semi-monthly" frequency option (twice a month)
+  - Updated calculation logic for semi-monthly recurrence
+  - Updated all income/bills forms and onboarding
+- UI polish:
+  - Changed "Rent" category label to "Rent/Mortgage"
+  - Moved feedback button to bottom-left (avoids PostHog survey conflict)
+
 ### Version 4.8 (January 12, 2026)
 - SEO positioning update:
   - Added “cash flow calendar” keyword targeting across global + homepage metadata
@@ -861,7 +896,7 @@ User Request
 
 ---
 
-**Document Version:** 4.8  
+**Document Version:** 4.9  
 **Last Updated:** January 12, 2026  
-**Status:** Live - Feature Complete - Landing Page Optimized - Ready for User Acquisition 🎉  
+**Status:** Live - Feature Complete - User Feedback Active - Ready for User Acquisition 🎉  
 **Next Review:** February 2026
