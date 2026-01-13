@@ -39,14 +39,14 @@ export type OnboardingAccountInput = {
 export type OnboardingIncomeInput = {
   name: string
   amount: number
-  frequency: 'weekly' | 'biweekly' | 'monthly' | 'one-time'
+  frequency: 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'one-time'
   next_date: string // YYYY-MM-DD
 }
 
 export type OnboardingBillInput = {
   name: string
   amount: number
-  frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually' | 'one-time'
+  frequency: 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually' | 'one-time'
   due_date: string // YYYY-MM-DD
   category?: string
 }
