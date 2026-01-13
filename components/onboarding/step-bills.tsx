@@ -322,7 +322,7 @@ export function StepBills({
                           }
                           className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                         >
-                          <option value="rent">Rent</option>
+                          <option value="rent">Rent/Mortgage</option>
                           <option value="utilities">Utilities</option>
                           <option value="subscriptions">Subscriptions</option>
                           <option value="insurance">Insurance</option>

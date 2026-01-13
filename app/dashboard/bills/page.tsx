@@ -19,6 +19,20 @@ import { GatedAddButton } from '@/components/subscription/gated-add-button';
 
 type Bill = Tables<'bills'>;
 
+// Category display labels
+const categoryLabels: Record<string, string> = {
+  rent: 'Rent/Mortgage',
+  utilities: 'Utilities',
+  subscriptions: 'Subscriptions',
+  insurance: 'Insurance',
+  other: 'Other',
+};
+
+function getCategoryLabel(category: string | null): string {
+  if (!category) return '';
+  return categoryLabels[category] || category;
+}
+
 interface BillsPageProps {
   searchParams: { success?: string };
 }
@@ -280,8 +294,8 @@ function BillCard({ bill }: { bill: Bill }) {
 
           <div className="flex gap-2 flex-wrap mt-2">
             {bill.category && (
-              <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded capitalize">
-                {bill.category}
+              <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded">
+                {getCategoryLabel(bill.category)}
               </span>
             )}
             <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded capitalize">

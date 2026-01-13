@@ -366,7 +366,7 @@ export default function EditBillPage() {
                 ].join(' ')}
               >
                 <option value="">Select category...</option>
-                <option value="rent">Rent</option>
+                <option value="rent">Rent/Mortgage</option>
                 <option value="utilities">Utilities</option>
                 <option value="subscriptions">Subscriptions</option>
                 <option value="insurance">Insurance</option>
