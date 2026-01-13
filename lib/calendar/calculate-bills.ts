@@ -12,7 +12,7 @@ interface BillRecord {
   name: string;
   /** Amount of the bill */
   amount: number;
-  /** Frequency: 'weekly', 'biweekly', 'monthly', 'quarterly', 'annually', or 'one-time' */
+  /** Frequency: 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually', or 'one-time' */
   frequency: string;
   /** Whether this bill is currently active */
   is_active: boolean | null;
@@ -26,6 +26,7 @@ interface BillRecord {
  * Handles different frequencies:
  * - weekly: every 7 days from due_date
  * - biweekly: every 14 days from due_date
+ * - semi-monthly: twice per month (e.g., 1st & 15th, or 15th & last day)
  * - monthly: same day each month from due_date, handling month-end edge cases (e.g., Jan 31 → Feb 28)
  * - quarterly: every 3 months from due_date on the same day of month, handling month-end edge cases
  * - annually: every 12 months from due_date on the same month and day each year
@@ -120,6 +121,82 @@ export function calculateBillOccurrences(
         
         currentDate = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + 14);
+      }
+      break;
+    }
+
+    case 'semi-monthly':
+    case 'semimonthly': {
+      // Semi-monthly: twice per month
+      // Common patterns: 1st & 15th, or 15th & last day of month
+      // We use the user's due_date to determine the pattern
+      const primaryDay = billDueDay.getDate();
+      
+      // Calculate the secondary day (the other payment in the month)
+      const secondaryDay = primaryDay <= 15 ? primaryDay + 15 : primaryDay - 15;
+      
+      // Start from the beginning of the month containing the due date
+      let currentYear = billDueDay.getFullYear();
+      let currentMonth = billDueDay.getMonth();
+      
+      // If due_date is before range start, advance to the correct month
+      if (isBefore(billDueDay, rangeStartDay)) {
+        const monthsDiff = (rangeStartDay.getFullYear() - currentYear) * 12 + 
+                          (rangeStartDay.getMonth() - currentMonth);
+        currentMonth += monthsDiff;
+        currentYear += Math.floor(currentMonth / 12);
+        currentMonth = currentMonth % 12;
+        if (currentMonth < 0) {
+          currentMonth += 12;
+          currentYear -= 1;
+        }
+      }
+      
+      // Generate occurrences for up to 24 months (to cover 365-day forecast)
+      for (let monthOffset = 0; monthOffset < 24; monthOffset++) {
+        const year = currentYear + Math.floor((currentMonth + monthOffset) / 12);
+        const month = (currentMonth + monthOffset) % 12;
+        
+        // Get last day of this month
+        const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Calculate both payment dates for this month
+        const day1 = Math.min(primaryDay, lastDayOfMonth);
+        const day2 = Math.min(secondaryDay, lastDayOfMonth);
+        
+        // Sort them so we process in chronological order
+        const [firstDay, secondDay] = day1 < day2 ? [day1, day2] : [day2, day1];
+        
+        // First occurrence of the month
+        const firstDate = new Date(year, month, firstDay, 12, 0, 0);
+        if (!isBefore(firstDate, rangeStartDay) && !isAfter(firstDate, rangeEndDay)) {
+          occurrences.push({
+            date: new Date(firstDate),
+            id: bill.id,
+            name: bill.name,
+            amount: bill.amount,
+            type: 'bill',
+            frequency: bill.frequency,
+          });
+        }
+        
+        // Second occurrence of the month
+        const secondDate = new Date(year, month, secondDay, 12, 0, 0);
+        if (!isBefore(secondDate, rangeStartDay) && !isAfter(secondDate, rangeEndDay)) {
+          occurrences.push({
+            date: new Date(secondDate),
+            id: bill.id,
+            name: bill.name,
+            amount: bill.amount,
+            type: 'bill',
+            frequency: bill.frequency,
+          });
+        }
+        
+        // Stop if we've passed the range end date
+        if (isAfter(new Date(year, month + 1, 1), rangeEndDay)) {
+          break;
+        }
       }
       break;
     }

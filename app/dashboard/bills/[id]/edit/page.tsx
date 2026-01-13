@@ -22,7 +22,7 @@ const billSchema = z.object({
     })
     .positive('Amount must be positive'),
   due_date: z.string().min(1, 'Due date is required'),
-  frequency: z.enum(['weekly', 'biweekly', 'monthly', 'quarterly', 'annually', 'one-time'], {
+  frequency: z.enum(['weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually', 'one-time'], {
     message: 'Please select a frequency',
   }),
   category: z.enum(['rent', 'utilities', 'subscriptions', 'insurance', 'other'], {
@@ -335,6 +335,7 @@ export default function EditBillPage() {
                 <option value="">Select frequency...</option>
                 <option value="weekly">Weekly</option>
                 <option value="biweekly">Biweekly</option>
+                <option value="semi-monthly">Semi-monthly (twice a month)</option>
                 <option value="monthly">Monthly</option>
                 <option value="quarterly">Quarterly</option>
                 <option value="annually">Annually</option>

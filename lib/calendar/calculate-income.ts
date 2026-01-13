@@ -17,7 +17,7 @@ interface IncomeRecord {
   name: string;
   /** Amount of the income */
   amount: number;
-  /** Frequency: 'weekly', 'biweekly', 'monthly', 'one-time', or 'irregular' */
+  /** Frequency: 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'one-time', or 'irregular' */
   frequency: string;
   /** Whether this income source is currently active */
   is_active: boolean | null;
@@ -39,6 +39,7 @@ interface IncomeRecord {
  * Handles different frequencies:
  * - weekly: every 7 days from next_date, using getNextWeeklyDate helper
  * - biweekly: every 14 days from next_date, using getNextBiweeklyDate helper
+ * - semi-monthly: twice per month (e.g., 1st & 15th, or 15th & last day)
  * - monthly: same day each month, handling month-end edge cases (e.g., Jan 31 → Feb 28)
  * - one-time: includes if next_date falls within the range
  * - irregular: returns empty array (cannot predict)
@@ -192,6 +193,95 @@ export function calculateIncomeOccurrences(
         if (CALENDAR_VERBOSE) console.log('Incremented to:', currentDate.toDateString());
       }
       if (CALENDAR_VERBOSE) console.log('Loop ended - final currentDate:', currentDate.toDateString());
+      break;
+    }
+
+    case 'semi-monthly':
+    case 'semimonthly': {
+      // Semi-monthly: twice per month
+      // Common patterns: 1st & 15th, or 15th & last day of month
+      // We use the user's next_date to determine the pattern:
+      // - If day is 1-15: occurrences on that day and that day + 15 (capped at month end)
+      // - If day is 16-31: occurrences on that day and that day - 15
+      if (CALENDAR_VERBOSE) console.log('Processing semi-monthly income');
+      
+      const baseDate = parsedStartDate;
+      const primaryDay = baseDate.getDate();
+      
+      // Calculate the secondary day (the other payment in the month)
+      // If primary is 1-15, secondary is primary + 15 (e.g., 1st -> 16th, 15th -> 30th)
+      // If primary is 16-31, secondary is primary - 15 (e.g., 16th -> 1st, 30th -> 15th)
+      const secondaryDay = primaryDay <= 15 ? primaryDay + 15 : primaryDay - 15;
+      
+      // Start from the beginning of the month containing the base date
+      let currentYear = baseDate.getFullYear();
+      let currentMonth = baseDate.getMonth();
+      
+      // If next_date is before range start, advance to the correct month
+      if (isBefore(incomeNextDay, rangeStartDay)) {
+        const monthsDiff = (rangeStartDay.getFullYear() - currentYear) * 12 + 
+                          (rangeStartDay.getMonth() - currentMonth);
+        currentMonth += monthsDiff;
+        currentYear += Math.floor(currentMonth / 12);
+        currentMonth = currentMonth % 12;
+        if (currentMonth < 0) {
+          currentMonth += 12;
+          currentYear -= 1;
+        }
+      }
+      
+      // Generate occurrences for up to 24 months (to cover 365-day forecast)
+      for (let monthOffset = 0; monthOffset < 24; monthOffset++) {
+        const year = currentYear + Math.floor((currentMonth + monthOffset) / 12);
+        const month = (currentMonth + monthOffset) % 12;
+        
+        // Get last day of this month
+        const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Calculate both payment dates for this month
+        const day1 = Math.min(primaryDay, lastDayOfMonth);
+        const day2 = Math.min(secondaryDay, lastDayOfMonth);
+        
+        // Sort them so we process in chronological order
+        const [firstDay, secondDay] = day1 < day2 ? [day1, day2] : [day2, day1];
+        
+        // First occurrence of the month
+        const firstDate = new Date(year, month, firstDay, 12, 0, 0);
+        if (!isBefore(firstDate, rangeStartDay) && !isAfter(firstDate, effectiveEndDate)) {
+          occurrences.push({
+            date: new Date(firstDate),
+            id: income.id,
+            name: income.name,
+            amount: income.amount,
+            type: 'income',
+            frequency: income.frequency,
+            status: income.status ?? null,
+            invoice_id: income.invoice_id ?? null,
+          });
+          if (CALENDAR_VERBOSE) console.log('Added semi-monthly occurrence:', firstDate.toDateString());
+        }
+        
+        // Second occurrence of the month
+        const secondDate = new Date(year, month, secondDay, 12, 0, 0);
+        if (!isBefore(secondDate, rangeStartDay) && !isAfter(secondDate, effectiveEndDate)) {
+          occurrences.push({
+            date: new Date(secondDate),
+            id: income.id,
+            name: income.name,
+            amount: income.amount,
+            type: 'income',
+            frequency: income.frequency,
+            status: income.status ?? null,
+            invoice_id: income.invoice_id ?? null,
+          });
+          if (CALENDAR_VERBOSE) console.log('Added semi-monthly occurrence:', secondDate.toDateString());
+        }
+        
+        // Stop if we've passed the effective end date
+        if (isAfter(new Date(year, month + 1, 1), effectiveEndDate)) {
+          break;
+        }
+      }
       break;
     }
 

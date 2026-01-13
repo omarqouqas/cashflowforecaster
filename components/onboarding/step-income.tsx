@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { showError, showSuccess } from '@/lib/toast'
 
-type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'one-time'
+type Frequency = 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'one-time'
 
 export function StepIncome({
   onContinue,
@@ -94,6 +94,7 @@ export function StepIncome({
               {([
                 { value: 'weekly', label: 'Weekly' },
                 { value: 'biweekly', label: 'Every 2 weeks' },
+                { value: 'semi-monthly', label: 'Twice a month' },
                 { value: 'monthly', label: 'Monthly' },
                 { value: 'one-time', label: 'One-time' },
               ] as const).map((opt) => (

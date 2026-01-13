@@ -28,7 +28,7 @@ const incomeSchema = z.object({
       invalid_type_error: 'Amount must be a number',
     })
     .positive('Amount must be positive'),
-  frequency: z.enum(['one-time', 'weekly', 'biweekly', 'monthly', 'irregular'], {
+  frequency: z.enum(['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'irregular'], {
     message: 'Please select a frequency',
   }),
   next_date: z.string().min(1, 'Next payment date is required'),
@@ -261,6 +261,7 @@ export default function NewIncomePage() {
                 <option value="">Select frequency...</option>
                 <option value="weekly">Weekly</option>
                 <option value="biweekly">Bi-weekly (every 2 weeks)</option>
+                <option value="semi-monthly">Semi-monthly (twice a month)</option>
                 <option value="monthly">Monthly</option>
                 <option value="one-time">One-time payment</option>
                 <option value="irregular">Irregular / Variable</option>
