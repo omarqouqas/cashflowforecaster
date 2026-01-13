@@ -5,6 +5,7 @@ import { DashboardNav } from '@/components/dashboard/nav'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { redirect } from 'next/navigation'
 import { IdentifyUser } from '@/components/analytics/identify-user'
+import { FeedbackButton } from '@/components/feedback/feedback-button'
 
 export default async function DashboardLayout({
   children,
@@ -66,6 +67,9 @@ export default async function DashboardLayout({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-8">
         {children}
       </main>
+
+      {/* Floating feedback button */}
+      <FeedbackButton />
     </div>
   )
 }
