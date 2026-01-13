@@ -134,6 +134,45 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          id: string
+          user_id: string | null
+          user_email: string | null
+          type: string
+          message: string
+          page_url: string | null
+          user_agent: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          user_email?: string | null
+          type: string
+          message: string
+          page_url?: string | null
+          user_agent?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          user_email?: string | null
+          type?: string
+          message?: string
+          page_url?: string | null
+          user_agent?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       income: {
         Row: {
           account_id: string | null
