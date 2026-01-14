@@ -27,7 +27,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
   }
 
   const success = searchParams?.success;
-  const accountList = accounts ?? [];
+  const accountList = (accounts ?? []) as any[];
   const currency = accountList.find((a) => a.currency)?.currency || 'USD';
   const totalBalance = accountList.reduce((sum, a) => sum + (a.current_balance || 0), 0);
   const spendableTotal = accountList.reduce((sum, a) => {
