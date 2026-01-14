@@ -29,7 +29,8 @@ export default async function DashboardLayout({
       .maybeSingle(),
   ])
 
-  const isOnboarded = settingsRow.data?.onboarding_complete === true
+  const settingsData = settingsRow.data as any
+  const isOnboarded = settingsData?.onboarding_complete === true
   const hasAccounts = (accountCount ?? 0) > 0
 
   if (!isOnboarded && !hasAccounts) {

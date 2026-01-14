@@ -135,9 +135,10 @@ export async function calculateScenario(
       return { ok: false, error: 'Add at least one account to generate your forecast.' };
     }
 
-    const safetyBuffer = settingsResult.data?.safety_buffer ?? 500;
-    const timezone = settingsResult.data?.timezone ?? null;
-    const currency = settingsResult.data?.currency ?? accounts[0]?.currency ?? 'USD';
+    const settingsData = settingsResult.data as any;
+    const safetyBuffer = settingsData?.safety_buffer ?? 500;
+    const timezone = settingsData?.timezone ?? null;
+    const currency = settingsData?.currency ?? accounts[0]?.currency ?? 'USD';
 
     const chosenDate = parseLocalDate(date);
     if (Number.isNaN(chosenDate.getTime())) return { ok: false, error: 'Please select a valid date.' };
