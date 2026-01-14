@@ -48,8 +48,9 @@ export default async function CalendarPage() {
   const income: Income[] = incomeResult.data || []
   const bills: Bill[] = billsResult.data || []
 
-  const safetyBuffer = settingsResult.data?.safety_buffer ?? 500
-  const timezone = settingsResult.data?.timezone ?? null
+  const settings = settingsResult.data as any
+  const safetyBuffer = settings?.safety_buffer ?? 500
+  const timezone = settings?.timezone ?? null
 
   const fetchErrors = [accountsResult.error, incomeResult.error, billsResult.error].filter(
     Boolean
