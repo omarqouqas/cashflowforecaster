@@ -81,8 +81,9 @@ export async function generateDigestData(userId: string): Promise<DigestData | n
   if (settingsErr) throw new Error(settingsErr.message);
   if (subscriptionErr) throw new Error(subscriptionErr.message);
 
-  const timezone = settingsRow?.timezone ?? null;
-  const safetyBuffer = settingsRow?.safety_buffer ?? 500;
+  const settings = settingsRow as any;
+  const timezone = settings?.timezone ?? null;
+  const safetyBuffer = settings?.safety_buffer ?? 500;
 
   const activeTier: SubscriptionTier = (() => {
     const tier = normalizeSubscriptionTier(subscriptionRow?.tier, 'free');
