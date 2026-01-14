@@ -89,11 +89,13 @@ export default async function InvoiceDetailPage({
 
   const invoiceData = invoice as any;
 
-  const { data: reminderHistory, error: remindersErr } = await supabase
+  const { data: remindersData, error: remindersErr } = await supabase
     .from('invoice_reminders')
     .select('reminder_type, sent_at')
     .eq('invoice_id', invoiceData.id)
     .order('sent_at', { ascending: false });
+
+  const reminderHistory = (remindersData || []) as any;
 
   if (remindersErr) {
     // eslint-disable-next-line no-console
