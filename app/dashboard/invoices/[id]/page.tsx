@@ -102,11 +102,13 @@ export default async function InvoiceDetailPage({
     console.error('Error fetching invoice reminders:', remindersErr);
   }
 
-  const { data: linkedIncome } = await supabase
+  const { data: linkedIncomeData } = await supabase
     .from('income')
     .select('id')
     .eq('invoice_id', invoiceData.id)
     .maybeSingle();
+
+  const linkedIncome = linkedIncomeData as any;
 
   const overdue = isOverdue(invoiceData.due_date, invoiceData.status);
   const status = invoiceData.status ?? 'draft';
