@@ -87,10 +87,12 @@ export default async function InvoiceDetailPage({
     redirect('/dashboard/invoices');
   }
 
+  const invoiceData = invoice as any;
+
   const { data: reminderHistory, error: remindersErr } = await supabase
     .from('invoice_reminders')
     .select('reminder_type, sent_at')
-    .eq('invoice_id', invoice.id)
+    .eq('invoice_id', invoiceData.id)
     .order('sent_at', { ascending: false });
 
   if (remindersErr) {
@@ -101,11 +103,11 @@ export default async function InvoiceDetailPage({
   const { data: linkedIncome } = await supabase
     .from('income')
     .select('id')
-    .eq('invoice_id', invoice.id)
+    .eq('invoice_id', invoiceData.id)
     .maybeSingle();
 
-  const overdue = isOverdue(invoice.due_date, invoice.status);
-  const status = invoice.status ?? 'draft';
+  const overdue = isOverdue(invoiceData.due_date, invoiceData.status);
+  const status = invoiceData.status ?? 'draft';
 
   const sentCompleted = status === 'sent' || status === 'viewed' || status === 'paid';
   const viewedCompleted = status === 'viewed' || status === 'paid';
@@ -129,39 +131,39 @@ export default async function InvoiceDetailPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-zinc-900">{invoice.invoice_number}</h1>
+          <h1 className="text-2xl font-bold text-zinc-900">{invoiceData.invoice_number}</h1>
           <span
             className={[
               'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize',
-              statusBadge(invoice.status),
+              statusBadge(invoiceData.status),
             ].join(' ')}
           >
-            {invoice.status ?? 'draft'}
+            {invoiceData.status ?? 'draft'}
           </span>
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <DownloadPdfButton invoiceId={invoice.id} />
+        <DownloadPdfButton invoiceId={invoiceData.id} />
         {status === 'draft' && (
           <SendInvoiceButton
-            invoiceId={invoice.id}
-            clientEmail={invoice.client_email}
-            disabled={!invoice.client_email}
+            invoiceId={invoiceData.id}
+            clientEmail={invoiceData.client_email}
+            disabled={!invoiceData.client_email}
             allowMessage
           />
         )}
         {status !== 'draft' && status !== 'paid' && (
           <div className="flex flex-col justify-center">
             <p className="text-xs text-zinc-500">
-              Sent{invoice.sent_at ? ` on ${formatDate(invoice.sent_at)}` : ''}
+              Sent{invoiceData.sent_at ? ` on ${formatDate(invoiceData.sent_at)}` : ''}
             </p>
             <div className="mt-2">
               <SendInvoiceButton
-                invoiceId={invoice.id}
-                clientEmail={invoice.client_email}
-                disabled={!invoice.client_email}
+                invoiceId={invoiceData.id}
+                clientEmail={invoiceData.client_email}
+                disabled={!invoiceData.client_email}
                 mode="resend"
               />
             </div>
@@ -169,15 +171,15 @@ export default async function InvoiceDetailPage({
         )}
         {status !== 'paid' && (
           <SendReminderButton
-            invoiceId={invoice.id}
-            invoiceStatus={invoice.status}
-            lastReminderAt={invoice.last_reminder_at}
-            reminderCount={invoice.reminder_count ?? 0}
+            invoiceId={invoiceData.id}
+            invoiceStatus={invoiceData.status}
+            lastReminderAt={invoiceData.last_reminder_at}
+            reminderCount={invoiceData.reminder_count ?? 0}
           />
         )}
         {status !== 'paid' && (
           <Link
-            href={`/dashboard/invoices/${invoice.id}/edit`}
+            href={`/dashboard/invoices/${invoiceData.id}/edit`}
             className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 min-h-[32px]"
             aria-label="Edit invoice"
             title="Edit invoice"
@@ -186,7 +188,7 @@ export default async function InvoiceDetailPage({
             <span className="hidden sm:inline">Edit</span>
           </Link>
         )}
-        {status !== 'paid' && <MarkAsPaidButton invoiceId={invoice.id} />}
+        {status !== 'paid' && <MarkAsPaidButton invoiceId={invoiceData.id} />}
       </div>
 
       {/* Details */}
@@ -194,16 +196,16 @@ export default async function InvoiceDetailPage({
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="min-w-0">
             <p className="text-sm text-zinc-500">Client</p>
-            <p className="text-lg font-semibold text-zinc-900 truncate">{invoice.client_name}</p>
-            {invoice.client_email && (
-              <p className="text-sm text-zinc-600 mt-0.5">{invoice.client_email}</p>
+            <p className="text-lg font-semibold text-zinc-900 truncate">{invoiceData.client_name}</p>
+            {invoiceData.client_email && (
+              <p className="text-sm text-zinc-600 mt-0.5">{invoiceData.client_email}</p>
             )}
           </div>
 
           <div className="text-left sm:text-right">
             <p className="text-sm text-zinc-500">Amount</p>
             <p className="text-3xl font-bold text-zinc-900 tabular-nums">
-              {formatCurrency(invoice.amount)}
+              {formatCurrency(invoiceData.amount)}
             </p>
           </div>
         </div>
@@ -211,7 +213,7 @@ export default async function InvoiceDetailPage({
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="border border-zinc-100 rounded-md p-4 bg-zinc-50">
             <p className="text-sm text-zinc-500">Due date</p>
-            <p className="text-base font-medium text-zinc-900">{formatDateOnly(invoice.due_date)}</p>
+            <p className="text-base font-medium text-zinc-900">{formatDateOnly(invoiceData.due_date)}</p>
             {overdue && (
               <p className="text-sm text-rose-600 mt-1 font-medium">Overdue</p>
             )}
@@ -220,15 +222,15 @@ export default async function InvoiceDetailPage({
           <div className="border border-zinc-100 rounded-md p-4 bg-zinc-50">
             <p className="text-sm text-zinc-500">Created</p>
             <p className="text-base font-medium text-zinc-900">
-              {invoice.created_at ? formatDate(invoice.created_at) : '—'}
+              {invoiceData.created_at ? formatDate(invoiceData.created_at) : '—'}
             </p>
           </div>
         </div>
 
-        {invoice.description?.trim() && (
+        {invoiceData.description?.trim() && (
           <div className="mt-6">
             <p className="text-sm text-zinc-500 mb-1.5">Description</p>
-            <p className="text-sm text-zinc-800 whitespace-pre-wrap">{invoice.description}</p>
+            <p className="text-sm text-zinc-800 whitespace-pre-wrap">{invoiceData.description}</p>
           </div>
         )}
       </div>
@@ -277,25 +279,25 @@ export default async function InvoiceDetailPage({
           <TimelineStep
             label="Created"
             completed={true}
-            timestamp={invoice.created_at}
+            timestamp={invoiceData.created_at}
             note="Created"
           />
           <TimelineStep
             label="Sent"
             completed={sentCompleted}
-            timestamp={invoice.sent_at}
+            timestamp={invoiceData.sent_at}
             note="Not sent yet"
           />
           <TimelineStep
             label="Viewed"
             completed={viewedCompleted}
-            timestamp={invoice.viewed_at}
+            timestamp={invoiceData.viewed_at}
             note="Not viewed yet"
           />
           <TimelineStep
             label="Paid"
             completed={paidCompleted}
-            timestamp={invoice.paid_at}
+            timestamp={invoiceData.paid_at}
           />
         </div>
 
@@ -316,7 +318,7 @@ export default async function InvoiceDetailPage({
           Deleting a draft invoice will also remove the linked income entry from your forecast.
         </p>
         <div className="mt-4">
-          <DeleteInvoiceButton invoiceId={invoice.id} status={invoice.status} />
+          <DeleteInvoiceButton invoiceId={invoiceData.id} status={invoiceData.status} />
         </div>
       </div>
     </div>
