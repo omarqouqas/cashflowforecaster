@@ -27,7 +27,7 @@ function cleanupExpiredEntries() {
   if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
 
   lastCleanup = now;
-  for (const [key, entry] of rateLimitState.entries()) {
+  for (const [key, entry] of Array.from(rateLimitState.entries())) {
     if (entry.resetAt <= now) {
       rateLimitState.delete(key);
     }
