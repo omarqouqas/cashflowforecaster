@@ -32,17 +32,19 @@ export default async function SettingsPage() {
     .eq('user_id', user.id)
     .single();
 
-  const safetyBuffer = settings?.safety_buffer ?? 500;
-  const timezone = settings?.timezone ?? null;
-  const digestEnabled = settings?.email_digest_enabled ?? true;
-  const digestDay = settings?.email_digest_day ?? 1;
-  const taxRate = settings?.tax_rate ?? 25.00;
-  const taxTrackingEnabled = settings?.tax_tracking_enabled ?? true;
-  const taxYear = settings?.tax_year ?? new Date().getFullYear();
-  const estimatedTaxQ1Paid = settings?.estimated_tax_q1_paid ?? 0;
-  const estimatedTaxQ2Paid = settings?.estimated_tax_q2_paid ?? 0;
-  const estimatedTaxQ3Paid = settings?.estimated_tax_q3_paid ?? 0;
-  const estimatedTaxQ4Paid = settings?.estimated_tax_q4_paid ?? 0;
+  const settingsData = settings as any;
+
+  const safetyBuffer = settingsData?.safety_buffer ?? 500;
+  const timezone = settingsData?.timezone ?? null;
+  const digestEnabled = settingsData?.email_digest_enabled ?? true;
+  const digestDay = settingsData?.email_digest_day ?? 1;
+  const taxRate = settingsData?.tax_rate ?? 25.00;
+  const taxTrackingEnabled = settingsData?.tax_tracking_enabled ?? true;
+  const taxYear = settingsData?.tax_year ?? new Date().getFullYear();
+  const estimatedTaxQ1Paid = settingsData?.estimated_tax_q1_paid ?? 0;
+  const estimatedTaxQ2Paid = settingsData?.estimated_tax_q2_paid ?? 0;
+  const estimatedTaxQ3Paid = settingsData?.estimated_tax_q3_paid ?? 0;
+  const estimatedTaxQ4Paid = settingsData?.estimated_tax_q4_paid ?? 0;
 
   // Fetch subscription status
   const subscription = await getUserSubscription(user.id);

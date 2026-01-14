@@ -53,17 +53,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const bills = billsResult.data || [];
   const invoiceSummary = invoiceSummaryResult;
 
+  // Extract settings with type assertion
+  const settingsData = settingsResult.data as any;
+
   // Extract safety buffer with fallback to default
-  const safetyBuffer = settingsResult.data?.safety_buffer ?? 500;
-  const timezone = settingsResult.data?.timezone ?? null;
+  const safetyBuffer = settingsData?.safety_buffer ?? 500;
+  const timezone = settingsData?.timezone ?? null;
 
   // Extract tax settings
-  const taxRate = settingsResult.data?.tax_rate ?? 25.00;
-  const taxTrackingEnabled = settingsResult.data?.tax_tracking_enabled ?? false;
-  const estimatedTaxQ1Paid = settingsResult.data?.estimated_tax_q1_paid ?? 0;
-  const estimatedTaxQ2Paid = settingsResult.data?.estimated_tax_q2_paid ?? 0;
-  const estimatedTaxQ3Paid = settingsResult.data?.estimated_tax_q3_paid ?? 0;
-  const estimatedTaxQ4Paid = settingsResult.data?.estimated_tax_q4_paid ?? 0;
+  const taxRate = settingsData?.tax_rate ?? 25.00;
+  const taxTrackingEnabled = settingsData?.tax_tracking_enabled ?? false;
+  const estimatedTaxQ1Paid = settingsData?.estimated_tax_q1_paid ?? 0;
+  const estimatedTaxQ2Paid = settingsData?.estimated_tax_q2_paid ?? 0;
+  const estimatedTaxQ3Paid = settingsData?.estimated_tax_q3_paid ?? 0;
+  const estimatedTaxQ4Paid = settingsData?.estimated_tax_q4_paid ?? 0;
 
   // Calculate totals
   const totalBalance = accounts.reduce((sum, acc) => sum + (acc.current_balance || 0), 0);
