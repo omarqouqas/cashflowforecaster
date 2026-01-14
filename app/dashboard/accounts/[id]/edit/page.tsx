@@ -74,14 +74,15 @@ export default function EditAccountPage() {
       }
 
       if (data) {
+        const accountData = data as any;
         setAccount(data);
         // Pre-fill form with existing data
         reset({
-          name: data.name,
-          account_type: (data.account_type as 'checking' | 'savings') || 'checking',
-          current_balance: data.current_balance,
-          currency: data.currency || 'USD',
-          is_spendable: data.is_spendable ?? true,
+          name: accountData.name,
+          account_type: (accountData.account_type as 'checking' | 'savings') || 'checking',
+          current_balance: accountData.current_balance,
+          currency: accountData.currency || 'USD',
+          is_spendable: accountData.is_spendable ?? true,
         });
       }
 
