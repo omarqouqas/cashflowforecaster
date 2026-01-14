@@ -66,8 +66,9 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
     }, 0);
   };
 
-  const monthlyTotal = calculateMonthlyIncome(incomes || []);
-  const activeIncomes = incomes?.filter((i) => i.is_active !== false) || [];
+  const incomesList = (incomes || []) as any[];
+  const monthlyTotal = calculateMonthlyIncome(incomesList);
+  const activeIncomes = incomesList.filter((i) => i.is_active !== false);
 
   // Feature gating
   const { current: incomeCount, limit: incomeLimit } = usageStats.income;
@@ -250,7 +251,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           ) : (
             /* Income List */
             <div className="space-y-3">
-              {incomes.map((income) => (
+              {incomesList.map((income) => (
                 <IncomeCard key={income.id} income={income} />
               ))}
             </div>

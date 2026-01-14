@@ -64,12 +64,14 @@ export default function EditIncomePage() {
         .eq('id', incomeId)
         .single();
 
-      if (incomeError) {
+      if (incomeError || !incomeData) {
         console.error('Error fetching income:', incomeError);
-        showError(incomeError.message);
+        showError(incomeError?.message || 'Income not found');
         router.push('/dashboard/income');
         return;
       }
+
+      const income = incomeData as any;
 
       // Fetch accounts
       const { data: accountsData } = await supabase
@@ -78,24 +80,22 @@ export default function EditIncomePage() {
         .order('name');
 
       setIncome(incomeData);
-      setAccounts(accountsData || []);
+      setAccounts((accountsData || []) as any[]);
 
       // Pre-fill form with existing data
-      if (incomeData) {
-        // Format date for HTML date input (YYYY-MM-DD)
-        const formattedDate = incomeData.next_date
-          ? new Date(incomeData.next_date).toISOString().split('T')[0]
-          : '';
+      // Format date for HTML date input (YYYY-MM-DD)
+      const formattedDate = income.next_date
+        ? new Date(income.next_date).toISOString().split('T')[0]
+        : '';
 
-        reset({
-          name: incomeData.name,
-          amount: incomeData.amount,
-          frequency: incomeData.frequency as IncomeFormData['frequency'],
-          next_date: formattedDate,
-          account_id: incomeData.account_id || '',
-          is_active: incomeData.is_active ?? true,
-        });
-      }
+      reset({
+        name: income.name,
+        amount: income.amount,
+        frequency: income.frequency as IncomeFormData['frequency'],
+        next_date: formattedDate,
+        account_id: income.account_id || '',
+        is_active: income.is_active ?? true,
+      });
 
       setIsLoading(false);
     }
