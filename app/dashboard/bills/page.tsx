@@ -270,7 +270,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           ) : (
             /* Bills List */
             <div className="space-y-3">
-              {bills.map((bill) => (
+              {billsList.map((bill) => (
                 <BillCard key={bill.id} bill={bill} />
               ))}
             </div>
