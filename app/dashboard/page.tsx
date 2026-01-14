@@ -69,7 +69,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const estimatedTaxQ4Paid = settingsData?.estimated_tax_q4_paid ?? 0;
 
   // Calculate totals
-  const totalBalance = accounts.reduce((sum, acc) => sum + (acc.current_balance || 0), 0);
+  const totalBalance = accounts.reduce((sum: number, acc: any) => sum + (acc.current_balance || 0), 0);
   const accountCount = accounts.length;
   // Use the first account's currency, or default to USD
   const currency = accounts[0]?.currency || 'USD';
@@ -90,7 +90,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const calculateMonthlyIncome = (incomes: any[]) => {
     if (!incomes) return 0;
 
-    return incomes.reduce((total, income) => {
+    return incomes.reduce((total: number, income: any) => {
       // Treat NULL as active (legacy rows) – only exclude explicitly deactivated rows.
       if (income.is_active === false) return total;
 
@@ -111,13 +111,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const monthlyIncome = calculateMonthlyIncome(incomes);
-  const incomeCount = incomes.filter((i) => i.is_active !== false).length;
+  const incomeCount = incomes.filter((i: any) => i.is_active !== false).length;
 
   // Calculate monthly bills equivalent
   const calculateMonthlyBills = (bills: any[]) => {
     if (!bills) return 0;
 
-    return bills.reduce((total, bill) => {
+    return bills.reduce((total: number, bill: any) => {
       if (!bill.is_active) return total;
 
       switch (bill.frequency) {
@@ -133,14 +133,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const monthlyBills = calculateMonthlyBills(bills);
-  const activeBillsCount = bills.filter(b => b.is_active).length;
+  const activeBillsCount = bills.filter((b: any) => b.is_active).length;
 
   // Calculate quarterly income for tax tracking
   const calculateQuarterlyIncome = (incomes: any[]): [number, number, number, number] => {
     const currentYear = new Date().getFullYear();
     const quarterTotals = [0, 0, 0, 0];
 
-    incomes.forEach(income => {
+    incomes.forEach((income: any) => {
       if (income.is_active === false) return;
 
       const incomeDate = income.date ? new Date(income.date) : null;
