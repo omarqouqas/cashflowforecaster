@@ -68,7 +68,7 @@ export async function POST(
     return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
   }
 
-  const status = (invoice.status ?? 'draft') as string;
+  const status = ((invoice as any).status ?? 'draft') as string;
   const isAlreadySent = status !== 'draft';
   if (isAlreadySent && !body.forceResend) {
     return NextResponse.json(
@@ -77,7 +77,9 @@ export async function POST(
     );
   }
 
-  const toEmail = (invoice.client_email ?? '').trim();
+  const invoiceData = invoice as any;
+
+  const toEmail = (invoiceData.client_email ?? '').trim();
   if (!toEmail) {
     return NextResponse.json(
       { error: 'Client email is required', code: 'missing_email' },
@@ -94,14 +96,14 @@ export async function POST(
 
   const senderName = getSenderName(user);
 
-  const doc = InvoiceTemplate({ invoice, fromEmail: user.email ?? 'Unknown' });
+  const doc = InvoiceTemplate({ invoice: invoiceData, fromEmail: user.email ?? 'Unknown' });
   const pdfBuffer = await renderToBuffer(doc);
 
   const { subject, html } = buildInvoiceEmail({
-    invoice_number: invoice.invoice_number ?? 'Invoice',
-    amount: invoice.amount ?? 0,
-    due_date: invoice.due_date,
-    client_name: invoice.client_name,
+    invoice_number: invoiceData.invoice_number ?? 'Invoice',
+    amount: invoiceData.amount ?? 0,
+    due_date: invoiceData.due_date,
+    client_name: invoiceData.client_name,
     sender_name: senderName,
     note: body.message,
   });
@@ -116,7 +118,7 @@ export async function POST(
     html,
     attachments: [
       {
-        filename: `invoice-${invoice.invoice_number ?? invoice.id}.pdf`,
+        filename: `invoice-${invoiceData.invoice_number ?? invoiceData.id}.pdf`,
         content: Buffer.from(pdfBuffer),
         contentType: 'application/pdf',
       },
@@ -137,7 +139,7 @@ export async function POST(
   const { error: updateErr } = await supabase
     .from('invoices')
     .update({ status: 'sent', sent_at: sentAt, updated_at: sentAt })
-    .eq('id', invoice.id)
+    .eq('id', invoiceData.id)
     .eq('user_id', user.id);
 
   if (updateErr) {
