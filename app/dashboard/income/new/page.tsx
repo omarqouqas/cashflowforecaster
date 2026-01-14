@@ -68,7 +68,7 @@ export default function NewIncomePage() {
         .select('id, name, account_type')
         .order('name');
 
-      setAccounts(data || []);
+      setAccounts((data || []) as any);
     }
 
     fetchAccounts();
