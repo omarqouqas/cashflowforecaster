@@ -10,6 +10,8 @@ import { getInvoiceSummary } from '@/lib/actions/invoices';
 import { getForecastDaysLimit } from '@/lib/stripe/subscription';
 import { differenceInCalendarDays, startOfDay, format } from 'date-fns';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
+import { TaxSavingsWidget } from '@/components/dashboard/tax-savings-widget';
+import { getQuarterForDate } from '@/lib/tax/calculations';
 
 interface DashboardPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -39,7 +41,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order('created_at', { ascending: false }),
     supabase
       .from('user_settings')
-      .select('safety_buffer, timezone')
+      .select('safety_buffer, timezone, tax_rate, tax_tracking_enabled, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid')
       .eq('user_id', user.id)
       .single(),
     getInvoiceSummary(),
@@ -54,6 +56,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   // Extract safety buffer with fallback to default
   const safetyBuffer = settingsResult.data?.safety_buffer ?? 500;
   const timezone = settingsResult.data?.timezone ?? null;
+
+  // Extract tax settings
+  const taxRate = settingsResult.data?.tax_rate ?? 25.00;
+  const taxTrackingEnabled = settingsResult.data?.tax_tracking_enabled ?? false;
+  const estimatedTaxQ1Paid = settingsResult.data?.estimated_tax_q1_paid ?? 0;
+  const estimatedTaxQ2Paid = settingsResult.data?.estimated_tax_q2_paid ?? 0;
+  const estimatedTaxQ3Paid = settingsResult.data?.estimated_tax_q3_paid ?? 0;
+  const estimatedTaxQ4Paid = settingsResult.data?.estimated_tax_q4_paid ?? 0;
 
   // Calculate totals
   const totalBalance = accounts.reduce((sum, acc) => sum + (acc.current_balance || 0), 0);
@@ -121,6 +131,52 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const monthlyBills = calculateMonthlyBills(bills);
   const activeBillsCount = bills.filter(b => b.is_active).length;
+
+  // Calculate quarterly income for tax tracking
+  const calculateQuarterlyIncome = (incomes: any[]): [number, number, number, number] => {
+    const currentYear = new Date().getFullYear();
+    const quarterTotals = [0, 0, 0, 0];
+
+    incomes.forEach(income => {
+      if (income.is_active === false) return;
+
+      const incomeDate = income.date ? new Date(income.date) : null;
+
+      // For one-time income with a date in current year
+      if (income.frequency === 'one-time' && incomeDate && incomeDate.getFullYear() === currentYear) {
+        const quarter = getQuarterForDate(incomeDate) - 1;
+        quarterTotals[quarter] += income.amount;
+      }
+      // For recurring income, distribute across all quarters
+      else if (income.frequency !== 'one-time' && income.frequency !== 'irregular') {
+        const monthlyAmount = (() => {
+          switch (income.frequency) {
+            case 'weekly': return (income.amount * 52) / 12;
+            case 'biweekly': return (income.amount * 26) / 12;
+            case 'monthly': return income.amount;
+            default: return 0;
+          }
+        })();
+        // Distribute monthly income across all quarters (3 months per quarter)
+        const quarterlyAmount = monthlyAmount * 3;
+        quarterTotals[0] += quarterlyAmount;
+        quarterTotals[1] += quarterlyAmount;
+        quarterTotals[2] += quarterlyAmount;
+        quarterTotals[3] += quarterlyAmount;
+      }
+    });
+
+    return quarterTotals as [number, number, number, number];
+  };
+
+  const quarterlyIncome = calculateQuarterlyIncome(incomes);
+  const totalYearIncome = quarterlyIncome.reduce((sum, q) => sum + q, 0);
+  const quarterlyPaid: [number, number, number, number] = [
+    estimatedTaxQ1Paid,
+    estimatedTaxQ2Paid,
+    estimatedTaxQ3Paid,
+    estimatedTaxQ4Paid,
+  ];
 
   // Forecast status (for dynamic dashboard subtitle)
   const forecastStatus = (() => {
@@ -521,6 +577,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Tax Savings Tracker Widget */}
+          <div className="mb-6">
+            <TaxSavingsWidget
+              totalIncome={totalYearIncome}
+              taxRate={taxRate}
+              quarterlyIncome={quarterlyIncome}
+              quarterlyPaid={quarterlyPaid}
+              enabled={taxTrackingEnabled}
+            />
           </div>
         </div>
   );

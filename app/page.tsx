@@ -13,6 +13,7 @@ import {
   Calendar,
   CheckCircle2,
   Code2,
+  DollarSign,
   FileSpreadsheet,
   FileText,
   Lock,
@@ -53,6 +54,9 @@ export const metadata: Metadata = {
     'avoid overdraft freelancer',
     'invoice to cash flow tracking',
     'cash flow forecasting and liquidity',
+    'freelancer tax tracking',
+    'estimated tax calculator',
+    'quarterly tax payments freelancer',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io',
@@ -155,7 +159,7 @@ export default async function Home() {
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              Your personal cash flow calendar for the next 60 days — with every invoice, bill, and payday mapped out.
+              Your personal cash flow calendar for the next 60 days — with every invoice, bill, payday, and tax savings mapped out.
               Built for freelancers with irregular income.
             </p>
 
@@ -283,10 +287,10 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-                Three pillars of cash flow clarity
+                Four pillars of cash flow clarity
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                Our cash flow forecasting tool helps you know what&apos;s safe today, get paid faster, and avoid getting blindsided—without spreadsheets.
+                Our cash flow forecasting tool helps you know what&apos;s safe today, get paid faster, avoid getting blindsided, and save for taxes—without spreadsheets.
               </p>
             </div>
 
@@ -460,6 +464,85 @@ export default async function Home() {
                       <div className="text-zinc-200">
                         <p className="font-medium">Bill collision detected</p>
                         <p className="text-zinc-300/90">Thu: Rent + Car Insurance land on the same day.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pillar 4: Tax Savings Tracker */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div className="lg:order-2">
+                  <div className="flex items-center gap-3">
+                    <div className="h-11 w-11 rounded-xl bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
+                      <DollarSign className="h-5 w-5 text-teal-300" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white tracking-tight">Save for Taxes Automatically</h3>
+                  </div>
+
+                  <p className="mt-4 text-zinc-300 leading-relaxed">
+                    Set your tax rate, track quarterly estimated payments, and see your after-tax &quot;safe to spend&quot; amount.
+                    Never get surprised by tax season again.
+                  </p>
+
+                  <ul className="mt-6 space-y-3 text-sm text-zinc-300">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
+                      <span>After-tax income calculator</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
+                      <span>Quarterly tax deadline tracking</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
+                      <span>Tax savings progress bar</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="lg:order-1 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-zinc-200">Tax Savings Tracker</span>
+                    <span className="text-xs text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-full px-3 py-1">
+                      25% rate
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <p className="text-sm text-zinc-500">Total Income</p>
+                      <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">$48,000</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-zinc-500">After-Tax</p>
+                      <p className="mt-1 text-2xl font-semibold text-teal-600">$36,000</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-sm mb-2">
+                      <span className="text-zinc-500">Tax Progress</span>
+                      <span className="font-medium text-zinc-900 dark:text-white">$8,500 / $12,000</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                      <div className="h-full bg-amber-400 transition-all" style={{ width: '71%' }} />
+                    </div>
+                    <p className="mt-2 text-xs text-zinc-500">
+                      $3,500 remaining to save
+                    </p>
+                  </div>
+
+                  <div className="mt-5 rounded-lg border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-3">
+                    <div className="flex items-start gap-2">
+                      <Bell className="h-4 w-4 text-amber-600 dark:text-amber-300 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                          Q4 deadline in 28 days
+                        </p>
+                        <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">
+                          $3,000 estimated tax due by January 15
+                        </p>
                       </div>
                     </div>
                   </div>

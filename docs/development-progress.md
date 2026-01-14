@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 12, 2026
+**Last Updated:** January 13, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,9 +10,9 @@
 
 ## Quick Stats
 
-- **Days in Development:** 23
-- **Commits:** 90
-- **Database Tables:** 13
+- **Days in Development:** 35
+- **Commits:** 95+
+- **Database Tables:** 14 (added feedback)
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
@@ -36,14 +36,85 @@
 - ✅ Phase 13: Stripe Live Mode (Day 22) - COMPLETE
 - ✅ Phase 14: Weekly Email Digest (Day 26) - COMPLETE
 - ✅ Phase 15: User Feedback System (Day 33) - COMPLETE
+- ✅ Phase 16: Tax Savings Tracker (Day 35) - COMPLETE
 
 **Current Focus:**
 
-- Reddit launch prep
+- Tax Savings Tracker feature adoption monitoring
 - User acquisition
 - Monitor NPS survey responses (PostHog)
 - Dashboard UX polish (freelancer-friendly day-to-day guidance)
 - Retention loop: weekly email digest (monitor open/click + settings adoption)
+
+---
+
+## Day 35: Tax Savings Tracker Feature (January 13, 2026)
+
+### Shipped (today)
+
+#### Tax Savings Tracker ✅ 🎉
+
+**HUGE differentiator** - No other cash flow app has this feature! Addresses #1 freelancer pain point: tax anxiety.
+
+- [x] **Database Schema**
+  - Added tax settings columns to `user_settings` table:
+    - `tax_rate` (DECIMAL, default 25.00%)
+    - `tax_tracking_enabled` (BOOLEAN, default true)
+    - `tax_year` (INTEGER)
+    - `estimated_tax_q1_paid`, `q2`, `q3`, `q4` (DECIMAL)
+  - Created migration: `20260113000002_add_tax_settings.sql`
+
+- [x] **Tax Calculation Library** (`lib/tax/calculations.ts`)
+  - Tax calculation utilities
+  - Quarterly deadline tracking (Q1-Q4 with due dates)
+  - Annual tax summary calculations
+  - Helper functions: `getNextQuarterlyDeadline()`, `getCurrentQuarter()`, etc.
+
+- [x] **Tax Settings Form** (`components/settings/tax-settings-form.tsx`)
+  - Toggle to enable/disable tax tracking
+  - Tax rate input (25-35% guidance)
+  - Quarterly estimated tax payment tracking
+  - Shows due dates for each quarter (April 15, June 15, Sept 15, Jan 15)
+  - Client component with react state
+
+- [x] **Server Action** (`lib/actions/update-tax-settings.ts`)
+  - Handles tax settings updates
+  - Input validation with Zod
+  - Revalidates dashboard and settings pages
+
+- [x] **Dashboard Widget** (`components/dashboard/tax-savings-widget.tsx`)
+  - Shows total YTD income vs after-tax income
+  - Visual progress bar for tax savings (color-coded: green/amber/rose)
+  - Next quarterly deadline alert (when due in ≤30 days)
+  - Enable/disable state with CTA to settings
+  - Responsive design
+
+- [x] **Settings Page Integration**
+  - Added Tax Savings Tracker section
+  - Fetches and displays tax settings
+  - Clean UI with quarterly payment inputs
+
+- [x] **Dashboard Integration**
+  - Added quarterly income calculation logic
+  - Integrated tax widget below invoice summary
+  - Calculates YTD income from all income sources
+  - Handles one-time and recurring income properly
+
+- [x] **PostHog Analytics**
+  - Event: `tax_tracking_toggled` (with `enabled` property)
+  - Event: `tax_settings_updated` (with `tax_rate`, `enabled`, `has_quarterly_payments`)
+
+**Impact:**
+- Addresses #1 freelancer pain point (tax anxiety)
+- Shows "after-tax safe to spend" amount
+- Prevents April panic with quarterly tracking
+- Sticky feature (users check regularly)
+- Huge marketing differentiator
+
+**Next Steps for Tax Feature:**
+- Monitor adoption rate via PostHog
+- Consider adding to onboarding flow
+- Potential premium upsell: tax report exports, accountant integration
 
 ---
 

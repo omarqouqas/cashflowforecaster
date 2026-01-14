@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
 import { EmailDigestForm } from '@/components/settings/email-digest-form';
+import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
 import { SubscriptionStatus } from '@/components/subscription/subscription-status';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 
@@ -27,7 +28,7 @@ export default async function SettingsPage() {
   // Fetch current user settings
   const { data: settings } = await supabase
     .from('user_settings')
-    .select('safety_buffer, timezone, email_digest_enabled, email_digest_day')
+    .select('safety_buffer, timezone, email_digest_enabled, email_digest_day, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid')
     .eq('user_id', user.id)
     .single();
 
@@ -35,6 +36,13 @@ export default async function SettingsPage() {
   const timezone = settings?.timezone ?? null;
   const digestEnabled = settings?.email_digest_enabled ?? true;
   const digestDay = settings?.email_digest_day ?? 1;
+  const taxRate = settings?.tax_rate ?? 25.00;
+  const taxTrackingEnabled = settings?.tax_tracking_enabled ?? true;
+  const taxYear = settings?.tax_year ?? new Date().getFullYear();
+  const estimatedTaxQ1Paid = settings?.estimated_tax_q1_paid ?? 0;
+  const estimatedTaxQ2Paid = settings?.estimated_tax_q2_paid ?? 0;
+  const estimatedTaxQ3Paid = settings?.estimated_tax_q3_paid ?? 0;
+  const estimatedTaxQ4Paid = settings?.estimated_tax_q4_paid ?? 0;
 
   // Fetch subscription status
   const subscription = await getUserSubscription(user.id);
@@ -146,6 +154,24 @@ export default async function SettingsPage() {
 
           {/* Email Preferences */}
           <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
+
+          {/* Tax Settings Card */}
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
+            <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
+              Tax Savings Tracker
+            </h2>
+            <TaxSettingsForm
+              initialSettings={{
+                tax_rate: taxRate,
+                tax_tracking_enabled: taxTrackingEnabled,
+                tax_year: taxYear,
+                estimated_tax_q1_paid: estimatedTaxQ1Paid,
+                estimated_tax_q2_paid: estimatedTaxQ2Paid,
+                estimated_tax_q3_paid: estimatedTaxQ3Paid,
+                estimated_tax_q4_paid: estimatedTaxQ4Paid,
+              }}
+            />
+          </div>
 
           {/* Safety Buffer Card */}
           <SafetyBufferForm initialValue={safetyBuffer} />

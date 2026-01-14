@@ -70,19 +70,14 @@ export function EmailDigestForm({ initialEnabled, initialDay }: Props) {
             role="switch"
             aria-checked={enabled}
             onClick={() => setEnabled((v) => !v)}
-            className={cn(
-              'min-h-[44px] min-w-[44px]',
-              'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-              'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2',
-              'focus:ring-offset-white dark:focus:ring-offset-zinc-900',
-              enabled ? 'bg-teal-500' : 'bg-zinc-300 dark:bg-zinc-700'
-            )}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              enabled ? 'bg-teal-500' : 'bg-zinc-300'
+            }`}
           >
             <span
-              className={cn(
-                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                 enabled ? 'translate-x-6' : 'translate-x-1'
-              )}
+              }`}
             />
           </button>
         </div>
