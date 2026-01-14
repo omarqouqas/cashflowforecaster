@@ -146,7 +146,9 @@ export default function EditBillPage() {
       return;
     }
 
-    if (billData.user_id !== user.id) {
+    const verifyBill = billData as any;
+
+    if (verifyBill.user_id !== user.id) {
       const message = 'Unauthorized: This bill does not belong to you';
       showError(message);
       setError(message);
