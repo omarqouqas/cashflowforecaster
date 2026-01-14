@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
     })
   );
 
-  const results = await mapWithConcurrency(candidates, 5, async (r) => {
+  const results = await mapWithConcurrency(candidates, 5, async (r: any) => {
     const res = await sendWeeklyDigest(r.user_id);
     return { user_id: r.user_id, ...res };
   });
