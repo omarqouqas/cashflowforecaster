@@ -8,11 +8,31 @@ export const runtime = 'nodejs';
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
-const rateLimitState: Map<string, { resetAt: number; count: number }> =
-  // eslint-disable-next-line no-var
+const CLEANUP_INTERVAL_MS = 300_000; // 5 minutes
+
+interface RateLimitEntry {
+  resetAt: number;
+  count: number;
+}
+
+const rateLimitState: Map<string, RateLimitEntry> =
   (globalThis as any).__digest_unsub_rl ?? new Map();
-// eslint-disable-next-line no-var
 (globalThis as any).__digest_unsub_rl = rateLimitState;
+
+// Cleanup expired entries periodically
+let lastCleanup = Date.now();
+
+function cleanupExpiredEntries() {
+  const now = Date.now();
+  if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
+
+  lastCleanup = now;
+  for (const [key, entry] of rateLimitState.entries()) {
+    if (entry.resetAt <= now) {
+      rateLimitState.delete(key);
+    }
+  }
+}
 
 function getIp(request: NextRequest) {
   return (
@@ -23,14 +43,27 @@ function getIp(request: NextRequest) {
 }
 
 function rateLimit(ip: string): boolean {
+  cleanupExpiredEntries();
+
   const now = Date.now();
   const existing = rateLimitState.get(ip);
+
   if (!existing || existing.resetAt <= now) {
+    // Create new entry or reset expired entry
     rateLimitState.set(ip, { resetAt: now + RATE_LIMIT_WINDOW_MS, count: 1 });
     return true;
   }
-  if (existing.count >= RATE_LIMIT_MAX) return false;
-  existing.count += 1;
+
+  if (existing.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+
+  // Create a new object instead of mutating to avoid race conditions
+  rateLimitState.set(ip, {
+    resetAt: existing.resetAt,
+    count: existing.count + 1,
+  });
+
   return true;
 }
 

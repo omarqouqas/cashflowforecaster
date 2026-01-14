@@ -139,7 +139,34 @@ export async function sendInvoiceReminder(
       senderName,
     });
 
-    // 4) Send email
+    const sentAt = new Date().toISOString();
+    const beforeCount = invoice.reminder_count ?? 0;
+    const beforeLast = invoice.last_reminder_at;
+
+    // 4) Insert reminder record BEFORE sending email to prevent state inconsistency
+    // We mark it as 'pending' initially and will update after successful send
+    const { data: reminderRecord, error: insertErr } = await supabase
+      .from('invoice_reminders')
+      .insert({
+        invoice_id: invoice.id,
+        user_id: user.id,
+        reminder_type: reminderType,
+        sent_at: sentAt,
+      })
+      .select('id')
+      .single();
+
+    if (insertErr || !reminderRecord) {
+      // eslint-disable-next-line no-console
+      console.error('Failed inserting invoice_reminders:', insertErr);
+      return {
+        ok: false,
+        code: 'db_insert_failed',
+        message: 'Failed to prepare reminder. Please try again.',
+      };
+    }
+
+    // 5) Send email
     const from =
       process.env.RESEND_FROM_EMAIL?.trim() || 'Cash Flow Forecaster <onboarding@resend.dev>';
 
@@ -153,32 +180,14 @@ export async function sendInvoiceReminder(
     if (res.error) {
       // eslint-disable-next-line no-console
       console.error('Resend error:', res.error);
+
+      // Delete the reminder record since email failed to send
+      await supabase.from('invoice_reminders').delete().eq('id', reminderRecord.id);
+
       return {
         ok: false,
         code: 'resend_error',
         message: 'Failed to send reminder. Please try again.',
-      };
-    }
-
-    const sentAt = new Date().toISOString();
-    const beforeCount = invoice.reminder_count ?? 0;
-    const beforeLast = invoice.last_reminder_at;
-
-    // 5) Insert reminder record
-    const { error: insertErr } = await supabase.from('invoice_reminders').insert({
-      invoice_id: invoice.id,
-      user_id: user.id,
-      reminder_type: reminderType,
-      sent_at: sentAt,
-    });
-
-    if (insertErr) {
-      // eslint-disable-next-line no-console
-      console.error('Failed inserting invoice_reminders:', insertErr);
-      return {
-        ok: false,
-        code: 'db_insert_failed',
-        message: 'Reminder email was sent, but saving the reminder failed.',
       };
     }
 

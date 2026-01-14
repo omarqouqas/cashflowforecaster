@@ -37,6 +37,10 @@ export const metadata: Metadata = {
     'budget calendar app',
     'cash flow calendar for freelancers',
     'cash flow forecast',
+    'cash flow forecast app',
+    'cash flow forecasting tool',
+    'cash flow forecasting software',
+    'cash flow forecast software',
     'freelancer budget',
     'bank balance predictor',
     'gig worker finances',
@@ -48,6 +52,7 @@ export const metadata: Metadata = {
     'predict bank balance',
     'avoid overdraft freelancer',
     'invoice to cash flow tracking',
+    'cash flow forecasting and liquidity',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io',
@@ -268,7 +273,7 @@ export default async function Home() {
                 Three pillars of cash flow clarity
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                Know what&apos;s safe today, get paid faster, and avoid getting blindsided—without spreadsheets.
+                Our cash flow forecasting tool helps you know what&apos;s safe today, get paid faster, and avoid getting blindsided—without spreadsheets.
               </p>
             </div>
 
@@ -530,7 +535,7 @@ export default async function Home() {
                 Built for freelancers who are tired of guessing
               </h2>
               <p className="mt-3 text-zinc-400 max-w-3xl mx-auto">
-                Cash Flow Forecaster is for anyone whose income doesn&apos;t arrive on the 1st and 15th like clockwork.
+                Cash Flow Forecaster is the most reliable cash flow forecasting system for anyone whose income doesn&apos;t arrive on the 1st and 15th like clockwork.
               </p>
             </div>
 
@@ -601,7 +606,7 @@ export default async function Home() {
               Ready to see your financial future?
             </h2>
             <p className="mt-3 text-zinc-400">
-              Join freelancers who finally know where their money is going.
+              Join freelancers who use our cash flow forecast software to finally know where their money is going.
             </p>
             <div className="mt-6 flex justify-center">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
