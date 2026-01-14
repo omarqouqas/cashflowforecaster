@@ -24,11 +24,12 @@ export async function getUserSubscription(userId?: string): Promise<UserSubscrip
   // If no userId provided, get from current session
   let finalUserId = userId;
   if (!finalUserId) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    // Use getSession() instead of getUser() to avoid refresh token errors
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
       return getDefaultSubscription();
     }
-    finalUserId = user.id;
+    finalUserId = session.user.id;
   }
   
   const { data: subscription, error } = await supabase
@@ -125,7 +126,8 @@ export async function hasReachedBillsLimit(userId?: string): Promise<boolean> {
   
   let finalUserId = userId;
   if (!finalUserId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return true;
     finalUserId = user.id;
   }
@@ -149,7 +151,8 @@ export async function hasReachedIncomeLimit(userId?: string): Promise<boolean> {
   
   let finalUserId = userId;
   if (!finalUserId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return true;
     finalUserId = user.id;
   }

@@ -92,10 +92,23 @@ const structuredData = {
 } as const;
 
 export default async function Home() {
-  // Get auth state on server
+  // Get auth state on server (use getSession to avoid refresh token errors)
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  let user = null;
+
+  try {
+    // Use getSession() instead of getUser() to avoid refresh token errors
+    // getSession() reads from the cookie without attempting to refresh
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (!error && session) {
+      user = session.user;
+    }
+  } catch (error) {
+    // If auth fails (invalid/expired token), treat as logged out
+    // The middleware will handle cleanup
+    user = null;
+  }
+
   // Get subscription tier if logged in
   let currentTier: 'free' | 'pro' | 'premium' = 'free';
   if (user) {

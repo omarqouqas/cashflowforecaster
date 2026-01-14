@@ -54,9 +54,29 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Check auth using getSession (doesn't attempt refresh, won't throw errors)
+  let user = null
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
+
+    if (!error && session) {
+      user = session.user
+    } else if (error) {
+      // If there's an auth error, clear Supabase cookies
+      request.cookies.getAll().forEach(cookie => {
+        if (cookie.name.includes('sb-') || cookie.name.includes('supabase')) {
+          response.cookies.set({
+            name: cookie.name,
+            value: '',
+            maxAge: 0,
+          })
+        }
+      })
+    }
+  } catch (error) {
+    // If getSession() throws an error, treat as unauthenticated
+    user = null
+  }
 
   // If user is logged in and tries to access auth pages, redirect to dashboard
   if (
