@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const candidates = (rows ?? []).filter((r) =>
+  const candidates = (rows ?? []).filter((r: any) =>
     shouldSendDigestNow({
       email_digest_enabled: r.email_digest_enabled,
       email_digest_day: r.email_digest_day,
