@@ -48,9 +48,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     getForecastDaysLimit(user.id),
   ]);
 
-  const accounts = accountsResult.data || [];
-  const incomes = incomeResult.data || [];
-  const bills = billsResult.data || [];
+  const accounts = (accountsResult.data || []) as any;
+  const incomes = (incomeResult.data || []) as any;
+  const bills = (billsResult.data || []) as any;
   const invoiceSummary = invoiceSummaryResult;
 
   // Extract settings with type assertion

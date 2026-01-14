@@ -44,9 +44,9 @@ export default async function CalendarPage() {
       .single(),
   ])
 
-  const accounts: Account[] = accountsResult.data || []
-  const income: Income[] = incomeResult.data || []
-  const bills: Bill[] = billsResult.data || []
+  const accounts: Account[] = (accountsResult.data || []) as any
+  const income: Income[] = (incomeResult.data || []) as any
+  const bills: Bill[] = (billsResult.data || []) as any
 
   const settings = settingsResult.data as any
   const safetyBuffer = settings?.safety_buffer ?? 500

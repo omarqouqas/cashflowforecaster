@@ -127,9 +127,9 @@ export async function calculateScenario(
       supabase.from('user_settings').select('safety_buffer, timezone, currency').eq('user_id', user.id).single(),
     ]);
 
-    const accounts: Account[] = accountsResult.data || [];
-    const income: Income[] = incomeResult.data || [];
-    const bills: Bill[] = billsResult.data || [];
+    const accounts: Account[] = (accountsResult.data || []) as any;
+    const income: Income[] = (incomeResult.data || []) as any;
+    const bills: Bill[] = (billsResult.data || []) as any;
 
     if (accounts.length === 0) {
       return { ok: false, error: 'Add at least one account to generate your forecast.' };
