@@ -35,19 +35,19 @@ export async function GET(
     .eq('id', id)
     .single();
 
-  if (error) {
+  if (error || !invoice) {
     // RLS + not found will typically look like a "no rows" error
     return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
   }
 
   const doc = InvoiceTemplate({
-    invoice,
+    invoice: invoice as any,
     fromEmail: user.email ?? 'Unknown',
   });
 
   const pdfBuffer = await renderToBuffer(doc);
 
-  const filename = `${invoice.invoice_number || 'invoice'}.pdf`;
+  const filename = `${(invoice as any).invoice_number || 'invoice'}.pdf`;
 
   // NextResponse expects a BodyInit; Buffer isn't always accepted by TS, but Uint8Array is.
   return new NextResponse(new Uint8Array(pdfBuffer), {
