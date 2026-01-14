@@ -75,15 +75,17 @@ export default function EditBillPage() {
         .eq('id', billId)
         .single();
 
-      if (billError) {
+      if (billError || !billData) {
         console.error('Error fetching bill:', billError);
         setError('Bill not found');
         setIsLoading(false);
         return;
       }
 
+      const bill = billData as any;
+
       // Verify bill belongs to current user
-      if (billData.user_id !== user.id) {
+      if (bill.user_id !== user.id) {
         setError('Unauthorized: This bill does not belong to you');
         setIsLoading(false);
         return;
@@ -92,21 +94,19 @@ export default function EditBillPage() {
       setBill(billData);
 
       // Pre-fill form with existing data
-      if (billData) {
-        // Format date for HTML date input (YYYY-MM-DD)
-        const formattedDate = billData.due_date
-          ? billData.due_date.split('T')[0]
-          : '';
+      // Format date for HTML date input (YYYY-MM-DD)
+      const formattedDate = bill.due_date
+        ? bill.due_date.split('T')[0]
+        : '';
 
-        reset({
-          name: billData.name,
-          amount: billData.amount,
-          due_date: formattedDate,
-          frequency: billData.frequency as BillFormData['frequency'],
-          category: billData.category as BillFormData['category'],
-          is_active: billData.is_active ?? true,
-        });
-      }
+      reset({
+        name: bill.name,
+        amount: bill.amount,
+        due_date: formattedDate,
+        frequency: bill.frequency as BillFormData['frequency'],
+        category: bill.category as BillFormData['category'],
+        is_active: bill.is_active ?? true,
+      });
 
       setIsLoading(false);
     }
