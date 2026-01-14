@@ -83,8 +83,9 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
     }, 0);
   };
 
-  const monthlyTotal = calculateMonthlyBills(bills || []);
-  const activeBills = bills?.filter((b) => b.is_active) || [];
+  const billsList = (bills || []) as any[];
+  const monthlyTotal = calculateMonthlyBills(billsList);
+  const activeBills = billsList.filter((b) => b.is_active);
 
   // Feature gating
   const { current: billsCount, limit: billsLimit } = usageStats.bills;
