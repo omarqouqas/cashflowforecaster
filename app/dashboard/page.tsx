@@ -148,7 +148,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       // For one-time income with a date in current year
       if (income.frequency === 'one-time' && incomeDate && incomeDate.getFullYear() === currentYear) {
         const quarter = getQuarterForDate(incomeDate) - 1;
-        quarterTotals[quarter] += income.amount;
+        quarterTotals[quarter]! += income.amount;
       }
       // For recurring income, distribute across all quarters
       else if (income.frequency !== 'one-time' && income.frequency !== 'irregular') {
@@ -162,10 +162,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         })();
         // Distribute monthly income across all quarters (3 months per quarter)
         const quarterlyAmount = monthlyAmount * 3;
-        quarterTotals[0] += quarterlyAmount;
-        quarterTotals[1] += quarterlyAmount;
-        quarterTotals[2] += quarterlyAmount;
-        quarterTotals[3] += quarterlyAmount;
+        quarterTotals[0]! += quarterlyAmount;
+        quarterTotals[1]! += quarterlyAmount;
+        quarterTotals[2]! += quarterlyAmount;
+        quarterTotals[3]! += quarterlyAmount;
       }
     });
 
