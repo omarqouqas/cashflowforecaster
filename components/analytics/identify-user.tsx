@@ -14,12 +14,13 @@ export function IdentifyUser() {
       
       if (user) {
         // Get subscription tier if you have it
-        const { data: subscription } = await supabase
+        const { data: subscriptionData } = await supabase
           .from('subscriptions')
           .select('tier')
           .eq('user_id', user.id)
           .single()
 
+        const subscription = subscriptionData as any
         const tier = normalizeSubscriptionTier(subscription?.tier, 'free')
 
         identifyUser(user.id, {
