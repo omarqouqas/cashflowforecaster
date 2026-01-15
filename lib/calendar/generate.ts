@@ -119,13 +119,13 @@ export default function generateCalendar(
     // Step 3: Calculate all income occurrences for the entire forecast period
     const allIncomeOccurrences = income
       .filter(inc => inc.is_active !== false)
-      .flatMap(inc => calculateIncomeOccurrences(inc, today, endDate));
+      .flatMap(inc => calculateIncomeOccurrences(inc as any, today, endDate));
     if (CALENDAR_VERBOSE) console.log('Total income occurrences:', allIncomeOccurrences.length);
 
     // Step 4: Calculate all bill occurrences for the entire forecast period
     const allBillOccurrences = bills
       .filter(bill => bill.is_active !== false)
-      .flatMap(bill => calculateBillOccurrences(bill, today, endDate));
+      .flatMap(bill => calculateBillOccurrences(bill as any, today, endDate));
     if (CALENDAR_VERBOSE) console.log('Total bill occurrences:', allBillOccurrences.length);
 
     // Step 5: Project daily balances using reduce to build array incrementally
