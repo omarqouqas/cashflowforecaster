@@ -138,7 +138,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   // Calculate quarterly income for tax tracking
   const calculateQuarterlyIncome = (incomes: any[]): [number, number, number, number] => {
     const currentYear = new Date().getFullYear();
-    const quarterTotals = [0, 0, 0, 0];
+    const quarterTotals: number[] = [0, 0, 0, 0];
 
     incomes.forEach((income: any) => {
       if (income.is_active === false) return;
