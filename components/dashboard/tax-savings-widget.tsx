@@ -48,9 +48,9 @@ export function TaxSavingsWidget({
   const savedPercentage = totalPaid > 0 ? (totalPaid / totalTaxOwed) * 100 : 0
 
   const currentQuarter = getCurrentQuarter()
-  const currentQuarterIncome = quarterlyIncome[currentQuarter - 1]
+  const currentQuarterIncome = quarterlyIncome[currentQuarter - 1] ?? 0
   const currentQuarterTax = currentQuarterIncome * (taxRate / 100)
-  const currentQuarterPaid = quarterlyPaid[currentQuarter - 1]
+  const currentQuarterPaid = quarterlyPaid[currentQuarter - 1] ?? 0
   const currentQuarterRemaining = Math.max(0, currentQuarterTax - currentQuarterPaid)
 
   const nextDeadline = getNextQuarterlyDeadline()
