@@ -149,6 +149,8 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
                 const value = [q1Paid, q2Paid, q3Paid, q4Paid][index]
                 const setValue = [setQ1Paid, setQ2Paid, setQ3Paid, setQ4Paid][index]
 
+                if (!setValue) return null
+
                 return (
                   <div key={q.quarter} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <div className="flex-1">
