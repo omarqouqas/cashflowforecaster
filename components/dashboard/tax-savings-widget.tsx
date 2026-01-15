@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { DollarSign, Calendar, AlertCircle } from 'lucide-react'
+import { DollarSign, AlertCircle } from 'lucide-react'
 import { formatCurrency, getNextQuarterlyDeadline, getCurrentQuarter } from '@/lib/tax/calculations'
 
 interface TaxSavingsWidgetProps {
