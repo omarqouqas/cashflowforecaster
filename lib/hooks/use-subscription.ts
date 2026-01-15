@@ -48,12 +48,13 @@ export function useSubscription(): SubscriptionData {
         return;
       }
 
-      const { data: subscription } = await supabase
+      const { data: subscriptionData } = await supabase
         .from('subscriptions')
         .select('tier, status')
         .eq('user_id', user.id)
         .single();
 
+      const subscription = subscriptionData as any;
       if (subscription) {
         setTier((subscription.tier as SubscriptionTier) || 'free');
         setStatus(subscription.status || 'active');
