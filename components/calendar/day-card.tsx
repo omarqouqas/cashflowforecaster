@@ -73,8 +73,6 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
   })();
 
   // Calculate transaction totals
-  const totalIncome = day.income.reduce((sum, t) => sum + t.amount, 0);
-  const totalBills = day.bills.reduce((sum, t) => sum + t.amount, 0);
   const totalTransactions = day.income.length + day.bills.length;
   const hasBillCollision = day.bills.length >= 2;
 
