@@ -234,7 +234,6 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
           startingBalance={calendarData.startingBalance}
           lowestBalance={calendarData.lowestBalance}
           safetyBuffer={calendarData.safetyBuffer}
-          currency={calendarData.currency}
           onDayClick={handleChartDayClick}
         />
       </div>

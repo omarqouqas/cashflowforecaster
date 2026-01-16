@@ -12,7 +12,6 @@ interface BalanceTrendChartInteractiveProps {
   startingBalance: number;
   lowestBalance: number;
   safetyBuffer: number;
-  currency?: string;
   onDayClick?: (dayIndex: number) => void; // Callback when user clicks a day
 }
 
@@ -30,7 +29,6 @@ export function BalanceTrendChartInteractive({
   startingBalance,
   lowestBalance,
   safetyBuffer,
-  currency = 'USD',
   onDayClick,
 }: BalanceTrendChartInteractiveProps) {
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
