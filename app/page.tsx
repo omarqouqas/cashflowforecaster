@@ -95,7 +95,11 @@ const structuredData = {
   },
 } as const;
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: { deleted?: string };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
   // Get auth state on server (use getSession to avoid refresh token errors)
   const supabase = await createClient();
   let user = null;
@@ -145,6 +149,17 @@ export default async function Home() {
       />
 
       <LandingHeader />
+
+      {/* Account Deleted Success Message */}
+      {searchParams?.deleted === 'true' && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 max-w-md w-full mx-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
+            <p className="text-sm text-green-800 font-medium text-center">
+              Your account has been successfully deleted. Thank you for using Cash Flow Forecaster.
+            </p>
+          </div>
+        </div>
+      )}
 
       <main>
         <section className="px-6 pt-16 pb-10">

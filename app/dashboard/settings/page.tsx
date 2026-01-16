@@ -15,6 +15,7 @@ import { EmailDigestForm } from '@/components/settings/email-digest-form';
 import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
 import { SubscriptionStatus } from '@/components/subscription/subscription-status';
 import { getUserSubscription } from '@/lib/stripe/subscription';
+import { DeleteAccountSection } from '@/components/settings/delete-account-section';
 
 export const metadata = {
   title: 'Settings | Cash Flow Forecaster',
@@ -202,6 +203,9 @@ export default async function SettingsPage() {
               </div>
             </div>
           </div>
+
+          {/* Delete Account Section */}
+          <DeleteAccountSection />
         </div>
     </div>
   );
