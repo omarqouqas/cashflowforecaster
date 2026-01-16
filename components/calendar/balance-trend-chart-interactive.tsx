@@ -129,8 +129,9 @@ export function BalanceTrendChartInteractive({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-      handleChartInteraction(e.touches[0].clientX, e.touches[0].clientY);
+    const touch = e.touches[0];
+    if (touch) {
+      handleChartInteraction(touch.clientX, touch.clientY);
     }
   };
 
