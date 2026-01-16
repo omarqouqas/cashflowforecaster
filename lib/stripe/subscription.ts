@@ -32,24 +32,26 @@ export async function getUserSubscription(userId?: string): Promise<UserSubscrip
     finalUserId = session.user.id;
   }
   
-  const { data: subscription, error } = await supabase
+  const { data: subscriptionData, error } = await supabase
     .from('subscriptions')
     .select('*')
     .eq('user_id', finalUserId)
     .single();
-  
+
+  const subscription = subscriptionData as any;
+
   if (error || !subscription) {
     // No subscription record = free tier
     return getDefaultSubscription();
   }
-  
+
   return {
     tier: normalizeSubscriptionTier(subscription.tier, 'free'),
     status: subscription.status,
     stripeCustomerId: subscription.stripe_customer_id,
     stripeSubscriptionId: subscription.stripe_subscription_id,
-    currentPeriodEnd: subscription.current_period_end 
-      ? new Date(subscription.current_period_end) 
+    currentPeriodEnd: subscription.current_period_end
+      ? new Date(subscription.current_period_end)
       : null,
     cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false,
   };

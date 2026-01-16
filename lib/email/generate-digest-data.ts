@@ -106,12 +106,12 @@ export async function generateDigestData(userId: string): Promise<DigestData | n
   if (incomeRes.error) throw new Error(incomeRes.error.message);
   if (billsRes.error) throw new Error(billsRes.error.message);
 
-  const accounts = accountsRes.data ?? [];
+  const accounts = (accountsRes.data ?? []) as any[];
   const hasAccounts = accounts.length > 0;
   if (!hasAccounts) return null;
 
-  const income = incomeRes.data ?? [];
-  const bills = billsRes.data ?? [];
+  const income = (incomeRes.data ?? []) as any[];
+  const bills = (billsRes.data ?? []) as any[];
 
   const calendar = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays);
   const weekDays = calendar.days.slice(0, 7);
