@@ -136,7 +136,7 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
       {totalTransactions > 0 && (
         <div className="space-y-1.5">
           {/* Top Income - Show name inline */}
-          {day.income.length > 0 && (
+          {day.income.length > 0 && day.income[0] && (
             <div className="flex items-start gap-1.5">
               <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
@@ -151,7 +151,7 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
           )}
 
           {/* Top Bill - Show name inline */}
-          {day.bills.length > 0 && (
+          {day.bills.length > 0 && day.bills[0] && (
             <div className="flex items-start gap-1.5">
               <TrendingDown className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
