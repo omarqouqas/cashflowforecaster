@@ -113,7 +113,6 @@ export function BalanceTrendChartInteractive({
 
       const rect = chartRef.current.getBoundingClientRect();
       const x = ((clientX - rect.left) / rect.width) * 100;
-      const y = ((clientY - rect.top) / rect.height) * 100;
 
       // Find closest day based on X position
       const dayIndex = Math.round((x / 100) * (days.length - 1));
