@@ -5,7 +5,7 @@ import generateCalendar from '@/lib/calendar/generate'
 import { getForecastDaysLimit } from '@/lib/stripe/subscription'
 import Link from 'next/link'
 import { ArrowLeft, Calendar as CalendarIcon } from 'lucide-react'
-import { CalendarContainer } from '@/components/calendar/calendar-container'
+import { CalendarHybridView } from '@/components/calendar/calendar-hybrid-view'
 import { ScenarioButton } from '@/components/scenarios/scenario-button'
 
 type Account = Tables<'accounts'>
@@ -191,7 +191,7 @@ export default async function CalendarPage() {
           </div>
         )}
 
-        <CalendarContainer calendarData={calendarContainerData} />
+        <CalendarHybridView calendarData={calendarContainerData} />
       </div>
 
       {/* Floating Scenario Tester */}

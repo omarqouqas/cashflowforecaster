@@ -6,6 +6,7 @@ import { DayDetail } from './day-detail'
 import { StickyCalendarHeader } from './sticky-header'
 import { LowBalanceWarning } from './low-balance-warning'
 import { BillCollisionWarning } from './bill-collision-warning'
+import { BalanceTrendChartInteractive } from './balance-trend-chart-interactive'
 import type { CalendarDay, Transaction } from '@/lib/calendar/types'
 import type { CollisionSummary } from '@/lib/calendar/detect-collisions'
 import { isToday } from 'date-fns'
@@ -128,6 +129,20 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
     setSelectedDayIndex((prev) => (prev === index ? null : index))
   }
 
+  // Handle chart click - scroll to and expand that day
+  const handleChartDayClick = (dayIndex: number) => {
+    const el = rowWrappersRef.current[dayIndex]
+    if (!el) return
+
+    // Scroll to the day row
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+    // Expand the detail after a brief delay
+    setTimeout(() => {
+      setSelectedDayIndex(dayIndex)
+    }, 300)
+  }
+
   // Escape closes
   useEffect(() => {
     if (selectedDayIndex === null) return
@@ -211,6 +226,18 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
   return (
     <div className="flex flex-col bg-zinc-900 text-zinc-100">
       <StickyCalendarHeader {...headerProps} />
+
+      {/* Balance Trend Chart - Interactive */}
+      <div className="px-4 pt-4">
+        <BalanceTrendChartInteractive
+          days={days}
+          startingBalance={calendarData.startingBalance}
+          lowestBalance={calendarData.lowestBalance}
+          safetyBuffer={calendarData.safetyBuffer}
+          currency={calendarData.currency}
+          onDayClick={handleChartDayClick}
+        />
+      </div>
 
       {/* Low Balance Warning */}
       {showWarning && (

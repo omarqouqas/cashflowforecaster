@@ -82,7 +82,10 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
     <button
       onClick={onClick}
       className={cn(
-        'relative border rounded-lg p-3 text-left transition-colors cursor-pointer',
+        'relative border rounded-lg p-3 text-left cursor-pointer',
+        'transition-all duration-200 ease-out',
+        'hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/10',
+        'active:scale-[0.98]',
         'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-zinc-900',
         colors.bg,
         colors.border,
@@ -94,7 +97,11 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
       aria-label={`View details for ${format(day.date, 'EEEE, MMMM d, yyyy')}`}
     >
       {/* Status dot indicator - top right */}
-      <div className={cn('absolute top-2 right-2 w-2 h-2 rounded-full', colors.indicator)} />
+      <div className={cn(
+        'absolute top-2 right-2 w-2 h-2 rounded-full',
+        colors.indicator,
+        (day.status === 'red' || day.status === 'orange') && 'animate-pulse'
+      )} />
 
       {/* Collision indicator (small, non-overlapping) */}
       {hasBillCollision && (
@@ -123,31 +130,48 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
       </div>
 
       {/* Balance */}
-      <div className={cn('text-lg font-semibold mb-2 tabular-nums tracking-tight', colors.balanceText)}>
+      <div className={cn('text-lg font-semibold mb-3 tabular-nums tracking-tight', colors.balanceText)}>
         {formatCurrency(day.balance)}
       </div>
 
-      {/* Transaction indicators */}
+      {/* Transaction indicators - Enhanced with names */}
       {totalTransactions > 0 && (
         <div className="space-y-1.5">
-          {/* Income indicator */}
+          {/* Top Income - Show name inline */}
           {day.income.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-              <span className="text-xs font-medium text-zinc-300 tabular-nums">
-                +{formatCurrency(totalIncome)}
-              </span>
+            <div className="flex items-start gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-zinc-300 truncate">
+                  {day.income[0].name}
+                </p>
+                <p className="text-xs font-semibold text-emerald-400 tabular-nums">
+                  +{formatCurrency(day.income[0].amount)}
+                </p>
+              </div>
             </div>
           )}
 
-          {/* Bills indicator */}
+          {/* Top Bill - Show name inline */}
           {day.bills.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <TrendingDown className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
-              <span className="text-xs font-medium text-zinc-300 tabular-nums">
-                -{formatCurrency(totalBills)}
-              </span>
+            <div className="flex items-start gap-1.5">
+              <TrendingDown className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-zinc-300 truncate">
+                  {day.bills[0].name}
+                </p>
+                <p className="text-xs font-semibold text-rose-400 tabular-nums">
+                  -{formatCurrency(day.bills[0].amount)}
+                </p>
+              </div>
             </div>
+          )}
+
+          {/* More indicator */}
+          {totalTransactions > 2 && (
+            <p className="text-xs text-zinc-400 italic pl-5">
+              +{totalTransactions - 2} more →
+            </p>
           )}
         </div>
       )}

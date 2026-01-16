@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CalendarData, CalendarDay } from '@/lib/calendar/types';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/utils/format';
 import { cn } from '@/lib/utils';
 import { DayCard } from './day-card';
 import { DayDetailModal } from './day-detail-modal';
+import { BalanceTrendChartInteractive } from './balance-trend-chart-interactive';
 
 interface CalendarViewProps {
   calendarData: CalendarData;
@@ -15,12 +16,13 @@ interface CalendarViewProps {
 
 /**
  * CalendarView component - displays the 60-day calendar grid
- * 
- * Groups days by month and displays them in a responsive grid.
+ *
+ * Shows balance trend chart and groups days by month in a responsive grid.
  * Clicking a day opens a detail modal.
  */
 export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) {
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
+  const dayRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // Calculate thresholds based on safety buffer
   const buffer = safetyBuffer ?? 500;
@@ -49,12 +51,47 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
     return dayDate.getTime() === lowestDate.getTime();
   };
 
+  // Handle chart click - scroll to and open that day
+  const handleChartDayClick = (dayIndex: number) => {
+    const day = calendarData.days[dayIndex];
+    if (!day) return;
+
+    const dayKey = day.date.getTime().toString();
+    const dayElement = dayRefs.current[dayKey];
+
+    if (dayElement) {
+      // Scroll to the day card
+      dayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Open the modal after a brief delay for smooth UX
+      setTimeout(() => {
+        setSelectedDay(day);
+      }, 300);
+    }
+  };
+
   return (
     <>
+      {/* Balance Trend Chart - Interactive */}
+      <BalanceTrendChartInteractive
+        days={calendarData.days}
+        startingBalance={calendarData.startingBalance}
+        lowestBalance={calendarData.lowestBalance}
+        safetyBuffer={buffer}
+        onDayClick={handleChartDayClick}
+      />
+
       <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
         {/* Month sections */}
-        {Object.entries(daysByMonth).map(([monthKey, days]) => (
-          <div key={monthKey} className="mb-8 last:mb-0">
+        {Object.entries(daysByMonth).map(([monthKey, days], index) => (
+          <div
+            key={monthKey}
+            className="mb-8 last:mb-0 animate-fadeIn"
+            style={{
+              animationDelay: `${index * 100}ms`,
+              animationFillMode: 'backwards'
+            }}
+          >
             {/* Month header */}
             <h3 className="text-xl font-semibold text-zinc-100 mb-4">
               {monthKey}
@@ -63,12 +100,18 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
             {/* Days grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
               {days.map((day) => (
-                <DayCard
+                <div
                   key={day.date.getTime()}
-                  day={day}
-                  isLowestDay={isLowestDay(day)}
-                  onClick={() => setSelectedDay(day)}
-                />
+                  ref={(el) => {
+                    dayRefs.current[day.date.getTime().toString()] = el;
+                  }}
+                >
+                  <DayCard
+                    day={day}
+                    isLowestDay={isLowestDay(day)}
+                    onClick={() => setSelectedDay(day)}
+                  />
+                </div>
               ))}
             </div>
           </div>
