@@ -85,7 +85,7 @@ export function BalanceTrendChartInteractive({
     const lowestPoint = lowestIndex >= 0 ? points[lowestIndex] : null;
 
     // Calculate overall trend
-    const endBalance = balances[balances.length - 1];
+    const endBalance = balances[balances.length - 1] ?? startingBalance;
     const balanceChange = endBalance - startingBalance;
     const isPositiveTrend = balanceChange > 0;
 
