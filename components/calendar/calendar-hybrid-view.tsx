@@ -23,6 +23,8 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
             startingBalance: calendarData.startingBalance,
             lowestBalance: calendarData.lowestBalance,
             lowestBalanceDay: calendarData.lowestBalanceDate,
+            safeToSpend: calendarData.safeToSpend,
+            collisions: calendarData.collisions,
           }}
           safetyBuffer={calendarData.safetyBuffer}
         />
