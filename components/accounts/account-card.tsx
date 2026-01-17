@@ -23,16 +23,16 @@ function accountTypeBadge(type: string | null | undefined) {
   const t = (type ?? 'checking').toLowerCase()
 
   if (t === 'checking') {
-    return { label: 'Checking', className: 'bg-blue-50 text-blue-700 border border-blue-200' }
+    return { label: 'Checking', className: 'bg-blue-500/20 text-blue-300 border border-blue-500/30' }
   }
   if (t === 'savings') {
-    return { label: 'Savings', className: 'bg-emerald-50 text-emerald-700 border border-emerald-200' }
+    return { label: 'Savings', className: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }
   }
   if (t === 'credit_card' || t === 'credit' || t === 'card') {
-    return { label: 'Credit Card', className: 'bg-amber-50 text-amber-800 border border-amber-200' }
+    return { label: 'Credit Card', className: 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }
   }
 
-  return { label: titleCase(t), className: 'bg-zinc-100 text-zinc-700 border border-zinc-200' }
+  return { label: titleCase(t), className: 'bg-zinc-700 text-zinc-300 border border-zinc-600' }
 }
 
 export function AccountCard({ account }: { account: Account }) {
@@ -43,11 +43,11 @@ export function AccountCard({ account }: { account: Account }) {
   const isSpendable = account.is_spendable ?? true
 
   return (
-    <div className="border border-zinc-200 bg-white rounded-lg p-4 hover:bg-zinc-50 transition-colors">
+    <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 hover:bg-zinc-700/60 transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-base font-medium text-zinc-900 truncate">{account.name}</p>
-          <p className="text-sm text-zinc-500">
+          <p className="text-base font-medium text-zinc-100 truncate">{account.name}</p>
+          <p className="text-sm text-zinc-400">
             {account.updated_at ? `Updated ${formatRelativeTime(account.updated_at)}` : ' '}
           </p>
 
@@ -61,8 +61,8 @@ export function AccountCard({ account }: { account: Account }) {
               {badge.label}
             </span>
 
-            <div className="inline-flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-2 py-1">
-              <span className="text-xs font-medium text-zinc-700">Spendable Account</span>
+            <div className="inline-flex items-center gap-2 bg-zinc-700 border border-zinc-600 rounded-full px-2 py-1">
+              <span className="text-xs font-medium text-zinc-300">Spendable Account</span>
               <InfoTooltip content="Spendable accounts are used to calculate your daily cash flow. Mark accounts you pay bills from." />
               <SpendableToggleButton
                 id={account.id}
@@ -77,7 +77,7 @@ export function AccountCard({ account }: { account: Account }) {
           <p
             className={[
               'text-lg font-semibold tabular-nums',
-              isPositive ? 'text-emerald-600' : 'text-rose-600',
+              isPositive ? 'text-emerald-400' : 'text-rose-400',
             ].join(' ')}
           >
             {formatCurrency(balance, currency)}
