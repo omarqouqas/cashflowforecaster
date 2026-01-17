@@ -241,10 +241,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   })();
 
   const dailyBudgetColorClass = (() => {
-    if (!dailyBudgetData) return 'text-zinc-900';
-    if (dailyBudgetData.dailyBudget >= 50) return 'text-teal-500';
-    if (dailyBudgetData.dailyBudget >= 20) return 'text-amber-500';
-    return 'text-rose-500';
+    if (!dailyBudgetData) return 'text-zinc-100';
+    if (dailyBudgetData.dailyBudget >= 50) return 'text-teal-400';
+    if (dailyBudgetData.dailyBudget >= 20) return 'text-amber-400';
+    return 'text-rose-400';
   })();
 
   const formatCurrencyNoCents = (amount: number, currency: string) => {
@@ -295,7 +295,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 sm:p-6 border border-slate-200 dark:border-slate-700">
+    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 sm:p-6">
           {/* Success Message */}
           {message === 'password-updated' && (
             <div className="mb-6">
@@ -303,7 +303,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </div>
           )}
 
-          <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-bold mb-4 text-zinc-100">
             Welcome to Cash Flow Forecaster!
           </h2>
           <div className="mb-6">
@@ -315,8 +315,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   : forecastStatus?.lowBalanceCount
                     ? 'text-amber-500'
                     : forecastStatus
-                      ? 'text-teal-500'
-                      : 'text-gray-600 dark:text-gray-400',
+                      ? 'text-teal-400'
+                      : 'text-zinc-400',
               ].join(' ')}
             >
               {forecastStatus?.negativeCount ? (
@@ -332,7 +332,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 <>Your {forecastDays}-day cash flow calendar will appear here soon.</>
               )}
             </p>
-            <Link href="/dashboard/calendar" className="text-teal-500 text-sm hover:underline">
+            <Link href="/dashboard/calendar" className="text-teal-400 text-sm hover:text-teal-300 transition-colors">
               View full calendar →
             </Link>
           </div>
@@ -344,34 +344,34 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5 text-teal-600 dark:text-teal-300" />
-                      <span className="font-semibold text-slate-900 dark:text-zinc-100">
+                      <Lightbulb className="w-5 h-5 text-teal-400" />
+                      <span className="font-semibold text-zinc-100">
                         Your Path Forward
                       </span>
                     </div>
 
-                    <p className="text-sm text-slate-700 dark:text-zinc-200 mt-2">
+                    <p className="text-sm text-zinc-300 mt-2">
                       To stay in the green by {format(pathForwardData.problemDate, 'MMM d')}, you could:
                     </p>
 
                     <div className="mt-3 space-y-2 text-sm">
-                      <p className="text-slate-800 dark:text-zinc-100">
+                      <p className="text-zinc-200">
                         •{' '}
-                        <span className="font-semibold text-teal-700 dark:text-teal-200">
+                        <span className="font-semibold text-teal-300">
                           Bring in {formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}
                         </span>{' '}
                         before then
                       </p>
                       <div className="flex items-center gap-3">
                         <div className="h-px flex-1 bg-teal-500/20" />
-                        <span className="text-xs uppercase tracking-wide text-teal-700/80 dark:text-teal-200/80">
+                        <span className="text-xs uppercase tracking-wide text-teal-300/80">
                           or
                         </span>
                         <div className="h-px flex-1 bg-teal-500/20" />
                       </div>
-                      <p className="text-slate-800 dark:text-zinc-100">
+                      <p className="text-zinc-200">
                         •{' '}
-                        <span className="font-semibold text-teal-700 dark:text-teal-200">
+                        <span className="font-semibold text-teal-300">
                           {pathForwardData.daysUntil <= 1
                             ? `Cut ${formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}`
                             : `Cut ${formatCurrencyNoCents(Math.ceil(pathForwardData.dailyReduction), currency)}/day`}
@@ -387,8 +387,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
                   <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
                     <ScenarioButton variant="nav" source="dashboard" label="Test a Scenario →" />
-                    <p className="hidden sm:block text-xs text-slate-600 dark:text-zinc-300 max-w-[200px] text-right">
-                      Try a “what if” purchase and see the impact.
+                    <p className="hidden sm:block text-xs text-zinc-400 max-w-[200px] text-right">
+                      Try a "what if" purchase and see the impact.
                     </p>
                   </div>
                 </div>
@@ -397,11 +397,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           )}
 
           {/* Quick Stats (responsive 2x2 on mobile/tablet, 4 across on desktop) */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {/* Daily Budget / Shortfall */}
             <Link href="/dashboard/calendar" className="h-full">
-              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
+              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
                   {dailyBudgetData && dailyBudgetData.dailyBudget < 0 ? 'Daily Shortfall' : 'Daily Budget'}
                 </p>
                 <div className="mt-2">
@@ -412,7 +412,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         : `${formatCurrencyNoCents(Math.floor(dailyBudgetData.dailyBudget), currency)}/day`
                       : '—'}
                   </p>
-                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                     {dailyBudgetData
                       ? dailyBudgetData.dailyBudget < 0
                         ? `Need extra income before ${format(dailyBudgetData.nextIncomeDate, 'MMM d')}`
@@ -427,13 +427,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             {/* Accounts Card */}
             <Link href="/dashboard/accounts" className="h-full">
-              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Accounts</p>
+              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Accounts</p>
                 <div className="mt-2">
-                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-zinc-900">
+                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
                     {formatCurrency(totalBalance, currency)}
                   </p>
-                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                     {accountCount > 0
                       ? `Across ${accountCount} ${accountCount === 1 ? 'account' : 'accounts'}`
                       : 'Add your bank accounts'}
@@ -444,13 +444,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             {/* Income Card */}
             <Link href="/dashboard/income" className="h-full">
-              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Income</p>
+              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Income</p>
                 <div className="mt-2">
-                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-600">
+                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-400">
                     {formatCurrency(monthlyIncome, currency)}
                   </p>
-                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                     {incomeCount > 0
                       ? `From ${incomeCount} ${incomeCount === 1 ? 'source' : 'sources'}`
                       : 'Track income sources'}
@@ -461,13 +461,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             {/* Bills Card */}
             <Link href="/dashboard/bills" className="h-full">
-              <div className="border border-zinc-200 bg-white rounded-lg p-4 sm:p-6 cursor-pointer h-full hover:bg-zinc-50 transition-colors">
-                <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Bills</p>
+              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Bills</p>
                 <div className="mt-2">
-                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-600">
+                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-400">
                     {formatCurrency(monthlyBills, currency)}
                   </p>
-                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                     {activeBillsCount > 0
                       ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
                       : 'Track your bills'}
@@ -480,14 +480,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {/* Import Transactions (secondary CTA) */}
           <div className="mb-6">
             <Link href="/dashboard/import" className="block">
-              <div className="border border-zinc-200 bg-white rounded-lg p-5 hover:bg-zinc-50 transition-colors">
+              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-5 hover:bg-zinc-700/60 transition-colors">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Upload className="w-5 h-5 text-zinc-700" />
+                  <div className="w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Upload className="w-5 h-5 text-zinc-300" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-zinc-900">Import Transactions</p>
-                    <p className="text-sm text-zinc-600 mt-1">
+                    <p className="text-sm font-semibold text-zinc-100">Import Transactions</p>
+                    <p className="text-sm text-zinc-400 mt-1">
                       Upload a bank CSV to quickly add bills and income
                     </p>
                   </div>
@@ -500,13 +500,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {calendarData && (
             <div className="mb-6">
               <Link href="/dashboard/calendar">
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-5 hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col h-full">
+                <div className="bg-zinc-800 border border-zinc-800 rounded-lg p-5 hover:bg-zinc-700/60 hover:border-teal-500/30 transition-all duration-200 cursor-pointer flex flex-col h-full">
                   <div className="flex justify-between items-start mb-3">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                      <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    <div className="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-teal-400" />
                     </div>
                     {calendarData.lowestBalance < safetyBuffer ? (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300">
                         Warning
                       </span>
                     ) : (
@@ -514,17 +514,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     )}
                   </div>
 
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="font-semibold text-zinc-100 mb-2">
                     {forecastDays}-Day Forecast
                   </h3>
 
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <p className="text-sm text-zinc-400 mb-2">
                     Lowest Balance
                   </p>
-                  <p className={`text-3xl font-bold mb-2 ${getBalanceColor(calendarData.lowestBalance, safetyBuffer)}`}>
+                  <p className={`text-3xl font-bold mb-2 ${getBalanceColor(calendarData.lowestBalance, safetyBuffer).replace('dark:', '').replace('text-green-400', 'text-emerald-400').replace('text-yellow-400', 'text-amber-400').replace('text-orange-400', 'text-orange-400').replace('text-red-400', 'text-rose-400')}`}>
                     {formatCurrency(calendarData.lowestBalance, currency)}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-zinc-400">
                     Lowest on {formatDate(calendarData.lowestBalanceDay)}
                   </p>
                 </div>
@@ -539,26 +539,26 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
           {/* Outstanding invoices */}
           <div className={invoiceSummary.unpaidCount === 0 ? 'hidden sm:block mb-6' : 'mb-6'}>
-            <div className="border border-zinc-200 bg-white rounded-lg p-6">
+            <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
+                  <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
                     Outstanding Invoices
                   </p>
                   {invoiceSummary.unpaidCount === 0 ? (
-                    <div className="mt-2 flex items-center gap-2 text-zinc-600">
-                      <CheckCircle2 className="w-5 h-5 text-teal-700" />
+                    <div className="mt-2 flex items-center gap-2 text-zinc-300">
+                      <CheckCircle2 className="w-5 h-5 text-teal-400" />
                       <p className="text-base font-medium">No outstanding invoices</p>
                     </div>
                   ) : (
                     <div className="mt-2">
-                      <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-900">
+                      <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
                         {formatCurrency(invoiceSummary.totalOutstanding, currency)}
                       </p>
-                      <p className="text-sm text-zinc-500 mt-1">
+                      <p className="text-sm text-zinc-400 mt-1">
                         {invoiceSummary.unpaidCount} unpaid invoice{invoiceSummary.unpaidCount === 1 ? '' : 's'}
                         {invoiceSummary.overdueCount > 0 && (
-                          <span className="ml-2 text-rose-600 font-medium">
+                          <span className="ml-2 text-rose-400 font-medium">
                             {invoiceSummary.overdueCount} overdue
                           </span>
                         )}
@@ -568,12 +568,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 </div>
 
                 <div className="flex flex-col items-end gap-3">
-                  <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
-                    <Receipt className="w-6 h-6 text-teal-700" />
+                  <div className="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center">
+                    <Receipt className="w-6 h-6 text-teal-400" />
                   </div>
                   <Link
                     href="/dashboard/invoices"
-                    className="text-sm font-medium text-teal-700 hover:text-teal-800"
+                    className="text-sm font-medium text-teal-400 hover:text-teal-300"
                   >
                     View all →
                   </Link>
