@@ -40,12 +40,12 @@ export function StickyCalendarHeader({
   const safeToSpendIsZero = safeToSpend <= 0
 
   return (
-    <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800 px-3 py-3 sm:px-4 sm:py-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800 px-3 py-2.5 sm:px-4 sm:py-3">
+      <div className="max-w-full mx-auto">
         {/* Safe to Spend - Hero metric */}
         <div
           className={[
-            'hidden sm:block mb-4 p-4 border rounded-lg',
+            'hidden sm:block mb-3 p-3 border rounded-lg',
             safeToSpendIsZero
               ? 'bg-amber-500/10 border-amber-500/30'
               : 'bg-teal-500/10 border-teal-500/30',
@@ -92,20 +92,20 @@ export function StickyCalendarHeader({
           </div>
           <p
             className={[
-              'text-3xl font-bold tabular-nums tracking-tight mt-1',
+              'text-2xl font-bold tabular-nums tracking-tight mt-0.5',
               safeToSpendIsZero ? 'text-amber-100' : 'text-teal-200',
             ].join(' ')}
           >
             {formatCurrency(safeToSpend, currency)}
           </p>
-          <p className={['text-sm mt-1', safeToSpendIsZero ? 'text-amber-200' : 'text-teal-300'].join(' ')}>
+          <p className={['text-xs mt-0.5', safeToSpendIsZero ? 'text-amber-200' : 'text-teal-300'].join(' ')}>
             {safeToSpendIsZero
               ? 'No room for extra spending right now'
               : `Without going below your ${formatCurrency(safetyBuffer, currency)} buffer`}
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {/* Safe to Spend (mobile-only, compact) */}
           <div
             className={[

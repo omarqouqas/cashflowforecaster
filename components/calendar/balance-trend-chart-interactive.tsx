@@ -200,7 +200,7 @@ export function BalanceTrendChartInteractive({
         onTouchEnd={handleMouseLeave}
         onClick={handleClick}
         className={cn(
-          'relative w-full h-48 sm:h-56 bg-zinc-800/50 rounded-lg p-4 overflow-hidden',
+          'relative w-full h-56 sm:h-64 md:h-72 bg-zinc-800/50 rounded-lg p-4 overflow-hidden',
           onDayClick && 'cursor-pointer'
         )}
       >

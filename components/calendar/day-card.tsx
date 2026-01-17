@@ -80,8 +80,8 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
     <button
       onClick={onClick}
       className={cn(
-        'relative border rounded-lg p-3 text-left cursor-pointer w-full',
-        'h-[180px] flex flex-col overflow-hidden',
+        'relative border rounded-lg p-2.5 text-left cursor-pointer w-full',
+        'h-[170px] sm:h-[165px] flex flex-col overflow-hidden',
         'transition-all duration-200 ease-out',
         'hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/10',
         'active:scale-[0.98]',

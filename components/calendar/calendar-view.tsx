@@ -109,24 +109,24 @@ export function CalendarView({
         onDayClick={handleChartDayClick}
       />
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 sm:p-6 mt-6">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 sm:p-4 mt-4">
         {/* Month sections */}
         {Object.entries(daysByMonth).map(([monthKey, days], index) => (
           <div
             key={monthKey}
-            className="mb-10 last:mb-0 animate-fadeIn"
+            className="mb-8 last:mb-0 animate-fadeIn"
             style={{
               animationDelay: `${index * 100}ms`,
               animationFillMode: 'backwards'
             }}
           >
             {/* Month header */}
-            <h3 className="text-xl font-semibold text-zinc-100 mb-5 pb-2 border-b border-zinc-800">
+            <h3 className="text-lg font-semibold text-zinc-100 mb-4 pb-1.5 border-b border-zinc-800">
               {monthKey}
             </h3>
 
             {/* Days grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
               {days.map((day) => (
                 <div
                   key={day.date.getTime()}
