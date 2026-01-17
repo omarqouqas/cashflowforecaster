@@ -92,7 +92,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
       <div className="flex justify-between items-center mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Income Sources</h2>
+            <h2 className="text-2xl font-bold text-zinc-100">Income Sources</h2>
             {/* Usage indicator */}
             {incomeLimit !== Infinity && (
               <span className={`text-xs font-medium px-2 py-1 rounded-full ${

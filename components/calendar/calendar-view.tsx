@@ -2,13 +2,14 @@
 
 import { useState, useRef } from 'react';
 import { CalendarData, CalendarDay } from '@/lib/calendar/types';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { formatCurrency } from '@/lib/utils/format';
 import { cn } from '@/lib/utils';
 import { DayCard } from './day-card';
 import { DayDetailModal } from './day-detail-modal';
 import { BalanceTrendChartInteractive } from './balance-trend-chart-interactive';
 import { StickyCalendarHeader } from './sticky-header';
+import { TrendingUp, AlertCircle } from 'lucide-react';
 
 interface CalendarViewProps {
   calendarData: CalendarData;
@@ -45,6 +46,34 @@ export function CalendarView({
     caution: buffer * 1.5,
     low: buffer,
   };
+
+  // Find next income in the next 14 days
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const next14Days = calendarData.days.filter(day => {
+    const dayDate = new Date(day.date);
+    dayDate.setHours(0, 0, 0, 0);
+    const diff = differenceInDays(dayDate, today);
+    return diff >= 0 && diff <= 14;
+  });
+
+  const nextIncome = next14Days.find(day => day.income.length > 0);
+  const nextIncomeAmount = nextIncome?.income.reduce((sum, inc) => sum + inc.amount, 0) ?? 0;
+  const daysUntilIncome = nextIncome ? differenceInDays(new Date(nextIncome.date), today) : null;
+
+  // Find urgent bills (next 7 days)
+  const next7Days = calendarData.days.filter(day => {
+    const dayDate = new Date(day.date);
+    dayDate.setHours(0, 0, 0, 0);
+    const diff = differenceInDays(dayDate, today);
+    return diff >= 0 && diff <= 7;
+  });
+
+  const urgentBills = next7Days.filter(day => day.bills.length > 0);
+  const urgentBillsCount = urgentBills.reduce((sum, day) => sum + day.bills.length, 0);
+  const urgentBillsTotal = urgentBills.reduce((sum, day) =>
+    sum + day.bills.reduce((s, bill) => s + bill.amount, 0), 0
+  );
 
   // Group days by month using reduce
   const daysByMonth = calendarData.days.reduce((acc, day) => {
@@ -110,44 +139,78 @@ export function CalendarView({
       />
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 sm:p-4 mt-4">
-        {/* Month sections */}
-        {Object.entries(daysByMonth).map(([monthKey, days], index) => (
-          <div
-            key={monthKey}
-            className="mb-8 last:mb-0 animate-fadeIn"
-            style={{
-              animationDelay: `${index * 100}ms`,
-              animationFillMode: 'backwards'
-            }}
-          >
-            {/* Month header */}
-            <h3 className="text-lg font-semibold text-zinc-100 mb-4 pb-1.5 border-b border-zinc-800">
-              {monthKey}
-            </h3>
-
-            {/* Days grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
-              {days.map((day) => (
-                <div
-                  key={day.date.getTime()}
-                  ref={(el) => {
-                    dayRefs.current[day.date.getTime().toString()] = el;
-                  }}
-                  className="h-full"
-                >
-                  <DayCard
-                    day={day}
-                    isLowestDay={isLowestDay(day)}
-                    onClick={() => setSelectedDay(day)}
-                  />
+        {/* Summary Section - What to know at a glance */}
+        <div className="mb-6 pb-6 border-b border-zinc-800">
+          <h4 className="text-sm font-semibold text-zinc-100 mb-3">
+            Quick Summary
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Next Income */}
+            {nextIncome && daysUntilIncome !== null ? (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="w-4 h-4 text-emerald-400" />
+                  <p className="text-xs font-medium text-emerald-300 uppercase tracking-wide">
+                    Next Income
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+                <p className="text-lg font-bold text-emerald-400 tabular-nums">
+                  {formatCurrency(nextIncomeAmount, currency)}
+                </p>
+                <p className="text-xs text-emerald-300/80 mt-0.5">
+                  {daysUntilIncome === 0 ? 'Today' : `in ${daysUntilIncome} day${daysUntilIncome === 1 ? '' : 's'}`}
+                  {' • '}
+                  {format(nextIncome.date, 'MMM d')}
+                </p>
+              </div>
+            ) : (
+              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="w-4 h-4 text-zinc-400" />
+                  <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
+                    Next Income
+                  </p>
+                </div>
+                <p className="text-sm text-zinc-500">
+                  No income in next 14 days
+                </p>
+              </div>
+            )}
 
-        {/* Legend */}
-        <div className="mt-8 pt-6 border-t border-zinc-800">
+            {/* Urgent Bills */}
+            {urgentBillsCount > 0 ? (
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertCircle className="w-4 h-4 text-amber-400" />
+                  <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">
+                    Bills This Week
+                  </p>
+                </div>
+                <p className="text-lg font-bold text-amber-400 tabular-nums">
+                  {urgentBillsCount} bill{urgentBillsCount === 1 ? '' : 's'}
+                </p>
+                <p className="text-xs text-amber-300/80 mt-0.5">
+                  {formatCurrency(urgentBillsTotal, currency)} total
+                </p>
+              </div>
+            ) : (
+              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertCircle className="w-4 h-4 text-zinc-400" />
+                  <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
+                    Bills This Week
+                  </p>
+                </div>
+                <p className="text-sm text-zinc-500">
+                  No bills in next 7 days
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Legend - Moved to top */}
+        <div className="mb-8 pb-6 border-b border-zinc-800">
           <h4 className="text-sm font-semibold text-zinc-100 mb-3">
             Balance Status
           </h4>
@@ -174,6 +237,51 @@ export function CalendarView({
             />
           </div>
         </div>
+
+        {/* Month sections */}
+        {Object.entries(daysByMonth).map(([monthKey, days], index) => (
+          <div
+            key={monthKey}
+            className="mb-8 last:mb-0 animate-fadeIn"
+            style={{
+              animationDelay: `${index * 100}ms`,
+              animationFillMode: 'backwards'
+            }}
+          >
+            {/* Month header */}
+            <h3 className="text-lg font-semibold text-zinc-100 mb-4 pb-1.5 border-b border-zinc-800">
+              {monthKey}
+            </h3>
+
+            {/* Days grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
+              {days.map((day) => {
+                // Find the previous day's balance from all days, not just this month
+                const globalDayIndex = calendarData.days.findIndex(d => d.date.getTime() === day.date.getTime());
+                const previousDayBalance = globalDayIndex > 0
+                  ? calendarData.days[globalDayIndex - 1]?.balance ?? calendarData.startingBalance
+                  : calendarData.startingBalance;
+
+                return (
+                  <div
+                    key={day.date.getTime()}
+                    ref={(el) => {
+                      dayRefs.current[day.date.getTime().toString()] = el;
+                    }}
+                    className="h-full"
+                  >
+                    <DayCard
+                      day={day}
+                      isLowestDay={isLowestDay(day)}
+                      onClick={() => setSelectedDay(day)}
+                      previousDayBalance={previousDayBalance}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Day Detail Modal */}

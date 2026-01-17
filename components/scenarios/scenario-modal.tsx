@@ -22,7 +22,7 @@ type ScenarioRow = Tables<'scenarios'>;
 export interface ScenarioModalProps {
   open: boolean;
   onClose: () => void;
-  source?: 'calendar' | 'dashboard' | 'mobile-nav';
+  source?: 'calendar' | 'dashboard' | 'mobile-nav' | 'nav';
 }
 
 function tomorrowISO(): string {

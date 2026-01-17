@@ -10,7 +10,7 @@ export type ScenarioButtonVariant = 'fab' | 'card' | 'mobile-nav' | 'nav';
 export interface ScenarioButtonProps {
   variant?: ScenarioButtonVariant;
   className?: string;
-  source?: 'calendar' | 'dashboard' | 'mobile-nav';
+  source?: 'calendar' | 'dashboard' | 'mobile-nav' | 'nav';
   label?: string;
 }
 
@@ -24,20 +24,20 @@ export function ScenarioButton({ variant = 'fab', className, source, label }: Sc
           type="button"
           onClick={() => setOpen(true)}
           className={cn(
-            'w-full text-left border border-zinc-200 bg-white rounded-lg p-6 hover:bg-zinc-50 transition-colors',
+            'w-full text-left border border-zinc-800 bg-zinc-800 rounded-lg p-6 hover:bg-zinc-700/60 transition-colors',
             'flex items-start justify-between gap-4',
             className
           )}
         >
           <div className="min-w-0">
-            <p className="text-sm font-medium text-zinc-500 uppercase tracking-wide">Scenario Tester</p>
-            <h3 className="mt-2 text-lg font-semibold text-zinc-900">Can I Afford It?</h3>
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Scenario Tester</p>
+            <h3 className="mt-2 text-lg font-semibold text-zinc-100">Can I Afford It?</h3>
+            <p className="mt-1 text-sm text-zinc-400">
               Test a hypothetical expense before committing.
             </p>
           </div>
-          <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <Calculator className="w-6 h-6 text-teal-700" />
+          <div className="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <Calculator className="w-6 h-6 text-teal-400" />
           </div>
         </button>
 
@@ -81,10 +81,10 @@ export function ScenarioButton({ variant = 'fab', className, source, label }: Sc
             'text-sm font-medium rounded-md whitespace-nowrap',
             'transition-colors',
             'inline-flex items-center gap-2',
-            // Make it feel like a native "primary action" in the nav (more discoverable than a plain tab)
-            'bg-teal-50 text-teal-800 hover:bg-teal-100 hover:text-teal-900',
-            'border border-teal-200/80',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+            open
+              ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+              : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900',
             className
           )}
           aria-label="Can I Afford It?"

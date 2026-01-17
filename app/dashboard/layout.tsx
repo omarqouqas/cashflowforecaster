@@ -2,10 +2,10 @@ import { requireAuth } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import { EmailVerificationBanner } from '@/components/auth/email-verification-banner'
 import { DashboardNav } from '@/components/dashboard/nav'
-import { LogoutButton } from '@/components/auth/logout-button'
 import { redirect } from 'next/navigation'
 import { IdentifyUser } from '@/components/analytics/identify-user'
 import { FeedbackButton } from '@/components/feedback/feedback-button'
+import Link from 'next/link'
 
 export default async function DashboardLayout({
   children,
@@ -38,26 +38,21 @@ export default async function DashboardLayout({
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-zinc-950">
       <IdentifyUser />
       <EmailVerificationBanner user={user} />
-      
-      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+
+      <header className="bg-zinc-900 border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-              Cash Flow Forecaster
-            </h1>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
-                {user.email}
-              </span>
-              <LogoutButton />
-            </div>
+            <Link href="/dashboard">
+              <h1 className="text-xl font-bold text-zinc-100 hover:text-teal-400 transition-colors cursor-pointer">
+                Cash Flow Forecaster
+              </h1>
+            </Link>
+            <DashboardNav userEmail={user.email ?? ''} />
           </div>
         </div>
-        {/* DashboardNav now handles both desktop (top) and mobile (bottom) navigation */}
-        <DashboardNav />
       </header>
       
       {/* 

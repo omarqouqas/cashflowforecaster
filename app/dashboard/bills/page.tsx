@@ -109,7 +109,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       <div className="flex justify-between items-center mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Bills</h2>
+            <h2 className="text-2xl font-bold text-zinc-100">Bills</h2>
             {/* Usage indicator */}
             {billsLimit !== Infinity && (
               <span className={`text-xs font-medium px-2 py-1 rounded-full ${

@@ -100,7 +100,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Invoices</h2>
+          <h2 className="text-2xl font-bold text-zinc-100">Invoices</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Create invoices and track who has paid
           </p>

@@ -10,6 +10,7 @@ interface DayCardProps {
   day: CalendarDay;
   isLowestDay: boolean;
   onClick: () => void;
+  previousDayBalance?: number;
 }
 
 /**
@@ -24,7 +25,11 @@ interface DayCardProps {
  * - Status dot indicator
  * - Special styling for today and lowest balance day
  */
-export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
+export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCardProps) {
+  // Calculate balance delta
+  const delta = previousDayBalance !== undefined ? day.balance - previousDayBalance : 0;
+  const showDelta = previousDayBalance !== undefined && delta !== 0;
+
   // Status colors mapping
   const statusColors = {
     green: {
@@ -120,17 +125,33 @@ export function DayCard({ day, isLowestDay, onClick }: DayCardProps) {
 
       {/* Date header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-zinc-400">
-          {format(day.date, 'EEE')}
-        </span>
+        {isToday ? (
+          <span className="text-xs font-bold text-teal-400 uppercase tracking-wide">
+            Today
+          </span>
+        ) : (
+          <span className="text-xs font-medium text-zinc-400">
+            {format(day.date, 'EEE')}
+          </span>
+        )}
         <span className="text-sm font-semibold text-zinc-100">
           {format(day.date, 'd')}
         </span>
       </div>
 
-      {/* Balance */}
-      <div className={cn('text-lg font-semibold mb-2 tabular-nums tracking-tight', colors.balanceText)}>
-        {formatCurrency(day.balance)}
+      {/* Balance with Delta */}
+      <div className="mb-2">
+        <div className={cn('text-lg font-semibold tabular-nums tracking-tight', colors.balanceText)}>
+          {formatCurrency(day.balance)}
+        </div>
+        {showDelta && (
+          <div className={cn(
+            'text-xs font-medium tabular-nums flex items-center gap-0.5',
+            delta > 0 ? 'text-emerald-400' : 'text-rose-400'
+          )}>
+            {delta > 0 ? '▲' : '▼'} {formatCurrency(Math.abs(delta))}
+          </div>
+        )}
       </div>
 
       {/* Transaction indicators - Compact version */}

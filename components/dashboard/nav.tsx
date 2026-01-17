@@ -1,13 +1,20 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Wallet, TrendingUp, Calendar, Settings, Receipt, FileText, Upload } from 'lucide-react'
+import { Wallet, TrendingUp, Calendar, Settings, Receipt, FileText, Upload, User, ChevronDown } from 'lucide-react'
 import { ScenarioButton } from '@/components/scenarios/scenario-button'
+import { LogoutButton } from '@/components/auth/logout-button'
 
-export function DashboardNav() {
+interface DashboardNavProps {
+  userEmail: string
+}
+
+export function DashboardNav({ userEmail }: DashboardNavProps) {
   const pathname = usePathname()
-  
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+
   const links = [
     { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
@@ -15,7 +22,6 @@ export function DashboardNav() {
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
     { href: '/dashboard/import', label: 'Import', icon: Upload },
     { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
 
   const isLinkActive = (href: string) => {
@@ -36,12 +42,12 @@ export function DashboardNav() {
     { href: '/dashboard/import', label: 'Import', icon: Upload },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ]
-  
+
   return (
     <>
       {/* Desktop Navigation - Hidden on mobile */}
-      <div className="border-b border-zinc-200 bg-white sticky top-0 z-10 backdrop-blur-sm bg-white/90 hidden md:block">
-        <nav className="flex gap-1 px-4 py-2 overflow-x-auto scrollbar-hide">
+      <div className="hidden md:flex items-center gap-4">
+        <nav className="flex gap-1">
           {links.map((link) => {
             const Icon = link.icon
             const isActive = isLinkActive(link.href)
@@ -57,17 +63,17 @@ export function DashboardNav() {
                   'transition-colors',
                   'inline-flex items-center gap-2',
                   isActive
-                    ? 'text-zinc-900 bg-zinc-100'
+                    ? 'text-zinc-100 bg-zinc-800'
                     : isCalendar
-                      ? 'text-teal-700 hover:text-zinc-900 hover:bg-zinc-100'
-                      : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100',
+                      ? 'text-teal-400 hover:text-zinc-100 hover:bg-zinc-800'
+                      : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800',
                 ].join(' ')}
               >
                 <Icon className="w-4 h-4" />
                 <span>
                   {link.label}
                   {isCalendar && !isActive && (
-                    <span className="bg-teal-100 text-teal-700 text-xs px-1.5 rounded ml-1">
+                    <span className="bg-teal-500/20 text-teal-300 text-xs px-1.5 rounded ml-1 border border-teal-500/30">
                       NEW
                     </span>
                   )}
@@ -77,8 +83,54 @@ export function DashboardNav() {
           })}
 
           {/* Desktop-only: Scenario tester lives in the nav */}
-          <ScenarioButton variant="nav" source="dashboard" label="Afford it?" />
+          <ScenarioButton variant="nav" source="nav" label="Afford it?" />
         </nav>
+
+        {/* User Profile Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-md transition-colors"
+          >
+            <User className="w-4 h-4" />
+            <span className="hidden lg:inline max-w-[150px] truncate">{userEmail}</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isUserMenuOpen && (
+            <>
+              {/* Backdrop to close dropdown */}
+              <div
+                className="fixed inset-0 z-10"
+                onClick={() => setIsUserMenuOpen(false)}
+              />
+
+              {/* Menu */}
+              <div className="absolute right-0 mt-2 w-64 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg z-20">
+                <div className="p-3 border-b border-zinc-700">
+                  <p className="text-sm text-zinc-400">Signed in as</p>
+                  <p className="text-sm font-medium text-zinc-100 truncate">{userEmail}</p>
+                </div>
+
+                <div className="p-2">
+                  <Link
+                    href="/dashboard/settings"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:text-zinc-100 hover:bg-zinc-700 rounded-md transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Settings
+                  </Link>
+                </div>
+
+                <div className="p-2 border-t border-zinc-700">
+                  <LogoutButton />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Mobile Bottom Navigation - Visible only on mobile */}

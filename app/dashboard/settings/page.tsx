@@ -71,7 +71,7 @@ export default async function SettingsPage() {
           </span>
         </nav>
 
-        <h1 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold mb-6 text-zinc-100">
           Settings
         </h1>
 

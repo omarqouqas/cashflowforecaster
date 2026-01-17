@@ -16,7 +16,8 @@
       "Bash(iconv:*)",
       "Bash(powershell -Command:*)",
       "Bash(git restore:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []
