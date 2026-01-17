@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 13, 2026
+**Last Updated:** January 16, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 35
-- **Commits:** 95+
+- **Days in Development:** 36
+- **Commits:** 103+
 - **Database Tables:** 14 (added feedback)
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live ✅ 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar ✅ 🎉
 
 **Completed Phases:**
 
@@ -37,6 +37,7 @@
 - ✅ Phase 14: Weekly Email Digest (Day 26) - COMPLETE
 - ✅ Phase 15: User Feedback System (Day 33) - COMPLETE
 - ✅ Phase 16: Tax Savings Tracker (Day 35) - COMPLETE
+- ✅ Phase 17: YNAB-Inspired Calendar Redesign (Day 36) - COMPLETE
 
 **Current Focus:**
 
@@ -45,6 +46,164 @@
 - Monitor NPS survey responses (PostHog)
 - Dashboard UX polish (freelancer-friendly day-to-day guidance)
 - Retention loop: weekly email digest (monitor open/click + settings adoption)
+- Calendar engagement analytics (chart interactions, day detail views)
+
+---
+
+## Day 36: YNAB-Inspired Calendar Redesign (January 14-16, 2026)
+
+### Shipped (last 48 hours)
+
+#### YNAB-Inspired Calendar UX Overhaul ✅ 🎉
+
+**Major UI/UX redesign** inspired by YNAB's minimalist, calm, premium fintech aesthetic. Enhanced the calendar to feel more "app-like" and less "dashboard-like."
+
+- [x] **Interactive Balance Trend Chart** (`balance-trend-chart-interactive.tsx`)
+  - Custom SVG-based line chart with gradient area fill
+  - Hover tooltips showing exact balance, date, and transactions
+  - Click-to-jump navigation - click anywhere on the chart to scroll to and expand that day
+  - Touch support for mobile devices
+  - Visual markers: Today line, lowest balance point (pulsing red dot), safety buffer line, zero line
+  - Net balance change indicator (trending up/down with color coding)
+  - Key metrics display: starting balance, ending balance, lowest balance
+  - Legend for visual reference
+  - No external chart dependencies - pure React + SVG
+
+- [x] **Enhanced Day Cards** (`day-card.tsx`)
+  - Inline transaction display (top 2 transactions visible with icons and amounts)
+  - Transaction count badge (e.g., "+3 more")
+  - Enhanced hover effects (scale + shadow for premium feel)
+  - Pulsing animation on status dots for danger/warning states
+  - Improved visual hierarchy (larger balances, clearer status indicators)
+  - Color-coded transaction icons (emerald for income, rose for bills)
+
+- [x] **Hybrid Responsive Layout** (`calendar-hybrid-view.tsx`)
+  - Desktop (≥ md): Grid layout with month grouping (CalendarView)
+  - Mobile (< md): Timeline vertical scrolling layout (CalendarContainer)
+  - Provides optimal experience for each screen size
+  - Single component manages responsive switching
+
+- [x] **Visual Polish & Animations**
+  - Shimmer loading animations for calendar skeleton
+  - Fade-in animations for day cards (staggered with delays)
+  - Global CSS keyframe animations (`app/globals.css`)
+  - Enhanced skeleton loader with gradient effects
+  - Dark theme refinements (zinc color palette with teal-500 accents)
+
+- [x] **Chart-to-Calendar Integration**
+  - Click on chart → scrolls to day row → expands day detail after 300ms delay
+  - Smooth scroll behavior with `scrollIntoView` API
+  - Day refs managed in both calendar views for scroll targeting
+  - Seamless desktop/mobile experience
+
+### Files Created / Added (Day 36)
+
+**Created:**
+
+```
+components/calendar/balance-trend-chart-interactive.tsx
+components/calendar/calendar-hybrid-view.tsx
+```
+
+### Files Modified (Day 36)
+
+**Modified:**
+
+```
+components/calendar/day-card.tsx
+components/calendar/calendar-view.tsx
+components/calendar/calendar-container.tsx
+components/calendar/calendar-skeleton.tsx
+app/globals.css
+app/dashboard/calendar/page.tsx
+```
+
+**Deleted:**
+
+```
+components/calendar/balance-trend-chart.tsx (unused static version)
+```
+
+### TypeScript Build Errors Fixed (Day 36)
+
+All Vercel deployment build errors resolved through 8 commits:
+
+1. **Error:** Unused `currency` parameter in `balance-trend-chart-interactive.tsx`
+   - **Fix:** Removed `currency` prop from interface and component
+   - **Commit:** `1e64fd4` - "fix: remove unused currency parameter from interactive chart"
+
+2. **Error:** Possibly undefined `endBalance` at line 89
+   - **Fix:** Added nullish coalescing: `balances[balances.length - 1] ?? startingBalance`
+   - **Commit:** `7bb112d` - "fix: handle undefined endBalance in interactive chart"
+
+3. **Error:** Unused `y` variable in `handleChartInteraction`
+   - **Fix:** Removed unused y coordinate calculation
+   - **Commit:** `072c4b9` - "fix: remove unused y variable in chart interaction handler"
+
+4. **Error:** Unused imports in `balance-trend-chart.tsx`
+   - **Fix:** Deleted entire static chart component (no longer used)
+   - **Commit:** `be56f1c` - "chore: remove unused static balance trend chart component"
+
+5. **Error:** Missing `safeToSpend` and `collisions` props in `CalendarView`
+   - **Fix:** Added missing props to CalendarView in calendar-hybrid-view.tsx
+   - **Commit:** `74ba337` - "fix: add missing safeToSpend and collisions props to CalendarView"
+
+6. **Error:** Unused `totalIncome` and `totalBills` variables in `day-card.tsx`
+   - **Fix:** Removed unused variable declarations (only `totalTransactions` needed)
+   - **Commit:** `56b118f` - "fix: remove unused totalIncome and totalBills variables"
+
+7. **Error:** Possibly undefined `day.income[0]` and `day.bills[0]`
+   - **Fix:** Added explicit null checks: `day.income.length > 0 && day.income[0] && (`
+   - **Commit:** `c042456` - "fix: add null checks for day.income[0] and day.bills[0]"
+
+8. **Error:** Possibly undefined `touch` object in `handleTouchMove`
+   - **Fix:** Extracted to variable with null check: `const touch = e.touches[0]; if (touch) { ... }`
+   - **Commit:** `0814f24` - "fix: handle possibly undefined touch in handleTouchMove"
+
+### Technical Implementation Details
+
+**Interactive Chart Architecture:**
+
+- Pure React + SVG implementation (no chart libraries)
+- Responsive SVG viewBox (percentage-based coordinates)
+- Chart data memoized with `useMemo` for performance
+- Mouse and touch event handlers with `useCallback`
+- Cursor position tracking for tooltip placement
+- Dynamic chart bounds calculation with 15% padding
+- Gradient definitions for area fill
+- Multiple reference lines (safety buffer, zero line, today marker)
+
+**Responsive Layout Strategy:**
+
+- Tailwind `md:` breakpoint for desktop/mobile split
+- `hidden md:block` / `md:hidden` pattern for clean component switching
+- Grid layout preserves month grouping on desktop
+- Timeline layout optimized for vertical scrolling on mobile
+- Both layouts share the same interactive chart component
+
+**Animation System:**
+
+- CSS keyframe animations defined in `app/globals.css`
+- Shimmer effect for skeleton loader (translateX transform)
+- Fade-in effect for day cards (opacity + translateY)
+- Staggered animation delays for sequential reveal
+- Pulsing animation for danger indicators (scale + opacity)
+
+### Impact
+
+- **Premium Feel:** Calendar now matches the polish of YNAB and other premium fintech apps
+- **Engagement:** Interactive chart drives exploration and understanding of cash flow
+- **Clarity:** Inline transaction display reduces need to click into day details
+- **Mobile UX:** Optimized layouts for each device type
+- **Performance:** No external chart dependencies reduces bundle size
+- **Accessibility:** Hover and click interactions work on desktop and mobile
+
+### Next Steps for Calendar Feature
+
+- Monitor chart interaction analytics via PostHog
+- A/B test chart placement (above vs. below warnings)
+- Consider adding chart annotations for bills/income
+- Explore mini-chart for dashboard widget
 
 ---
 

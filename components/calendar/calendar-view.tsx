@@ -8,10 +8,16 @@ import { cn } from '@/lib/utils';
 import { DayCard } from './day-card';
 import { DayDetailModal } from './day-detail-modal';
 import { BalanceTrendChartInteractive } from './balance-trend-chart-interactive';
+import { StickyCalendarHeader } from './sticky-header';
 
 interface CalendarViewProps {
   calendarData: CalendarData;
   safetyBuffer?: number;
+  lowestIn14Days: number;
+  totalIncome: number;
+  totalBills: number;
+  endingBalance: number;
+  currency?: string;
 }
 
 /**
@@ -20,7 +26,15 @@ interface CalendarViewProps {
  * Shows balance trend chart and groups days by month in a responsive grid.
  * Clicking a day opens a detail modal.
  */
-export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) {
+export function CalendarView({
+  calendarData,
+  safetyBuffer,
+  lowestIn14Days,
+  totalIncome,
+  totalBills,
+  endingBalance,
+  currency = 'USD',
+}: CalendarViewProps) {
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const dayRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -72,6 +86,20 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
 
   return (
     <>
+      {/* Sticky Header */}
+      <StickyCalendarHeader
+        startingBalance={calendarData.startingBalance}
+        lowestBalance={calendarData.lowestBalance}
+        lowestBalanceDate={calendarData.lowestBalanceDay}
+        lowestIn14Days={lowestIn14Days}
+        totalIncome={totalIncome}
+        totalBills={totalBills}
+        endingBalance={endingBalance}
+        safetyBuffer={buffer}
+        safeToSpend={calendarData.safeToSpend}
+        currency={currency}
+      />
+
       {/* Balance Trend Chart - Interactive */}
       <BalanceTrendChartInteractive
         days={calendarData.days}
@@ -81,30 +109,31 @@ export function CalendarView({ calendarData, safetyBuffer }: CalendarViewProps) 
         onDayClick={handleChartDayClick}
       />
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 sm:p-6 mt-6">
         {/* Month sections */}
         {Object.entries(daysByMonth).map(([monthKey, days], index) => (
           <div
             key={monthKey}
-            className="mb-8 last:mb-0 animate-fadeIn"
+            className="mb-10 last:mb-0 animate-fadeIn"
             style={{
               animationDelay: `${index * 100}ms`,
               animationFillMode: 'backwards'
             }}
           >
             {/* Month header */}
-            <h3 className="text-xl font-semibold text-zinc-100 mb-4">
+            <h3 className="text-xl font-semibold text-zinc-100 mb-5 pb-2 border-b border-zinc-800">
               {monthKey}
             </h3>
 
             {/* Days grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4">
               {days.map((day) => (
                 <div
                   key={day.date.getTime()}
                   ref={(el) => {
                     dayRefs.current[day.date.getTime().toString()] = el;
                   }}
+                  className="h-full"
                 >
                   <DayCard
                     day={day}

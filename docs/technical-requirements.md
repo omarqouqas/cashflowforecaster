@@ -2,11 +2,11 @@
 
 ## Development Progress
 
-### ✅ Completed (Days 1-22)
+### ✅ Completed (Days 1-36)
 
 - [x] Next.js 14 project setup with TypeScript
 - [x] Supabase integration (client, server, route handlers)
-- [x] Database schema created (12 tables)
+- [x] Database schema created (14 tables)
 - [x] Row Level Security enabled
 - [x] TypeScript types generated from live database
 - [x] Git repository initialized
@@ -19,21 +19,29 @@
 - [x] Account management (full CRUD)
 - [x] Income management (full CRUD)
 - [x] Bills management (full CRUD)
-- [x] 60-day calendar algorithm
+- [x] 60-day calendar algorithm (tier-based: 60/365 days)
 - [x] Calendar UI with day modals
+- [x] Interactive balance trend chart (hover + click navigation)
+- [x] Hybrid responsive layout (grid/timeline)
+- [x] Enhanced day cards with inline transactions
+- [x] Visual animations (shimmer, fade-in, pulsing)
 - [x] "Can I Afford It?" scenarios
 - [x] Landing page with pricing
 - [x] Runway Collect invoicing
 - [x] Payment reminders
 - [x] Onboarding wizard
 - [x] Stripe integration (checkout, webhooks, portal)
+- [x] Stripe live mode
 - [x] PostHog analytics
 - [x] Feature gating (bills/income limits, invoicing gate)
+- [x] Weekly email digest
+- [x] User feedback system (NPS + in-app widget)
+- [x] Tax savings tracker
+- [x] YNAB-inspired calendar redesign
 
 ### 📋 Upcoming
 
-- [ ] Stripe live mode
-- [ ] Bill collision warnings
+- [ ] Bill collision warnings (enhanced)
 - [ ] Sentry error monitoring
 - [ ] Email parser
 - [ ] Plaid bank sync
@@ -42,11 +50,11 @@
 
 ## Project Status
 
-**Status:** Live - Accepting Payments
+**Status:** Live - Accepting Payments - YNAB-Inspired Calendar
 
 **Current Phase:** User Acquisition
 
-**Last Updated:** December 21, 2025
+**Last Updated:** January 16, 2026
 
 ---
 
@@ -526,11 +534,11 @@ The calendar algorithm projects bank balance into the future by:
 - Current account balances
 - Income sources (amount, frequency, start_date, end_date)
 - Bills (amount, due_date, frequency)
-- Forecast days (60/90/365 based on tier)
+- Forecast days (60/365 based on tier)
 
 **Processing:**
 
-1. Initialize calendar array (60/90/365 days based on tier)
+1. Initialize calendar array (60/365 days based on tier)
 2. Set starting balance for day 0
 3. For each day:
    - Copy previous day's balance
@@ -542,6 +550,7 @@ The calendar algorithm projects bank balance into the future by:
 - **Daily:** Every day
 - **Weekly:** Same day of week
 - **Bi-weekly:** Every 2 weeks from start date
+- **Semi-monthly:** Twice per month (1st/15th or 15th/30th patterns)
 - **Monthly:** Same day of month (handles month-end edge cases)
 - **Quarterly:** Every 3 months
 - **Yearly:** Same month and day each year
@@ -556,6 +565,97 @@ The calendar algorithm projects bank balance into the future by:
 - Leap years
 - Income/bills that end before forecast window
 - Multiple accounts (aggregate balance)
+
+## Calendar UI Architecture
+
+### Interactive Balance Trend Chart
+
+**Component:** `components/calendar/balance-trend-chart-interactive.tsx`
+
+**Features:**
+- Custom SVG-based line chart (no external dependencies)
+- Hover tooltips showing balance, date, and transactions
+- Click-to-jump navigation (scrolls to and expands day)
+- Touch support for mobile devices
+- Visual markers: today line, lowest balance point, safety buffer line, zero line
+- Net balance change indicator (trending up/down)
+- Key metrics display (starting, ending, lowest balance)
+
+**Technical Implementation:**
+- Pure React + SVG (viewBox percentage-based coordinates)
+- Chart data memoized with `useMemo` for performance
+- Mouse and touch handlers with `useCallback`
+- Cursor position tracking for tooltip placement
+- Dynamic chart bounds with 15% padding
+- Gradient definitions for area fill
+
+**State Management:**
+```typescript
+const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null)
+const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number } | null>(null)
+```
+
+**Click Handler:**
+```typescript
+const handleChartDayClick = (dayIndex: number) => {
+  // Scroll to day row
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  // Expand detail after delay
+  setTimeout(() => setSelectedDayIndex(dayIndex), 300)
+}
+```
+
+### Hybrid Responsive Layout
+
+**Component:** `components/calendar/calendar-hybrid-view.tsx`
+
+**Strategy:**
+- Desktop (≥ md): Grid layout with month grouping (`CalendarView`)
+- Mobile (< md): Timeline vertical scrolling (`CalendarContainer`)
+- Conditional rendering with Tailwind: `hidden md:block` / `md:hidden`
+
+**Benefits:**
+- Optimal UX for each device type
+- Single component manages layout switching
+- Shared interactive chart component
+- Both layouts support chart-to-day navigation
+
+### Enhanced Day Cards
+
+**Component:** `components/calendar/day-card.tsx`
+
+**Features:**
+- Inline transaction display (top 2 transactions)
+- Transaction count badge ("+3 more")
+- Color-coded transaction icons (emerald/rose)
+- Enhanced hover effects (scale + shadow)
+- Pulsing animation for danger states
+- Improved visual hierarchy
+
+**Animation System:**
+```css
+/* app/globals.css */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+**Usage:**
+- Shimmer: Skeleton loader gradient animation
+- Fade-in: Day card reveal with staggered delays
+- Pulsing: Danger indicator animation (built-in Tailwind `animate-ping`)
 
 ---
 
@@ -788,6 +888,6 @@ cash-flow-forecaster/
 
 ---
 
-**Document Version:** 2.0
-**Last Updated:** December 21, 2025
+**Document Version:** 3.0
+**Last Updated:** January 16, 2026
 **Maintained By:** Development Team

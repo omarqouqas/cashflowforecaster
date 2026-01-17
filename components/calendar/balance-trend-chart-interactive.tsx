@@ -253,7 +253,7 @@ export function BalanceTrendChartInteractive({
             d={chartData.pathD}
             fill="none"
             stroke="rgb(20 184 166)"
-            strokeWidth="1"
+            strokeWidth="0.3"
             strokeLinecap="round"
             strokeLinejoin="round"
             className="drop-shadow-[0_0_8px_rgba(20,184,166,0.4)]"
@@ -329,11 +329,11 @@ export function BalanceTrendChartInteractive({
         </svg>
 
         {/* Hover tooltip */}
-        {hoveredDay && cursorPosition && (
+        {hoveredDay && cursorPosition && chartRef.current && (
           <div
             className="absolute z-10 pointer-events-none"
             style={{
-              left: cursorPosition.x,
+              left: Math.max(90, Math.min(cursorPosition.x, chartRef.current.clientWidth - 90)),
               top: cursorPosition.y,
               transform: 'translate(-50%, -120%)',
             }}

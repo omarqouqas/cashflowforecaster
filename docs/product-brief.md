@@ -236,11 +236,18 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Tier-based forward projection:
   - Free: 60 days
   - Pro: 365 days (12 months ahead)
+- **Interactive balance trend chart** with hover tooltips and click-to-jump navigation
+- **Inline transaction display** on day cards (top 2 transactions visible)
+- **Hybrid responsive layout:**
+  - Desktop: Grid layout with month grouping
+  - Mobile: Timeline vertical scrolling
 - Color-coded balance indicators (green/amber/rose)
-- Daily transaction list with detail modals
-- Mobile-responsive dark theme design
+- Enhanced visual polish (shimmer animations, fade-in effects, pulsing danger indicators)
+- Daily transaction list with expandable detail panels
+- Mobile-responsive dark theme design (YNAB-inspired minimalist aesthetic)
 - Today indicator with auto-scroll
 - Overdraft warning banners
+- Custom SVG chart (no external dependencies)
 
 **2. Dashboard Guidance & Daily Budgeting ✅**
 - Daily Budget / Daily Shortfall until next income
@@ -797,6 +804,20 @@ User Request
 ---
 
 ## Changelog
+
+### Version 5.0 (January 16, 2026)
+- YNAB-inspired calendar redesign:
+  - Added interactive balance trend chart (hover tooltips, click-to-jump)
+  - Enhanced day cards with inline transaction display
+  - Implemented hybrid responsive layout (grid/timeline)
+  - Added visual polish (shimmer animations, fade-in effects, pulsing indicators)
+  - Chart-to-calendar integration (click chart → scroll/expand day)
+  - Fixed 8 TypeScript build errors for clean Vercel deployment
+- Technical improvements:
+  - Custom SVG chart (no external dependencies)
+  - Touch support for mobile interactions
+  - Memoized chart calculations for performance
+  - Responsive layout switching at md breakpoint
 
 ### Version 4.9 (January 12, 2026)
 - User feedback system:

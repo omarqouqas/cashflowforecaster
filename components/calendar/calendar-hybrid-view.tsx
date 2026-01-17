@@ -13,6 +13,19 @@ import type { CalendarContainerProps } from './calendar-container';
  * Provides the best experience for each screen size.
  */
 export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
+  // Calculate required props for sticky header
+  const lowestIn14Days = Math.min(
+    ...calendarData.days.slice(0, 14).map((d) => d.balance)
+  );
+
+  const totalIncome = calendarData.days
+    .reduce((sum, day) => sum + day.income.reduce((s, t) => s + t.amount, 0), 0);
+
+  const totalBills = calendarData.days
+    .reduce((sum, day) => sum + day.bills.reduce((s, t) => s + t.amount, 0), 0);
+
+  const endingBalance = calendarData.days[calendarData.days.length - 1]?.balance ?? calendarData.startingBalance;
+
   return (
     <>
       {/* Desktop: Grid Layout */}
@@ -27,6 +40,10 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
             collisions: calendarData.collisions,
           }}
           safetyBuffer={calendarData.safetyBuffer}
+          lowestIn14Days={lowestIn14Days}
+          totalIncome={totalIncome}
+          totalBills={totalBills}
+          endingBalance={endingBalance}
         />
       </div>
 
