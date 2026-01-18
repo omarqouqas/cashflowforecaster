@@ -101,7 +101,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const billsList = (bills || []) as any[];
 
   // Calculate total monthly bills
-  const monthlyTotal = billsList.reduce((total, bill) => {
+  const monthlyTotal = billsList.reduce(function(total, bill) {
     if (!bill.is_active) return total;
 
     switch (bill.frequency) {
@@ -122,7 +122,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
     }
   }, 0);
 
-  const activeBills = billsList.filter((b) => b.is_active);
+  const activeBills = billsList.filter(function(b) { return b.is_active; });
 
   // Feature gating
   const { current: billsCount, limit: billsLimit } = usageStats.bills;
@@ -133,13 +133,13 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const futureBills = activeBills.filter(bill => {
+  const futureBills = activeBills.filter(function(bill) {
     if (!bill.due_date) return false;
     const nextDate = getActualNextDueDate(bill.due_date, bill.frequency);
     return nextDate >= today;
   });
 
-  const nextBill = futureBills.length > 0 ? futureBills.reduce((earliest, current) => {
+  const nextBill = futureBills.length > 0 ? futureBills.reduce(function(earliest, current) {
     if (!earliest || !earliest.due_date || !current.due_date) return current;
     const earliestDate = getActualNextDueDate(earliest.due_date, earliest.frequency);
     const currentDate = getActualNextDueDate(current.due_date, current.frequency);
@@ -337,9 +337,9 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           ) : (
             /* Bills List */
             <div className="space-y-3">
-              {billsList.map((bill) => (
-                <BillCard key={bill.id} bill={bill} />
-              ))}
+              {billsList.map(function(bill) {
+                return <BillCard key={bill.id} bill={bill} />;
+              })}
             </div>
           )}
         </>
