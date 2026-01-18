@@ -161,6 +161,11 @@ export function IncomeCard({ income }: IncomeCardProps) {
 
   // Calculate the actual next payment date
   const actualNextDate = getActualNextDate(income.next_date, income.frequency)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Only show next payment date if it's in the future
+  const showNextPayment = actualNextDate >= today
 
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
@@ -210,9 +215,11 @@ export function IncomeCard({ income }: IncomeCardProps) {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-zinc-400 mt-1">
-                Next payment: {formatDateOnly(actualNextDate.toISOString().split('T')[0])}
-              </p>
+              {showNextPayment && (
+                <p className="text-sm text-zinc-400 mt-1">
+                  Next payment: {formatDateOnly(actualNextDate.toISOString().split('T')[0])}
+                </p>
+              )}
             </div>
 
             <p className="text-xl font-bold tabular-nums text-emerald-400">

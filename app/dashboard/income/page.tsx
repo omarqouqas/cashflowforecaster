@@ -266,13 +266,26 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
               return currentDate
             }
 
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+
+            // Filter to only include income with future payment dates
+            const futureIncomes = activeIncomes.filter(income => {
+              const nextDate = getActualNextDate(income.next_date, income.frequency)
+              return nextDate >= today
+            })
+
+            if (futureIncomes.length === 0) {
+              return null
+            }
+
             // Find the income with the earliest actual next date
-            const nextIncome = activeIncomes.reduce((earliest, current) => {
+            const nextIncome = futureIncomes.reduce((earliest, current) => {
               if (!earliest) return current
               const earliestDate = getActualNextDate(earliest.next_date, earliest.frequency)
               const currentDate = getActualNextDate(current.next_date, current.frequency)
               return currentDate < earliestDate ? current : earliest
-            }, activeIncomes[0])
+            }, futureIncomes[0])
 
             const actualNextDate = getActualNextDate(nextIncome.next_date, nextIncome.frequency)
 
