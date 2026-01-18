@@ -14,6 +14,63 @@ interface IncomeCardProps {
   income: Income
 }
 
+function getActualNextDate(nextDate: string, frequency: string | null | undefined): Date {
+  const storedDate = new Date(nextDate)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // If the stored date is in the future, use it
+  if (storedDate >= today) {
+    return storedDate
+  }
+
+  // Otherwise, calculate the next occurrence
+  const freq = (frequency ?? 'monthly').toLowerCase()
+  let currentDate = new Date(storedDate)
+
+  switch (freq) {
+    case 'weekly':
+      while (currentDate < today) {
+        currentDate.setDate(currentDate.getDate() + 7)
+      }
+      break
+
+    case 'biweekly':
+      while (currentDate < today) {
+        currentDate.setDate(currentDate.getDate() + 14)
+      }
+      break
+
+    case 'monthly':
+      const targetDay = storedDate.getDate()
+      while (currentDate < today) {
+        let nextMonth = currentDate.getMonth() + 1
+        let nextYear = currentDate.getFullYear()
+
+        if (nextMonth > 11) {
+          nextMonth = 0
+          nextYear++
+        }
+
+        const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate()
+        const dayToUse = Math.min(targetDay, lastDayOfNextMonth)
+
+        currentDate = new Date(nextYear, nextMonth, dayToUse)
+      }
+      break
+
+    case 'one-time':
+    case 'irregular':
+      // For one-time and irregular, just return the stored date
+      return storedDate
+
+    default:
+      return storedDate
+  }
+
+  return currentDate
+}
+
 function getIncomeTypeIcon(frequency: string | null | undefined, isInvoiceLinked: boolean) {
   if (isInvoiceLinked) {
     return {
@@ -102,6 +159,9 @@ export function IncomeCard({ income }: IncomeCardProps) {
   const frequencyBadge = getFrequencyBadge(income.frequency)
   const IncomeIcon = typeIcon.icon
 
+  // Calculate the actual next payment date
+  const actualNextDate = getActualNextDate(income.next_date, income.frequency)
+
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
       <div className="flex items-start gap-3">
@@ -151,7 +211,7 @@ export function IncomeCard({ income }: IncomeCardProps) {
                 )}
               </div>
               <p className="text-sm text-zinc-400 mt-1">
-                Next payment: {formatDateOnly(income.next_date)}
+                Next payment: {formatDateOnly(actualNextDate.toISOString().split('T')[0])}
               </p>
             </div>
 

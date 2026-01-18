@@ -222,17 +222,66 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
 
           {/* Next Payment */}
           {activeIncomes.length > 0 && (() => {
+            // Helper function to get actual next date
+            const getActualNextDate = (nextDate: string, frequency: string | null | undefined): Date => {
+              const storedDate = new Date(nextDate)
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
+
+              if (storedDate >= today) {
+                return storedDate
+              }
+
+              const freq = (frequency ?? 'monthly').toLowerCase()
+              let currentDate = new Date(storedDate)
+
+              switch (freq) {
+                case 'weekly':
+                  while (currentDate < today) {
+                    currentDate.setDate(currentDate.getDate() + 7)
+                  }
+                  break
+                case 'biweekly':
+                  while (currentDate < today) {
+                    currentDate.setDate(currentDate.getDate() + 14)
+                  }
+                  break
+                case 'monthly':
+                  const targetDay = storedDate.getDate()
+                  while (currentDate < today) {
+                    let nextMonth = currentDate.getMonth() + 1
+                    let nextYear = currentDate.getFullYear()
+                    if (nextMonth > 11) {
+                      nextMonth = 0
+                      nextYear++
+                    }
+                    const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate()
+                    const dayToUse = Math.min(targetDay, lastDayOfNextMonth)
+                    currentDate = new Date(nextYear, nextMonth, dayToUse)
+                  }
+                  break
+                default:
+                  return storedDate
+              }
+              return currentDate
+            }
+
+            // Find the income with the earliest actual next date
             const nextIncome = activeIncomes.reduce((earliest, current) => {
               if (!earliest) return current
-              return new Date(current.next_date) < new Date(earliest.next_date) ? current : earliest
+              const earliestDate = getActualNextDate(earliest.next_date, earliest.frequency)
+              const currentDate = getActualNextDate(current.next_date, current.frequency)
+              return currentDate < earliestDate ? current : earliest
             }, activeIncomes[0])
+
+            const actualNextDate = getActualNextDate(nextIncome.next_date, nextIncome.frequency)
 
             return (
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-400" />
                   <p className="text-sm text-blue-300 font-medium">
-                    Next payment: {nextIncome.name} on {formatDateOnly(nextIncome.next_date)}
+                    Next payment: {nextIncome.name} on {formatDateOnly(actualNextDate.toISOString().split('T')[0])}
                   </p>
                 </div>
               </div>
