@@ -48,6 +48,7 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
@@ -59,6 +60,12 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
       description: invoice.description ?? '',
     },
   });
+
+  const setPaymentTerm = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    setValue('due_date', d.toISOString().slice(0, 10));
+  };
 
   const onSubmit = async (data: InvoiceFormData) => {
     setIsLoading(true);
@@ -90,20 +97,20 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
     <div className="max-w-lg mx-auto">
       <Link
         href={`/dashboard/invoices/${invoice.id}`}
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
         Back to Invoice
       </Link>
 
-      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Edit Invoice</h1>
+      <h1 className="text-2xl font-bold text-zinc-100 mb-6">Edit Invoice</h1>
 
-      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Invoice number */}
           <div>
-            <Label htmlFor="invoice_number" className="text-zinc-700 mb-1.5 block">
-              Invoice number <span className="text-zinc-400">(optional)</span>
+            <Label htmlFor="invoice_number" className="text-zinc-300 mb-1.5 block">
+              Invoice number <span className="text-zinc-500">(optional)</span>
             </Label>
             <Input
               id="invoice_number"
@@ -112,14 +119,14 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
               className={errors.invoice_number ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.invoice_number?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.invoice_number.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.invoice_number.message}</p>
             )}
           </div>
 
           {/* Client name */}
           <div>
-            <Label htmlFor="client_name" className="text-zinc-700 mb-1.5 block">
-              Client name<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="client_name" className="text-zinc-300 mb-1.5 block">
+              Client name<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="client_name"
@@ -128,14 +135,14 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
               className={errors.client_name ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.client_name?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.client_name.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.client_name.message}</p>
             )}
           </div>
 
           {/* Client email */}
           <div>
-            <Label htmlFor="client_email" className="text-zinc-700 mb-1.5 block">
-              Client email <span className="text-zinc-400">(optional)</span>
+            <Label htmlFor="client_email" className="text-zinc-300 mb-1.5 block">
+              Client email <span className="text-zinc-500">(optional)</span>
             </Label>
             <Input
               id="client_email"
@@ -145,14 +152,14 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
               className={errors.client_email ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.client_email?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.client_email.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.client_email.message}</p>
             )}
           </div>
 
           {/* Amount */}
           <div>
-            <Label htmlFor="amount" className="text-zinc-700 mb-1.5 block">
-              Amount<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="amount" className="text-zinc-300 mb-1.5 block">
+              Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
@@ -161,20 +168,46 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                className={['pl-8', errors.amount ? 'border-rose-500 focus:ring-rose-500' : ''].join(' ')}
+                className={[
+                  'pl-8',
+                  errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
+                ].join(' ')}
                 {...register('amount')}
               />
             </div>
             {errors.amount?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.amount.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.amount.message}</p>
             )}
           </div>
 
           {/* Due date */}
           <div>
-            <Label htmlFor="due_date" className="text-zinc-700 mb-1.5 block">
-              Due date<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="due_date" className="text-zinc-300 mb-1.5 block">
+              Due date<span className="text-rose-400 ml-0.5">*</span>
             </Label>
+            <div className="flex gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => setPaymentTerm(15)}
+                className="px-3 py-1.5 text-xs font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 rounded hover:bg-zinc-700 hover:text-teal-400 hover:border-teal-500/30 transition-colors"
+              >
+                Net-15
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentTerm(30)}
+                className="px-3 py-1.5 text-xs font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 rounded hover:bg-zinc-700 hover:text-teal-400 hover:border-teal-500/30 transition-colors"
+              >
+                Net-30
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentTerm(60)}
+                className="px-3 py-1.5 text-xs font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 rounded hover:bg-zinc-700 hover:text-teal-400 hover:border-teal-500/30 transition-colors"
+              >
+                Net-60
+              </button>
+            </div>
             <Input
               id="due_date"
               type="date"
@@ -182,48 +215,49 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
               className={errors.due_date ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.due_date?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.due_date.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.due_date.message}</p>
             )}
+            <p className="text-sm text-zinc-400 mt-1.5">Quick select payment terms or choose a custom date.</p>
           </div>
 
           {/* Description */}
           <div>
-            <Label htmlFor="description" className="text-zinc-700 mb-1.5 block">
-              Description <span className="text-zinc-400">(optional)</span>
+            <Label htmlFor="description" className="text-zinc-300 mb-1.5 block">
+              Description <span className="text-zinc-500">(optional)</span>
             </Label>
             <textarea
               id="description"
               rows={4}
               {...register('description')}
               className={[
-                'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900',
-                'placeholder:text-zinc-400',
-                'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100',
+                'placeholder:text-zinc-500',
+                'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
                 'min-h-[96px]',
                 errors.description ? 'border-rose-500 focus:ring-rose-500' : '',
               ].join(' ')}
               placeholder="What is this invoice for?"
             />
             {errors.description?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.description.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.description.message}</p>
             )}
           </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-800">
             <button
               type="button"
               onClick={() => router.push(`/dashboard/invoices/${invoice.id}`)}
               disabled={isLoading}
-              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-100 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? 'Saving...' : 'Save changes'}
             </button>
