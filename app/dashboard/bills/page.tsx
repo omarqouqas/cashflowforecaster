@@ -22,30 +22,6 @@ interface BillsPageProps {
   searchParams: { success?: string };
 }
 
-// Calculate total monthly bills
-function calculateMonthlyBills(billsList: Bill[]): number {
-  return billsList.reduce((total, bill) => {
-    if (!bill.is_active) return total;
-
-    switch (bill.frequency) {
-      case 'weekly':
-        return total + (bill.amount * 52) / 12;
-      case 'biweekly':
-        return total + (bill.amount * 26) / 12;
-      case 'monthly':
-        return total + bill.amount * 1;
-      case 'quarterly':
-        return total + bill.amount / 3;
-      case 'annually':
-        return total + bill.amount / 12;
-      case 'one-time':
-        return total;
-      default:
-        return total;
-    }
-  }, 0);
-}
-
 export default async function BillsPage({ searchParams }: BillsPageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
@@ -69,7 +45,29 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const success = searchParams?.success;
 
   const billsList = (bills || []) as any[];
-  const monthlyTotal = calculateMonthlyBills(billsList);
+
+  // Calculate total monthly bills
+  const monthlyTotal = billsList.reduce((total, bill) => {
+    if (!bill.is_active) return total;
+
+    switch (bill.frequency) {
+      case 'weekly':
+        return total + (bill.amount * 52) / 12;
+      case 'biweekly':
+        return total + (bill.amount * 26) / 12;
+      case 'monthly':
+        return total + bill.amount * 1;
+      case 'quarterly':
+        return total + bill.amount / 3;
+      case 'annually':
+        return total + bill.amount / 12;
+      case 'one-time':
+        return total;
+      default:
+        return total;
+    }
+  }, 0);
+
   const activeBills = billsList.filter((b) => b.is_active);
 
   // Feature gating
