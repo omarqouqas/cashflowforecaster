@@ -15,15 +15,15 @@ function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
   switch (s) {
     case 'draft':
-      return 'bg-zinc-100 text-zinc-700';
+      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
     case 'sent':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
     case 'viewed':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
     case 'paid':
-      return 'bg-green-100 text-green-800';
+      return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
     default:
-      return 'bg-zinc-100 text-zinc-700';
+      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
   }
 }
 
@@ -92,8 +92,8 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
 
       {/* Success */}
       {searchParams?.success === 'invoice-deleted' && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6">
-          <p className="text-sm text-green-800 dark:text-green-200">✓ Invoice deleted successfully</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-6">
+          <p className="text-sm text-emerald-400">✓ Invoice deleted successfully</p>
         </div>
       )}
 
@@ -101,7 +101,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-zinc-100">Invoices</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-zinc-400 mt-1">
             Create invoices and track who has paid
           </p>
         </div>
@@ -115,8 +115,8 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-          <p className="text-sm text-red-800 dark:text-red-200">
+        <div className="bg-rose-500/10 border border-rose-500/30 rounded-lg p-4 mb-6">
+          <p className="text-sm text-rose-400">
             Error loading invoices. Please try refreshing the page.
           </p>
         </div>
@@ -126,14 +126,19 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
       {!error && (
         <>
           {invoices.length === 0 ? (
-            <div className="text-center py-12">
-              <Receipt className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
-              <p className="text-zinc-700 font-medium">No invoices yet.</p>
-              <p className="text-sm text-zinc-500 mt-1 mb-6">
-                Create your first invoice to get paid faster.
+            <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-12 text-center">
+              <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Receipt className="w-8 h-8 text-teal-400" />
+              </div>
+              <p className="text-zinc-100 font-semibold text-lg mb-2">No invoices yet</p>
+              <p className="text-sm text-zinc-400 mb-6 max-w-md mx-auto">
+                Create your first invoice to get paid faster and automatically sync it with your cash flow forecast.
               </p>
               <Link href="/dashboard/invoices/new">
-                <Button variant="primary">Create Invoice</Button>
+                <Button variant="primary">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Invoice
+                </Button>
               </Link>
             </div>
           ) : (() => {
@@ -143,21 +148,53 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
             const showFollowUpOnly = filter === 'followup';
             const visibleInvoices = showFollowUpOnly ? followUpInvoices : invoices;
 
+            // Calculate summary stats
+            const totalOutstanding = invoices
+              .filter((inv) => (inv.status ?? 'draft') !== 'paid')
+              .reduce((sum, inv) => sum + inv.amount, 0);
+            const overdueCount = invoices.filter((inv) => isOverdue(inv.due_date, inv.status)).length;
+            const awaitingPaymentCount = invoices.filter((inv) => {
+              const s = inv.status ?? 'draft';
+              return s === 'sent' || s === 'viewed';
+            }).length;
+
             return (
               <>
+                {/* Summary Stats */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                  <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
+                    <p className="text-xs font-medium text-zinc-400 mb-1">Total Outstanding</p>
+                    <p className="text-2xl font-bold text-zinc-100 tabular-nums">
+                      {formatCurrency(totalOutstanding)}
+                    </p>
+                  </div>
+                  <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
+                    <p className="text-xs font-medium text-zinc-400 mb-1">Awaiting Payment</p>
+                    <p className="text-2xl font-bold text-zinc-100 tabular-nums">
+                      {awaitingPaymentCount}
+                    </p>
+                  </div>
+                  <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
+                    <p className="text-xs font-medium text-zinc-400 mb-1">Overdue</p>
+                    <p className="text-2xl font-bold text-rose-400 tabular-nums">
+                      {overdueCount}
+                    </p>
+                  </div>
+                </div>
+
                 {followUpInvoices.length > 0 && (
                   <div className="mb-4">
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div className="flex items-start gap-2">
                           <div className="mt-0.5">
-                            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-300" />
+                            <AlertTriangle className="w-4 h-4 text-amber-400" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                            <p className="text-sm font-medium text-amber-100">
                               {followUpInvoices.length} invoice{followUpInvoices.length === 1 ? '' : 's'} need follow-up
                             </p>
-                            <p className="text-xs text-amber-800/80 dark:text-amber-200/80 mt-0.5">
+                            <p className="text-xs text-amber-300/80 mt-0.5">
                               Overdue and not reminded in the last 3 days.
                             </p>
                           </div>
@@ -167,18 +204,18 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                           {!showFollowUpOnly ? (
                             <Link
                               href="/dashboard/invoices?filter=followup"
-                              className="text-xs font-medium text-amber-900 dark:text-amber-100 hover:underline"
+                              className="text-xs font-medium text-amber-100 hover:underline"
                             >
                               View follow-ups
                             </Link>
                           ) : (
                             <>
-                              <span className="text-xs text-amber-800/80 dark:text-amber-200/80">
+                              <span className="text-xs text-amber-300/80">
                                 Showing follow-ups
                               </span>
                               <Link
                                 href="/dashboard/invoices"
-                                className="text-xs font-medium text-amber-900 dark:text-amber-100 hover:underline"
+                                className="text-xs font-medium text-amber-100 hover:underline"
                               >
                                 Clear
                               </Link>
@@ -190,52 +227,54 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                   </div>
                 )}
 
-                <div className="border border-zinc-200 bg-white rounded-lg overflow-hidden">
+                <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-sm">
-                      <thead className="bg-zinc-50 border-b border-zinc-200">
+                      <thead className="bg-zinc-800 border-b border-zinc-700">
                         <tr>
-                          <th className="text-left font-medium text-zinc-600 px-4 py-3">Invoice</th>
-                          <th className="text-left font-medium text-zinc-600 px-4 py-3">Client</th>
-                          <th className="text-right font-medium text-zinc-600 px-4 py-3">Amount</th>
-                          <th className="text-left font-medium text-zinc-600 px-4 py-3">Due date</th>
-                          <th className="text-left font-medium text-zinc-600 px-4 py-3">Status</th>
-                          <th className="text-right font-medium text-zinc-600 px-4 py-3">Actions</th>
+                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Invoice</th>
+                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Client</th>
+                          <th className="text-right font-medium text-zinc-300 px-4 py-4">Amount</th>
+                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Due date</th>
+                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Status</th>
+                          <th className="text-right font-medium text-zinc-300 px-4 py-4">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-zinc-100">
+                      <tbody className="divide-y divide-zinc-800">
                         {visibleInvoices.map((invoice) => {
                           const showFollowUpIndicator = needsFollowUp(invoice, now);
                           const overdue = isOverdue(invoice.due_date, invoice.status);
 
                           return (
-                            <tr key={invoice.id} className="hover:bg-zinc-50 transition-colors">
-                              <td className="px-4 py-3">
+                            <tr key={invoice.id} className="hover:bg-zinc-800/50 transition-colors">
+                              <td className="px-4 py-4">
                                 <div className="flex items-center gap-2">
                                   {showFollowUpIndicator && (
                                     <span
-                                      className="inline-block w-2 h-2 rounded-full bg-amber-500"
+                                      className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"
                                       title="Needs follow-up"
                                       aria-label="Needs follow-up"
                                     />
                                   )}
                                   <Link
                                     href={`/dashboard/invoices/${invoice.id}`}
-                                    className="text-zinc-900 font-medium hover:text-teal-700"
+                                    className="text-zinc-100 font-medium hover:text-teal-400 transition-colors"
                                   >
                                     {invoice.invoice_number}
                                   </Link>
                                 </div>
                               </td>
-                              <td className="px-4 py-3 text-zinc-700">{invoice.client_name}</td>
-                              <td className="px-4 py-3 text-right tabular-nums font-semibold text-zinc-900">
+                              <td className="px-4 py-4 text-zinc-300">{invoice.client_name}</td>
+                              <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-100 text-base">
                                 {formatCurrency(invoice.amount)}
                               </td>
-                              <td className="px-4 py-3 text-zinc-700">
+                              <td className="px-4 py-4 text-zinc-300">
                                 <div className="flex items-center gap-2">
                                   <span>{formatDateOnly(invoice.due_date)}</span>
                                   {overdue && (invoice.status ?? 'draft') !== 'paid' && (
-                                    <span className="text-xs font-medium text-rose-600">Overdue</span>
+                                    <span className="text-xs font-semibold text-rose-400 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">
+                                      Overdue
+                                    </span>
                                   )}
                                 </div>
                               </td>
@@ -266,7 +305,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                                       showEdit && (
                                         <Link
                                           href={`/dashboard/invoices/${invoice.id}/edit`}
-                                          className="p-2 text-zinc-400 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
+                                          className="p-2 text-zinc-400 hover:text-teal-400 hover:bg-teal-500/10 rounded-md transition-colors"
                                           aria-label="Edit invoice"
                                           title="Edit invoice"
                                         >

@@ -1,9 +1,9 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 4.9  
-**Last Updated:** January 12, 2026  
-**Status:** Live - Accepting Payments - User Feedback System Active  
-**Product URL:** https://cashflowforecaster.io  
+**Version:** 5.1
+**Last Updated:** January 18, 2026
+**Status:** Live - Accepting Payments - Import & Invoices Polished
+**Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
 ---
@@ -273,7 +273,10 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - **Gated:** 10 limit for Free tier
 
 **6. CSV Transaction Import ✅**
-- Upload CSV and map columns (date, description, amount)
+- **YNAB-inspired dark theme UI** with step progress indicator
+- **Column auto-detection** for common CSV formats (date, description, amount patterns)
+- **Duplicate detection** - compares against last 500 transactions with visual warnings
+- **Enhanced drag-and-drop upload** with visual feedback
 - Review table with search + filters
 - Date cutoff filter (defaults to first day of current month)
 - Select-all checkbox with indeterminate state
@@ -291,11 +294,15 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - `/tools/income-variability-calculator` — measure freelance income stability (CV%), danger months, and emergency fund target
 
 **8. Runway Collect (Pro) ✅**
-- Create professional invoices
+- **YNAB-inspired dark theme UI** for list and forms
+- **Summary stats dashboard** (total outstanding, awaiting payment, overdue count)
+- Create professional invoices with **payment terms helper** (Net-15/30/60 quick buttons)
 - Generate & download PDFs
 - Email invoices directly
 - Payment reminder system (friendly/firm/final)
 - Auto-sync with cash flow forecasts
+- **Enhanced status badges** for dark theme (draft/sent/viewed/paid)
+- **Improved empty state** with value proposition messaging
 - **Gated:** Pro+ only
 
 **9. Onboarding Wizard ✅**
@@ -805,6 +812,28 @@ User Request
 
 ## Changelog
 
+### Version 5.1 (January 18, 2026)
+- Import page YNAB-inspired redesign:
+  - Applied dark theme consistency (zinc-900/800 backgrounds, zinc-100/300/400 text)
+  - Added step progress indicator (Upload → Map → Import)
+  - Implemented column auto-detection with regex pattern matching
+  - Added duplicate detection (checks last 500 transactions)
+  - Enhanced drag-and-drop upload with visual feedback
+  - Improved review table with dark theme styling
+- Invoices pages YNAB-inspired redesign:
+  - Applied dark theme to list page and create form
+  - Added summary stats cards (total outstanding, awaiting payment, overdue count)
+  - Updated status badges for dark theme (draft/sent/viewed/paid with proper colors)
+  - Added payment terms helper buttons (Net-15/30/60)
+  - Enhanced empty state with value proposition
+  - Improved table density and visual hierarchy
+  - Updated Input component to dark theme globally
+- UX improvements:
+  - Follow-up indicator now pulses for better visibility
+  - Overdue badge more prominent with colored background
+  - Increased table padding for better readability
+  - Enhanced hover states with teal-400 accents
+
 ### Version 5.0 (January 16, 2026)
 - YNAB-inspired calendar redesign:
   - Added interactive balance trend chart (hover tooltips, click-to-jump)
@@ -917,7 +946,7 @@ User Request
 
 ---
 
-**Document Version:** 4.9  
-**Last Updated:** January 12, 2026  
-**Status:** Live - Feature Complete - User Feedback Active - Ready for User Acquisition 🎉  
+**Document Version:** 5.1
+**Last Updated:** January 18, 2026
+**Status:** Live - Import & Invoices Polished - YNAB-Inspired UX Complete 🎉
 **Next Review:** February 2026
