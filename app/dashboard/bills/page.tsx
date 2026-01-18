@@ -75,6 +75,80 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const isAtLimit = billsLimit !== Infinity && billsCount >= billsLimit;
   const isNearLimit = billsLimit !== Infinity && billsCount >= billsLimit - 2 && !isAtLimit;
 
+  // Calculate next due bill
+  const getActualNextDueDate = (dueDate: string, frequency: string | null | undefined): Date => {
+    const storedDate = new Date(dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (storedDate >= today) {
+      return storedDate;
+    }
+
+    const freq = (frequency ?? 'monthly').toLowerCase();
+    let currentDate = new Date(storedDate);
+
+    switch (freq) {
+      case 'weekly':
+        while (currentDate < today) {
+          currentDate.setDate(currentDate.getDate() + 7);
+        }
+        break;
+      case 'biweekly':
+        while (currentDate < today) {
+          currentDate.setDate(currentDate.getDate() + 14);
+        }
+        break;
+      case 'monthly':
+        const targetDay = storedDate.getDate();
+        while (currentDate < today) {
+          let nextMonth = currentDate.getMonth() + 1;
+          let nextYear = currentDate.getFullYear();
+          if (nextMonth > 11) {
+            nextMonth = 0;
+            nextYear++;
+          }
+          const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+          const dayToUse = Math.min(targetDay, lastDayOfNextMonth);
+          currentDate = new Date(nextYear, nextMonth, dayToUse);
+        }
+        break;
+      case 'quarterly':
+        while (currentDate < today) {
+          currentDate.setMonth(currentDate.getMonth() + 3);
+        }
+        break;
+      case 'annually':
+        while (currentDate < today) {
+          currentDate.setFullYear(currentDate.getFullYear() + 1);
+        }
+        break;
+      default:
+        return storedDate;
+    }
+    return currentDate;
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const futureBills = activeBills.filter(bill => {
+    if (!bill.due_date) return false;
+    const nextDate = getActualNextDueDate(bill.due_date, bill.frequency);
+    return nextDate >= today;
+  });
+
+  const nextBill = futureBills.length > 0 ? futureBills.reduce((earliest, current) => {
+    if (!earliest || !earliest.due_date || !current.due_date) return current;
+    const earliestDate = getActualNextDueDate(earliest.due_date, earliest.frequency);
+    const currentDate = getActualNextDueDate(current.due_date, current.frequency);
+    return currentDate < earliestDate ? current : earliest;
+  }, futureBills[0]) : null;
+
+  const nextBillDueDate = nextBill && nextBill.due_date
+    ? getActualNextDueDate(nextBill.due_date, nextBill.frequency).toISOString().split('T')[0] ?? ''
+    : '';
+
   return (
     <>
       {/* Breadcrumb */}
@@ -220,96 +294,16 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           </div>
 
           {/* Next Due */}
-          {(() => {
-            const getActualNextDueDate = (dueDate: string, frequency: string | null | undefined): Date => {
-              const storedDate = new Date(dueDate)
-              const today = new Date()
-              today.setHours(0, 0, 0, 0)
-
-              if (storedDate >= today) {
-                return storedDate
-              }
-
-              const freq = (frequency ?? 'monthly').toLowerCase()
-              let currentDate = new Date(storedDate)
-
-              switch (freq) {
-                case 'weekly':
-                  while (currentDate < today) {
-                    currentDate.setDate(currentDate.getDate() + 7)
-                  }
-                  break
-                case 'biweekly':
-                  while (currentDate < today) {
-                    currentDate.setDate(currentDate.getDate() + 14)
-                  }
-                  break
-                case 'monthly':
-                  const targetDay = storedDate.getDate()
-                  while (currentDate < today) {
-                    let nextMonth = currentDate.getMonth() + 1
-                    let nextYear = currentDate.getFullYear()
-                    if (nextMonth > 11) {
-                      nextMonth = 0
-                      nextYear++
-                    }
-                    const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate()
-                    const dayToUse = Math.min(targetDay, lastDayOfNextMonth)
-                    currentDate = new Date(nextYear, nextMonth, dayToUse)
-                  }
-                  break
-                case 'quarterly':
-                  while (currentDate < today) {
-                    currentDate.setMonth(currentDate.getMonth() + 3)
-                  }
-                  break
-                case 'annually':
-                  while (currentDate < today) {
-                    currentDate.setFullYear(currentDate.getFullYear() + 1)
-                  }
-                  break
-                default:
-                  return storedDate
-              }
-              return currentDate
-            }
-
-            const today = new Date()
-            today.setHours(0, 0, 0, 0)
-
-            const futureBills = activeBills.filter(bill => {
-              if (!bill.due_date) return false
-              const nextDate = getActualNextDueDate(bill.due_date, bill.frequency)
-              return nextDate >= today
-            })
-
-            if (futureBills.length === 0) {
-              return null
-            }
-
-            const nextBill = futureBills.reduce((earliest, current) => {
-              if (!earliest || !earliest.due_date || !current.due_date) return current
-              const earliestDate = getActualNextDueDate(earliest.due_date, earliest.frequency)
-              const currentDate = getActualNextDueDate(current.due_date, current.frequency)
-              return currentDate < earliestDate ? current : earliest
-            }, futureBills[0])
-
-            if (!nextBill || !nextBill.due_date) return null
-
-            const actualDueDate = getActualNextDueDate(nextBill.due_date, nextBill.frequency)
-            const dateString = actualDueDate.toISOString().split('T')[0] ?? ''
-
-            return (
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-blue-400" />
-                  <p className="text-sm text-blue-300 font-medium">
-                    Next due: {nextBill.name} on {formatDateOnly(dateString)}
-                  </p>
-                </div>
+          {nextBill && nextBillDueDate && (
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-blue-400" />
+                <p className="text-sm text-blue-300 font-medium">
+                  Next due: {nextBill.name} on {formatDateOnly(nextBillDueDate)}
+                </p>
               </div>
-            )
-          })()}
+            </div>
+          )}
         </div>
       )}
 
