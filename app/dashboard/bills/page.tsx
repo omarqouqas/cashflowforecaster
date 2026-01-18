@@ -9,29 +9,14 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Tables } from '@/types/supabase';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Receipt, ArrowLeft, Edit, Sparkles } from 'lucide-react';
+import { Receipt, ArrowLeft, Sparkles, Calendar, DollarSign } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
-import { DeleteBillButton } from '@/components/bills/delete-bill-button';
-import { ActiveToggleButton } from '@/components/ui/active-toggle-button';
+import { BillCard } from '@/components/bills/bill-card';
 import { getUserUsageStats } from '@/lib/stripe/feature-gate';
 import { GatedAddButton } from '@/components/subscription/gated-add-button';
+import { InfoTooltip } from '@/components/ui/tooltip';
 
 type Bill = Tables<'bills'>;
-
-// Category display labels
-const categoryLabels: Record<string, string> = {
-  rent: 'Rent/Mortgage',
-  utilities: 'Utilities',
-  subscriptions: 'Subscriptions',
-  insurance: 'Insurance',
-  other: 'Other',
-};
-
-function getCategoryLabel(category: string | null): string {
-  if (!category) return '';
-  return categoryLabels[category] || category;
-}
 
 interface BillsPageProps {
   searchParams: { success?: string };
@@ -108,22 +93,8 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-zinc-100">Bills</h2>
-            {/* Usage indicator */}
-            {billsLimit !== Infinity && (
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                isAtLimit 
-                  ? 'bg-amber-100 text-amber-700' 
-                  : isNearLimit
-                    ? 'bg-amber-50 text-amber-600'
-                    : 'bg-zinc-100 text-zinc-600'
-              }`}>
-                {billsCount}/{billsLimit}
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <h2 className="text-2xl font-bold text-zinc-100">Bills</h2>
+          <p className="text-sm text-zinc-400 mt-1">
             Track your recurring and one-time bills
           </p>
         </div>
@@ -138,32 +109,32 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       {/* Upgrade Banner - Show when at or near limit */}
       {(isAtLimit || isNearLimit) && (
         <div className={`rounded-lg p-4 mb-6 ${
-          isAtLimit 
-            ? 'bg-amber-50 border border-amber-200' 
-            : 'bg-blue-50 border border-blue-200'
+          isAtLimit
+            ? 'bg-amber-500/10 border border-amber-500/30'
+            : 'bg-teal-500/10 border border-teal-500/30'
         }`}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${
-                isAtLimit ? 'bg-amber-100' : 'bg-blue-100'
+                isAtLimit ? 'bg-amber-500/20' : 'bg-teal-500/20'
               }`}>
                 <Sparkles className={`w-5 h-5 ${
-                  isAtLimit ? 'text-amber-600' : 'text-blue-600'
+                  isAtLimit ? 'text-amber-400' : 'text-teal-400'
                 }`} />
               </div>
               <div>
                 <p className={`font-medium ${
-                  isAtLimit ? 'text-amber-900' : 'text-blue-900'
+                  isAtLimit ? 'text-amber-300' : 'text-teal-300'
                 }`}>
-                  {isAtLimit 
-                    ? "You've reached your bills limit" 
+                  {isAtLimit
+                    ? "You've reached your bills limit"
                     : `${billsLimit - billsCount} bills remaining`}
                 </p>
                 <p className={`text-sm ${
-                  isAtLimit ? 'text-amber-700' : 'text-blue-700'
+                  isAtLimit ? 'text-amber-400' : 'text-teal-400'
                 }`}>
-                  {isAtLimit 
-                    ? 'Upgrade to Pro for unlimited bill tracking' 
+                  {isAtLimit
+                    ? 'Upgrade to Pro for unlimited bill tracking'
                     : 'Upgrade anytime for unlimited tracking'}
                 </p>
               </div>
@@ -172,8 +143,8 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
               href="/#pricing"
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isAtLimit
-                  ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                  : 'bg-teal-500 hover:bg-teal-600 text-white'
               }`}
             >
               Upgrade
@@ -184,71 +155,163 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
       {/* Success Messages */}
       {success === 'bill-created' && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6">
-          <p className="text-sm text-green-800 dark:text-green-200">
-            ✓ Bill created successfully
-          </p>
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-6">
+          <p className="text-sm text-emerald-300">✓ Bill created successfully</p>
         </div>
       )}
       {success === 'bill-updated' && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6">
-          <p className="text-sm text-green-800 dark:text-green-200">
-            ✓ Bill updated successfully
-          </p>
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-6">
+          <p className="text-sm text-emerald-300">✓ Bill updated successfully</p>
         </div>
       )}
       {success === 'bill-deleted' && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-6">
-          <p className="text-sm text-green-800 dark:text-green-200">
-            ✓ Bill deleted successfully
-          </p>
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-6">
+          <p className="text-sm text-emerald-300">✓ Bill deleted successfully</p>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-          <p className="text-sm text-red-800 dark:text-red-200">
+        <div className="bg-rose-500/10 border border-rose-500/30 rounded-lg p-4 mb-6">
+          <p className="text-sm text-rose-300">
             Error loading bills. Please try refreshing the page.
           </p>
         </div>
       )}
 
-      {/* Summary Section */}
-      {!error && bills && bills.length > 0 && (
-        <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-6">
-          <div className="flex justify-between items-center">
-            <div className="flex-1">
+      {/* Quick Summary */}
+      {!error && billsList.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-zinc-100 mb-3">Quick Summary</h3>
+
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            {/* Monthly Bills */}
+            <div className="bg-rose-500/10 border border-rose-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Monthly Bills</p>
-                <button
-                  type="button"
-                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                  title="This is your average monthly bills. Weekly bills are converted to monthly (amount × 52 ÷ 12). Biweekly bills are converted to monthly (amount × 26 ÷ 12). Quarterly bills are converted to monthly (amount ÷ 3). Annually bills are converted to monthly (amount ÷ 12). One-time bills are excluded."
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
+                <Receipt className="w-4 h-4 text-rose-400" />
+                <p className="text-xs font-medium text-rose-300 uppercase tracking-wide">
+                  Monthly Bills
+                </p>
+                <InfoTooltip content="Estimated average monthly expenses. Weekly (×52÷12), biweekly (×26÷12), quarterly (÷3), and annual (÷12) bills are converted to monthly equivalents." />
               </div>
-              <p className="text-3xl font-bold text-red-600 dark:text-red-400">
+              <p className="text-2xl font-bold text-rose-300 tabular-nums">
                 {formatCurrency(monthlyTotal)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-rose-300/80 mt-0.5">
                 From {activeBills.length} active bill{activeBills.length !== 1 ? 's' : ''}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">
-                * Weekly = amount × 52 ÷ 12 | Biweekly = amount × 26 ÷ 12 | Quarterly = amount ÷ 3 | Annually = amount ÷ 12
+            </div>
+
+            {/* Total Bills */}
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <DollarSign className="w-4 h-4 text-amber-400" />
+                <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">
+                  Total Bills
+                </p>
+                <InfoTooltip content="Total number of bills you're tracking. Only active bills are included in forecasts." />
+              </div>
+              <p className="text-2xl font-bold text-amber-300 tabular-nums">
+                {billsList.length}
+              </p>
+              <p className="text-xs text-amber-300/80 mt-0.5">
+                {activeBills.length} active • {billsList.length - activeBills.length} inactive
               </p>
             </div>
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-              <Receipt className="w-8 h-8 text-red-600 dark:text-red-400" />
-            </div>
           </div>
+
+          {/* Next Due */}
+          {(() => {
+            const getActualNextDueDate = (dueDate: string, frequency: string | null | undefined): Date => {
+              const storedDate = new Date(dueDate)
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
+
+              if (storedDate >= today) {
+                return storedDate
+              }
+
+              const freq = (frequency ?? 'monthly').toLowerCase()
+              let currentDate = new Date(storedDate)
+
+              switch (freq) {
+                case 'weekly':
+                  while (currentDate < today) {
+                    currentDate.setDate(currentDate.getDate() + 7)
+                  }
+                  break
+                case 'biweekly':
+                  while (currentDate < today) {
+                    currentDate.setDate(currentDate.getDate() + 14)
+                  }
+                  break
+                case 'monthly':
+                  const targetDay = storedDate.getDate()
+                  while (currentDate < today) {
+                    let nextMonth = currentDate.getMonth() + 1
+                    let nextYear = currentDate.getFullYear()
+                    if (nextMonth > 11) {
+                      nextMonth = 0
+                      nextYear++
+                    }
+                    const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate()
+                    const dayToUse = Math.min(targetDay, lastDayOfNextMonth)
+                    currentDate = new Date(nextYear, nextMonth, dayToUse)
+                  }
+                  break
+                case 'quarterly':
+                  while (currentDate < today) {
+                    currentDate.setMonth(currentDate.getMonth() + 3)
+                  }
+                  break
+                case 'annually':
+                  while (currentDate < today) {
+                    currentDate.setFullYear(currentDate.getFullYear() + 1)
+                  }
+                  break
+                default:
+                  return storedDate
+              }
+              return currentDate
+            }
+
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+
+            const futureBills = activeBills.filter(bill => {
+              if (!bill.due_date) return false
+              const nextDate = getActualNextDueDate(bill.due_date, bill.frequency)
+              return nextDate >= today
+            })
+
+            if (futureBills.length === 0) {
+              return null
+            }
+
+            const nextBill = futureBills.reduce((earliest, current) => {
+              if (!earliest || !earliest.due_date || !current.due_date) return current
+              const earliestDate = getActualNextDueDate(earliest.due_date, earliest.frequency)
+              const currentDate = getActualNextDueDate(current.due_date, current.frequency)
+              return currentDate < earliestDate ? current : earliest
+            }, futureBills[0])
+
+            if (!nextBill || !nextBill.due_date) return null
+
+            const actualDueDate = getActualNextDueDate(nextBill.due_date, nextBill.frequency)
+            const dateString = actualDueDate.toISOString().split('T')[0] ?? ''
+
+            return (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-blue-400" />
+                  <p className="text-sm text-blue-300 font-medium">
+                    Next due: {nextBill.name} on {formatDateOnly(dateString)}
+                  </p>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       )}
 
@@ -256,16 +319,27 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       {!error && (
         <>
           {!bills || bills.length === 0 ? (
-            /* Empty State */
-            <div className="text-center py-12">
-              <Receipt className="w-10 h-10 mx-auto mb-3 text-zinc-400" />
-              <p className="text-zinc-500">No bills yet</p>
-              <p className="text-sm text-zinc-500 mt-1 mb-6">
-                Add your first bill to start tracking your expenses
-              </p>
-              <Link href="/dashboard/bills/new">
-                <Button variant="primary">Add Your First Bill</Button>
-              </Link>
+            /* Empty State */}
+            <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+              <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center py-10">
+                <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mb-6">
+                  <Receipt className="w-10 h-10 text-rose-500" />
+                </div>
+
+                <h2 className="text-xl font-semibold text-zinc-100 mb-2">Track your bills</h2>
+                <p className="text-zinc-400 mb-8 max-w-xs">
+                  Add your recurring and one-time bills to stay on top of your expenses and improve your cash flow.
+                </p>
+
+                <Link
+                  href="/dashboard/bills/new"
+                  className="w-full max-w-xs bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors min-h-[44px] inline-flex items-center justify-center"
+                >
+                  Add your first bill
+                </Link>
+
+                <p className="text-zinc-500 text-sm mt-6">Get started in seconds</p>
+              </div>
             </div>
           ) : (
             /* Bills List */
@@ -278,54 +352,5 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
         </>
       )}
     </>
-  );
-}
-
-function BillCard({ bill }: { bill: Bill }) {
-  return (
-    <div className="border border-zinc-200 bg-white rounded-lg p-4 hover:bg-zinc-50 transition-colors">
-      <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-base font-medium text-zinc-900 truncate">{bill.name}</p>
-          {bill.due_date ? (
-            <p className="text-sm text-zinc-500">Due: {formatDateOnly(bill.due_date)}</p>
-          ) : (
-            <p className="text-sm text-zinc-500">&nbsp;</p>
-          )}
-
-          <div className="flex gap-2 flex-wrap mt-2">
-            {bill.category && (
-              <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded">
-                {getCategoryLabel(bill.category)}
-              </span>
-            )}
-            <span className="bg-zinc-100 text-zinc-600 text-xs font-medium px-2 py-0.5 rounded capitalize">
-              {bill.frequency}
-            </span>
-            <ActiveToggleButton
-              id={bill.id}
-              isActive={bill.is_active ?? true}
-              tableName="bills"
-              itemName={bill.name}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <p className="text-lg font-semibold tabular-nums text-rose-600">
-            {formatCurrency(bill.amount)}
-          </p>
-          <Link href={`/dashboard/bills/${bill.id}/edit`}>
-            <button
-              className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded transition-colors"
-              aria-label="Edit bill"
-            >
-              <Edit className="w-4 h-4" />
-            </button>
-          </Link>
-          <DeleteBillButton billId={bill.id} billName={bill.name} />
-        </div>
-      </div>
-    </div>
   );
 }
