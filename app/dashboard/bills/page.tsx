@@ -76,6 +76,51 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
   return currentDate;
 }
 
+// Helper function to calculate monthly bill total
+function calculateMonthlyTotal(billsList: any[]) {
+  return billsList.reduce(function(total, bill) {
+    if (!bill.is_active) return total;
+
+    switch (bill.frequency) {
+      case 'weekly':
+        return total + (bill.amount * 52) / 12;
+      case 'biweekly':
+        return total + (bill.amount * 26) / 12;
+      case 'monthly':
+        return total + bill.amount * 1;
+      case 'quarterly':
+        return total + bill.amount / 3;
+      case 'annually':
+        return total + bill.amount / 12;
+      case 'one-time':
+        return total;
+      default:
+        return total;
+    }
+  }, 0);
+}
+
+// Helper function to get next due bill
+function getNextDueBill(activeBills: any[]) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const futureBills = activeBills.filter(function(bill) {
+    if (!bill.due_date) return false;
+    const nextDate = getActualNextDueDate(bill.due_date, bill.frequency);
+    return nextDate >= today;
+  });
+
+  if (futureBills.length === 0) return null;
+
+  return futureBills.reduce(function(earliest, current) {
+    if (!earliest || !earliest.due_date || !current.due_date) return current;
+    const earliestDate = getActualNextDueDate(earliest.due_date, earliest.frequency);
+    const currentDate = getActualNextDueDate(current.due_date, current.frequency);
+    return currentDate < earliestDate ? current : earliest;
+  }, futureBills[0]);
+}
+
 export default async function BillsPage({ searchParams }: BillsPageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
@@ -99,56 +144,23 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const success = searchParams?.success;
 
   const billsList = (bills || []) as any[];
-
-  // Calculate total monthly bills
-  const monthlyTotal = billsList.reduce(function(total, bill) {
-    if (!bill.is_active) return total;
-
-    switch (bill.frequency) {
-      case 'weekly':
-        return total + (bill.amount * 52) / 12;
-      case 'biweekly':
-        return total + (bill.amount * 26) / 12;
-      case 'monthly':
-        return total + bill.amount * 1;
-      case 'quarterly':
-        return total + bill.amount / 3;
-      case 'annually':
-        return total + bill.amount / 12;
-      case 'one-time':
-        return total;
-      default:
-        return total;
-    }
-  }, 0);
-
+  const monthlyTotal = calculateMonthlyTotal(billsList);
   const activeBills = billsList.filter(function(b) { return b.is_active; });
 
   // Feature gating
-  const { current: billsCount, limit: billsLimit } = usageStats.bills;
+  const billsCount = usageStats.bills.current;
+  const billsLimit = usageStats.bills.limit;
   const isAtLimit = billsLimit !== Infinity && billsCount >= billsLimit;
   const isNearLimit = billsLimit !== Infinity && billsCount >= billsLimit - 2 && !isAtLimit;
 
   // Calculate next due bill
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const futureBills = activeBills.filter(function(bill) {
-    if (!bill.due_date) return false;
-    const nextDate = getActualNextDueDate(bill.due_date, bill.frequency);
-    return nextDate >= today;
-  });
-
-  const nextBill = futureBills.length > 0 ? futureBills.reduce(function(earliest, current) {
-    if (!earliest || !earliest.due_date || !current.due_date) return current;
-    const earliestDate = getActualNextDueDate(earliest.due_date, earliest.frequency);
-    const currentDate = getActualNextDueDate(current.due_date, current.frequency);
-    return currentDate < earliestDate ? current : earliest;
-  }, futureBills[0]) : null;
-
-  const nextBillDueDate = nextBill && nextBill.due_date
-    ? getActualNextDueDate(nextBill.due_date, nextBill.frequency).toISOString().split('T')[0] ?? ''
-    : '';
+  const nextBill = getNextDueBill(activeBills);
+  let nextBillDueDate = '';
+  if (nextBill && nextBill.due_date) {
+    const dueDateObj = getActualNextDueDate(nextBill.due_date, nextBill.frequency);
+    const parts = dueDateObj.toISOString().split('T');
+    nextBillDueDate = parts[0] || '';
+  }
 
   return (
     <>
