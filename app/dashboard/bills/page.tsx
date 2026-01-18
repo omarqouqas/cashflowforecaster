@@ -329,7 +329,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       {!error && (
         <>
           {!bills || bills.length === 0 ? (
-            /* Empty State */}
+            /* Empty State */
             <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
               <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center py-10">
                 <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mb-6">
