@@ -1,6 +1,6 @@
 // app/dashboard/bills/page.tsx
 // ============================================
-// Bills Page - With Feature Gating
+// Bills Page - With Feature Gating & Dark Theme
 // ============================================
 
 export const dynamic = 'force-dynamic';
