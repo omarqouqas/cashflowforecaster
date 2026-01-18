@@ -821,10 +821,10 @@ User Request
   - Enhanced drag-and-drop upload with visual feedback
   - Improved review table with dark theme styling
 - Invoices pages YNAB-inspired redesign:
-  - Applied dark theme to list page and create form
+  - Applied dark theme to list page, create form, and edit form
   - Added summary stats cards (total outstanding, awaiting payment, overdue count)
   - Updated status badges for dark theme (draft/sent/viewed/paid with proper colors)
-  - Added payment terms helper buttons (Net-15/30/60)
+  - Added payment terms helper buttons (Net-15/30/60) to create and edit forms
   - Enhanced empty state with value proposition
   - Improved table density and visual hierarchy
   - Updated Input component to dark theme globally
