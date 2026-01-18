@@ -75,7 +75,7 @@ function ActionSelect({
       value={value}
       onChange={(e) => onChange(e.target.value as ImportAction)}
       className={[
-        'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[40px]',
+        'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[40px]',
         'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
       ].join(' ')}
     >
@@ -337,12 +337,12 @@ export function TransactionSelector({
   };
 
   return (
-    <div className="border border-zinc-200 bg-white rounded-lg p-6">
+    <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-base font-semibold text-zinc-900">Review transactions</p>
+          <p className="text-base font-semibold text-zinc-100">Review transactions</p>
           <p className="text-sm text-zinc-500 mt-1">
-            File: <span className="font-medium text-zinc-700">{fileName}</span>
+            File: <span className="font-medium text-zinc-300">{fileName}</span>
           </p>
         </div>
         <div className="flex gap-2">
@@ -357,7 +357,7 @@ export function TransactionSelector({
 
       <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2">
-          <label className="text-sm text-zinc-700 block mb-1.5">
+          <label className="text-sm text-zinc-300 block mb-1.5">
             Only import transactions after:
           </label>
           <Input
@@ -367,12 +367,12 @@ export function TransactionSelector({
           />
           {cutoffHuman && (
             <p className="text-xs text-zinc-500 mt-1.5">
-              Filtering from <span className="font-medium text-zinc-700">{cutoffHuman}</span>
+              Filtering from <span className="font-medium text-zinc-300">{cutoffHuman}</span>
             </p>
           )}
         </div>
         <div className="flex items-end">
-          <div className="text-sm text-zinc-600">
+          <div className="text-sm text-zinc-400">
             Showing <span className="font-semibold">{dateFilteredTransactions.length}</span> of{' '}
             <span className="font-semibold">{transactions.length}</span> transactions (filtered by date)
           </div>
@@ -392,7 +392,7 @@ export function TransactionSelector({
             value={direction}
             onChange={(e) => setDirection(e.target.value as any)}
             className={[
-              'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
+              'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
               'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
             ].join(' ')}
           >
@@ -400,19 +400,19 @@ export function TransactionSelector({
             <option value="in">Money in</option>
             <option value="out">Money out</option>
           </select>
-          <label className="flex items-center gap-2 text-sm text-zinc-700 select-none">
+          <label className="flex items-center gap-2 text-sm text-zinc-300 select-none">
             <input
               type="checkbox"
               checked={showSelectedOnly}
               onChange={(e) => setShowSelectedOnly(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+              className="h-4 w-4 rounded border-zinc-300 text-zinc-100 focus:ring-2 focus:ring-zinc-900"
             />
             Selected only
           </label>
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-zinc-600">
+      <div className="mt-4 text-sm text-zinc-400">
         {counts.total === 0 ? (
           <span>Select rows to import.</span>
         ) : (
@@ -423,8 +423,8 @@ export function TransactionSelector({
       </div>
 
       {tier === 'free' && (billsLimit !== null || incomeLimit !== null) && (
-        <div className="mt-3 text-sm text-zinc-600">
-          <span className="font-medium text-zinc-700">Free tier remaining:</span>{' '}
+        <div className="mt-3 text-sm text-zinc-400">
+          <span className="font-medium text-zinc-300">Free tier remaining:</span>{' '}
           <span>
             {limits.billsRemaining === Infinity ? '∞' : limits.billsRemaining} bills,{' '}
             {limits.incomeRemaining === Infinity ? '∞' : limits.incomeRemaining} income sources
@@ -471,16 +471,16 @@ export function TransactionSelector({
       )}
 
       {/* Phase 2 hint */}
-      <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-        <p className="text-sm text-zinc-700 font-medium">Invoice matching coming soon</p>
-        <p className="text-sm text-zinc-600 mt-1">
+      <div className="mt-4 rounded-lg border border-zinc-700 bg-zinc-800 p-3">
+        <p className="text-sm text-zinc-300 font-medium">Invoice matching coming soon</p>
+        <p className="text-sm text-zinc-400 mt-1">
           Soon you&apos;ll be able to match imported transactions to unpaid invoices and mark them as paid.
         </p>
       </div>
 
-      <div className="mt-5 overflow-auto border border-zinc-200 rounded-lg">
+      <div className="mt-5 overflow-auto border border-zinc-700 rounded-lg">
         <table className="min-w-[800px] w-full text-sm">
-          <thead className="bg-zinc-50">
+          <thead className="bg-zinc-800">
             <tr>
               <th className="text-left px-3 py-2 w-[44px]"> </th>
               <th className="text-left px-3 py-2 w-[130px]">
@@ -494,7 +494,7 @@ export function TransactionSelector({
                       if (e.target.checked) selectAllVisible();
                       else deselectAllVisible();
                     }}
-                    className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+                    className="h-4 w-4 rounded border-zinc-300 text-zinc-100 focus:ring-2 focus:ring-zinc-900"
                     aria-label="Select all visible transactions"
                   />
                   <span>Date</span>
@@ -515,11 +515,11 @@ export function TransactionSelector({
                       type="checkbox"
                       checked={t.selected}
                       onChange={(e) => setRowSelected(t.id, e.target.checked)}
-                      className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+                      className="h-4 w-4 rounded border-zinc-300 text-zinc-100 focus:ring-2 focus:ring-zinc-900"
                     />
                   </td>
-                  <td className="px-3 py-2 text-zinc-700 tabular-nums">{t.transaction_date}</td>
-                  <td className="px-3 py-2 text-zinc-900">
+                  <td className="px-3 py-2 text-zinc-300 tabular-nums">{t.transaction_date}</td>
+                  <td className="px-3 py-2 text-zinc-100">
                     <div className="truncate max-w-[520px]" title={t.description}>
                       {t.description}
                     </div>

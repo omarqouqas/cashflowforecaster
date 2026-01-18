@@ -23,14 +23,14 @@ function Select({
 }) {
   return (
     <div>
-      <Label className="text-zinc-700 mb-1.5 block">{label}</Label>
+      <Label className="text-zinc-300 mb-1.5 block">{label}</Label>
       <div className="relative">
         <select
           value={value === null ? '' : String(value)}
           onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
           className={[
-            'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-            'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+            'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+            'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
           ].join(' ')}
         >
           <option value="">Select column…</option>
@@ -63,9 +63,9 @@ export function ColumnMapper({ headers, mapping, onChange }: Props) {
   const isComplete = mapping.dateIndex !== null && mapping.descriptionIndex !== null && mapping.amountIndex !== null && !hasDupes;
 
   return (
-    <div className="border border-zinc-200 bg-white rounded-lg p-6">
-      <p className="text-base font-semibold text-zinc-900">Map your columns</p>
-      <p className="text-sm text-zinc-500 mt-1">
+    <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+      <p className="text-base font-semibold text-zinc-100">Map your columns</p>
+      <p className="text-sm text-zinc-400 mt-1">
         Tell us which columns contain the date, description, and amount.
       </p>
 
@@ -91,13 +91,13 @@ export function ColumnMapper({ headers, mapping, onChange }: Props) {
       </div>
 
       {!isComplete && (
-        <p className="text-sm text-amber-700 mt-4">
+        <p className="text-sm text-amber-400 mt-4">
           Select three different columns to continue.
         </p>
       )}
 
       {hasDupes && (
-        <p className="text-sm text-rose-600 mt-2">
+        <p className="text-sm text-rose-400 mt-2">
           Each field must map to a different column.
         </p>
       )}

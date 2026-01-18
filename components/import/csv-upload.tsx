@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { parseCsv, type CsvParseResult } from '@/lib/import/parse-csv';
 
@@ -11,6 +12,7 @@ type Props = {
 export function CsvUpload({ onLoaded }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFile = async (file: File | null) => {
     setError(null);
@@ -37,23 +39,54 @@ export function CsvUpload({ onLoaded }: Props) {
     }
   };
 
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className="border border-zinc-200 bg-white rounded-lg p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-base font-semibold text-zinc-900">Upload your bank CSV</p>
-          <p className="text-sm text-zinc-500 mt-1">
-            Export transactions from your bank and upload the CSV here. You&apos;ll review everything before importing.
+    <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+      <div
+        className={`border-2 border-dashed rounded-lg p-8 transition-colors ${
+          isDragging
+            ? 'border-teal-500 bg-teal-500/10'
+            : 'border-zinc-700 hover:border-zinc-600'
+        }`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-4">
+            <Upload className="w-8 h-8 text-teal-400" />
+          </div>
+          <p className="text-base font-semibold text-zinc-100 mb-2">Upload your bank CSV</p>
+          <p className="text-sm text-zinc-400 mb-4 max-w-md">
+            Drag and drop your CSV file here, or click the button below to browse
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => document.getElementById('csv-file-input')?.click()}
+            loading={isLoading}
+          >
+            Choose file
+          </Button>
+          <p className="text-xs text-zinc-500 mt-3">
+            Accepts .csv files only
           </p>
         </div>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => document.getElementById('csv-file-input')?.click()}
-          loading={isLoading}
-        >
-          Choose file
-        </Button>
       </div>
 
       <input
@@ -64,7 +97,11 @@ export function CsvUpload({ onLoaded }: Props) {
         onChange={(e) => void handleFile(e.target.files?.[0] ?? null)}
       />
 
-      {error && <p className="text-sm text-rose-600 mt-4">{error}</p>}
+      {error && (
+        <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg">
+          <p className="text-sm text-rose-400">{error}</p>
+        </div>
+      )}
     </div>
   );
 }

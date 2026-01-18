@@ -60,6 +60,32 @@ function remainingSlots(limit: number | null, current: number): number {
   return Math.max(0, limit - current);
 }
 
+// Auto-detect column indices based on common header names
+function autoDetectColumns(headers: string[]): ColumnMapping {
+  const datePatterns = /^(date|posted.*date|transaction.*date|trans.*date|posting.*date)$/i;
+  const descriptionPatterns = /^(description|payee|memo|merchant|name|narrative|details?)$/i;
+  const amountPatterns = /^(amount|total|debit|credit|value|sum)$/i;
+
+  let dateIndex: number | null = null;
+  let descriptionIndex: number | null = null;
+  let amountIndex: number | null = null;
+
+  headers.forEach((header, idx) => {
+    const trimmed = header.trim();
+    if (dateIndex === null && datePatterns.test(trimmed)) {
+      dateIndex = idx;
+    }
+    if (descriptionIndex === null && descriptionPatterns.test(trimmed)) {
+      descriptionIndex = idx;
+    }
+    if (amountIndex === null && amountPatterns.test(trimmed)) {
+      amountIndex = idx;
+    }
+  });
+
+  return { dateIndex, descriptionIndex, amountIndex };
+}
+
 export function ImportPageClient({ userId, usage }: Props) {
   const router = useRouter();
   const [loaded, setLoaded] = useState<LoadedCsv | null>(null);
@@ -275,8 +301,8 @@ export function ImportPageClient({ userId, usage }: Props) {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Import transactions</h1>
-        <p className="text-sm text-zinc-600 mt-1">
+        <h1 className="text-2xl font-bold text-zinc-100">Import transactions</h1>
+        <p className="text-sm text-zinc-400 mt-1">
           Upload a CSV export from your bank, map columns, then select the transactions you want to track.
         </p>
         {usage.tier === 'free' && (
@@ -290,22 +316,23 @@ export function ImportPageClient({ userId, usage }: Props) {
       <CsvUpload
         onLoaded={({ fileName, parsed }) => {
           setLoaded({ fileName, headers: parsed.headers, rows: parsed.rows });
-          setMapping({ dateIndex: null, descriptionIndex: null, amountIndex: null });
+          const detectedMapping = autoDetectColumns(parsed.headers);
+          setMapping(detectedMapping);
         }}
       />
 
       {preview && (
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
-          <p className="text-base font-semibold text-zinc-900">Preview (first 10 rows)</p>
-          <p className="text-sm text-zinc-500 mt-1">
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+          <p className="text-base font-semibold text-zinc-100">Preview (first 10 rows)</p>
+          <p className="text-sm text-zinc-400 mt-1">
             This is just a preview. You&apos;ll choose which rows to import later.
           </p>
-          <div className="mt-4 overflow-auto border border-zinc-200 rounded-lg">
-            <table className="min-w-[800px] w-full text-sm">
-              <thead className="bg-zinc-50">
+          <div className="mt-4 overflow-auto border border-zinc-800 rounded-lg">
+            <table className="min-w-full w-full text-sm">
+              <thead className="bg-zinc-800">
                 <tr>
                   {preview.headers.map((h, idx) => (
-                    <th key={`${h}-${idx}`} className="text-left px-3 py-2 whitespace-nowrap">
+                    <th key={`${h}-${idx}`} className="text-left px-3 py-2 whitespace-nowrap text-zinc-300 font-medium">
                       {h || `(Column ${idx + 1})`}
                     </th>
                   ))}
@@ -313,9 +340,9 @@ export function ImportPageClient({ userId, usage }: Props) {
               </thead>
               <tbody>
                 {preview.rows.map((row, rIdx) => (
-                  <tr key={rIdx} className="border-t border-zinc-100">
+                  <tr key={rIdx} className="border-t border-zinc-800">
                     {preview.headers.map((_, cIdx) => (
-                      <td key={cIdx} className="px-3 py-2 text-zinc-700 whitespace-nowrap">
+                      <td key={cIdx} className="px-3 py-2 text-zinc-400 whitespace-nowrap">
                         {row[cIdx] ?? ''}
                       </td>
                     ))}
@@ -344,9 +371,9 @@ export function ImportPageClient({ userId, usage }: Props) {
       )}
 
       {loaded && mappingReady && normalizedTransactions.length === 0 && (
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
-          <p className="text-base font-semibold text-zinc-900">No transactions found</p>
-          <p className="text-sm text-zinc-500 mt-1">
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+          <p className="text-base font-semibold text-zinc-100">No transactions found</p>
+          <p className="text-sm text-zinc-400 mt-1">
             We couldn&apos;t parse any rows with the selected mapping. Try adjusting the column mapping.
           </p>
         </div>
