@@ -100,6 +100,11 @@ function calculateMonthlyTotal(billsList: any[]) {
   }, 0);
 }
 
+// Helper function to get active bills
+function getActiveBills(billsList: any[]) {
+  return billsList.filter(function(b) { return b.is_active; });
+}
+
 // Helper function to get next due bill
 function getNextDueBill(activeBills: any[]) {
   const today = new Date();
@@ -145,7 +150,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
   const billsList = (bills || []) as any[];
   const monthlyTotal = calculateMonthlyTotal(billsList);
-  const activeBills = billsList.filter(function(b) { return b.is_active; });
+  const activeBills = getActiveBills(billsList);
 
   // Feature gating
   const billsCount = usageStats.bills.current;
