@@ -2,7 +2,7 @@
 
 import { Tables } from '@/types/supabase'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, Clock, Edit, Briefcase, DollarSign, FileText, RefreshCw } from 'lucide-react'
+import { CheckCircle2, Clock, Edit, Briefcase, DollarSign, FileText } from 'lucide-react'
 import { DeleteIncomeButton } from './delete-income-button'
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format'
 import { ActiveToggleButton } from '@/components/ui/active-toggle-button'
