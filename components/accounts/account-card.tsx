@@ -7,6 +7,7 @@ import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle } from 'lucide-react'
 import { formatCurrency, formatRelativeTime } from '@/lib/utils/format'
 import { DeleteAccountButton } from '@/components/accounts/delete-account-button'
 import { SpendableToggleButton } from '@/components/accounts/spendable-toggle-button'
+import { Tooltip } from '@/components/ui/tooltip'
 import { differenceInDays } from 'date-fns'
 
 type Account = Tables<'accounts'>
@@ -136,11 +137,13 @@ export function AccountCard({ account }: { account: Account }) {
                 Edit
               </Button>
             </Link>
-            <SpendableToggleButton
-              id={account.id}
-              isSpendable={isSpendable}
-              accountName={account.name}
-            />
+            <Tooltip content="Spendable accounts are included in your cash flow forecast. Turn off for savings accounts or funds you don't regularly spend.">
+              <SpendableToggleButton
+                id={account.id}
+                isSpendable={isSpendable}
+                accountName={account.name}
+              />
+            </Tooltip>
             <DeleteAccountButton accountId={account.id} accountName={account.name} />
           </div>
         </div>
