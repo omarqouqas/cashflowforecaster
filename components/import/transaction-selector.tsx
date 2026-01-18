@@ -15,6 +15,7 @@ export type NormalizedTransaction = {
   amount: number; // signed
   raw_data: unknown;
   original_row_number: number | null;
+  isPotentialDuplicate?: boolean;
 };
 
 type Props = {
@@ -412,14 +413,27 @@ export function TransactionSelector({
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-zinc-400">
-        {counts.total === 0 ? (
-          <span>Select rows to import.</span>
-        ) : (
-          <span>
-            Ready to import: <span className="font-semibold">{counts.total}</span> (Income: {counts.income}, Bills: {counts.bill})
-          </span>
-        )}
+      <div className="mt-4 space-y-2">
+        <div className="text-sm text-zinc-400">
+          {counts.total === 0 ? (
+            <span>Select rows to import.</span>
+          ) : (
+            <span>
+              Ready to import: <span className="font-semibold">{counts.total}</span> (Income: {counts.income}, Bills: {counts.bill})
+            </span>
+          )}
+        </div>
+        {(() => {
+          const dupeCount = visibleRows.filter((t) => t.isPotentialDuplicate).length;
+          if (dupeCount > 0) {
+            return (
+              <div className="text-sm text-amber-400 flex items-center gap-1">
+                ⚠ {dupeCount} possible duplicate{dupeCount === 1 ? '' : 's'} detected
+              </div>
+            );
+          }
+          return null;
+        })()}
       </div>
 
       {tier === 'free' && (billsLimit !== null || incomeLimit !== null) && (
@@ -507,21 +521,29 @@ export function TransactionSelector({
           </thead>
           <tbody>
             {visibleRows.map((t) => {
-              const amountColor = t.amount >= 0 ? 'text-emerald-700' : 'text-rose-700';
+              const amountColor = t.amount >= 0 ? 'text-emerald-400' : 'text-rose-400';
+              const isDupe = t.isPotentialDuplicate;
               return (
-                <tr key={t.id} className="border-t border-zinc-100">
+                <tr key={t.id} className={`border-t border-zinc-800 ${isDupe ? 'bg-amber-500/5' : ''}`}>
                   <td className="px-3 py-2">
                     <input
                       type="checkbox"
                       checked={t.selected}
                       onChange={(e) => setRowSelected(t.id, e.target.checked)}
-                      className="h-4 w-4 rounded border-zinc-300 text-zinc-100 focus:ring-2 focus:ring-zinc-900"
+                      className="h-4 w-4 rounded border-zinc-600 text-teal-500 focus:ring-2 focus:ring-teal-500"
                     />
                   </td>
                   <td className="px-3 py-2 text-zinc-300 tabular-nums">{t.transaction_date}</td>
                   <td className="px-3 py-2 text-zinc-100">
-                    <div className="truncate max-w-[520px]" title={t.description}>
-                      {t.description}
+                    <div className="flex items-center gap-2">
+                      <div className="truncate max-w-[520px]" title={t.description}>
+                        {t.description}
+                      </div>
+                      {isDupe && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30 whitespace-nowrap">
+                          Possible duplicate
+                        </span>
+                      )}
                     </div>
                     {t.original_row_number !== null && (
                       <div className="text-xs text-zinc-500 mt-0.5">Row {t.original_row_number}</div>

@@ -1,12 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { CsvUpload } from '@/components/import/csv-upload';
 import { ColumnMapper } from '@/components/import/column-mapper';
 import { TransactionSelector, type NormalizedTransaction } from '@/components/import/transaction-selector';
+import { StepIndicator } from '@/components/import/step-indicator';
 import { type ColumnMapping, parseUsAmount, parseUsDateToIsoDate } from '@/lib/import/parse-csv';
 import { createClient } from '@/lib/supabase/client';
 import { showError, showSuccess } from '@/lib/toast';
@@ -102,6 +103,31 @@ export function ImportPageClient({ userId, usage }: Props) {
     limit: undefined,
   });
 
+  const [existingTransactions, setExistingTransactions] = useState<Array<{
+    posted_at: string;
+    description: string;
+    amount: number;
+  }>>([]);
+
+  // Load existing imported transactions for duplicate detection
+  useEffect(() => {
+    const loadExisting = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('imported_transactions')
+        .select('posted_at, description, amount')
+        .eq('user_id', userId)
+        .order('posted_at', { ascending: false })
+        .limit(500); // Last 500 transactions should be enough for duplicate detection
+
+      if (data) {
+        setExistingTransactions(data);
+      }
+    };
+
+    loadExisting();
+  }, [userId]);
+
   const preview = useMemo(() => {
     if (!loaded) return null;
     return {
@@ -121,13 +147,23 @@ export function ImportPageClient({ userId, usage }: Props) {
     for (let i = 0; i < loaded.rows.length; i++) {
       const normalized = normalizeRow(loaded.rows[i] ?? [], mapping, i + 2 /* header is row 1 */);
       if (!normalized) continue;
+
+      // Check for potential duplicate
+      const isDuplicate = existingTransactions.some(
+        (existing) =>
+          existing.posted_at === normalized.transaction_date &&
+          existing.description.toLowerCase().trim() === normalized.description.toLowerCase().trim() &&
+          Math.abs(existing.amount - normalized.amount) < 0.01 // Allow for small floating point differences
+      );
+
       result.push({
         id: crypto.randomUUID(),
         ...normalized,
+        isPotentialDuplicate: isDuplicate,
       });
     }
     return result;
-  }, [loaded, mapping]);
+  }, [loaded, mapping, existingTransactions]);
 
   const mappingReady =
     mapping.dateIndex !== null &&
@@ -312,6 +348,27 @@ export function ImportPageClient({ userId, usage }: Props) {
           </p>
         )}
       </div>
+
+      {/* Step Indicator */}
+      <StepIndicator
+        steps={[
+          {
+            number: 1,
+            title: 'Upload CSV',
+            status: !loaded ? 'current' : 'completed',
+          },
+          {
+            number: 2,
+            title: 'Map Columns',
+            status: !loaded ? 'pending' : mappingReady ? 'completed' : 'current',
+          },
+          {
+            number: 3,
+            title: 'Select & Import',
+            status: !loaded || !mappingReady ? 'pending' : 'current',
+          },
+        ]}
+      />
 
       <CsvUpload
         onLoaded={({ fileName, parsed }) => {
