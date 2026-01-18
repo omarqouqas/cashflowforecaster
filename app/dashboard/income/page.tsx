@@ -287,13 +287,14 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
             }, futureIncomes[0])
 
             const actualNextDate = getActualNextDate(nextIncome.next_date, nextIncome.frequency)
+            const dateString = actualNextDate.toISOString().split('T')[0] ?? ''
 
             return (
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-400" />
                   <p className="text-sm text-blue-300 font-medium">
-                    Next payment: {nextIncome.name} on {formatDateOnly(actualNextDate.toISOString().split('T')[0])}
+                    Next payment: {nextIncome.name} on {formatDateOnly(dateString)}
                   </p>
                 </div>
               </div>
