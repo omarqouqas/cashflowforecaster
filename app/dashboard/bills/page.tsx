@@ -7,7 +7,6 @@ export const dynamic = 'force-dynamic';
 
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
-import { Tables } from '@/types/supabase';
 import Link from 'next/link';
 import { Receipt, ArrowLeft, Sparkles, Calendar, DollarSign } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
@@ -15,8 +14,6 @@ import { BillCard } from '@/components/bills/bill-card';
 import { getUserUsageStats } from '@/lib/stripe/feature-gate';
 import { GatedAddButton } from '@/components/subscription/gated-add-button';
 import { InfoTooltip } from '@/components/ui/tooltip';
-
-type Bill = Tables<'bills'>;
 
 interface BillsPageProps {
   searchParams: { success?: string };
