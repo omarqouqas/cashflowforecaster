@@ -2,10 +2,11 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Wallet, ArrowLeft } from 'lucide-react';
+import { Wallet, ArrowLeft, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import { AccountCard } from '@/components/accounts/account-card';
 import { InfoTooltip } from '@/components/ui/tooltip';
+import { differenceInDays } from 'date-fns';
 
 interface AccountsPageProps {
   searchParams: { success?: string };
@@ -34,6 +35,16 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
     const spendable = a.is_spendable ?? true;
     return spendable ? sum + (a.current_balance || 0) : sum;
   }, 0);
+
+  // Calculate account health metrics
+  const today = new Date();
+  const staleAccounts = accountList.filter(account => {
+    if (!account.updated_at) return true;
+    const daysSinceUpdate = differenceInDays(today, new Date(account.updated_at));
+    return daysSinceUpdate > 7;
+  });
+
+  const spendableCount = accountList.filter(a => a.is_spendable ?? true).length;
 
   return (
     <>
@@ -87,32 +98,72 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
         </div>
       )}
 
-      {/* Summary */}
+      {/* Quick Summary */}
       {!error && accountList.length > 0 && (
-        <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-6 mb-6">
-          <div className="flex justify-between items-start gap-4">
-            <div className="flex-1 min-w-0">
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-zinc-100 mb-3">Quick Summary</h3>
+
+          {/* Balance Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            {/* Total Balance */}
+            <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm text-zinc-400">Total Balance</p>
+                <Wallet className="w-4 h-4 text-teal-400" />
+                <p className="text-xs font-medium text-teal-300 uppercase tracking-wide">
+                  Total Balance
+                </p>
                 <InfoTooltip content="Sum of current balances across all accounts." />
               </div>
-              <p className="text-3xl font-bold text-teal-300 tabular-nums">
+              <p className="text-2xl font-bold text-teal-300 tabular-nums">
                 {formatCurrency(totalBalance, currency)}
               </p>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-teal-300/80 mt-0.5">
                 Across {accountList.length} account{accountList.length !== 1 ? 's' : ''}
-              </p>
-              <p className="text-sm text-zinc-300 mt-2">
-                Spendable:{' '}
-                <span className="font-semibold tabular-nums text-emerald-400">
-                  {formatCurrency(spendableTotal, currency)}
-                </span>
               </p>
             </div>
 
-            <div className="w-16 h-16 bg-teal-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <Wallet className="w-8 h-8 text-teal-300" />
+            {/* Spendable */}
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <p className="text-xs font-medium text-emerald-300 uppercase tracking-wide">
+                  Spendable
+                </p>
+                <InfoTooltip content="Total balance from accounts marked as spendable. These are used in your cash flow forecast." />
+              </div>
+              <p className="text-2xl font-bold text-emerald-400 tabular-nums">
+                {formatCurrency(spendableTotal, currency)}
+              </p>
+              <p className="text-xs text-emerald-300/80 mt-0.5">
+                {spendableCount} spendable account{spendableCount !== 1 ? 's' : ''}
+              </p>
             </div>
+          </div>
+
+          {/* Account Health Status */}
+          <div className="grid grid-cols-1 gap-3">
+            {staleAccounts.length > 0 ? (
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertCircle className="w-4 h-4 text-amber-400" />
+                  <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">
+                    Needs Update
+                  </p>
+                </div>
+                <p className="text-sm text-amber-300">
+                  {staleAccounts.length} account{staleAccounts.length !== 1 ? 's' : ''} not updated in 7+ days
+                </p>
+              </div>
+            ) : (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <p className="text-sm text-emerald-300 font-medium">
+                    All accounts current (updated within 7 days)
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
