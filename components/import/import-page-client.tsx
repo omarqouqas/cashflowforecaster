@@ -268,9 +268,9 @@ export function ImportPageClient({ userId, usage }: Props) {
     <div className="max-w-5xl mx-auto space-y-6">
       <Link
         href="/dashboard"
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1"
+        className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
         Back to Dashboard
       </Link>
 

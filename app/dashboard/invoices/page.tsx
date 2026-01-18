@@ -83,9 +83,9 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4 mr-1" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Dashboard
         </Link>
       </div>

@@ -7,7 +7,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
-import { ChevronRight, FileText } from 'lucide-react';
+import { ChevronRight, FileText, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
@@ -58,18 +58,15 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto">
         {/* Breadcrumb */}
-        <nav className="mb-6">
+        <div className="mb-6">
           <Link
             href="/dashboard"
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group"
           >
-            ← Back to Dashboard
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Back to Dashboard
           </Link>
-          <span className="text-sm text-gray-400 dark:text-gray-500 mx-2">/</span>
-          <span className="text-sm text-gray-900 dark:text-white font-medium">
-            Settings
-          </span>
-        </nav>
+        </div>
 
         <h1 className="text-2xl font-bold mb-6 text-zinc-100">
           Settings
