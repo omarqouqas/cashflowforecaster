@@ -22,6 +22,60 @@ interface BillsPageProps {
   searchParams: { success?: string };
 }
 
+// Helper function to calculate next due date for recurring bills
+function getActualNextDueDate(dueDate: string, frequency: string | null | undefined): Date {
+  const storedDate = new Date(dueDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (storedDate >= today) {
+    return storedDate;
+  }
+
+  const freq = (frequency ?? 'monthly').toLowerCase();
+  let currentDate = new Date(storedDate);
+
+  switch (freq) {
+    case 'weekly':
+      while (currentDate < today) {
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+      break;
+    case 'biweekly':
+      while (currentDate < today) {
+        currentDate.setDate(currentDate.getDate() + 14);
+      }
+      break;
+    case 'monthly':
+      const targetDay = storedDate.getDate();
+      while (currentDate < today) {
+        let nextMonth = currentDate.getMonth() + 1;
+        let nextYear = currentDate.getFullYear();
+        if (nextMonth > 11) {
+          nextMonth = 0;
+          nextYear++;
+        }
+        const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+        const dayToUse = Math.min(targetDay, lastDayOfNextMonth);
+        currentDate = new Date(nextYear, nextMonth, dayToUse);
+      }
+      break;
+    case 'quarterly':
+      while (currentDate < today) {
+        currentDate.setMonth(currentDate.getMonth() + 3);
+      }
+      break;
+    case 'annually':
+      while (currentDate < today) {
+        currentDate.setFullYear(currentDate.getFullYear() + 1);
+      }
+      break;
+    default:
+      return storedDate;
+  }
+  return currentDate;
+}
+
 export default async function BillsPage({ searchParams }: BillsPageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
@@ -76,59 +130,6 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const isNearLimit = billsLimit !== Infinity && billsCount >= billsLimit - 2 && !isAtLimit;
 
   // Calculate next due bill
-  const getActualNextDueDate = (dueDate: string, frequency: string | null | undefined): Date => {
-    const storedDate = new Date(dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (storedDate >= today) {
-      return storedDate;
-    }
-
-    const freq = (frequency ?? 'monthly').toLowerCase();
-    let currentDate = new Date(storedDate);
-
-    switch (freq) {
-      case 'weekly':
-        while (currentDate < today) {
-          currentDate.setDate(currentDate.getDate() + 7);
-        }
-        break;
-      case 'biweekly':
-        while (currentDate < today) {
-          currentDate.setDate(currentDate.getDate() + 14);
-        }
-        break;
-      case 'monthly':
-        const targetDay = storedDate.getDate();
-        while (currentDate < today) {
-          let nextMonth = currentDate.getMonth() + 1;
-          let nextYear = currentDate.getFullYear();
-          if (nextMonth > 11) {
-            nextMonth = 0;
-            nextYear++;
-          }
-          const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
-          const dayToUse = Math.min(targetDay, lastDayOfNextMonth);
-          currentDate = new Date(nextYear, nextMonth, dayToUse);
-        }
-        break;
-      case 'quarterly':
-        while (currentDate < today) {
-          currentDate.setMonth(currentDate.getMonth() + 3);
-        }
-        break;
-      case 'annually':
-        while (currentDate < today) {
-          currentDate.setFullYear(currentDate.getFullYear() + 1);
-        }
-        break;
-      default:
-        return storedDate;
-    }
-    return currentDate;
-  };
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
