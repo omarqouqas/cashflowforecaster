@@ -166,6 +166,7 @@ export function IncomeCard({ income }: IncomeCardProps) {
 
   // Only show next payment date if it's in the future
   const showNextPayment = actualNextDate >= today
+  const nextDateString = actualNextDate.toISOString().split('T')[0] ?? ''
 
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
@@ -217,7 +218,7 @@ export function IncomeCard({ income }: IncomeCardProps) {
               </div>
               {showNextPayment && (
                 <p className="text-sm text-zinc-400 mt-1">
-                  Next payment: {formatDateOnly(actualNextDate.toISOString().split('T')[0])}
+                  Next payment: {formatDateOnly(nextDateString)}
                 </p>
               )}
             </div>
