@@ -126,7 +126,12 @@ export function AccountCard({ account }: { account: Account }) {
           {/* Actions */}
           <div className="flex items-center gap-2 mt-3">
             <Link href={`/dashboard/accounts/${account.id}/edit`} className="flex-1">
-              <Button variant="outline" size="sm" className="w-full" aria-label="Edit account">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-teal-500/50 text-zinc-100 hover:text-teal-400 transition-all"
+                aria-label="Edit account"
+              >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
               </Button>

@@ -63,9 +63,9 @@ export function SpendableToggleButton({
       } spendable.`}
       className={[
         'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-        isSpendable ? 'bg-teal-600' : 'bg-zinc-200',
-        'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2',
-        isLoading ? 'opacity-50 cursor-not-allowed' : '',
+        isSpendable ? 'bg-teal-500 hover:bg-teal-600' : 'bg-zinc-700 hover:bg-zinc-600',
+        'focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:ring-offset-2 focus:ring-offset-zinc-900',
+        isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
       ].join(' ')}
       title={`Click to ${isSpendable ? 'disable' : 'enable'} spendable for ${accountName}`}
     >
