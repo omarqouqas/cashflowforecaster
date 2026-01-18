@@ -2,7 +2,7 @@
 
 import { Tables } from '@/types/supabase'
 import { Button } from '@/components/ui/button'
-import { Edit, CreditCard, Home, Tv, Shield, Calendar } from 'lucide-react'
+import { Edit, CreditCard, Home, Tv, Shield } from 'lucide-react'
 import { DeleteBillButton } from './delete-bill-button'
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format'
 import { ActiveToggleButton } from '@/components/ui/active-toggle-button'
