@@ -130,9 +130,9 @@ export default function NewBillPage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/bills"
-          className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-teal-400 mb-6 transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to Bills
         </Link>
 
@@ -164,9 +164,9 @@ export default function NewBillPage() {
     <div className="max-w-lg mx-auto">
       <Link
         href="/dashboard/bills"
-        className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
+        className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-teal-400 mb-6 transition-colors group"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Back to Bills
       </Link>
 
@@ -258,21 +258,23 @@ export default function NewBillPage() {
                 id="frequency"
                 {...register('frequency')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
-                  'placeholder:text-zinc-500',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100 font-medium',
+                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
+                  '[&>option:first-child]:text-zinc-500',
                   'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
                   errors.frequency ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
               >
-                <option value="" className="bg-zinc-900 text-zinc-500">Select frequency...</option>
-                <option value="weekly" className="bg-zinc-900 text-zinc-100">Weekly</option>
-                <option value="biweekly" className="bg-zinc-900 text-zinc-100">Biweekly</option>
-                <option value="semi-monthly" className="bg-zinc-900 text-zinc-100">Semi-monthly (twice a month)</option>
-                <option value="monthly" className="bg-zinc-900 text-zinc-100">Monthly</option>
-                <option value="quarterly" className="bg-zinc-900 text-zinc-100">Quarterly</option>
-                <option value="annually" className="bg-zinc-900 text-zinc-100">Annually</option>
-                <option value="one-time" className="bg-zinc-900 text-zinc-100">One-time</option>
+                <option value="">Select frequency...</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Biweekly</option>
+                <option value="semi-monthly">Semi-monthly (twice a month)</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="annually">Annually</option>
+                <option value="one-time">One-time</option>
               </select>
               <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -291,19 +293,21 @@ export default function NewBillPage() {
                 id="category"
                 {...register('category')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
-                  'placeholder:text-zinc-500',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100 font-medium',
+                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
+                  '[&>option:first-child]:text-zinc-500',
                   'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
                   errors.category ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
               >
-                <option value="" className="bg-zinc-900 text-zinc-500">Select category...</option>
-                <option value="rent" className="bg-zinc-900 text-zinc-100">Rent/Mortgage</option>
-                <option value="utilities" className="bg-zinc-900 text-zinc-100">Utilities</option>
-                <option value="subscriptions" className="bg-zinc-900 text-zinc-100">Subscriptions</option>
-                <option value="insurance" className="bg-zinc-900 text-zinc-100">Insurance</option>
-                <option value="other" className="bg-zinc-900 text-zinc-100">Other</option>
+                <option value="">Select category...</option>
+                <option value="rent">Rent/Mortgage</option>
+                <option value="utilities">Utilities</option>
+                <option value="subscriptions">Subscriptions</option>
+                <option value="insurance">Insurance</option>
+                <option value="other">Other</option>
               </select>
               <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>

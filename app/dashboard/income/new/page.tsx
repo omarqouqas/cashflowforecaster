@@ -147,9 +147,9 @@ export default function NewIncomePage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/income"
-          className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-teal-400 mb-6 transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to Income
         </Link>
 
@@ -181,9 +181,9 @@ export default function NewIncomePage() {
     <div className="max-w-lg mx-auto">
       <Link
         href="/dashboard/income"
-        className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
+        className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-teal-400 mb-6 transition-colors group"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Back to Income
       </Link>
 
@@ -256,20 +256,22 @@ export default function NewIncomePage() {
                 id="frequency"
                 {...register('frequency')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
-                  'placeholder:text-zinc-500',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100 font-medium',
+                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
+                  '[&>option:first-child]:text-zinc-500',
                   'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
                   errors.frequency ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
               >
-                <option value="" className="bg-zinc-900 text-zinc-500">Select frequency...</option>
-                <option value="weekly" className="bg-zinc-900 text-zinc-100">Weekly</option>
-                <option value="biweekly" className="bg-zinc-900 text-zinc-100">Bi-weekly (every 2 weeks)</option>
-                <option value="semi-monthly" className="bg-zinc-900 text-zinc-100">Semi-monthly (twice a month)</option>
-                <option value="monthly" className="bg-zinc-900 text-zinc-100">Monthly</option>
-                <option value="one-time" className="bg-zinc-900 text-zinc-100">One-time payment</option>
-                <option value="irregular" className="bg-zinc-900 text-zinc-100">Irregular / Variable</option>
+                <option value="">Select frequency...</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly (every 2 weeks)</option>
+                <option value="semi-monthly">Semi-monthly (twice a month)</option>
+                <option value="monthly">Monthly</option>
+                <option value="one-time">One-time payment</option>
+                <option value="irregular">Irregular / Variable</option>
               </select>
               <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -309,15 +311,16 @@ export default function NewIncomePage() {
                 id="account_id"
                 {...register('account_id')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
-                  'placeholder:text-zinc-500',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100 font-medium',
+                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
                   'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
                 ].join(' ')}
               >
-                <option value="" className="bg-zinc-900 text-zinc-100">No specific account</option>
+                <option value="">No specific account</option>
                 {accounts.map((account) => (
-                  <option key={account.id} value={account.id} className="bg-zinc-900 text-zinc-100">
+                  <option key={account.id} value={account.id}>
                     {account.name} ({account.account_type})
                   </option>
                 ))}
