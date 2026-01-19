@@ -232,7 +232,6 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
         <BalanceTrendChartInteractive
           days={days}
           startingBalance={calendarData.startingBalance}
-          lowestBalance={calendarData.lowestBalance}
           safetyBuffer={calendarData.safetyBuffer}
           onDayClick={handleChartDayClick}
         />

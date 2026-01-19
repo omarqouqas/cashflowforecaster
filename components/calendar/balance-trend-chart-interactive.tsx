@@ -19,7 +19,6 @@ import {
 interface BalanceTrendChartInteractiveProps {
   days: CalendarDay[];
   startingBalance: number;
-  lowestBalance: number;
   safetyBuffer: number;
   onDayClick?: (dayIndex: number) => void;
 }
@@ -36,7 +35,6 @@ interface BalanceTrendChartInteractiveProps {
 export function BalanceTrendChartInteractive({
   days,
   startingBalance,
-  lowestBalance,
   safetyBuffer,
   onDayClick,
 }: BalanceTrendChartInteractiveProps) {

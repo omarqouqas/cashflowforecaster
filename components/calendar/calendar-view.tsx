@@ -133,7 +133,6 @@ export function CalendarView({
       <BalanceTrendChartInteractive
         days={calendarData.days}
         startingBalance={calendarData.startingBalance}
-        lowestBalance={calendarData.lowestBalance}
         safetyBuffer={buffer}
         onDayClick={handleChartDayClick}
       />
