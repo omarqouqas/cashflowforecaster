@@ -9,16 +9,22 @@ import {
   FilterToggleGroup,
   type FilterOption,
 } from '@/components/filters';
-import { Wallet } from 'lucide-react';
+import { Wallet, CreditCard, PiggyBank, Building2 } from 'lucide-react';
+
+export type AccountType = 'checking' | 'savings' | 'credit_card';
 
 export interface DashboardFilters {
   forecastHorizon: '7' | '14' | '30' | '60';
   selectedAccountIds: string[];
+  accountTypes: AccountType[];
 }
+
+const allAccountTypes: AccountType[] = ['checking', 'savings', 'credit_card'];
 
 export const defaultDashboardFilters: DashboardFilters = {
   forecastHorizon: '60',
   selectedAccountIds: [], // Empty means "all accounts"
+  accountTypes: allAccountTypes,
 };
 
 interface Account {
@@ -43,12 +49,34 @@ const forecastHorizonOptions = [
   { value: '60', label: '60 Days' },
 ];
 
+const accountTypeOptions: FilterOption[] = [
+  {
+    value: 'checking',
+    label: 'Checking',
+    icon: <Building2 className="w-3.5 h-3.5" />,
+    color: 'teal',
+  },
+  {
+    value: 'savings',
+    label: 'Savings',
+    icon: <PiggyBank className="w-3.5 h-3.5" />,
+    color: 'green',
+  },
+  {
+    value: 'credit_card',
+    label: 'Credit Card',
+    icon: <CreditCard className="w-3.5 h-3.5" />,
+    color: 'orange',
+  },
+];
+
 /**
  * DashboardFiltersPanel - Filter controls for the Dashboard page
  *
  * Allows filtering by:
  * - Forecast horizon (7/14/30/60 days)
  * - Account selection (filter which accounts to include)
+ * - Account type (Checking / Savings / Credit Card)
  */
 export function DashboardFiltersPanel({
   filters,
@@ -69,6 +97,12 @@ export function DashboardFiltersPanel({
     color: 'teal' as const,
   }));
 
+  // Get unique account types from the user's accounts
+  const userAccountTypes = Array.from(new Set(accounts.map((a) => a.account_type)));
+  const availableAccountTypeOptions = accountTypeOptions.filter((opt) =>
+    userAccountTypes.includes(opt.value)
+  );
+
   // Count active filters
   const activeFilterCount = React.useMemo(() => {
     let count = 0;
@@ -76,6 +110,7 @@ export function DashboardFiltersPanel({
       maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
     if (filters.forecastHorizon !== defaultHorizon) count++;
     if (filters.selectedAccountIds.length > 0) count++;
+    if (filters.accountTypes.length !== allAccountTypes.length) count++;
     return count;
   }, [filters, maxForecastDays]);
 
@@ -89,6 +124,8 @@ export function DashboardFiltersPanel({
 
   // If only one account or no accounts, don't show account filter
   const showAccountFilter = accounts.length > 1;
+  // Show account type filter if there are multiple types
+  const showAccountTypeFilter = availableAccountTypeOptions.length > 1;
 
   return (
     <FilterPanel
@@ -110,7 +147,24 @@ export function DashboardFiltersPanel({
           }
         />
 
-        {showAccountFilter && (
+        {showAccountTypeFilter && (
+          <FilterToggleGroup
+            label="Account Type"
+            options={availableAccountTypeOptions}
+            value={filters.accountTypes}
+            onChange={(value) =>
+              onChange({
+                ...filters,
+                accountTypes: value as AccountType[],
+              })
+            }
+            allowEmpty={false}
+          />
+        )}
+      </FilterSection>
+
+      {showAccountFilter && (
+        <FilterSection>
           <FilterToggleGroup
             label="Accounts"
             options={accountOptions}
@@ -129,8 +183,8 @@ export function DashboardFiltersPanel({
             }}
             allowEmpty={false}
           />
-        )}
-      </FilterSection>
+        </FilterSection>
+      )}
     </FilterPanel>
   );
 }
@@ -153,16 +207,21 @@ export function useDashboardFilters(
   const filtersFromUrl = React.useMemo((): DashboardFilters => {
     const horizon = searchParams.get('horizon');
     const accounts = searchParams.get('accounts');
+    const types = searchParams.get('types');
 
     return {
       forecastHorizon: (horizon as DashboardFilters['forecastHorizon']) || defaultHorizon,
       selectedAccountIds: accounts ? accounts.split(',').filter(Boolean) : [],
+      accountTypes: types
+        ? (types.split(',') as AccountType[])
+        : allAccountTypes,
     };
   }, [searchParams, defaultHorizon]);
 
   const [filters, setFiltersState] = React.useState<DashboardFilters>(() => ({
     forecastHorizon: filtersFromUrl.forecastHorizon || (defaultHorizon as DashboardFilters['forecastHorizon']),
     selectedAccountIds: initialFilters?.selectedAccountIds ?? filtersFromUrl.selectedAccountIds ?? [],
+    accountTypes: filtersFromUrl.accountTypes,
   }));
 
   // Sync state with URL changes
@@ -170,6 +229,7 @@ export function useDashboardFilters(
     setFiltersState({
       forecastHorizon: filtersFromUrl.forecastHorizon || (defaultHorizon as DashboardFilters['forecastHorizon']),
       selectedAccountIds: filtersFromUrl.selectedAccountIds,
+      accountTypes: filtersFromUrl.accountTypes,
     });
   }, [filtersFromUrl, defaultHorizon]);
 
@@ -195,6 +255,14 @@ export function useDashboardFilters(
         params.set('accounts', newFilters.selectedAccountIds.join(','));
       }
 
+      // Account types
+      const isDefaultTypes = newFilters.accountTypes.length === allAccountTypes.length;
+      if (isDefaultTypes) {
+        params.delete('types');
+      } else {
+        params.set('types', newFilters.accountTypes.join(','));
+      }
+
       // Update URL without scroll
       const queryString = params.toString();
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
@@ -213,7 +281,8 @@ export function useDashboardFilters(
   const isFiltered = React.useMemo(() => {
     return (
       filters.forecastHorizon !== defaultHorizon ||
-      filters.selectedAccountIds.length > 0
+      filters.selectedAccountIds.length > 0 ||
+      filters.accountTypes.length !== allAccountTypes.length
     );
   }, [filters, defaultHorizon]);
 

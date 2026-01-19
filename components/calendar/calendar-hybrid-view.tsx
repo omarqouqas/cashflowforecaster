@@ -7,9 +7,42 @@ import type { CalendarContainerProps } from './calendar-container';
 import {
   CalendarFiltersPanel,
   useCalendarFilters,
+  defaultCalendarFilters,
   type CalendarFilters,
+  type FrequencyType,
 } from './calendar-filters';
-import type { CalendarDay } from '@/lib/calendar/types';
+import type { CalendarDay, Transaction } from '@/lib/calendar/types';
+
+/**
+ * Filter a single transaction based on filter criteria
+ */
+function matchesTransactionFilters(
+  transaction: Transaction,
+  filters: CalendarFilters
+): boolean {
+  // Filter by frequency
+  if (!filters.frequencies.includes(transaction.frequency as FrequencyType)) {
+    return false;
+  }
+
+  // Filter by amount range
+  if (filters.amountMin !== null && transaction.amount < filters.amountMin) {
+    return false;
+  }
+  if (filters.amountMax !== null && transaction.amount > filters.amountMax) {
+    return false;
+  }
+
+  // Filter by search term
+  if (filters.search) {
+    const searchLower = filters.search.toLowerCase();
+    if (!transaction.name.toLowerCase().includes(searchLower)) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 /**
  * Apply filters to calendar days
@@ -28,12 +61,20 @@ function filterCalendarDays(
     })
     .map((day) => {
       // Filter transactions within each day
-      const filteredIncome = filters.transactionTypes.includes('income')
-        ? day.income
-        : [];
-      const filteredBills = filters.transactionTypes.includes('bill')
-        ? day.bills
-        : [];
+      let filteredIncome: Transaction[] = [];
+      let filteredBills: Transaction[] = [];
+
+      if (filters.transactionTypes.includes('income')) {
+        filteredIncome = day.income.filter((t) =>
+          matchesTransactionFilters(t, filters)
+        );
+      }
+
+      if (filters.transactionTypes.includes('bill')) {
+        filteredBills = day.bills.filter((t) =>
+          matchesTransactionFilters(t, filters)
+        );
+      }
 
       return {
         ...day,
@@ -140,12 +181,7 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
             Try adjusting your filters to see more results.
           </p>
           <button
-            onClick={() =>
-              setFilters({
-                transactionTypes: ['income', 'bill'],
-                balanceStatuses: ['green', 'yellow', 'orange', 'red'],
-              })
-            }
+            onClick={() => setFilters(defaultCalendarFilters)}
             className="text-sm font-medium text-teal-400 hover:text-teal-300 transition-colors"
           >
             Clear all filters

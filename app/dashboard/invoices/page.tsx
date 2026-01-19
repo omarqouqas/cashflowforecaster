@@ -1,34 +1,16 @@
 import { getInvoices } from '@/lib/actions/invoices';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, Receipt, ArrowLeft, Pencil, AlertTriangle } from 'lucide-react';
-import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
-import { DownloadPdfButton } from '@/components/invoices/download-pdf-button';
-import { DeleteInvoiceIconButton } from '@/components/invoices/delete-invoice-icon-button';
-import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
+import { Plus, Receipt, ArrowLeft } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils/format';
 import { canUseInvoicing } from '@/lib/stripe/subscription';
 import { InvoicingUpgradePrompt } from '@/components/invoices/invoicing-upgrade-prompt';
+import { InvoicesContent } from '@/components/invoices/invoices-content';
 import type { Tables } from '@/types/supabase';
 import { isRedirectError } from 'next/dist/client/components/redirect';
 
-function statusBadge(status: string | null | undefined) {
-  const s = status ?? 'draft';
-  switch (s) {
-    case 'draft':
-      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
-    case 'sent':
-      return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
-    case 'viewed':
-      return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
-    case 'paid':
-      return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-    default:
-      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
-  }
-}
-
 interface InvoicesPageProps {
-  searchParams?: { success?: string; filter?: string };
+  searchParams?: { success?: string };
 }
 
 function isOverdue(dueDate: string, status: string | null | undefined) {
@@ -37,23 +19,6 @@ function isOverdue(dueDate: string, status: string | null | undefined) {
   const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const due = new Date(`${dueDate}T00:00:00`);
   return due < todayMidnight;
-}
-
-function wasRemindedRecently(lastReminderAt: string | null, now = new Date()) {
-  if (!lastReminderAt) return false;
-  const last = new Date(lastReminderAt);
-  if (Number.isNaN(last.getTime())) return false;
-  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-  return now.getTime() - last.getTime() < THREE_DAYS_MS;
-}
-
-function needsFollowUp(invoice: Tables<'invoices'>, now = new Date()) {
-  const status = invoice.status ?? 'draft';
-  if (!(status === 'sent' || status === 'viewed')) return false;
-  if (!isOverdue(invoice.due_date, status)) return false;
-  // Either never reminded, or last reminder was 3+ days ago
-  if (!invoice.last_reminder_at) return true;
-  return !wasRemindedRecently(invoice.last_reminder_at, now);
 }
 
 export default async function InvoicesPage({ searchParams }: InvoicesPageProps) {
@@ -142,12 +107,6 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
               </Link>
             </div>
           ) : (() => {
-            const now = new Date();
-            const followUpInvoices = invoices.filter((inv) => needsFollowUp(inv, now));
-            const filter = (searchParams?.filter ?? '').toLowerCase();
-            const showFollowUpOnly = filter === 'followup';
-            const visibleInvoices = showFollowUpOnly ? followUpInvoices : invoices;
-
             // Calculate summary stats
             const totalOutstanding = invoices
               .filter((inv) => (inv.status ?? 'draft') !== 'paid')
@@ -182,157 +141,8 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                   </div>
                 </div>
 
-                {followUpInvoices.length > 0 && (
-                  <div className="mb-4">
-                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="flex items-start gap-2">
-                          <div className="mt-0.5">
-                            <AlertTriangle className="w-4 h-4 text-amber-400" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-amber-100">
-                              {followUpInvoices.length} invoice{followUpInvoices.length === 1 ? '' : 's'} need follow-up
-                            </p>
-                            <p className="text-xs text-amber-300/80 mt-0.5">
-                              Overdue and not reminded in the last 3 days.
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {!showFollowUpOnly ? (
-                            <Link
-                              href="/dashboard/invoices?filter=followup"
-                              className="text-xs font-medium text-amber-100 hover:underline"
-                            >
-                              View follow-ups
-                            </Link>
-                          ) : (
-                            <>
-                              <span className="text-xs text-amber-300/80">
-                                Showing follow-ups
-                              </span>
-                              <Link
-                                href="/dashboard/invoices"
-                                className="text-xs font-medium text-amber-100 hover:underline"
-                              >
-                                Clear
-                              </Link>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
-                      <thead className="bg-zinc-800 border-b border-zinc-700">
-                        <tr>
-                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Invoice</th>
-                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Client</th>
-                          <th className="text-right font-medium text-zinc-300 px-4 py-4">Amount</th>
-                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Due date</th>
-                          <th className="text-left font-medium text-zinc-300 px-4 py-4">Status</th>
-                          <th className="text-right font-medium text-zinc-300 px-4 py-4">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-800">
-                        {visibleInvoices.map((invoice) => {
-                          const showFollowUpIndicator = needsFollowUp(invoice, now);
-                          const overdue = isOverdue(invoice.due_date, invoice.status);
-
-                          return (
-                            <tr key={invoice.id} className="hover:bg-zinc-800/50 transition-colors">
-                              <td className="px-4 py-4">
-                                <div className="flex items-center gap-2">
-                                  {showFollowUpIndicator && (
-                                    <span
-                                      className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"
-                                      title="Needs follow-up"
-                                      aria-label="Needs follow-up"
-                                    />
-                                  )}
-                                  <Link
-                                    href={`/dashboard/invoices/${invoice.id}`}
-                                    className="text-zinc-100 font-medium hover:text-teal-400 transition-colors"
-                                  >
-                                    {invoice.invoice_number}
-                                  </Link>
-                                </div>
-                              </td>
-                              <td className="px-4 py-4 text-zinc-300">{invoice.client_name}</td>
-                              <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-100 text-base">
-                                {formatCurrency(invoice.amount)}
-                              </td>
-                              <td className="px-4 py-4 text-zinc-300">
-                                <div className="flex items-center gap-2">
-                                  <span>{formatDateOnly(invoice.due_date)}</span>
-                                  {overdue && (invoice.status ?? 'draft') !== 'paid' && (
-                                    <span className="text-xs font-semibold text-rose-400 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">
-                                      Overdue
-                                    </span>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span
-                                  className={[
-                                    'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize',
-                                    statusBadge(invoice.status),
-                                  ].join(' ')}
-                                >
-                                  {invoice.status ?? 'draft'}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-right">
-                                <div className="inline-flex items-center justify-end gap-2">
-                                  {(invoice.status ?? 'draft') === 'draft' && (
-                                    <SendInvoiceButton
-                                      invoiceId={invoice.id}
-                                      clientEmail={invoice.client_email}
-                                      disabled={!invoice.client_email}
-                                      compact
-                                    />
-                                  )}
-                                  {(() => {
-                                    const s = invoice.status ?? 'draft';
-                                    const showEdit = s === 'draft' || s === 'sent';
-                                    return (
-                                      showEdit && (
-                                        <Link
-                                          href={`/dashboard/invoices/${invoice.id}/edit`}
-                                          className="p-2 text-zinc-400 hover:text-teal-400 hover:bg-teal-500/10 rounded-md transition-colors"
-                                          aria-label="Edit invoice"
-                                          title="Edit invoice"
-                                        >
-                                          <Pencil className="w-4 h-4" />
-                                        </Link>
-                                      )
-                                    );
-                                  })()}
-
-                                  {(invoice.status ?? 'draft') === 'draft' && (
-                                    <DeleteInvoiceIconButton
-                                      invoiceId={invoice.id}
-                                      invoiceLabel={invoice.invoice_number}
-                                    />
-                                  )}
-
-                                  {/* Always visible */}
-                                  <DownloadPdfButton invoiceId={invoice.id} />
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                {/* Invoice List with Filters */}
+                <InvoicesContent invoices={invoices as any} />
               </>
             );
           })()}

@@ -10,74 +10,55 @@ import {
   FilterSearch,
   type FilterOption,
 } from '@/components/filters';
-import { TrendingUp, Receipt, CircleDot, RefreshCw } from 'lucide-react';
+import {
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  FileText,
+  Briefcase,
+} from 'lucide-react';
 
-export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually' | 'irregular';
+export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'irregular';
+export type SourceType = 'regular' | 'invoice';
 
-export interface CalendarFilters {
-  transactionTypes: ('income' | 'bill')[];
-  balanceStatuses: ('green' | 'yellow' | 'orange' | 'red')[];
+export interface IncomeFilters {
+  status: ('active' | 'inactive')[];
   frequencies: FrequencyType[];
+  sourceTypes: SourceType[];
   amountMin: number | null;
   amountMax: number | null;
   search: string;
 }
 
-const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'monthly', 'quarterly', 'annually', 'irregular'];
+const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'monthly', 'irregular'];
+const allSourceTypes: SourceType[] = ['regular', 'invoice'];
 
-export const defaultCalendarFilters: CalendarFilters = {
-  transactionTypes: ['income', 'bill'],
-  balanceStatuses: ['green', 'yellow', 'orange', 'red'],
+export const defaultIncomeFilters: IncomeFilters = {
+  status: ['active', 'inactive'],
   frequencies: allFrequencies,
+  sourceTypes: allSourceTypes,
   amountMin: null,
   amountMax: null,
   search: '',
 };
 
-interface CalendarFiltersProps {
-  filters: CalendarFilters;
-  onChange: (filters: CalendarFilters) => void;
+interface IncomeFiltersProps {
+  filters: IncomeFilters;
+  onChange: (filters: IncomeFilters) => void;
 }
 
-const transactionTypeOptions: FilterOption[] = [
+const statusOptions: FilterOption[] = [
   {
-    value: 'income',
-    label: 'Income',
-    icon: <TrendingUp className="w-3.5 h-3.5" />,
+    value: 'active',
+    label: 'Active',
+    icon: <CheckCircle className="w-3.5 h-3.5" />,
     color: 'green',
   },
   {
-    value: 'bill',
-    label: 'Bills',
-    icon: <Receipt className="w-3.5 h-3.5" />,
-    color: 'red',
-  },
-];
-
-const balanceStatusOptions: FilterOption[] = [
-  {
-    value: 'green',
-    label: 'Safe',
-    icon: <CircleDot className="w-3.5 h-3.5" />,
-    color: 'green',
-  },
-  {
-    value: 'yellow',
-    label: 'Caution',
-    icon: <CircleDot className="w-3.5 h-3.5" />,
-    color: 'yellow',
-  },
-  {
-    value: 'orange',
-    label: 'Low',
-    icon: <CircleDot className="w-3.5 h-3.5" />,
-    color: 'orange',
-  },
-  {
-    value: 'red',
-    label: 'Danger',
-    icon: <CircleDot className="w-3.5 h-3.5" />,
-    color: 'red',
+    value: 'inactive',
+    label: 'Inactive',
+    icon: <XCircle className="w-3.5 h-3.5" />,
+    color: 'default',
   },
 ];
 
@@ -86,35 +67,48 @@ const frequencyOptions: FilterOption[] = [
   { value: 'weekly', label: 'Weekly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
   { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
   { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'quarterly', label: 'Quarterly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'annually', label: 'Annually', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'irregular', label: 'Irregular', color: 'default' },
+  { value: 'irregular', label: 'Irregular', color: 'orange' },
+];
+
+const sourceTypeOptions: FilterOption[] = [
+  {
+    value: 'regular',
+    label: 'Regular',
+    icon: <Briefcase className="w-3.5 h-3.5" />,
+    color: 'green',
+  },
+  {
+    value: 'invoice',
+    label: 'Invoice-linked',
+    icon: <FileText className="w-3.5 h-3.5" />,
+    color: 'teal',
+  },
 ];
 
 /**
- * CalendarFiltersPanel - Filter controls for the Calendar page
+ * IncomeFiltersPanel - Filter controls for the Income page
  *
  * Allows filtering by:
- * - Transaction type (Income / Bills)
- * - Balance status (Safe / Caution / Low / Danger)
+ * - Status (Active / Inactive)
  * - Frequency (One-time, Weekly, Monthly, etc.)
+ * - Source Type (Regular / Invoice-linked)
  * - Amount range (min/max)
  * - Search by name
  */
-export function CalendarFiltersPanel({ filters, onChange }: CalendarFiltersProps) {
+export function IncomeFiltersPanel({ filters, onChange }: IncomeFiltersProps) {
   // Count active filters (filters that differ from defaults)
   const activeFilterCount = React.useMemo(() => {
     let count = 0;
-    if (filters.transactionTypes.length !== 2) count++;
-    if (filters.balanceStatuses.length !== 4) count++;
+    if (filters.status.length !== 2) count++;
     if (filters.frequencies.length !== allFrequencies.length) count++;
+    if (filters.sourceTypes.length !== allSourceTypes.length) count++;
     if (filters.amountMin !== null || filters.amountMax !== null) count++;
     if (filters.search) count++;
     return count;
   }, [filters]);
 
   const handleClearAll = () => {
-    onChange(defaultCalendarFilters);
+    onChange(defaultIncomeFilters);
   };
 
   return (
@@ -126,26 +120,26 @@ export function CalendarFiltersPanel({ filters, onChange }: CalendarFiltersProps
     >
       <FilterSection>
         <FilterToggleGroup
-          label="Show"
-          options={transactionTypeOptions}
-          value={filters.transactionTypes}
+          label="Status"
+          options={statusOptions}
+          value={filters.status}
           onChange={(value) =>
             onChange({
               ...filters,
-              transactionTypes: value as ('income' | 'bill')[],
+              status: value as ('active' | 'inactive')[],
             })
           }
           allowEmpty={false}
         />
 
         <FilterToggleGroup
-          label="Balance Status"
-          options={balanceStatusOptions}
-          value={filters.balanceStatuses}
+          label="Source Type"
+          options={sourceTypeOptions}
+          value={filters.sourceTypes}
           onChange={(value) =>
             onChange({
               ...filters,
-              balanceStatuses: value as ('green' | 'yellow' | 'orange' | 'red')[],
+              sourceTypes: value as SourceType[],
             })
           }
           allowEmpty={false}
@@ -190,7 +184,7 @@ export function CalendarFiltersPanel({ filters, onChange }: CalendarFiltersProps
               search: value,
             })
           }
-          placeholder="Search transactions..."
+          placeholder="Search income sources..."
         />
       </FilterSection>
     </FilterPanel>
@@ -198,40 +192,40 @@ export function CalendarFiltersPanel({ filters, onChange }: CalendarFiltersProps
 }
 
 /**
- * Hook to manage calendar filter state with URL persistence
+ * Hook to manage income filter state with URL persistence
  */
-export function useCalendarFilters(initialFilters?: Partial<CalendarFilters>) {
+export function useIncomeFilters(initialFilters?: Partial<IncomeFilters>) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   // Parse filters from URL on initial load
-  const filtersFromUrl = React.useMemo((): CalendarFilters => {
-    const types = searchParams.get('types');
-    const statuses = searchParams.get('status');
+  const filtersFromUrl = React.useMemo((): IncomeFilters => {
+    const status = searchParams.get('status');
     const freqs = searchParams.get('freq');
+    const sources = searchParams.get('source');
     const minAmount = searchParams.get('min');
     const maxAmount = searchParams.get('max');
     const search = searchParams.get('q');
 
     return {
-      transactionTypes: types
-        ? (types.split(',') as ('income' | 'bill')[])
-        : defaultCalendarFilters.transactionTypes,
-      balanceStatuses: statuses
-        ? (statuses.split(',') as ('green' | 'yellow' | 'orange' | 'red')[])
-        : defaultCalendarFilters.balanceStatuses,
+      status: status
+        ? (status.split(',') as ('active' | 'inactive')[])
+        : defaultIncomeFilters.status,
       frequencies: freqs
         ? (freqs.split(',') as FrequencyType[])
-        : defaultCalendarFilters.frequencies,
+        : defaultIncomeFilters.frequencies,
+      sourceTypes: sources
+        ? (sources.split(',') as SourceType[])
+        : defaultIncomeFilters.sourceTypes,
       amountMin: minAmount ? parseFloat(minAmount) : null,
       amountMax: maxAmount ? parseFloat(maxAmount) : null,
       search: search || '',
     };
   }, [searchParams]);
 
-  const [filters, setFiltersState] = React.useState<CalendarFilters>({
-    ...defaultCalendarFilters,
+  const [filters, setFiltersState] = React.useState<IncomeFilters>({
+    ...defaultIncomeFilters,
     ...filtersFromUrl,
     ...initialFilters,
   });
@@ -239,42 +233,29 @@ export function useCalendarFilters(initialFilters?: Partial<CalendarFilters>) {
   // Sync state with URL changes
   React.useEffect(() => {
     setFiltersState({
-      ...defaultCalendarFilters,
+      ...defaultIncomeFilters,
       ...filtersFromUrl,
     });
   }, [filtersFromUrl]);
 
   // Update URL when filters change
   const setFilters = React.useCallback(
-    (newFilters: CalendarFilters) => {
+    (newFilters: IncomeFilters) => {
       setFiltersState(newFilters);
 
       // Update URL params
       const params = new URLSearchParams(searchParams.toString());
 
-      // Transaction types
-      const isDefaultTypes =
-        newFilters.transactionTypes.length === 2 &&
-        newFilters.transactionTypes.includes('income') &&
-        newFilters.transactionTypes.includes('bill');
+      // Status
+      const isDefaultStatus =
+        newFilters.status.length === 2 &&
+        newFilters.status.includes('active') &&
+        newFilters.status.includes('inactive');
 
-      if (isDefaultTypes) {
-        params.delete('types');
-      } else {
-        params.set('types', newFilters.transactionTypes.join(','));
-      }
-
-      // Balance statuses
-      const isDefaultStatuses =
-        newFilters.balanceStatuses.length === 4 &&
-        ['green', 'yellow', 'orange', 'red'].every((s) =>
-          newFilters.balanceStatuses.includes(s as any)
-        );
-
-      if (isDefaultStatuses) {
+      if (isDefaultStatus) {
         params.delete('status');
       } else {
-        params.set('status', newFilters.balanceStatuses.join(','));
+        params.set('status', newFilters.status.join(','));
       }
 
       // Frequencies
@@ -283,6 +264,14 @@ export function useCalendarFilters(initialFilters?: Partial<CalendarFilters>) {
         params.delete('freq');
       } else {
         params.set('freq', newFilters.frequencies.join(','));
+      }
+
+      // Source types
+      const isDefaultSources = newFilters.sourceTypes.length === allSourceTypes.length;
+      if (isDefaultSources) {
+        params.delete('source');
+      } else {
+        params.set('source', newFilters.sourceTypes.join(','));
       }
 
       // Amount range
@@ -314,14 +303,14 @@ export function useCalendarFilters(initialFilters?: Partial<CalendarFilters>) {
   );
 
   const resetFilters = React.useCallback(() => {
-    setFilters(defaultCalendarFilters);
+    setFilters(defaultIncomeFilters);
   }, [setFilters]);
 
   const isFiltered = React.useMemo(() => {
     return (
-      filters.transactionTypes.length !== 2 ||
-      filters.balanceStatuses.length !== 4 ||
+      filters.status.length !== 2 ||
       filters.frequencies.length !== allFrequencies.length ||
+      filters.sourceTypes.length !== allSourceTypes.length ||
       filters.amountMin !== null ||
       filters.amountMax !== null ||
       filters.search !== ''

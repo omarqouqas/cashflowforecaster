@@ -11,7 +11,7 @@ import { Tables } from '@/types/supabase';
 import Link from 'next/link';
 import { TrendingUp, ArrowLeft, Sparkles, Calendar, DollarSign } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
-import { IncomeCard } from '@/components/income/income-card';
+import { IncomeContent } from '@/components/income/income-content';
 import { getUserUsageStats } from '@/lib/stripe/feature-gate';
 import { GatedAddButton } from '@/components/subscription/gated-add-button';
 import { InfoTooltip } from '@/components/ui/tooltip';
@@ -330,12 +330,8 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
               </div>
             </div>
           ) : (
-            /* Income List */
-            <div className="space-y-3">
-              {incomesList.map((income) => (
-                <IncomeCard key={income.id} income={income} />
-              ))}
-            </div>
+            /* Income List with Filters */
+            <IncomeContent incomes={incomesList} />
           )}
         </>
       )}

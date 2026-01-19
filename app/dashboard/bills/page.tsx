@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { Receipt, ArrowLeft, Sparkles, Calendar, DollarSign } from 'lucide-react';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
-import { BillCard } from '@/components/bills/bill-card';
+import { BillsContent } from '@/components/bills/bills-content';
 import { getUserUsageStats } from '@/lib/stripe/feature-gate';
 import { GatedAddButton } from '@/components/subscription/gated-add-button';
 import { InfoTooltip } from '@/components/ui/tooltip';
@@ -349,12 +349,8 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
               </div>
             </div>
           ) : (
-            /* Bills List */
-            <div className="space-y-3">
-              {billsList.map(function(bill) {
-                return <BillCard key={bill.id} bill={bill} />;
-              })}
-            </div>
+            /* Bills List with Filters */
+            <BillsContent bills={billsList} />
           )}
         </>
       )}

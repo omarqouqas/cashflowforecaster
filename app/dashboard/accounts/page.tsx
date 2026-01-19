@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Wallet, ArrowLeft, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
-import { AccountCard } from '@/components/accounts/account-card';
+import { AccountsContent } from '@/components/accounts/accounts-content';
 import { InfoTooltip } from '@/components/ui/tooltip';
 import { differenceInDays } from 'date-fns';
 
@@ -183,11 +183,8 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {accountList.map((account) => (
-                <AccountCard key={account.id} account={account} />
-              ))}
-            </div>
+            /* Accounts List with Filters */
+            <AccountsContent accounts={accountList} />
           )}
         </>
       )}
