@@ -130,18 +130,18 @@ export default function NewBillPage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/bills"
-          className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+          className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Bills
         </Link>
 
-        <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Bill</h1>
+        <h1 className="text-2xl font-semibold text-zinc-100 mb-6">Add Bill</h1>
 
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
+        <div className="border border-zinc-700/50 bg-zinc-800/50 backdrop-blur-sm rounded-lg p-6 shadow-xl">
           <div className="flex flex-col items-center justify-center gap-4 py-10">
             <svg
-              className="animate-spin h-8 w-8 text-zinc-900"
+              className="animate-spin h-8 w-8 text-teal-500"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ export default function NewBillPage() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            <p className="text-zinc-500">Loading…</p>
+            <p className="text-zinc-400">Loading…</p>
           </div>
         </div>
       </div>
@@ -164,179 +164,188 @@ export default function NewBillPage() {
     <div className="max-w-lg mx-auto">
       <Link
         href="/dashboard/bills"
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Bills
       </Link>
 
-      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Bill</h1>
+      <h1 className="text-2xl font-semibold text-zinc-100 mb-6">Add Bill</h1>
 
       {/* Usage indicator */}
       {limits.maxBills !== Infinity && (
-        <div className="mb-4 text-sm text-zinc-500">
+        <div className="mb-4 text-sm text-zinc-400">
           {usage.billsCount}/{limits.maxBills} bills used
         </div>
       )}
 
-      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+      <div className="border border-zinc-700/50 bg-zinc-800/50 backdrop-blur-sm rounded-lg p-6 shadow-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Bill Name */}
           <div>
-            <Label htmlFor="name" className="text-zinc-700 mb-1.5 block">
-              Bill Name<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="name" className="text-zinc-300 mb-1.5 block font-medium">
+              Bill Name<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="name"
               placeholder="e.g., Rent, Netflix, Car Insurance"
               {...register('name')}
-              className={errors.name ? 'border-rose-500 focus:ring-rose-500' : undefined}
+              className={[
+                'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                'focus:border-teal-500 focus:ring-teal-500/20',
+                errors.name ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+              ].join(' ')}
             />
             {errors.name?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.name.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.name.message}</p>
             )}
           </div>
 
           {/* Amount */}
           <div>
-            <Label htmlFor="amount" className="text-zinc-700 mb-1.5 block">
-              Amount<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="amount" className="text-zinc-300 mb-1.5 block font-medium">
+              Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
               <Input
                 id="amount"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
                 className={[
-                  'pl-8',
-                  errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
+                  'pl-8 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                  'focus:border-teal-500 focus:ring-teal-500/20',
+                  errors.amount ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
                 {...register('amount')}
               />
             </div>
             {errors.amount?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.amount.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.amount.message}</p>
             )}
-            <p className="text-sm text-zinc-500 mt-1.5">Enter the amount for this bill</p>
+            <p className="text-sm text-zinc-400 mt-1.5">Enter the amount for this bill</p>
           </div>
 
           {/* Due Date */}
           <div>
-            <Label htmlFor="due_date" className="text-zinc-700 mb-1.5 block">
-              Due Date<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="due_date" className="text-zinc-300 mb-1.5 block font-medium">
+              Due Date<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="due_date"
               type="date"
               {...register('due_date')}
-              className={errors.due_date ? 'border-rose-500 focus:ring-rose-500' : undefined}
+              className={[
+                'bg-zinc-900 border-zinc-700 text-zinc-100',
+                'focus:border-teal-500 focus:ring-teal-500/20',
+                errors.due_date ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+              ].join(' ')}
             />
             {errors.due_date?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.due_date.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.due_date.message}</p>
             )}
-            <p className="text-sm text-zinc-500 mt-1.5">When is this bill due?</p>
+            <p className="text-sm text-zinc-400 mt-1.5">When is this bill due?</p>
           </div>
 
           {/* Frequency */}
           <div>
-            <Label htmlFor="frequency" className="text-zinc-700 mb-1.5 block">
-              Frequency<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="frequency" className="text-zinc-300 mb-1.5 block font-medium">
+              Frequency<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <select
                 id="frequency"
                 {...register('frequency')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
-                  errors.frequency ? 'border-rose-500 focus:ring-rose-500' : '',
+                  errors.frequency ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
               >
-                <option value="">Select frequency...</option>
-                <option value="weekly">Weekly</option>
-                <option value="biweekly">Biweekly</option>
-                <option value="semi-monthly">Semi-monthly (twice a month)</option>
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
-                <option value="annually">Annually</option>
-                <option value="one-time">One-time</option>
+                <option value="" className="bg-zinc-900 text-zinc-500">Select frequency...</option>
+                <option value="weekly" className="bg-zinc-900 text-zinc-100">Weekly</option>
+                <option value="biweekly" className="bg-zinc-900 text-zinc-100">Biweekly</option>
+                <option value="semi-monthly" className="bg-zinc-900 text-zinc-100">Semi-monthly (twice a month)</option>
+                <option value="monthly" className="bg-zinc-900 text-zinc-100">Monthly</option>
+                <option value="quarterly" className="bg-zinc-900 text-zinc-100">Quarterly</option>
+                <option value="annually" className="bg-zinc-900 text-zinc-100">Annually</option>
+                <option value="one-time" className="bg-zinc-900 text-zinc-100">One-time</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.frequency?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.frequency.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.frequency.message}</p>
             )}
           </div>
 
           {/* Category */}
           <div>
-            <Label htmlFor="category" className="text-zinc-700 mb-1.5 block">
-              Category<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="category" className="text-zinc-300 mb-1.5 block font-medium">
+              Category<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <select
                 id="category"
                 {...register('category')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
-                  errors.category ? 'border-rose-500 focus:ring-rose-500' : '',
+                  errors.category ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
               >
-                <option value="">Select category...</option>
-                <option value="rent">Rent/Mortgage</option>
-                <option value="utilities">Utilities</option>
-                <option value="subscriptions">Subscriptions</option>
-                <option value="insurance">Insurance</option>
-                <option value="other">Other</option>
+                <option value="" className="bg-zinc-900 text-zinc-500">Select category...</option>
+                <option value="rent" className="bg-zinc-900 text-zinc-100">Rent/Mortgage</option>
+                <option value="utilities" className="bg-zinc-900 text-zinc-100">Utilities</option>
+                <option value="subscriptions" className="bg-zinc-900 text-zinc-100">Subscriptions</option>
+                <option value="insurance" className="bg-zinc-900 text-zinc-100">Insurance</option>
+                <option value="other" className="bg-zinc-900 text-zinc-100">Other</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.category?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.category.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.category.message}</p>
             )}
           </div>
 
           {/* Is Active Checkbox */}
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 p-3 rounded-md bg-zinc-900/50 border border-zinc-700/50">
             <input
               type="checkbox"
               id="is_active"
               {...register('is_active')}
               defaultChecked
-              className="mt-1 h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+              className="mt-1 h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
             />
             <div>
-              <Label htmlFor="is_active" className="text-zinc-700 cursor-pointer">
+              <Label htmlFor="is_active" className="text-zinc-300 cursor-pointer">
                 Include in forecast
               </Label>
-              <p className="text-sm text-zinc-500 mt-1">
+              <p className="text-sm text-zinc-400 mt-1">
                 Uncheck to pause this bill without deleting it
               </p>
             </div>
           </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-700/50">
             <button
               type="button"
               onClick={() => router.push('/dashboard/bills')}
               disabled={isLoading}
-              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading || !canAddBill}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-teal-600 hover:bg-teal-500 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/20 transition-all hover:shadow-teal-500/30"
             >
               {isLoading ? 'Saving...' : 'Save'}
             </button>

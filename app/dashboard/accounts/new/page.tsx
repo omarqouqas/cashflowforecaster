@@ -89,67 +89,71 @@ export default function NewAccountPage() {
     <div className="max-w-lg mx-auto">
       <Link
         href="/dashboard/accounts"
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        className="text-sm text-zinc-400 hover:text-zinc-300 flex items-center gap-1 mb-4 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Accounts
       </Link>
 
-      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Add Account</h1>
+      <h1 className="text-2xl font-semibold text-zinc-100 mb-6">Add Account</h1>
 
-      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+      <div className="border border-zinc-700/50 bg-zinc-800/50 backdrop-blur-sm rounded-lg p-6 shadow-xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Account Name */}
           <div>
-            <Label htmlFor="name" className="text-zinc-700 mb-1.5 block">
-              Account Name<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="name" className="text-zinc-300 mb-1.5 block font-medium">
+              Account Name<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="name"
               placeholder="e.g., Main Checking"
               {...register('name')}
-              className={errors.name ? 'border-rose-500 focus:ring-rose-500' : undefined}
+              className={[
+                'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                'focus:border-teal-500 focus:ring-teal-500/20',
+                errors.name ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+              ].join(' ')}
             />
             {errors.name?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.name.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.name.message}</p>
             )}
           </div>
 
           {/* Account Type */}
           <div>
-            <Label htmlFor="account_type" className="text-zinc-700 mb-1.5 block">
-              Account Type<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="account_type" className="text-zinc-300 mb-1.5 block font-medium">
+              Account Type<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <select
                 id="account_type"
                 {...register('account_type')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
-                  errors.account_type ? 'border-rose-500 focus:ring-rose-500' : '',
+                  errors.account_type ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
               >
-                <option value="">Select type...</option>
-                <option value="checking">Checking</option>
-                <option value="savings">Savings</option>
+                <option value="" className="bg-zinc-900 text-zinc-500">Select type...</option>
+                <option value="checking" className="bg-zinc-900 text-zinc-100">Checking</option>
+                <option value="savings" className="bg-zinc-900 text-zinc-100">Savings</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.account_type?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.account_type.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.account_type.message}</p>
             )}
           </div>
 
           {/* Current Balance */}
           <div>
-            <Label htmlFor="current_balance" className="text-zinc-700 mb-1.5 block">
-              Current Balance<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="current_balance" className="text-zinc-300 mb-1.5 block font-medium">
+              Current Balance<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
                 $
               </span>
               <Input
@@ -158,21 +162,22 @@ export default function NewAccountPage() {
                 step="0.01"
                 placeholder="0.00"
                 className={[
-                  'pl-8',
-                  errors.current_balance ? 'border-rose-500 focus:ring-rose-500' : '',
+                  'pl-8 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                  'focus:border-teal-500 focus:ring-teal-500/20',
+                  errors.current_balance ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                 ].join(' ')}
                 {...register('current_balance')}
               />
             </div>
             {errors.current_balance?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.current_balance.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.current_balance.message}</p>
             )}
-            <p className="text-sm text-zinc-500 mt-1.5">Enter your current account balance</p>
+            <p className="text-sm text-zinc-400 mt-1.5">Enter your current account balance</p>
           </div>
 
           {/* Currency */}
           <div>
-            <Label htmlFor="currency" className="text-zinc-700 mb-1.5 block">
+            <Label htmlFor="currency" className="text-zinc-300 mb-1.5 block font-medium">
               Currency
             </Label>
             <div className="relative">
@@ -180,49 +185,49 @@ export default function NewAccountPage() {
                 id="currency"
                 {...register('currency')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
                   'appearance-none pr-10',
                 ].join(' ')}
               >
-                <option value="USD">USD ($)</option>
-                <option value="CAD">CAD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
+                <option value="USD" className="bg-zinc-900 text-zinc-100">USD ($)</option>
+                <option value="CAD" className="bg-zinc-900 text-zinc-100">CAD ($)</option>
+                <option value="EUR" className="bg-zinc-900 text-zinc-100">EUR (€)</option>
+                <option value="GBP" className="bg-zinc-900 text-zinc-100">GBP (£)</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           {/* Is Spendable Checkbox */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 p-3 rounded-md bg-zinc-900/50 border border-zinc-700/50">
             <input
               type="checkbox"
               id="is_spendable"
               {...register('is_spendable')}
-              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+              className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
             />
-            <Label htmlFor="is_spendable" className="text-zinc-700 font-normal cursor-pointer">
+            <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
               Use this account for expenses
             </Label>
           </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-700/50">
             <button
               type="button"
               onClick={() => router.push('/dashboard/accounts')}
               disabled={isLoading}
-              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-teal-600 hover:bg-teal-500 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/20 transition-all hover:shadow-teal-500/30"
             >
               {isLoading ? 'Creating...' : 'Create Account'}
             </button>
