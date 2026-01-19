@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { SuccessMessage } from '@/components/ui/success-message';
 import Link from 'next/link';
-import { Calendar, Receipt, CheckCircle2, Lightbulb, Upload } from 'lucide-react';
+import { Calendar, Receipt, CheckCircle2, Lightbulb, Upload, Wallet, TrendingUp, FileText, DollarSign, Plus } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import generateCalendar from '@/lib/calendar/generate';
 import { formatDate } from '@/lib/utils';
@@ -23,7 +23,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const supabase = await createClient();
 
   // Fetch accounts, income, bills, and user settings in parallel
-  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult, forecastDays] = await Promise.all([
+  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult, topInvoicesResult, forecastDays] = await Promise.all([
     supabase
       .from('accounts')
       .select('*')
@@ -45,6 +45,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .eq('user_id', user.id)
       .single(),
     getInvoiceSummary(),
+    supabase
+      .from('invoices')
+      .select('id, invoice_number, client_name, amount, due_date, status')
+      .eq('user_id', user.id)
+      .or('status.is.null,status.neq.paid')
+      .order('due_date', { ascending: true })
+      .limit(3),
     getForecastDaysLimit(user.id),
   ]);
 
@@ -52,6 +59,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const incomes = (incomeResult.data || []) as any;
   const bills = (billsResult.data || []) as any;
   const invoiceSummary = invoiceSummaryResult;
+  const topInvoices = (topInvoicesResult.data || []) as any;
 
   // Extract settings with type assertion
   const settingsData = settingsResult.data as any;
@@ -303,94 +311,145 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </div>
           )}
 
-          <h2 className="text-2xl font-bold mb-4 text-zinc-100">
+          <h2 className="text-2xl font-bold mb-6 text-zinc-100">
             Welcome to Cash Flow Forecaster!
           </h2>
-          <div className="mb-6">
-            <p
-              className={[
-                'text-sm font-medium',
-                forecastStatus?.negativeCount
-                  ? 'text-rose-500'
-                  : forecastStatus?.lowBalanceCount
-                    ? 'text-amber-500'
-                    : forecastStatus
-                      ? 'text-teal-400'
-                      : 'text-zinc-400',
-              ].join(' ')}
-            >
-              {forecastStatus?.negativeCount ? (
-                <>
-                  You may overdraft on {forecastStatus.firstNegativeDate ? formatDate(forecastStatus.firstNegativeDate) : 'a future day'}
-                  . Let&apos;s fix that.
-                </>
-              ) : forecastStatus?.lowBalanceCount ? (
-                <>Heads up — {forecastStatus.lowBalanceCount} low-balance day{forecastStatus.lowBalanceCount === 1 ? '' : 's'} in the next {forecastDays} days.</>
-              ) : forecastStatus ? (
-                <>✓ You&apos;re in the green for the next {forecastDays} days.</>
-              ) : (
-                <>Your {forecastDays}-day cash flow calendar will appear here soon.</>
-              )}
-            </p>
-            <Link href="/dashboard/calendar" className="text-teal-400 text-sm hover:text-teal-300 transition-colors">
-              View full calendar →
-            </Link>
-          </div>
+
+          {/* Critical Warning Banner - Overdraft Alert */}
+          {forecastStatus?.negativeCount ? (
+            <div className="mb-6">
+              <div className="border border-rose-500/30 bg-rose-500/10 rounded-lg p-5">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-rose-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-base font-semibold text-rose-300">
+                      You may overdraft on {forecastStatus.firstNegativeDate ? formatDate(forecastStatus.firstNegativeDate) : 'a future day'}
+                    </p>
+                    <p className="text-sm text-rose-400 mt-1">
+                      Let&apos;s fix that — check your forecast and adjust spending or income.
+                    </p>
+                    <Link href="/dashboard/calendar" className="inline-flex items-center text-sm font-medium text-rose-300 hover:text-rose-200 transition-colors mt-2">
+                      View full calendar →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : forecastStatus?.lowBalanceCount ? (
+            <div className="mb-6">
+              <div className="border border-amber-500/30 bg-amber-500/10 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-amber-300">
+                      Heads up — {forecastStatus.lowBalanceCount} low-balance day{forecastStatus.lowBalanceCount === 1 ? '' : 's'} in the next {forecastDays} days
+                    </p>
+                    <Link href="/dashboard/calendar" className="inline-flex items-center text-sm text-amber-400 hover:text-amber-300 transition-colors mt-1">
+                      View calendar →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : forecastStatus ? (
+            <div className="mb-6">
+              <div className="border border-teal-500/30 bg-teal-500/10 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-teal-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-teal-300">
+                      ✓ You&apos;re in the green for the next {forecastDays} days
+                    </p>
+                    <Link href="/dashboard/calendar" className="inline-flex items-center text-sm text-teal-400 hover:text-teal-300 transition-colors mt-1">
+                      View calendar →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           {/* Path Forward (first negative day in forecast) */}
           {pathForwardData && (
             <div className="mb-6">
-              <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4 sm:p-5">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-5 sm:p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 bg-teal-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="w-5 h-5 text-teal-400" />
+                  </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5 text-teal-400" />
-                      <span className="font-semibold text-zinc-100">
-                        Your Path Forward
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-zinc-300 mt-2">
+                    <h3 className="text-lg font-semibold text-zinc-100">
+                      Your Path Forward
+                    </h3>
+                    <p className="text-sm text-zinc-300 mt-1">
                       To stay in the green by {format(pathForwardData.problemDate, 'MMM d')}, you could:
                     </p>
+                  </div>
+                </div>
 
-                    <div className="mt-3 space-y-2 text-sm">
-                      <p className="text-zinc-200">
-                        •{' '}
-                        <span className="font-semibold text-teal-300">
-                          Bring in {formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}
-                        </span>{' '}
-                        before then
-                      </p>
-                      <div className="flex items-center gap-3">
-                        <div className="h-px flex-1 bg-teal-500/20" />
-                        <span className="text-xs uppercase tracking-wide text-teal-300/80">
-                          or
-                        </span>
-                        <div className="h-px flex-1 bg-teal-500/20" />
+                <div className="grid sm:grid-cols-2 gap-3 mb-5">
+                  {/* Option 1: Add Income */}
+                  <div className="border border-teal-500/20 bg-teal-500/5 rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <div className="w-6 h-6 bg-teal-500/20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-xs font-bold text-teal-300">1</span>
                       </div>
-                      <p className="text-zinc-200">
-                        •{' '}
-                        <span className="font-semibold text-teal-300">
-                          {pathForwardData.daysUntil <= 1
-                            ? `Cut ${formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}`
-                            : `Cut ${formatCurrencyNoCents(Math.ceil(pathForwardData.dailyReduction), currency)}/day`}
-                        </span>{' '}
-                        {pathForwardData.daysUntil === 0
-                          ? 'from spending today'
-                          : pathForwardData.daysUntil === 1
-                            ? `from spending tomorrow`
-                            : 'from spending'}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-zinc-200">Add Income</p>
+                        <p className="text-sm text-teal-300 font-semibold mt-1">
+                          {formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}
+                        </p>
+                        <p className="text-xs text-zinc-400 mt-0.5">before {format(pathForwardData.problemDate, 'MMM d')}</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
-                    <ScenarioButton variant="nav" source="dashboard" label="Test a Scenario →" />
-                    <p className="hidden sm:block text-xs text-zinc-400 max-w-[200px] text-right">
-                      Try a "what if" purchase and see the impact.
-                    </p>
+                  {/* Option 2: Cut Spending */}
+                  <div className="border border-teal-500/20 bg-teal-500/5 rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <div className="w-6 h-6 bg-teal-500/20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-xs font-bold text-teal-300">2</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-zinc-200">Cut Spending</p>
+                        <p className="text-sm text-teal-300 font-semibold mt-1">
+                          {pathForwardData.daysUntil <= 1
+                            ? `${formatCurrencyNoCents(Math.ceil(pathForwardData.deficit), currency)}`
+                            : `${formatCurrencyNoCents(Math.ceil(pathForwardData.dailyReduction), currency)}/day`}
+                        </p>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          {pathForwardData.daysUntil === 0
+                            ? 'from today'
+                            : pathForwardData.daysUntil === 1
+                              ? 'for tomorrow'
+                              : `for ${pathForwardData.daysUntil} days`}
+                        </p>
+                      </div>
+                    </div>
                   </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/dashboard/calendar"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md transition-colors"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    View Full Forecast
+                  </Link>
+                  <ScenarioButton variant="nav" source="dashboard" label="Test a Scenario" />
                 </div>
               </div>
             </div>
@@ -399,82 +458,138 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {/* Quick Stats (responsive 2x2 on mobile/tablet, 4 across on desktop) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {/* Daily Budget / Shortfall */}
-            <Link href="/dashboard/calendar" className="h-full">
-              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
-                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
-                  {dailyBudgetData && dailyBudgetData.dailyBudget < 0 ? 'Daily Shortfall' : 'Daily Budget'}
-                </p>
-                <div className="mt-2">
-                  <p className={`text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight ${dailyBudgetColorClass}`}>
-                    {dailyBudgetData
-                      ? dailyBudgetData.dailyBudget < 0
-                        ? `${formatCurrencyNoCents(Math.ceil(Math.abs(dailyBudgetData.dailyBudget)), currency)}/day short`
-                        : `${formatCurrencyNoCents(Math.floor(dailyBudgetData.dailyBudget), currency)}/day`
-                      : '—'}
-                  </p>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    {dailyBudgetData
-                      ? dailyBudgetData.dailyBudget < 0
-                        ? `Need extra income before ${format(dailyBudgetData.nextIncomeDate, 'MMM d')}`
-                        : dailyBudgetData.daysUntilIncome === 0
-                          ? `until income today`
-                          : `until ${format(dailyBudgetData.nextIncomeDate, 'MMM d')} (${dailyBudgetData.daysUntilIncome}d)`
-                      : 'Add income to calculate'}
-                  </p>
+            <div className="flex flex-col gap-2 h-full">
+              <Link href="/dashboard/calendar" className="flex-1">
+                <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
+                      {dailyBudgetData && dailyBudgetData.dailyBudget < 0 ? 'Daily Shortfall' : 'Daily Budget'}
+                    </p>
+                    <div className="w-8 h-8 bg-zinc-700/50 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-4 h-4 text-zinc-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className={`text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight ${dailyBudgetColorClass}`}>
+                      {dailyBudgetData
+                        ? dailyBudgetData.dailyBudget < 0
+                          ? `${formatCurrencyNoCents(Math.ceil(Math.abs(dailyBudgetData.dailyBudget)), currency)}/day short`
+                          : `${formatCurrencyNoCents(Math.floor(dailyBudgetData.dailyBudget), currency)}/day`
+                        : '—'}
+                    </p>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                      {dailyBudgetData
+                        ? dailyBudgetData.dailyBudget < 0
+                          ? `Need extra income before ${format(dailyBudgetData.nextIncomeDate, 'MMM d')}`
+                          : dailyBudgetData.daysUntilIncome === 0
+                            ? `until income today`
+                            : `until ${format(dailyBudgetData.nextIncomeDate, 'MMM d')} (${dailyBudgetData.daysUntilIncome}d)`
+                        : 'Add income to calculate'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+              <Link
+                href="/dashboard/calendar"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-300 hover:text-teal-400 transition-colors"
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                View Calendar
+              </Link>
+            </div>
 
             {/* Accounts Card */}
-            <Link href="/dashboard/accounts" className="h-full">
-              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
-                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Accounts</p>
-                <div className="mt-2">
-                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
-                    {formatCurrency(totalBalance, currency)}
-                  </p>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    {accountCount > 0
-                      ? `Across ${accountCount} ${accountCount === 1 ? 'account' : 'accounts'}`
-                      : 'Add your bank accounts'}
-                  </p>
+            <div className="flex flex-col gap-2 h-full">
+              <Link href="/dashboard/accounts" className="flex-1">
+                <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Accounts</p>
+                    <div className="w-8 h-8 bg-zinc-700/50 rounded-lg flex items-center justify-center">
+                      <Wallet className="w-4 h-4 text-zinc-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
+                      {formatCurrency(totalBalance, currency)}
+                    </p>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                      {accountCount > 0
+                        ? `Across ${accountCount} ${accountCount === 1 ? 'account' : 'accounts'}`
+                        : 'Add your bank accounts'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+              <Link
+                href="/dashboard/accounts/new"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-300 hover:text-teal-400 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Account
+              </Link>
+            </div>
 
             {/* Income Card */}
-            <Link href="/dashboard/income" className="h-full">
-              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
-                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Income</p>
-                <div className="mt-2">
-                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-400">
-                    {formatCurrency(monthlyIncome, currency)}
-                  </p>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    {incomeCount > 0
-                      ? `From ${incomeCount} ${incomeCount === 1 ? 'source' : 'sources'}`
-                      : 'Track income sources'}
-                  </p>
+            <div className="flex flex-col gap-2 h-full">
+              <Link href="/dashboard/income" className="flex-1">
+                <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Income</p>
+                    <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="w-4 h-4 text-emerald-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-400">
+                      {formatCurrency(monthlyIncome, currency)}
+                    </p>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                      {incomeCount > 0
+                        ? `From ${incomeCount} ${incomeCount === 1 ? 'source' : 'sources'}`
+                        : 'Track income sources'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+              <Link
+                href="/dashboard/income/new"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-300 hover:text-teal-400 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Income
+              </Link>
+            </div>
 
             {/* Bills Card */}
-            <Link href="/dashboard/bills" className="h-full">
-              <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
-                <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Bills</p>
-                <div className="mt-2">
-                  <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-400">
-                    {formatCurrency(monthlyBills, currency)}
-                  </p>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    {activeBillsCount > 0
-                      ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
-                      : 'Track your bills'}
-                  </p>
+            <div className="flex flex-col gap-2 h-full">
+              <Link href="/dashboard/bills" className="flex-1">
+                <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Bills</p>
+                    <div className="w-8 h-8 bg-rose-500/10 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-rose-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-400">
+                      {formatCurrency(monthlyBills, currency)}
+                    </p>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                      {activeBillsCount > 0
+                        ? `${activeBillsCount} ${activeBillsCount === 1 ? 'active bill' : 'active bills'}`
+                        : 'Track your bills'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+              <Link
+                href="/dashboard/bills/new"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-300 hover:text-teal-400 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Bill
+              </Link>
+            </div>
           </div>
 
           {/* Import Transactions (secondary CTA) */}
@@ -500,33 +615,80 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {calendarData && (
             <div className="mb-6">
               <Link href="/dashboard/calendar">
-                <div className="bg-zinc-800 border border-zinc-800 rounded-lg p-5 hover:bg-zinc-700/60 hover:border-teal-500/30 transition-all duration-200 cursor-pointer flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center">
-                      <Calendar className="w-6 h-6 text-teal-400" />
+                <div className="bg-zinc-800 border border-zinc-800 rounded-lg p-6 hover:bg-zinc-700/60 hover:border-teal-500/30 transition-all duration-200 cursor-pointer">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-6 h-6 text-teal-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-zinc-100">
+                          {forecastDays}-Day Forecast
+                        </h3>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          Your cash flow outlook
+                        </p>
+                      </div>
                     </div>
                     {calendarData.lowestBalance < safetyBuffer ? (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300">
+                      <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300">
                         Warning
                       </span>
                     ) : (
-                      <span className="w-0 h-0"></span>
+                      <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300">
+                        Healthy
+                      </span>
                     )}
                   </div>
 
-                  <h3 className="font-semibold text-zinc-100 mb-2">
-                    {forecastDays}-Day Forecast
-                  </h3>
+                  <div className="grid grid-cols-3 gap-4 py-4 border-t border-b border-zinc-700/50">
+                    <div>
+                      <p className="text-xs text-zinc-400 mb-1">Lowest Balance</p>
+                      <p className={`text-xl sm:text-2xl font-bold ${getBalanceColor(calendarData.lowestBalance, safetyBuffer).replace('dark:', '').replace('text-green-400', 'text-emerald-400').replace('text-yellow-400', 'text-amber-400').replace('text-orange-400', 'text-orange-400').replace('text-red-400', 'text-rose-400')}`}>
+                        {formatCurrency(calendarData.lowestBalance, currency)}
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        on {format(calendarData.lowestBalanceDay, 'MMM d')}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-zinc-400 mb-1">Total Income</p>
+                      <p className="text-xl sm:text-2xl font-bold text-emerald-400">
+                        {formatCurrency(
+                          calendarData.days.reduce((sum, day) =>
+                            sum + (day.income?.reduce((s, i) => s + (i.amount || 0), 0) || 0), 0
+                          ),
+                          currency
+                        )}
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        {forecastDays} days
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-zinc-400 mb-1">Total Bills</p>
+                      <p className="text-xl sm:text-2xl font-bold text-rose-400">
+                        {formatCurrency(
+                          calendarData.days.reduce((sum, day) =>
+                            sum + (day.bills?.reduce((s, b) => s + (b.amount || 0), 0) || 0), 0
+                          ),
+                          currency
+                        )}
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        {forecastDays} days
+                      </p>
+                    </div>
+                  </div>
 
-                  <p className="text-sm text-zinc-400 mb-2">
-                    Lowest Balance
-                  </p>
-                  <p className={`text-3xl font-bold mb-2 ${getBalanceColor(calendarData.lowestBalance, safetyBuffer).replace('dark:', '').replace('text-green-400', 'text-emerald-400').replace('text-yellow-400', 'text-amber-400').replace('text-orange-400', 'text-orange-400').replace('text-red-400', 'text-rose-400')}`}>
-                    {formatCurrency(calendarData.lowestBalance, currency)}
-                  </p>
-                  <p className="text-sm text-zinc-400">
-                    Lowest on {formatDate(calendarData.lowestBalanceDay)}
-                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <p className="text-sm text-zinc-400">
+                      Click to view day-by-day breakdown
+                    </p>
+                    <svg className="w-5 h-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
               </Link>
             </div>
@@ -540,45 +702,81 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {/* Outstanding invoices */}
           <div className={invoiceSummary.unpaidCount === 0 ? 'hidden sm:block mb-6' : 'mb-6'}>
             <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
-                    Outstanding Invoices
-                  </p>
-                  {invoiceSummary.unpaidCount === 0 ? (
-                    <div className="mt-2 flex items-center gap-2 text-zinc-300">
-                      <CheckCircle2 className="w-5 h-5 text-teal-400" />
-                      <p className="text-base font-medium">No outstanding invoices</p>
-                    </div>
-                  ) : (
-                    <div className="mt-2">
-                      <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
-                        {formatCurrency(invoiceSummary.totalOutstanding, currency)}
-                      </p>
-                      <p className="text-sm text-zinc-400 mt-1">
-                        {invoiceSummary.unpaidCount} unpaid invoice{invoiceSummary.unpaidCount === 1 ? '' : 's'}
-                        {invoiceSummary.overdueCount > 0 && (
-                          <span className="ml-2 text-rose-400 font-medium">
-                            {invoiceSummary.overdueCount} overdue
-                          </span>
-                        )}
-                      </p>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                    <Receipt className="w-5 h-5 text-teal-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-zinc-100">Outstanding Invoices</h3>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      {invoiceSummary.unpaidCount === 0
+                        ? 'All caught up'
+                        : `${invoiceSummary.unpaidCount} unpaid invoice${invoiceSummary.unpaidCount === 1 ? '' : 's'}`}
+                    </p>
+                  </div>
+                </div>
+                {invoiceSummary.overdueCount > 0 && (
+                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300">
+                    {invoiceSummary.overdueCount} Overdue
+                  </span>
+                )}
+              </div>
+
+              {invoiceSummary.unpaidCount === 0 ? (
+                <div className="flex items-center gap-2 text-zinc-300 py-4 border-t border-zinc-700/50">
+                  <CheckCircle2 className="w-5 h-5 text-teal-400" />
+                  <p className="text-sm font-medium">No outstanding invoices</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-baseline justify-between py-3 border-t border-zinc-700/50 mb-4">
+                    <p className="text-xs text-zinc-400">Total Outstanding</p>
+                    <p className="text-2xl font-bold tabular-nums text-zinc-100">
+                      {formatCurrency(invoiceSummary.totalOutstanding, currency)}
+                    </p>
+                  </div>
+
+                  {topInvoices.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      {topInvoices.map((invoice: any) => {
+                        const today = new Date();
+                        const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        const dueDate = new Date(`${invoice.due_date}T00:00:00`);
+                        const isOverdue = dueDate < todayMidnight;
+
+                        return (
+                          <Link
+                            key={invoice.id}
+                            href={`/dashboard/invoices/${invoice.id}`}
+                            className="flex items-center justify-between p-3 bg-zinc-900 rounded-md hover:bg-zinc-700/60 transition-colors border border-zinc-800 hover:border-teal-500/30"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-zinc-100 truncate">
+                                {invoice.client_name}
+                              </p>
+                              <p className="text-xs text-zinc-400 mt-0.5">
+                                {invoice.invoice_number || 'No number'} • Due {format(dueDate, 'MMM d')}
+                                {isOverdue && <span className="text-rose-400 ml-1 font-medium">Overdue</span>}
+                              </p>
+                            </div>
+                            <p className={`text-sm font-semibold tabular-nums ml-3 ${isOverdue ? 'text-rose-400' : 'text-zinc-100'}`}>
+                              {formatCurrency(invoice.amount, currency)}
+                            </p>
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
-                </div>
+                </>
+              )}
 
-                <div className="flex flex-col items-end gap-3">
-                  <div className="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center">
-                    <Receipt className="w-6 h-6 text-teal-400" />
-                  </div>
-                  <Link
-                    href="/dashboard/invoices"
-                    className="text-sm font-medium text-teal-400 hover:text-teal-300"
-                  >
-                    View all →
-                  </Link>
-                </div>
-              </div>
+              <Link
+                href="/dashboard/invoices"
+                className="inline-flex items-center text-sm font-medium text-teal-400 hover:text-teal-300 transition-colors"
+              >
+                View all invoices →
+              </Link>
             </div>
           </div>
 

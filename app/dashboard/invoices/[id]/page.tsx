@@ -8,7 +8,7 @@ import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
 import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button';
 import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
 import { SendReminderButton } from '@/components/invoices/send-reminder-button';
-import { CheckCircle2, Circle, Pencil } from 'lucide-react';
+import { CheckCircle2, Pencil } from 'lucide-react';
 import { canUseInvoicing } from '@/lib/stripe/subscription';
 
 function statusBadge(status: string | null | undefined) {
@@ -48,7 +48,6 @@ function TimelineStep({
   note?: string;
   isLast?: boolean;
 }) {
-  const Icon = completed ? CheckCircle2 : Circle;
   return (
     <div className="flex items-start gap-3 relative">
       {!isLast && (
