@@ -4,9 +4,25 @@ import { formatDistanceToNow } from 'date-fns';
  * Formats a number as currency
  * @param amount - The amount to format
  * @param currency - The currency code (default: 'USD')
- * @returns Formatted currency string (e.g., "$1,234.56")
+ * @param compact - Whether to use compact notation (e.g., "$1.2k") (default: false)
+ * @returns Formatted currency string (e.g., "$1,234.56" or "$1.2k")
  */
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
+export function formatCurrency(amount: number, currency: string = 'USD', compact: boolean = false): string {
+  if (compact) {
+    // For compact notation, use custom formatting
+    const absAmount = Math.abs(amount);
+    const sign = amount < 0 ? '-' : '';
+    const currencySymbol = currency === 'USD' ? '$' : currency;
+
+    if (absAmount >= 1000000) {
+      return `${sign}${currencySymbol}${(absAmount / 1000000).toFixed(1)}m`;
+    } else if (absAmount >= 1000) {
+      return `${sign}${currencySymbol}${(absAmount / 1000).toFixed(1)}k`;
+    } else {
+      return `${sign}${currencySymbol}${absAmount.toFixed(0)}`;
+    }
+  }
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency,
