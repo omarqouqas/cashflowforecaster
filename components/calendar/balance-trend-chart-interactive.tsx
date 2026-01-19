@@ -160,7 +160,7 @@ export function BalanceTrendChartInteractive({
       </div>
 
       {/* Chart */}
-      <div className="w-full -mx-2">
+      <div className={`w-full -mx-2 ${onDayClick ? 'cursor-pointer' : ''}`}>
         <ResponsiveContainer width="100%" height={320}>
           <AreaChart
             data={chartData}
@@ -257,6 +257,7 @@ export function BalanceTrendChartInteractive({
               strokeWidth={2.5}
               fill="url(#balanceGradient)"
               fillOpacity={1}
+              onClick={handleClick}
               activeDot={{
                 r: 5,
                 fill: 'rgb(16, 185, 129)',
