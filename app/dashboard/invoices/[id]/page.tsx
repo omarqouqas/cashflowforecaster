@@ -15,15 +15,15 @@ function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
   switch (s) {
     case 'draft':
-      return 'bg-zinc-100 text-zinc-700';
+      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
     case 'sent':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
     case 'viewed':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
     case 'paid':
-      return 'bg-green-100 text-green-800';
+      return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
     default:
-      return 'bg-zinc-100 text-zinc-700';
+      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
   }
 }
 
@@ -40,20 +40,27 @@ function TimelineStep({
   completed,
   timestamp,
   note,
+  isLast = false,
 }: {
   label: string;
   completed: boolean;
   timestamp?: string | null;
   note?: string;
+  isLast?: boolean;
 }) {
   const Icon = completed ? CheckCircle2 : Circle;
   return (
-    <div className="flex items-start gap-3">
-      <Icon className={completed ? 'w-5 h-5 text-teal-700 mt-0.5' : 'w-5 h-5 text-zinc-300 mt-0.5'} />
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-zinc-900">{label}</p>
+    <div className="flex items-start gap-3 relative">
+      {!isLast && (
+        <div className="absolute left-[9px] top-6 bottom-0 w-0.5 bg-zinc-800" />
+      )}
+      <div className={completed ? 'w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center mt-0.5 relative z-10' : 'w-5 h-5 rounded-full border-2 border-zinc-700 bg-zinc-900 mt-0.5 relative z-10'}>
+        {completed && <CheckCircle2 className="w-3 h-3 text-zinc-900" />}
+      </div>
+      <div className="min-w-0 pb-6">
+        <p className="text-sm font-medium text-zinc-100">{label}</p>
         {timestamp ? (
-          <p className="text-xs text-zinc-500 mt-0.5">{formatDate(timestamp)}</p>
+          <p className="text-xs text-zinc-400 mt-0.5">{formatDate(timestamp)}</p>
         ) : (
           <p className="text-xs text-zinc-500 mt-0.5">{completed ? (note ?? 'Date not recorded') : 'Pending'}</p>
         )}
@@ -121,21 +128,21 @@ export default async function InvoiceDetailPage({
     <div className="max-w-3xl mx-auto">
       <Link
         href="/dashboard/invoices"
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        className="text-sm text-zinc-400 hover:text-teal-400 flex items-center gap-1 mb-6 transition-colors"
       >
         ← Back to Invoices
       </Link>
 
       {searchParams?.error === 'paid-cannot-edit' && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-          <p className="text-sm text-amber-900 font-medium">Paid invoices cannot be edited.</p>
+        <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3 mb-6">
+          <p className="text-sm text-amber-400 font-medium">Paid invoices cannot be edited.</p>
         </div>
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-zinc-900">{invoiceData.invoice_number}</h1>
+          <h1 className="text-2xl font-bold text-zinc-100">{invoiceData.invoice_number}</h1>
           <span
             className={[
               'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize',
@@ -147,124 +154,130 @@ export default async function InvoiceDetailPage({
         </div>
       </div>
 
-      {/* Actions */}
+      {/* Actions - Reorganized with primary actions on right */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <DownloadPdfButton invoiceId={invoiceData.id} />
-        {status === 'draft' && (
-          <SendInvoiceButton
-            invoiceId={invoiceData.id}
-            clientEmail={invoiceData.client_email}
-            disabled={!invoiceData.client_email}
-            allowMessage
-          />
-        )}
-        {status !== 'draft' && status !== 'paid' && (
-          <div className="flex flex-col justify-center">
-            <p className="text-xs text-zinc-500">
-              Sent{invoiceData.sent_at ? ` on ${formatDate(invoiceData.sent_at)}` : ''}
-            </p>
-            <div className="mt-2">
-              <SendInvoiceButton
-                invoiceId={invoiceData.id}
-                clientEmail={invoiceData.client_email}
-                disabled={!invoiceData.client_email}
-                mode="resend"
-              />
-            </div>
-          </div>
-        )}
-        {status !== 'paid' && (
-          <SendReminderButton
-            invoiceId={invoiceData.id}
-            invoiceStatus={invoiceData.status}
-            lastReminderAt={invoiceData.last_reminder_at}
-            reminderCount={invoiceData.reminder_count ?? 0}
-          />
-        )}
-        {status !== 'paid' && (
-          <Link
-            href={`/dashboard/invoices/${invoiceData.id}/edit`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 min-h-[32px]"
-            aria-label="Edit invoice"
-            title="Edit invoice"
-          >
-            <Pencil className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Edit</span>
-          </Link>
-        )}
-        {status !== 'paid' && <MarkAsPaidButton invoiceId={invoiceData.id} />}
+        {/* Secondary actions on left */}
+        <div className="flex flex-wrap gap-3 flex-1">
+          <DownloadPdfButton invoiceId={invoiceData.id} />
+          {status === 'draft' && (
+            <SendInvoiceButton
+              invoiceId={invoiceData.id}
+              clientEmail={invoiceData.client_email}
+              disabled={!invoiceData.client_email}
+              allowMessage
+            />
+          )}
+          {status !== 'draft' && status !== 'paid' && (
+            <SendInvoiceButton
+              invoiceId={invoiceData.id}
+              clientEmail={invoiceData.client_email}
+              disabled={!invoiceData.client_email}
+              mode="resend"
+            />
+          )}
+          {status !== 'paid' && (
+            <SendReminderButton
+              invoiceId={invoiceData.id}
+              invoiceStatus={invoiceData.status}
+              lastReminderAt={invoiceData.last_reminder_at}
+              reminderCount={invoiceData.reminder_count ?? 0}
+            />
+          )}
+        </div>
+
+        {/* Primary actions on right */}
+        <div className="flex gap-3">
+          {status !== 'paid' && (
+            <Link
+              href={`/dashboard/invoices/${invoiceData.id}/edit`}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 transition-colors"
+              aria-label="Edit invoice"
+              title="Edit invoice"
+            >
+              <Pencil className="w-4 h-4" />
+              <span>Edit</span>
+            </Link>
+          )}
+          {status !== 'paid' && <MarkAsPaidButton invoiceId={invoiceData.id} />}
+        </div>
       </div>
 
+      {status !== 'draft' && status !== 'paid' && invoiceData.sent_at && (
+        <p className="text-xs text-zinc-500 mb-6">
+          Sent on {formatDate(invoiceData.sent_at)}
+        </p>
+      )}
+
       {/* Details */}
-      <div className="border border-zinc-200 bg-white rounded-lg p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
           <div className="min-w-0">
-            <p className="text-sm text-zinc-500">Client</p>
-            <p className="text-lg font-semibold text-zinc-900 truncate">{invoiceData.client_name}</p>
+            <p className="text-sm text-zinc-400 mb-1">Client</p>
+            <p className="text-lg font-semibold text-zinc-100 truncate">{invoiceData.client_name}</p>
             {invoiceData.client_email && (
-              <p className="text-sm text-zinc-600 mt-0.5">{invoiceData.client_email}</p>
+              <p className="text-sm text-zinc-300 mt-1">{invoiceData.client_email}</p>
             )}
           </div>
 
           <div className="text-left sm:text-right">
-            <p className="text-sm text-zinc-500">Amount</p>
-            <p className="text-3xl font-bold text-zinc-900 tabular-nums">
+            <p className="text-sm text-zinc-400 mb-1">Amount</p>
+            <p className="text-3xl font-bold text-zinc-100 tabular-nums">
               {formatCurrency(invoiceData.amount)}
             </p>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="border border-zinc-100 rounded-md p-4 bg-zinc-50">
-            <p className="text-sm text-zinc-500">Due date</p>
-            <p className="text-base font-medium text-zinc-900">{formatDateOnly(invoiceData.due_date)}</p>
+          <div className="border border-zinc-800 rounded-md p-4 bg-zinc-800/50">
+            <p className="text-sm text-zinc-400 mb-1">Due date</p>
+            <p className="text-base font-medium text-zinc-100">{formatDateOnly(invoiceData.due_date)}</p>
             {overdue && (
-              <p className="text-sm text-rose-600 mt-1 font-medium">Overdue</p>
+              <p className="text-sm text-rose-400 mt-1.5 font-medium">Overdue</p>
             )}
           </div>
 
-          <div className="border border-zinc-100 rounded-md p-4 bg-zinc-50">
-            <p className="text-sm text-zinc-500">Created</p>
-            <p className="text-base font-medium text-zinc-900">
+          <div className="border border-zinc-800 rounded-md p-4 bg-zinc-800/50">
+            <p className="text-sm text-zinc-400 mb-1">Created</p>
+            <p className="text-base font-medium text-zinc-100">
               {invoiceData.created_at ? formatDate(invoiceData.created_at) : '—'}
             </p>
           </div>
         </div>
 
         {invoiceData.description?.trim() && (
-          <div className="mt-6">
-            <p className="text-sm text-zinc-500 mb-1.5">Description</p>
-            <p className="text-sm text-zinc-800 whitespace-pre-wrap">{invoiceData.description}</p>
+          <div className="mt-6 pt-6 border-t border-zinc-800">
+            <p className="text-sm text-zinc-400 mb-2">Description</p>
+            <p className="text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed">{invoiceData.description}</p>
           </div>
         )}
       </div>
 
       {/* Reminder History */}
       {Array.isArray(reminderHistory) && reminderHistory.length > 0 ? (
-        <div className="border border-zinc-200 bg-zinc-700/5 rounded-lg p-4 mb-6">
-          <h2 className="text-sm font-semibold text-zinc-900 mb-3">Reminder History</h2>
-          <div className="space-y-2">
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-5 mb-6">
+          <h2 className="text-sm font-semibold text-zinc-100 mb-4">Reminder History</h2>
+          <div className="space-y-3">
             {reminderHistory.map((r) => {
               const type = (r.reminder_type ?? '').toLowerCase();
               const label =
                 type === 'friendly' ? 'Friendly' : type === 'firm' ? 'Firm' : type === 'final' ? 'Final' : 'Reminder';
               const badge =
                 type === 'friendly'
-                  ? 'bg-teal-50 text-teal-800 border border-teal-200'
+                  ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30'
                   : type === 'firm'
-                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                     : type === 'final'
-                      ? 'bg-rose-50 text-rose-800 border border-rose-200'
-                      : 'bg-zinc-50 text-zinc-700 border border-zinc-200';
+                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                      : 'bg-zinc-800 text-zinc-300 border border-zinc-700';
 
               return (
-                <div key={`${r.sent_at}-${r.reminder_type}`} className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={['inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold', badge].join(' ')}>
+                <div key={`${r.sent_at}-${r.reminder_type}`} className="flex items-center justify-between gap-3 p-3 bg-zinc-800/50 rounded-md border border-zinc-800">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={['inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold', badge].join(' ')}>
                       {label}
                     </span>
-                    <p className="text-xs text-zinc-700 truncate">
-                      {label.toLowerCase()} reminder sent {r.sent_at ? formatDate(r.sent_at) : '—'}
+                    <p className="text-sm text-zinc-300 truncate">
+                      Sent {r.sent_at ? formatDate(r.sent_at) : '—'}
                     </p>
                   </div>
                 </div>
@@ -273,13 +286,13 @@ export default async function InvoiceDetailPage({
           </div>
         </div>
       ) : overdue ? (
-        <p className="text-xs text-zinc-500 mb-6">No reminders sent yet</p>
+        <p className="text-sm text-zinc-500 mb-6">No reminders sent yet</p>
       ) : null}
 
       {/* Timeline */}
-      <div className="border border-zinc-200 bg-white rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">History</h2>
-        <div className="space-y-4">
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6 mb-6">
+        <h2 className="text-lg font-semibold text-zinc-100 mb-6">History</h2>
+        <div>
           <TimelineStep
             label="Created"
             completed={true}
@@ -302,28 +315,49 @@ export default async function InvoiceDetailPage({
             label="Paid"
             completed={paidCompleted}
             timestamp={invoiceData.paid_at}
+            isLast={true}
           />
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-zinc-100">
-          <Link
-            href={linkedIncome?.id ? `/dashboard/income/${linkedIncome.id}/edit` : '/dashboard/income'}
-            className="text-sm text-teal-700 hover:text-teal-800 font-medium"
-          >
-            View linked income entry →
-          </Link>
         </div>
       </div>
 
-      {/* Danger zone (optional, less prominent) */}
-      <div className="mt-6 border border-rose-200 bg-rose-50 rounded-lg p-6">
-        <h2 className="text-sm font-semibold text-rose-900">Danger zone</h2>
-        <p className="text-sm text-rose-800 mt-1">
+      {/* Linked Income Entry */}
+      {linkedIncome?.id ? (
+        <Link
+          href={`/dashboard/income/${linkedIncome.id}/edit`}
+          className="block border border-zinc-800 bg-zinc-900 rounded-lg p-5 mb-6 hover:bg-zinc-800 transition-colors group"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-zinc-400 mb-1">Linked Income Entry</p>
+              <p className="text-base font-medium text-zinc-100 group-hover:text-teal-400 transition-colors">
+                {formatCurrency(invoiceData.amount)} • {formatDateOnly(invoiceData.due_date)}
+              </p>
+              <p className="text-xs text-zinc-500 mt-1">
+                This invoice is tracked in your cash flow forecast
+              </p>
+            </div>
+            <div className="text-teal-400">→</div>
+          </div>
+        </Link>
+      ) : (
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-5 mb-6">
+          <p className="text-sm text-zinc-400 mb-1">Linked Income Entry</p>
+          <p className="text-sm text-zinc-500">
+            This invoice is not yet linked to your cash flow forecast.{' '}
+            <Link href="/dashboard/income" className="text-teal-400 hover:text-teal-300 font-medium">
+              Add to forecast →
+            </Link>
+          </p>
+        </div>
+      )}
+
+      {/* Danger zone */}
+      <div className="border border-rose-500/30 bg-rose-500/10 rounded-lg p-6">
+        <h2 className="text-sm font-semibold text-rose-400 mb-2">Danger zone</h2>
+        <p className="text-sm text-zinc-300 mb-4">
           Deleting a draft invoice will also remove the linked income entry from your forecast.
         </p>
-        <div className="mt-4">
-          <DeleteInvoiceButton invoiceId={invoiceData.id} status={invoiceData.status} />
-        </div>
+        <DeleteInvoiceButton invoiceId={invoiceData.id} status={invoiceData.status} />
       </div>
     </div>
   );
