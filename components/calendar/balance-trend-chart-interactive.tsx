@@ -110,9 +110,6 @@ export function BalanceTrendChartInteractive({
             )}
           </div>
         )}
-        {onDayClick && (
-          <p className="text-xs text-zinc-500 mt-3 italic text-center">Click to view details</p>
-        )}
       </div>
     );
   };
@@ -133,7 +130,7 @@ export function BalanceTrendChartInteractive({
             Balance Forecast
             <MousePointer2 className="w-4 h-4 text-zinc-500" />
           </h3>
-          <p className="text-sm text-zinc-500">{days.length}-day projection • Click to jump to date</p>
+          <p className="text-sm text-zinc-500">{days.length}-day projection • Hover & click chart to view day</p>
         </div>
 
         {/* Trend indicator */}
@@ -275,15 +272,19 @@ export function BalanceTrendChartInteractive({
       {/* Legend */}
       <div className="grid grid-cols-3 gap-3 mt-6 text-xs">
         <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
-          <div className="w-8 h-0.5 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full" />
+          <div className="w-8 h-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full" />
           <span className="text-zinc-400">Balance trend</span>
         </div>
         <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
-          <div className="w-8 h-0.5 bg-amber-400 rounded-full opacity-60" style={{ borderTop: '1.5px dashed currentColor', height: 0 }} />
+          <svg width="32" height="4" viewBox="0 0 32 4">
+            <line x1="0" y1="2" x2="32" y2="2" stroke="rgb(251, 191, 36)" strokeWidth="2" strokeDasharray="4 2" />
+          </svg>
           <span className="text-zinc-400">Safety buffer</span>
         </div>
         <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
-          <div className="w-8 h-0.5 bg-rose-500 rounded-full opacity-50" style={{ borderTop: '1.5px dashed currentColor', height: 0 }} />
+          <svg width="32" height="4" viewBox="0 0 32 4">
+            <line x1="0" y1="2" x2="32" y2="2" stroke="rgb(244, 63, 94)" strokeWidth="2" strokeDasharray="3 2" />
+          </svg>
           <span className="text-zinc-400">Zero line</span>
         </div>
       </div>
