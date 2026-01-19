@@ -145,18 +145,18 @@ export default function EditAccountPage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/accounts"
-          className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Accounts
         </Link>
 
-        <h1 className="text-xl font-semibold text-zinc-900 mb-6">Edit Account</h1>
+        <h1 className="text-2xl font-bold text-zinc-100 mb-6">Edit Account</h1>
 
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
           <div className="flex flex-col items-center justify-center gap-4 py-10">
             <svg
-              className="animate-spin h-8 w-8 text-zinc-900"
+              className="animate-spin h-8 w-8 text-teal-400"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -175,7 +175,7 @@ export default function EditAccountPage() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            <p className="text-zinc-500">Loading account…</p>
+            <p className="text-zinc-400">Loading account…</p>
           </div>
         </div>
       </div>
@@ -188,16 +188,16 @@ export default function EditAccountPage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/accounts"
-          className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Accounts
         </Link>
 
-        <h1 className="text-xl font-semibold text-zinc-900 mb-6">Edit Account</h1>
+        <h1 className="text-2xl font-bold text-zinc-100 mb-6">Edit Account</h1>
 
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
-          <p className="text-zinc-500 text-center">Account not found</p>
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+          <p className="text-zinc-400 text-center">Account not found</p>
         </div>
       </div>
     );
@@ -207,23 +207,23 @@ export default function EditAccountPage() {
     <div className="max-w-lg mx-auto">
       <Link
         href="/dashboard/accounts"
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
         Back to Accounts
       </Link>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-zinc-900">Edit Account</h1>
+        <h1 className="text-2xl font-bold text-zinc-100">Edit Account</h1>
         <DeleteAccountButton accountId={account.id} accountName={account.name} />
       </div>
 
-      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Account Name */}
           <div>
-            <Label htmlFor="name" className="text-zinc-700 mb-1.5 block">
-              Account Name<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="name" className="text-zinc-300 mb-1.5 block">
+              Account Name<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="name"
@@ -232,23 +232,23 @@ export default function EditAccountPage() {
               className={errors.name ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.name?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.name.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.name.message}</p>
             )}
           </div>
 
           {/* Account Type */}
           <div>
-            <Label htmlFor="account_type" className="text-zinc-700 mb-1.5 block">
-              Account Type<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="account_type" className="text-zinc-300 mb-1.5 block">
+              Account Type<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <select
                 id="account_type"
                 {...register('account_type')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
                   'appearance-none pr-10',
                   errors.account_type ? 'border-rose-500 focus:ring-rose-500' : '',
                 ].join(' ')}
@@ -260,14 +260,14 @@ export default function EditAccountPage() {
               <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.account_type?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.account_type.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.account_type.message}</p>
             )}
           </div>
 
           {/* Current Balance */}
           <div>
-            <Label htmlFor="current_balance" className="text-zinc-700 mb-1.5 block">
-              Current Balance<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="current_balance" className="text-zinc-300 mb-1.5 block">
+              Current Balance<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
@@ -286,14 +286,14 @@ export default function EditAccountPage() {
               />
             </div>
             {errors.current_balance?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.current_balance.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.current_balance.message}</p>
             )}
-            <p className="text-sm text-zinc-500 mt-1.5">Enter your current account balance</p>
+            <p className="text-sm text-zinc-400 mt-1.5">Enter your current account balance</p>
           </div>
 
           {/* Currency */}
           <div>
-            <Label htmlFor="currency" className="text-zinc-700 mb-1.5 block">
+            <Label htmlFor="currency" className="text-zinc-300 mb-1.5 block">
               Currency
             </Label>
             <div className="relative">
@@ -301,9 +301,9 @@ export default function EditAccountPage() {
                 id="currency"
                 {...register('currency')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
                   'appearance-none pr-10',
                 ].join(' ')}
               >
@@ -322,30 +322,30 @@ export default function EditAccountPage() {
               type="checkbox"
               id="is_spendable"
               {...register('is_spendable')}
-              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+              className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 checked:bg-teal-500"
             />
-            <Label htmlFor="is_spendable" className="text-zinc-700 font-normal cursor-pointer">
+            <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
               Use this account for expenses
             </Label>
           </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-800">
             <button
               type="button"
               onClick={() => router.push('/dashboard/accounts')}
               disabled={isSubmitting}
-              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-100 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isSubmitting ? 'Updating...' : 'Save changes'}
+              {isSubmitting ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>

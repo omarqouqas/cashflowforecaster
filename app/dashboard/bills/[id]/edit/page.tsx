@@ -188,18 +188,18 @@ export default function EditBillPage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/bills"
-          className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Bills
         </Link>
 
-        <h1 className="text-xl font-semibold text-zinc-900 mb-6">Edit Bill</h1>
+        <h1 className="text-2xl font-bold text-zinc-100 mb-6">Edit Bill</h1>
 
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
           <div className="flex flex-col items-center justify-center gap-4 py-10">
             <svg
-              className="animate-spin h-8 w-8 text-zinc-900"
+              className="animate-spin h-8 w-8 text-teal-400"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -218,7 +218,7 @@ export default function EditBillPage() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            <p className="text-zinc-500">Loading…</p>
+            <p className="text-zinc-400">Loading…</p>
           </div>
         </div>
       </div>
@@ -230,16 +230,16 @@ export default function EditBillPage() {
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard/bills"
-          className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Bills
         </Link>
 
-        <h1 className="text-xl font-semibold text-zinc-900 mb-6">Edit Bill</h1>
+        <h1 className="text-2xl font-bold text-zinc-100 mb-6">Edit Bill</h1>
 
-        <div className="border border-zinc-200 bg-white rounded-lg p-6">
-          <p className="text-zinc-500 text-center">{error || 'Bill not found'}</p>
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+          <p className="text-zinc-400 text-center">{error || 'Bill not found'}</p>
         </div>
       </div>
     );
@@ -249,20 +249,20 @@ export default function EditBillPage() {
     <div className="max-w-lg mx-auto">
       <Link
         href="/dashboard/bills"
-        className="text-sm text-zinc-500 hover:text-zinc-700 flex items-center gap-1 mb-4"
+        className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
         Back to Bills
       </Link>
 
-      <h1 className="text-xl font-semibold text-zinc-900 mb-6">Edit Bill</h1>
+      <h1 className="text-2xl font-bold text-zinc-100 mb-6">Edit Bill</h1>
 
-      <div className="border border-zinc-200 bg-white rounded-lg p-6">
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Bill Name */}
           <div>
-            <Label htmlFor="name" className="text-zinc-700 mb-1.5 block">
-              Bill Name<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="name" className="text-zinc-300 mb-1.5 block">
+              Bill Name<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="name"
@@ -271,14 +271,14 @@ export default function EditBillPage() {
               className={errors.name ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.name?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.name.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.name.message}</p>
             )}
           </div>
 
           {/* Amount */}
           <div>
-            <Label htmlFor="amount" className="text-zinc-700 mb-1.5 block">
-              Amount<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="amount" className="text-zinc-300 mb-1.5 block">
+              Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
@@ -295,15 +295,15 @@ export default function EditBillPage() {
               />
             </div>
             {errors.amount?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.amount.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.amount.message}</p>
             )}
-            <p className="text-sm text-zinc-500 mt-1.5">Enter the amount for this bill</p>
+            <p className="text-sm text-zinc-400 mt-1.5">Enter the amount for this bill</p>
           </div>
 
           {/* Due Date */}
           <div>
-            <Label htmlFor="due_date" className="text-zinc-700 mb-1.5 block">
-              Due Date<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="due_date" className="text-zinc-300 mb-1.5 block">
+              Due Date<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <Input
               id="due_date"
@@ -312,24 +312,24 @@ export default function EditBillPage() {
               className={errors.due_date ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
             {errors.due_date?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.due_date.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.due_date.message}</p>
             )}
-            <p className="text-sm text-zinc-500 mt-1.5">When is this bill due?</p>
+            <p className="text-sm text-zinc-400 mt-1.5">When is this bill due?</p>
           </div>
 
           {/* Frequency */}
           <div>
-            <Label htmlFor="frequency" className="text-zinc-700 mb-1.5 block">
-              Frequency<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="frequency" className="text-zinc-300 mb-1.5 block">
+              Frequency<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <select
                 id="frequency"
                 {...register('frequency')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
                   'appearance-none pr-10',
                   errors.frequency ? 'border-rose-500 focus:ring-rose-500' : '',
                 ].join(' ')}
@@ -346,23 +346,23 @@ export default function EditBillPage() {
               <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.frequency?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.frequency.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.frequency.message}</p>
             )}
           </div>
 
           {/* Category */}
           <div>
-            <Label htmlFor="category" className="text-zinc-700 mb-1.5 block">
-              Category<span className="text-rose-500 ml-0.5">*</span>
+            <Label htmlFor="category" className="text-zinc-300 mb-1.5 block">
+              Category<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
               <select
                 id="category"
                 {...register('category')}
                 className={[
-                  'w-full bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-zinc-900 min-h-[44px]',
-                  'placeholder:text-zinc-400',
-                  'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
+                  'placeholder:text-zinc-500',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
                   'appearance-none pr-10',
                   errors.category ? 'border-rose-500 focus:ring-rose-500' : '',
                 ].join(' ')}
@@ -377,7 +377,7 @@ export default function EditBillPage() {
               <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.category?.message && (
-              <p className="text-sm text-rose-600 mt-1.5">{errors.category.message}</p>
+              <p className="text-sm text-rose-400 mt-1.5">{errors.category.message}</p>
             )}
           </div>
 
@@ -387,33 +387,33 @@ export default function EditBillPage() {
               type="checkbox"
               id="is_active"
               {...register('is_active')}
-              className="mt-1 h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-900"
+              className="mt-1 h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 checked:bg-teal-500"
             />
             <div>
-              <Label htmlFor="is_active" className="text-zinc-700 cursor-pointer">
+              <Label htmlFor="is_active" className="text-zinc-300 cursor-pointer">
                 Include in forecast
               </Label>
-              <p className="text-sm text-zinc-500 mt-1">
+              <p className="text-sm text-zinc-400 mt-1">
                 Uncheck to pause this bill without deleting it
               </p>
             </div>
           </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-100">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-800">
             <button
               type="button"
               onClick={() => router.push('/dashboard/bills')}
               disabled={isSubmitting}
-              className="w-full bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-100 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isSubmitting ? 'Saving...' : 'Save changes'}
             </button>
