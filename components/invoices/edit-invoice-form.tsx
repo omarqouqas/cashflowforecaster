@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -47,7 +47,7 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     setValue,
   } = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
@@ -66,6 +66,28 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
     d.setDate(d.getDate() + days);
     setValue('due_date', d.toISOString().slice(0, 10));
   };
+
+  const handleCancel = () => {
+    if (isDirty) {
+      const confirmed = window.confirm(
+        'You have unsaved changes. Are you sure you want to cancel?'
+      );
+      if (!confirmed) return;
+    }
+    router.push(`/dashboard/invoices/${invoice.id}`);
+  };
+
+  // Keyboard shortcut: Escape to cancel
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isLoading) {
+        handleCancel();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isLoading, isDirty]);
 
   const onSubmit = async (data: InvoiceFormData) => {
     setIsLoading(true);
@@ -248,7 +270,7 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
           <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-800">
             <button
               type="button"
-              onClick={() => router.push(`/dashboard/invoices/${invoice.id}`)}
+              onClick={handleCancel}
               disabled={isLoading}
               className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-100 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
