@@ -23,6 +23,11 @@ const config: Config = {
       gridTemplateColumns: {
         '14': 'repeat(14, minmax(0, 1fr))',
       },
+      keyframes: {
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
     },
   },
   plugins: [

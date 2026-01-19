@@ -159,14 +159,23 @@ export function BalanceTrendChartInteractive({
         </div>
       </div>
 
+      {/* Mobile fallback message */}
+      <div className="sm:hidden p-6 bg-zinc-800/40 border border-zinc-700/50 rounded-lg text-center">
+        <p className="text-sm text-zinc-400">
+          📊 Chart hidden on small screens. View daily details in the calendar below.
+        </p>
+      </div>
+
       {/* Chart */}
-      <div className={`w-full -mx-2 ${onDayClick ? 'cursor-pointer' : ''}`}>
+      <div className={`w-full -mx-2 ${onDayClick ? 'cursor-pointer' : ''} max-sm:hidden`}>
         <ResponsiveContainer width="100%" height={320}>
           <AreaChart
             data={chartData}
             margin={{ top: 20, right: 30, left: 10, bottom: 0 }}
             onClick={handleClick}
             className={onDayClick ? 'cursor-pointer' : ''}
+            aria-label={`${days.length}-day balance forecast from ${formatCurrency(startingBalance)} to ${formatCurrency(endBalance)}`}
+            role="img"
           >
             <defs>
               <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
@@ -258,13 +267,17 @@ export function BalanceTrendChartInteractive({
               fill="url(#balanceGradient)"
               fillOpacity={1}
               onClick={handleClick}
+              strokeLinecap="round"
+              strokeLinejoin="round"
               activeDot={{
-                r: 5,
+                r: 6,
                 fill: 'rgb(16, 185, 129)',
                 stroke: 'rgb(0, 0, 0)',
                 strokeWidth: 2,
                 filter: 'url(#glow)',
+                onClick: handleClick,
               }}
+              dot={onDayClick ? { r: 3, fill: 'rgb(16, 185, 129)', cursor: 'pointer' } : false}
             />
           </AreaChart>
         </ResponsiveContainer>
