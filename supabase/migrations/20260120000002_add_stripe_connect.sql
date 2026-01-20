@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS stripe_connect_accounts (
 ALTER TABLE stripe_connect_accounts ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy: Users can only view their own Connect account
+DROP POLICY IF EXISTS "Users can view own connect account" ON stripe_connect_accounts;
 CREATE POLICY "Users can view own connect account"
   ON stripe_connect_accounts FOR SELECT
   USING (auth.uid() = user_id);
@@ -28,7 +29,8 @@ CREATE POLICY "Users can view own connect account"
 ALTER TABLE invoices
 ADD COLUMN IF NOT EXISTS payment_link_url TEXT,
 ADD COLUMN IF NOT EXISTS stripe_checkout_session_id TEXT,
-ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT 'manual'; -- 'manual' or 'stripe'
+ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT 'manual', -- 'manual' or 'stripe'
+ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ;
 
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_stripe_connect_user_id ON stripe_connect_accounts(user_id);

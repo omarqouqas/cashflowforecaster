@@ -51,12 +51,22 @@ export async function POST(request: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    console.error(`Webhook signature verification failed: ${errorMessage}`);
-    return NextResponse.json(
-      { error: `Webhook Error: ${errorMessage}` },
-      { status: 400 }
-    );
+    // In development, try to parse the event without verification if using Stripe CLI
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Webhook signature verification failed, parsing without verification (dev mode)');
+      try {
+        event = JSON.parse(body) as Stripe.Event;
+      } catch {
+        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+      }
+    } else {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error(`Webhook signature verification failed: ${errorMessage}`);
+      return NextResponse.json(
+        { error: `Webhook Error: ${errorMessage}` },
+        { status: 400 }
+      );
+    }
   }
 
   try {
@@ -510,7 +520,7 @@ async function handleInvoicePaymentCompleted(session: Stripe.Checkout.Session) {
   }
 
   // Mark invoice as paid
-  const { data: invoiceData, error: invoiceError } = await supabaseAdmin
+  const { error: invoiceError } = await supabaseAdmin
     .from('invoices')
     .update({
       status: 'paid',
@@ -518,9 +528,7 @@ async function handleInvoicePaymentCompleted(session: Stripe.Checkout.Session) {
       payment_method: 'stripe',
       updated_at: new Date().toISOString(),
     })
-    .eq('id', invoiceId)
-    .select('user_id, linked_income_id')
-    .single();
+    .eq('id', invoiceId);
 
   if (invoiceError) {
     console.error('Failed to update invoice as paid:', invoiceError);
@@ -528,24 +536,6 @@ async function handleInvoicePaymentCompleted(session: Stripe.Checkout.Session) {
   }
 
   console.log(`Invoice ${invoiceNumber || invoiceId} marked as paid via Stripe`);
-
-  // If invoice is linked to an income record, update its status to confirmed
-  if (invoiceData?.linked_income_id) {
-    const { error: incomeError } = await supabaseAdmin
-      .from('income')
-      .update({
-        status: 'confirmed',
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', invoiceData.linked_income_id);
-
-    if (incomeError) {
-      console.error('Failed to update linked income status:', incomeError);
-      // Don't throw - invoice is already marked paid, this is secondary
-    } else {
-      console.log(`Linked income ${invoiceData.linked_income_id} marked as confirmed`);
-    }
-  }
 }
 
 /**

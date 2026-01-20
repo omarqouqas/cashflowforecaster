@@ -99,7 +99,7 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
             clientEmail: toEmail,
             clientName: invoice.client_name ?? 'Client',
             connectAccountId: connectAccount.stripeAccountId,
-            description: invoice.notes ?? undefined,
+            description: invoice.description ?? undefined,
           });
           paymentLinkUrl = session.url;
           checkoutSessionId = session.sessionId;
@@ -159,11 +159,10 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
       updated_at: sentAt,
     };
 
-    // Add payment link data if created
+    // Add payment link data if created (payment_method is set when actually paid)
     if (paymentLinkUrl) {
       updateData.payment_link_url = paymentLinkUrl;
       updateData.stripe_checkout_session_id = checkoutSessionId;
-      updateData.payment_method = 'stripe';
     }
 
     const { error: updateErr } = await supabase
