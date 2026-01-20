@@ -7,7 +7,6 @@ import { FAQSection } from '@/components/landing/faq-section';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 import { LandingFooter } from '@/components/landing/footer';
 import {
-  AlarmClock,
   BadgeDollarSign,
   Bell,
   Calendar,
@@ -31,7 +30,7 @@ import { getUserSubscription } from '@/lib/stripe/subscription';
 export const metadata: Metadata = {
   title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
   description:
-    'A cash flow calendar app for freelancers with irregular income—see your bank balance 60 days ahead with bill alerts and simple scenarios.',
+    'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
   keywords: [
     'cash flow calendar',
     'cash flow calendar app',
@@ -64,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'A cash flow calendar app for freelancers with irregular income—see your bank balance 60 days ahead with bill alerts and simple scenarios.',
+      'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
     url: 'https://cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
@@ -73,7 +72,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'A cash flow calendar app for freelancers with irregular income—see your bank balance 60 days ahead with bill alerts and simple scenarios.',
+      'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
   },
 };
 
@@ -174,7 +173,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              Your personal cash flow calendar for the next 60 days — with every invoice, bill, payday, and tax savings mapped out.
+              Your personal cash flow calendar for up to 365 days — with interactive charts, smart filters, and every invoice, bill, and payday mapped out.
               Built for freelancers with irregular income.
             </p>
 
@@ -228,7 +227,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">How it works</h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                A simple 4-step flow to get clarity on what&apos;s safe to spend—today and 60 days from now.
+                A simple 4-step flow to get clarity on what&apos;s safe to spend—today and up to a year from now.
               </p>
             </div>
 
@@ -277,7 +276,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   </div>
                 </div>
                 <h3 className="mt-4 font-semibold text-white">See Your Future</h3>
-                <p className="mt-2 text-zinc-400">Get a 60-day cash flow calendar projection with low days highlighted.</p>
+                <p className="mt-2 text-zinc-400">Get up to a 365-day projection with interactive charts and filters.</p>
               </div>
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
@@ -322,21 +321,21 @@ export default async function Home({ searchParams }: HomeProps) {
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
                     See your &quot;safe to spend&quot; amount right now — based on what&apos;s coming in and going out over the
-                    next 60 days in your cash flow calendar. No more checking your bank app ten times a day.
+                    next 365 days in your cash flow calendar. No more checking your bank app ten times a day.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Daily balance projections</span>
+                      <span>Interactive balance forecast chart</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Color-coded low-balance warnings</span>
+                      <span>Color-coded balance status indicators</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Overdraft alerts before they happen</span>
+                      <span>Filter by accounts, categories & date range</span>
                     </li>
                   </ul>
                 </div>
@@ -346,11 +345,11 @@ export default async function Home({ searchParams }: HomeProps) {
                     <span className="h-3 w-3 rounded-full bg-red-500" />
                     <span className="h-3 w-3 rounded-full bg-yellow-500" />
                     <span className="h-3 w-3 rounded-full bg-green-500" />
-                    <span className="ml-2 text-xs text-zinc-400">60-day forecast</span>
+                    <span className="ml-2 text-xs text-zinc-400">365-day forecast</span>
                   </div>
                   <Image
-                    src="/hero-dashboard.png"
-                    alt="60-day calendar preview"
+                    src="/screenshot-calendar.png"
+                    alt="Cash flow calendar with interactive chart and balance forecast"
                     width={1600}
                     height={900}
                     sizes="(max-width: 1024px) 100vw, 560px"
@@ -395,29 +394,21 @@ export default async function Home({ searchParams }: HomeProps) {
                   </ul>
                 </div>
 
-                <div className="lg:order-1 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">Invoice #1042</span>
-                    <span className="text-sm font-semibold text-white">$1,250</span>
+                <div className="lg:order-1 rounded-2xl border border-zinc-800 bg-zinc-900/40 overflow-hidden shadow-2xl">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-800 bg-zinc-950/40">
+                    <span className="h-3 w-3 rounded-full bg-red-500" />
+                    <span className="h-3 w-3 rounded-full bg-yellow-500" />
+                    <span className="h-3 w-3 rounded-full bg-green-500" />
+                    <span className="ml-2 text-xs text-zinc-400">Invoice management</span>
                   </div>
-                  <div className="mt-3 space-y-2">
-                    <div className="h-2 rounded bg-zinc-800" />
-                    <div className="h-2 rounded bg-zinc-800 w-5/6" />
-                    <div className="h-2 rounded bg-zinc-800 w-3/4" />
-                  </div>
-                  <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-zinc-950/40 border border-zinc-800 px-3 py-1 text-xs text-zinc-300">
-                    <AlarmClock className="h-3.5 w-3.5 text-teal-300" />
-                    Scheduled reminders included
-                  </div>
-                  <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
-                    <div className="flex items-start gap-2 text-sm">
-                      <Bell className="h-4 w-4 text-amber-300 mt-0.5" />
-                      <div className="text-zinc-300">
-                        <p className="font-medium text-zinc-200">Reminder scheduled</p>
-                        <p className="text-zinc-400">Auto-follow up in 3 days if unpaid.</p>
-                      </div>
-                    </div>
-                  </div>
+                  <Image
+                    src="/screenshot-invoices.png"
+                    alt="Invoice dashboard with status tracking and PDF downloads"
+                    width={1600}
+                    height={900}
+                    sizes="(max-width: 1024px) 100vw, 560px"
+                    className="w-full h-auto"
+                  />
                 </div>
               </div>
 
@@ -585,20 +576,17 @@ export default async function Home({ searchParams }: HomeProps) {
                     </div>
                     <h4 className="mt-4 font-semibold text-white">Can I Afford It?</h4>
                     <p className="mt-2 text-zinc-400">
-                      Try a purchase, bill, or income change and instantly see how it affects your next 60 days.
+                      Test a hypothetical expense and instantly see how it affects your cash flow forecast.
                     </p>
-                    <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-zinc-300">New expense</span>
-                        <span className="font-semibold text-white">$250</span>
-                      </div>
-                      <div className="mt-3 h-2 rounded-full bg-zinc-800 overflow-hidden">
-                        <div className="h-full w-[72%] bg-teal-500" />
-                      </div>
-                      <div className="mt-4 flex items-start gap-2 text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-teal-400 mt-0.5" />
-                        <p className="text-zinc-300">Result: you stay above your buffer for the next 30 days.</p>
-                      </div>
+                    <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
+                      <Image
+                        src="/screenshot-scenario.png"
+                        alt="Can I Afford It scenario tester"
+                        width={800}
+                        height={600}
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        className="w-full h-auto"
+                      />
                     </div>
                   </div>
 
@@ -615,22 +603,15 @@ export default async function Home({ searchParams }: HomeProps) {
                     <p className="mt-2 text-zinc-400">
                       Upload a CSV export and quickly add bills &amp; income—no manual entry required.
                     </p>
-                    <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="h-9 w-9 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/20 flex items-center justify-center flex-shrink-0">
-                            <FileSpreadsheet className="h-4 w-4 text-teal-300" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-zinc-200 truncate">transactions.csv</p>
-                            <p className="text-xs text-zinc-500">Uploaded</p>
-                          </div>
-                        </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 border border-zinc-800 px-3 py-1 text-xs text-zinc-300 flex-shrink-0">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-teal-300" />
-                          24 transactions found
-                        </div>
-                      </div>
+                    <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
+                      <Image
+                        src="/screenshot-import.png"
+                        alt="CSV import wizard with 3-step process"
+                        width={800}
+                        height={600}
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        className="w-full h-auto"
+                      />
                     </div>
                   </div>
                 </div>
