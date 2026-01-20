@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Gauge } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,7 +90,6 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
 
     const supabase = createClient();
 
-    // Get current user
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -100,26 +100,21 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
       return;
     }
 
-    // Upsert user settings
-    const { error: upsertError } = await supabase
-      .from('user_settings')
-      .upsert(
-        {
-          user_id: user.id,
-          safety_buffer: data.safetyBuffer,
-        },
-        {
-          onConflict: 'user_id',
-        }
-      );
+    const { error: upsertError } = await supabase.from('user_settings').upsert(
+      {
+        user_id: user.id,
+        safety_buffer: data.safetyBuffer,
+      },
+      {
+        onConflict: 'user_id',
+      }
+    );
 
     if (upsertError) {
       setError(upsertError.message);
     } else {
       setSuccess(true);
-      // Refresh to update cached data
       router.refresh();
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
     }
 
@@ -128,10 +123,10 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
+      <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
         <div className="flex items-center justify-center py-8">
           <svg
-            className="animate-spin h-6 w-6 text-blue-600"
+            className="animate-spin h-6 w-6 text-teal-500"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -156,61 +151,73 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
-      <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
-        Safety Buffer
-      </h2>
+    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <Gauge className="w-5 h-5 text-teal-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-zinc-100">Safety Buffer</h3>
+          <p className="text-sm text-zinc-400">
+            Minimum balance threshold for warnings
+          </p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Safety Buffer Input */}
         <div>
-          <Label htmlFor="safetyBuffer">Minimum Balance (Safety Buffer)</Label>
-          <div className="relative mt-1">
-            <span className="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">$</span>
+          <Label htmlFor="safetyBuffer" className="text-zinc-300">
+            Minimum Balance
+          </Label>
+          <div className="relative mt-1.5">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
+              $
+            </span>
             <Input
               id="safetyBuffer"
               type="number"
               min="50"
               step="50"
               placeholder="500"
-              className="pl-8"
+              className="pl-8 bg-zinc-950 border-zinc-800 text-zinc-100 focus:border-teal-500"
               {...register('safetyBuffer')}
             />
           </div>
           <FormError message={errors.safetyBuffer?.message} />
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-zinc-500 mt-1.5">
             We&apos;ll warn you when your projected balance drops below this amount
           </p>
         </div>
 
         {/* Threshold Preview */}
-        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-          <p className="text-sm font-medium text-slate-900 dark:text-white mb-3">
-            Threshold Preview
+        <div className="bg-zinc-950 rounded-lg p-4 border border-zinc-800">
+          <p className="text-sm font-medium text-zinc-300 mb-3">
+            Color Thresholds Preview
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-2">
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Safe (green)</p>
-              <p className="text-sm font-semibold text-green-700 dark:text-green-300">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5">
+              <p className="text-xs text-zinc-400 mb-0.5">Safe</p>
+              <p className="text-sm font-semibold text-emerald-400">
                 {formatCurrency(thresholds.safe)}+
               </p>
             </div>
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded p-2">
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Caution (yellow)</p>
-              <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-300">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5">
+              <p className="text-xs text-zinc-400 mb-0.5">Caution</p>
+              <p className="text-sm font-semibold text-amber-400">
                 {formatCurrency(thresholds.caution)}+
               </p>
             </div>
-            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded p-2">
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Low (orange)</p>
-              <p className="text-sm font-semibold text-orange-700 dark:text-orange-300">
+            <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-2.5">
+              <p className="text-xs text-zinc-400 mb-0.5">Low</p>
+              <p className="text-sm font-semibold text-orange-400">
                 {formatCurrency(thresholds.low)}+
               </p>
             </div>
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-2">
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Danger (red)</p>
-              <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-                Below {formatCurrency(thresholds.low)}
+            <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-2.5">
+              <p className="text-xs text-zinc-400 mb-0.5">Danger</p>
+              <p className="text-sm font-semibold text-rose-400">
+                &lt; {formatCurrency(thresholds.low)}
               </p>
             </div>
           </div>
@@ -218,14 +225,14 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
 
         {/* Success Message */}
         {success && (
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-3 text-sm text-green-800 dark:text-green-200">
-            ✓ Settings saved successfully
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-sm text-emerald-400">
+            Settings saved successfully
           </div>
         )}
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-3 text-sm text-red-800 dark:text-red-200">
+          <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 text-sm text-rose-400">
             {error}
           </div>
         )}
@@ -233,11 +240,10 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
         {/* Submit Button */}
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting} loading={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Settings'}
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </form>
     </div>
   );
 }
-

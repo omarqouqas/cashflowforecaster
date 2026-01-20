@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-
+import { Mail } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { updateDigestSettings } from '@/lib/actions/update-digest-settings';
 import { Button } from '@/components/ui/button';
@@ -50,18 +50,26 @@ export function EmailDigestForm({ initialEnabled, initialDay }: Props) {
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-lg shadow border border-slate-200 dark:border-zinc-800 p-6">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-4">
-        Email Preferences
-      </h2>
+    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <Mail className="w-5 h-5 text-teal-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-zinc-100">Weekly Digest</h3>
+          <p className="text-sm text-zinc-400">
+            Get a summary of your upcoming week
+          </p>
+        </div>
+      </div>
 
       <div className="space-y-4">
         {/* Weekly Digest Toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 py-3 border-b border-slate-200 dark:border-zinc-800">
+        <div className="flex items-center justify-between py-3 border-b border-zinc-800">
           <div>
-            <p className="text-slate-900 dark:text-zinc-100 font-medium">Weekly Digest</p>
-            <p className="text-sm text-slate-600 dark:text-zinc-400">
-              Get a summary of your upcoming week on your preferred day
+            <p className="text-zinc-100 font-medium">Enable Weekly Digest</p>
+            <p className="text-sm text-zinc-500">
+              Receive email summaries on your preferred day
             </p>
           </div>
 
@@ -70,68 +78,65 @@ export function EmailDigestForm({ initialEnabled, initialDay }: Props) {
             role="switch"
             aria-checked={enabled}
             onClick={() => setEnabled((v) => !v)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              enabled ? 'bg-teal-500' : 'bg-zinc-300'
-            }`}
+            className={cn(
+              'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+              enabled ? 'bg-teal-500' : 'bg-zinc-700'
+            )}
           >
             <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              className={cn(
+                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
                 enabled ? 'translate-x-6' : 'translate-x-1'
-              }`}
+              )}
             />
           </button>
         </div>
 
         {/* Day Selector */}
         {enabled && (
-          <div className="py-3 border-b border-slate-200 dark:border-zinc-800">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-              <label className="text-slate-900 dark:text-zinc-100 font-medium">Send on</label>
-              <select
-                className={cn(
-                  'text-base',
-                  'min-h-[44px] w-full sm:w-[220px] rounded-md border border-slate-200 dark:border-zinc-800',
-                  'bg-white dark:bg-zinc-950 px-3 py-2 text-slate-900 dark:text-zinc-100',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500'
-                )}
-                value={day}
-                onChange={(e) => setDay(Number(e.target.value))}
-              >
-                {DAYS.map((d) => (
-                  <option key={d.value} value={d.value}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-3 border-b border-zinc-800">
+            <label className="text-zinc-100 font-medium">Send on</label>
+            <select
+              className={cn(
+                'text-base min-h-[44px] w-full sm:w-[200px] rounded-lg',
+                'border border-zinc-800 bg-zinc-950 px-3 py-2',
+                'text-zinc-100 focus:outline-none focus:ring-2 focus:ring-teal-500'
+              )}
+              value={day}
+              onChange={(e) => setDay(Number(e.target.value))}
+            >
+              {DAYS.map((d) => (
+                <option key={d.value} value={d.value}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-3 text-sm text-green-800 dark:text-green-200">
-            ✓ Email preferences saved
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-sm text-emerald-400">
+            Email preferences saved
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-3 text-sm text-red-800 dark:text-red-200">
+          <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 text-sm text-rose-400">
             {error}
           </div>
         )}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-2">
           <Button
             type="button"
             disabled={isPending}
             loading={isPending}
             onClick={() => startTransition(save)}
           >
-            {isPending ? 'Saving...' : 'Save Email Preferences'}
+            {isPending ? 'Saving...' : 'Save Preferences'}
           </Button>
         </div>
       </div>
     </div>
   );
 }
-
-

@@ -3,9 +3,11 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import { Calculator } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { updateTaxSettings } from '@/lib/actions/update-tax-settings'
 import { usePostHog } from 'posthog-js/react'
+import { cn } from '@/lib/utils/cn'
 
 interface TaxSettingsFormProps {
   initialSettings: {
@@ -51,7 +53,6 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
       })
 
       if (result.success) {
-        // Track tax settings update
         posthog?.capture('tax_settings_updated', {
           tax_rate: parseFloat(taxRate),
           tax_tracking_enabled: enabled,
@@ -71,15 +72,26 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <Calculator className="w-5 h-5 text-teal-400" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-zinc-100">Tax Settings</h3>
+          <p className="text-sm text-zinc-400">
+            Configure tax tracking and quarterly payments
+          </p>
+        </div>
+      </div>
+
       {/* Enable/Disable Toggle */}
-      <div className="flex items-start gap-4">
-        <div className="flex-1">
-          <label htmlFor="tax-tracking-enabled" className="block text-sm font-medium text-zinc-900">
-            Tax Tracking
-          </label>
-          <p className="mt-1 text-sm text-zinc-500">
-            Automatically calculate and track tax savings on your income
+      <div className="flex items-center justify-between py-3 border-b border-zinc-800">
+        <div>
+          <p className="text-zinc-100 font-medium">Enable Tax Tracking</p>
+          <p className="text-sm text-zinc-500">
+            Automatically calculate and track tax savings
           </p>
         </div>
         <button
@@ -90,19 +102,20 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
           onClick={() => {
             const newValue = !enabled
             setEnabled(newValue)
-            // Track toggle event
             posthog?.capture('tax_tracking_toggled', {
               enabled: newValue,
             })
           }}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            enabled ? 'bg-teal-500' : 'bg-zinc-300'
-          }`}
+          className={cn(
+            'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+            enabled ? 'bg-teal-500' : 'bg-zinc-700'
+          )}
         >
           <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            className={cn(
+              'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
               enabled ? 'translate-x-6' : 'translate-x-1'
-            }`}
+            )}
           />
         </button>
       </div>
@@ -110,14 +123,14 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
       {enabled && (
         <>
           {/* Tax Rate */}
-          <div>
-            <label htmlFor="tax-rate" className="block text-sm font-medium text-zinc-900">
+          <div className="py-3 border-b border-zinc-800">
+            <label htmlFor="tax-rate" className="block text-zinc-100 font-medium mb-1">
               Estimated Tax Rate
             </label>
-            <p className="mt-1 text-sm text-zinc-500">
-              Your estimated tax rate (federal + state + self-employment). Typical range: 25-35%
+            <p className="text-sm text-zinc-500 mb-3">
+              Federal + state + self-employment. Typical range: 25-35%
             </p>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <input
                 type="number"
                 id="tax-rate"
@@ -126,25 +139,26 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
                 step="0.5"
                 value={taxRate}
                 onChange={(e) => setTaxRate(e.target.value)}
-                className="block w-24 rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className={cn(
+                  'block w-24 rounded-lg border border-zinc-800',
+                  'bg-zinc-950 px-3 py-2 text-sm text-zinc-100',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500'
+                )}
                 required
               />
-              <span className="text-sm text-zinc-700">%</span>
+              <span className="text-sm text-zinc-400">%</span>
             </div>
-            <p className="mt-2 text-xs text-zinc-400">
-              💡 Tip: Add federal (~15%), state (~5%), and self-employment tax (~15%)
-            </p>
           </div>
 
           {/* Quarterly Estimated Tax Payments */}
-          <div>
-            <h3 className="text-sm font-medium text-zinc-900 mb-2">
-              Quarterly Estimated Tax Payments ({initialSettings.tax_year})
-            </h3>
+          <div className="py-3">
+            <h4 className="text-zinc-100 font-medium mb-1">
+              Quarterly Payments ({initialSettings.tax_year})
+            </h4>
             <p className="text-sm text-zinc-500 mb-4">
               Track what you've already paid for quarterly estimated taxes
             </p>
-            <div className="space-y-4 sm:space-y-3">
+            <div className="bg-zinc-950 rounded-lg border border-zinc-800 divide-y divide-zinc-800">
               {QUARTERLY_DEADLINES.map((q, index) => {
                 const value = [q1Paid, q2Paid, q3Paid, q4Paid][index]
                 const setValue = [setQ1Paid, setQ2Paid, setQ3Paid, setQ4Paid][index]
@@ -152,9 +166,9 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
                 if (!setValue) return null
 
                 return (
-                  <div key={q.quarter} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                    <div className="flex-1">
-                      <label htmlFor={`q${index + 1}-paid`} className="text-sm font-medium text-zinc-700">
+                  <div key={q.quarter} className="flex items-center justify-between p-3 gap-4">
+                    <div className="flex-1 min-w-0">
+                      <label htmlFor={`q${index + 1}-paid`} className="text-sm font-medium text-zinc-300">
                         {q.label}
                       </label>
                       <p className="text-xs text-zinc-500">Due {q.dueDate}</p>
@@ -168,7 +182,11 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
                         step="0.01"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
-                        className="block w-full sm:w-32 rounded-md border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        className={cn(
+                          'block w-28 rounded-lg border border-zinc-800',
+                          'bg-zinc-900 px-3 py-2 text-sm text-zinc-100',
+                          'focus:outline-none focus:ring-2 focus:ring-teal-500'
+                        )}
                         placeholder="0.00"
                       />
                     </div>
@@ -176,16 +194,13 @@ export function TaxSettingsForm({ initialSettings }: TaxSettingsFormProps) {
                 )
               })}
             </div>
-            <p className="mt-4 text-xs text-zinc-400">
-              💡 These payments count toward your annual tax obligation
-            </p>
           </div>
         </>
       )}
 
       {/* Save Button */}
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isPending} className="bg-teal-500 hover:bg-teal-600">
+      <div className="flex justify-end pt-2">
+        <Button type="submit" disabled={isPending} loading={isPending}>
           {isPending ? 'Saving...' : 'Save Tax Settings'}
         </Button>
       </div>

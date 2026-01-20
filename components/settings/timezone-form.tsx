@@ -5,47 +5,51 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Globe } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { FormError } from '@/components/ui/form-error';
+import { cn } from '@/lib/utils/cn';
 
-const TIMEZONE_GROUPS: Array<{ label: string; options: Array<{ value: string; label: string }> }> =
-  [
-    {
-      label: 'North America',
-      options: [
-        { value: 'America/Vancouver', label: 'Vancouver (America/Vancouver)' },
-        { value: 'America/Los_Angeles', label: 'Los Angeles (America/Los_Angeles)' },
-        { value: 'America/Denver', label: 'Denver (America/Denver)' },
-        { value: 'America/Chicago', label: 'Chicago (America/Chicago)' },
-        { value: 'America/Toronto', label: 'Toronto (America/Toronto)' },
-        { value: 'America/New_York', label: 'New York (America/New_York)' },
-      ],
-    },
-    {
-      label: 'Europe',
-      options: [
-        { value: 'Europe/London', label: 'London (Europe/London)' },
-        { value: 'Europe/Paris', label: 'Paris (Europe/Paris)' },
-      ],
-    },
-    {
-      label: 'Asia Pacific',
-      options: [
-        { value: 'Asia/Singapore', label: 'Singapore (Asia/Singapore)' },
-        { value: 'Asia/Tokyo', label: 'Tokyo (Asia/Tokyo)' },
-      ],
-    },
-    {
-      label: 'Australia',
-      options: [{ value: 'Australia/Sydney', label: 'Sydney (Australia/Sydney)' }],
-    },
-    {
-      label: 'UTC',
-      options: [{ value: 'UTC', label: 'UTC' }],
-    },
-  ];
+const TIMEZONE_GROUPS: Array<{
+  label: string;
+  options: Array<{ value: string; label: string }>;
+}> = [
+  {
+    label: 'North America',
+    options: [
+      { value: 'America/Vancouver', label: 'Vancouver (Pacific)' },
+      { value: 'America/Los_Angeles', label: 'Los Angeles (Pacific)' },
+      { value: 'America/Denver', label: 'Denver (Mountain)' },
+      { value: 'America/Chicago', label: 'Chicago (Central)' },
+      { value: 'America/Toronto', label: 'Toronto (Eastern)' },
+      { value: 'America/New_York', label: 'New York (Eastern)' },
+    ],
+  },
+  {
+    label: 'Europe',
+    options: [
+      { value: 'Europe/London', label: 'London (GMT)' },
+      { value: 'Europe/Paris', label: 'Paris (CET)' },
+    ],
+  },
+  {
+    label: 'Asia Pacific',
+    options: [
+      { value: 'Asia/Singapore', label: 'Singapore (SGT)' },
+      { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
+    ],
+  },
+  {
+    label: 'Australia',
+    options: [{ value: 'Australia/Sydney', label: 'Sydney (AEST)' }],
+  },
+  {
+    label: 'UTC',
+    options: [{ value: 'UTC', label: 'UTC' }],
+  },
+];
 
 const ALLOWED_TIMEZONES = new Set(
   TIMEZONE_GROUPS.flatMap((g) => g.options.map((o) => o.value))
@@ -77,12 +81,10 @@ function formatTimeInTimezone(date: Date, tz: string): string {
     return new Intl.DateTimeFormat('en-US', {
       timeZone: tz,
       weekday: 'short',
-      year: 'numeric',
       month: 'short',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit',
     }).format(date);
   } catch {
     return date.toLocaleString();
@@ -95,7 +97,9 @@ export function TimezoneForm({ initialValue }: TimezoneFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [savedTimezone, setSavedTimezone] = useState<string | null>(initialValue ?? null);
+  const [savedTimezone, setSavedTimezone] = useState<string | null>(
+    initialValue ?? null
+  );
   const [now, setNow] = useState<Date>(() => new Date());
 
   const browserTz = useMemo(() => getBrowserTimezone(), []);
@@ -181,17 +185,15 @@ export function TimezoneForm({ initialValue }: TimezoneFormProps) {
       return;
     }
 
-    const { error: upsertError } = await supabase
-      .from('user_settings')
-      .upsert(
-        {
-          user_id: user.id,
-          timezone: data.timezone,
-        },
-        {
-          onConflict: 'user_id',
-        }
-      );
+    const { error: upsertError } = await supabase.from('user_settings').upsert(
+      {
+        user_id: user.id,
+        timezone: data.timezone,
+      },
+      {
+        onConflict: 'user_id',
+      }
+    );
 
     if (upsertError) {
       setError(upsertError.message);
@@ -207,10 +209,10 @@ export function TimezoneForm({ initialValue }: TimezoneFormProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
+      <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
         <div className="flex items-center justify-center py-8">
           <svg
-            className="animate-spin h-6 w-6 text-blue-600"
+            className="animate-spin h-6 w-6 text-teal-500"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -235,88 +237,94 @@ export function TimezoneForm({ initialValue }: TimezoneFormProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6">
-      <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
-        Timezone
-      </h2>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <Globe className="w-5 h-5 text-teal-400" />
+        </div>
         <div>
-          <div className="flex items-center justify-between gap-3">
-            <Label htmlFor="timezone">Timezone</Label>
+          <h3 className="font-semibold text-zinc-100">Timezone</h3>
+          <p className="text-sm text-zinc-400">
+            Used for date calculations in your calendar
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div>
+          <div className="flex items-center justify-between gap-3 mb-1.5">
+            <Label htmlFor="timezone" className="text-zinc-300">
+              Select Timezone
+            </Label>
             {showUseDetected && (
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setValue('timezone', browserTz, { shouldDirty: true, shouldValidate: true })}
+                onClick={() =>
+                  setValue('timezone', browserTz, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+                className="text-xs text-teal-400 hover:text-teal-300 transition-colors"
               >
-                Use detected timezone
-              </Button>
+                Use detected ({browserTz.split('/').pop()})
+              </button>
             )}
           </div>
-          <div className="mt-1">
-            <select
-              id="timezone"
-              className={[
-                'flex h-11 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900',
-                'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
-                'disabled:cursor-not-allowed disabled:opacity-50',
-              ].join(' ')}
-              {...register('timezone')}
-            >
-              {TIMEZONE_GROUPS.map((group) => (
-                <optgroup key={group.label} label={group.label}>
-                  {group.options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
+          <select
+            id="timezone"
+            className={cn(
+              'flex h-11 w-full rounded-lg border border-zinc-800',
+              'bg-zinc-950 px-3 py-2 text-sm text-zinc-100',
+              'focus:outline-none focus:ring-2 focus:ring-teal-500',
+              'disabled:cursor-not-allowed disabled:opacity-50'
+            )}
+            {...register('timezone')}
+          >
+            {TIMEZONE_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
           <FormError message={errors.timezone?.message} />
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Used to display dates correctly in your calendar. Detected: <span className="font-mono">{browserTz}</span>
-          </p>
         </div>
 
         {/* Preview */}
-        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-          <p className="text-sm font-medium text-slate-900 dark:text-white mb-1">
-            Current time preview
-          </p>
-          <div className="space-y-1">
-            <p className="text-xs text-gray-600 dark:text-gray-400">Timezone</p>
-            <p className="text-sm text-gray-900 dark:text-gray-100 font-mono">{timezone}</p>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Current time</p>
-            <p className="text-sm text-gray-900 dark:text-gray-100 font-mono">
+        <div className="bg-zinc-950 rounded-lg p-4 border border-zinc-800">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-zinc-500 mb-0.5">Current time in</p>
+              <p className="text-sm font-mono text-zinc-300">{timezone}</p>
+            </div>
+            <p className="text-lg font-mono text-zinc-100 tabular-nums">
               {formatTimeInTimezone(now, timezone)}
             </p>
           </div>
         </div>
 
         {success && (
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-3 text-sm text-green-800 dark:text-green-200">
-            ✓ Settings saved successfully
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-sm text-emerald-400">
+            Timezone saved successfully
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-3 text-sm text-red-800 dark:text-red-200">
+          <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 text-sm text-rose-400">
             {error}
           </div>
         )}
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting} loading={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Settings'}
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </form>
     </div>
   );
 }
-
-
