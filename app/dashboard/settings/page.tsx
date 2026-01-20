@@ -17,6 +17,7 @@ import {
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
 import { EmailDigestForm } from '@/components/settings/email-digest-form';
+import { LowBalanceAlertForm } from '@/components/settings/low-balance-alert-form';
 import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
 import { SubscriptionStatus } from '@/components/subscription/subscription-status';
 import { getUserSubscription } from '@/lib/stripe/subscription';
@@ -36,7 +37,7 @@ export default async function SettingsPage() {
   const { data: settings } = await supabase
     .from('user_settings')
     .select(
-      'safety_buffer, timezone, email_digest_enabled, email_digest_day, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid'
+      'safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid'
     )
     .eq('user_id', user.id)
     .single();
@@ -47,6 +48,7 @@ export default async function SettingsPage() {
   const timezone = settingsData?.timezone ?? null;
   const digestEnabled = settingsData?.email_digest_enabled ?? true;
   const digestDay = settingsData?.email_digest_day ?? 1;
+  const lowBalanceAlertEnabled = settingsData?.low_balance_alert_enabled ?? true;
   const taxRate = settingsData?.tax_rate ?? 25.0;
   const taxTrackingEnabled = settingsData?.tax_tracking_enabled ?? true;
   const taxYear = settingsData?.tax_year ?? new Date().getFullYear();
@@ -153,7 +155,10 @@ export default async function SettingsPage() {
         {/* ===== NOTIFICATIONS SECTION ===== */}
         <section>
           <SectionHeader icon={Bell} title="Notifications" />
-          <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
+          <div className="space-y-4">
+            <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
+            <LowBalanceAlertForm initialEnabled={lowBalanceAlertEnabled} safetyBuffer={safetyBuffer} />
+          </div>
         </section>
 
         {/* ===== TAX TRACKING SECTION ===== */}

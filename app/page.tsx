@@ -173,8 +173,8 @@ export default async function Home({ searchParams }: HomeProps) {
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              Your personal cash flow calendar for up to 365 days — with interactive charts, smart filters, and every invoice, bill, and payday mapped out.
-              Built for freelancers with irregular income.
+              Know exactly what&apos;s <span className="text-teal-300 font-semibold">safe to spend</span> — today and for the next 365 days.
+              Your personal cash flow calendar with interactive charts, smart filters, and every bill mapped out.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -312,30 +312,34 @@ export default async function Home({ searchParams }: HomeProps) {
               {/* Pillar 1 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <div className="h-11 w-11 rounded-xl bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
                       <Calendar className="h-5 w-5 text-teal-300" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight">Know Your Number Today</h3>
+                    <h3 className="text-2xl font-semibold text-white tracking-tight">Safe to Spend</h3>
+                    <span className="text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1">
+                      Core Feature
+                    </span>
                   </div>
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
-                    See your &quot;safe to spend&quot; amount right now — based on what&apos;s coming in and going out over the
-                    next 365 days in your cash flow calendar. No more checking your bank app ten times a day.
+                    One number that answers: &quot;Can I afford this?&quot; Your <span className="text-teal-300 font-medium">Safe to Spend</span> amount
+                    is calculated from your lowest projected balance over the next 14 days, minus your safety buffer.
+                    No more guessing.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Interactive balance forecast chart</span>
+                      <span><strong className="text-white">Safe to Spend indicator</strong> — always visible at the top</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Color-coded balance status indicators</span>
+                      <span>Interactive 365-day balance forecast chart</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Filter by accounts, categories & date range</span>
+                      <span>Low balance alerts when you need them</span>
                     </li>
                   </ul>
                 </div>

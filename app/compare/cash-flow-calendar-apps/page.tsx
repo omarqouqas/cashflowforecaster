@@ -39,6 +39,8 @@ export const metadata: Metadata = {
 };
 
 const comparisonRows = [
+  { feature: '"Safe to Spend" indicator', cff: '✅ Prominently displayed daily', typical: '❌ Not available' },
+  { feature: 'Low balance alerts', cff: '✅ Proactive email warnings', typical: '❌ No' },
   { feature: 'Free tier', cff: '✅ Yes (10 bills, 10 income)', typical: '❌ Trial only (14 days)' },
   { feature: 'Forecast length', cff: '60 days (Free) / 365 days (Pro)', typical: '~30 days' },
   { feature: 'Invoicing built-in', cff: '✅ Runway Collect', typical: '❌ No' },
