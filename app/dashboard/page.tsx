@@ -34,7 +34,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order('created_at', { ascending: false }),
     supabase
       .from('user_settings')
-      .select('safety_buffer, timezone, tax_rate, tax_tracking_enabled, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid')
+      .select('safety_buffer, timezone, tax_rate, tax_tracking_enabled, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id')
       .eq('user_id', user.id)
       .single(),
     getInvoiceSummary(),
@@ -68,6 +68,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const estimatedTaxQ2Paid = settingsData?.estimated_tax_q2_paid ?? 0;
   const estimatedTaxQ3Paid = settingsData?.estimated_tax_q3_paid ?? 0;
   const estimatedTaxQ4Paid = settingsData?.estimated_tax_q4_paid ?? 0;
+
+  // Extract emergency fund settings
+  const emergencyFundEnabled = settingsData?.emergency_fund_enabled ?? false;
+  const emergencyFundGoalMonths = settingsData?.emergency_fund_goal_months ?? 3;
+  const emergencyFundAccountId = settingsData?.emergency_fund_account_id ?? null;
+
+  // Find account name if emergency fund has designated account
+  const emergencyFundAccountName = emergencyFundAccountId
+    ? accounts.find((a: any) => a.id === emergencyFundAccountId)?.name
+    : undefined;
 
   // Generate calendar data if user has accounts
   let calendarData = null;
@@ -213,6 +223,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         quarterlyIncome,
         quarterlyPaid,
         enabled: taxTrackingEnabled,
+      }}
+      emergencyFundData={{
+        enabled: emergencyFundEnabled,
+        goalMonths: emergencyFundGoalMonths,
+        accountId: emergencyFundAccountId,
+        accountName: emergencyFundAccountName,
       }}
       message={message}
       calendarError={calendarError}

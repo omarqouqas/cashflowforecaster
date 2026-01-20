@@ -19,6 +19,7 @@ import { TimezoneForm } from '@/components/settings/timezone-form';
 import { EmailDigestForm } from '@/components/settings/email-digest-form';
 import { LowBalanceAlertForm } from '@/components/settings/low-balance-alert-form';
 import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
+import { EmergencyFundForm } from '@/components/settings/emergency-fund-form';
 import { SubscriptionStatus } from '@/components/subscription/subscription-status';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 import { DeleteAccountSection } from '@/components/settings/delete-account-section';
@@ -33,16 +34,30 @@ export default async function SettingsPage() {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  // Fetch current user settings
-  const { data: settings } = await supabase
-    .from('user_settings')
-    .select(
-      'safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid'
-    )
-    .eq('user_id', user.id)
-    .single();
+  // Fetch current user settings, accounts, and bills in parallel
+  const [settingsResult, accountsResult, billsResult] = await Promise.all([
+    supabase
+      .from('user_settings')
+      .select(
+        'safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id'
+      )
+      .eq('user_id', user.id)
+      .single(),
+    supabase
+      .from('accounts')
+      .select('id, name, account_type, current_balance')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('bills')
+      .select('amount, frequency, is_active')
+      .eq('user_id', user.id)
+      .eq('is_active', true),
+  ]);
 
-  const settingsData = settings as any;
+  const settingsData = settingsResult.data as any;
+  const accounts = (accountsResult.data || []) as any[];
+  const bills = (billsResult.data || []) as any[];
 
   const safetyBuffer = settingsData?.safety_buffer ?? 500;
   const timezone = settingsData?.timezone ?? null;
@@ -56,6 +71,24 @@ export default async function SettingsPage() {
   const estimatedTaxQ2Paid = settingsData?.estimated_tax_q2_paid ?? 0;
   const estimatedTaxQ3Paid = settingsData?.estimated_tax_q3_paid ?? 0;
   const estimatedTaxQ4Paid = settingsData?.estimated_tax_q4_paid ?? 0;
+
+  // Emergency fund settings
+  const emergencyFundEnabled = settingsData?.emergency_fund_enabled ?? false;
+  const emergencyFundGoalMonths = settingsData?.emergency_fund_goal_months ?? 3;
+  const emergencyFundAccountId = settingsData?.emergency_fund_account_id ?? null;
+
+  // Calculate monthly expenses from bills
+  const monthlyExpenses = bills.reduce((total: number, bill: any) => {
+    switch (bill.frequency) {
+      case 'weekly': return total + (bill.amount * 52) / 12;
+      case 'biweekly': return total + (bill.amount * 26) / 12;
+      case 'semi-monthly': return total + bill.amount * 2;
+      case 'monthly': return total + bill.amount;
+      case 'quarterly': return total + bill.amount / 3;
+      case 'annually': return total + bill.amount / 12;
+      default: return total;
+    }
+  }, 0);
 
   // Fetch subscription status
   const subscription = await getUserSubscription(user.id);
@@ -176,6 +209,17 @@ export default async function SettingsPage() {
               }}
             />
           </div>
+        </section>
+
+        {/* ===== EMERGENCY FUND SECTION ===== */}
+        <section>
+          <EmergencyFundForm
+            initialEnabled={emergencyFundEnabled}
+            initialGoalMonths={emergencyFundGoalMonths}
+            initialAccountId={emergencyFundAccountId}
+            accounts={accounts}
+            monthlyExpenses={monthlyExpenses}
+          />
         </section>
 
         {/* ===== DANGER ZONE ===== */}

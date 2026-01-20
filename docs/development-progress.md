@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 19, 2026 (Day 40)
+**Last Updated:** January 20, 2026 (Day 41)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 40
-- **Commits:** 120+
+- **Days in Development:** 41
+- **Commits:** 125+
 - **Database Tables:** 14
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Safe to Spend Marketing ✅ 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker ✅ 🎉
 
 **Completed Phases:**
 
@@ -42,13 +42,207 @@
 - ✅ Phase 19: Comprehensive Filters (Day 38) - COMPLETE
 - ✅ Phase 20: Automated Welcome Email + User Outreach (Day 39) - COMPLETE
 - ✅ Phase 21: Low Balance Alerts + Safe to Spend Marketing (Day 40) - COMPLETE
+- ✅ Phase 22: Simpler Onboarding + Emergency Fund Tracker (Day 41) - COMPLETE
 
 **Current Focus:**
 
-- Monitor low balance alert delivery and effectiveness
-- Track "Safe to Spend" feature awareness
+- Monitor onboarding completion rates with new 2-step flow
+- Track Emergency Fund Tracker adoption
 - User acquisition
 - Monitor NPS survey responses (PostHog)
+
+---
+
+## Day 41: Simpler Onboarding + Emergency Fund Tracker (January 20, 2026)
+
+### Shipped (today)
+
+#### Simpler Onboarding (2-Step Flow) ✅ 🎉
+
+**Major UX improvement** - Reduced onboarding from 4 steps to 2 steps (~60 seconds completion time). Streamlines the new user experience while maintaining all essential data collection.
+
+- [x] **New Quick Setup Step** (`components/onboarding/step-quick-setup.tsx`)
+  - Combined account balance + income into single step
+  - Balance input (required) with currency formatting
+  - Collapsible "When do you get paid?" income section (optional)
+  - ChevronDown/ChevronUp toggle for income visibility
+  - Creates default "Checking" account with "Main Account" name
+
+- [x] **Updated Progress Indicator** (`components/onboarding/progress-steps.tsx`)
+  - Changed from 4 steps to 2 steps
+  - Labels: "Quick Setup" and "Bills"
+  - Simplified visual design
+
+- [x] **Onboarding Page Rewrite** (`app/onboarding/page.tsx`)
+  - 2-step flow: Quick Setup → Bills
+  - Direct redirect to `/dashboard/calendar` on completion (no success screen)
+  - Updated storage key to 'cff_onboarding_state_v2' for fresh start
+  - Calls `onboardingMarkComplete()` on completion
+
+- [x] **Bills Step Update** (`components/onboarding/step-bills.tsx`)
+  - Changed button text from "Continue" to "See Your Forecast"
+  - Completion triggers calendar redirect
+
+- [x] **Deleted Old Files**
+  - Removed `components/onboarding/step-account.tsx` (merged into quick-setup)
+  - Removed `components/onboarding/step-income.tsx` (merged into quick-setup)
+  - Removed `components/onboarding/step-success.tsx` (no longer needed)
+
+#### Emergency Fund Tracker ✅ 🎉
+
+**New feature** - Dashboard widget and settings form to help users track progress toward their financial safety net goal.
+
+- [x] **Database Migration** (`supabase/migrations/20260120000001_add_emergency_fund.sql`)
+  - Added `emergency_fund_enabled` column (boolean, default false)
+  - Added `emergency_fund_goal_months` column (integer, default 3)
+  - Added `emergency_fund_account_id` column (UUID, references accounts)
+
+- [x] **Dashboard Widget** (`components/dashboard/emergency-fund-widget.tsx`)
+  - Shows progress toward savings goal with visual progress bar
+  - Two states: enabled (shows metrics) and disabled (shows CTA to settings)
+  - Calculates: goalAmount, progressPercent, monthsCovered, amountToGo
+  - Color-coded progress: rose (<50%), amber (50-75%), teal-400 (75-99%), teal-500 (100%)
+  - Displays months covered and amount remaining
+  - Link to configure in Settings
+
+- [x] **Settings Form** (`components/settings/emergency-fund-form.tsx`)
+  - Toggle to enable/disable tracking
+  - Goal months selector (3/6/12 months radio buttons)
+  - Optional savings account selector (dropdown)
+  - Displays calculated monthly expenses from bills
+  - Shows calculated goal amount
+
+- [x] **Server Action** (`lib/actions/update-emergency-fund.ts`)
+  - Saves emergency fund settings to user_settings
+  - Validates goal months (must be 3, 6, or 12)
+  - Validates account ownership if accountId provided
+  - PostHog event: `emergency_fund_settings_updated`
+
+- [x] **Dashboard Integration** (`app/dashboard/page.tsx`)
+  - Fetches emergency fund settings from user_settings
+  - Passes emergencyFundData prop to DashboardContent
+  - Widget renders after Tax Savings Tracker
+
+- [x] **Settings Integration** (`app/dashboard/settings/page.tsx`)
+  - Fetches accounts list and bills for calculations
+  - Calculates monthly expenses from active bills
+  - Renders EmergencyFundForm section
+
+#### Email Cleanup ✅
+
+- [x] Removed last name from customer-facing emails
+  - Updated `app/api/admin/send-outreach/route.ts`
+  - Updated `scripts/send-outreach.mjs`
+
+### Files Created (Day 41)
+
+**Created:**
+
+```
+components/onboarding/step-quick-setup.tsx
+components/dashboard/emergency-fund-widget.tsx
+components/settings/emergency-fund-form.tsx
+lib/actions/update-emergency-fund.ts
+supabase/migrations/20260120000001_add_emergency_fund.sql
+```
+
+### Files Modified (Day 41)
+
+**Modified:**
+
+```
+app/onboarding/page.tsx
+components/onboarding/progress-steps.tsx
+components/onboarding/step-bills.tsx
+app/dashboard/page.tsx
+app/dashboard/settings/page.tsx
+components/dashboard/dashboard-content.tsx
+app/api/admin/send-outreach/route.ts
+scripts/send-outreach.mjs
+```
+
+**Deleted:**
+
+```
+components/onboarding/step-account.tsx
+components/onboarding/step-income.tsx
+components/onboarding/step-success.tsx
+```
+
+### Technical Implementation Details
+
+**Simpler Onboarding Flow:**
+
+```
+┌─────────────────────────────────────────────┐
+│ Step 1: Quick Setup                         │
+│ - Balance input (required)                  │
+│ - Income section (collapsible, optional)    │
+│   - Name, Amount, Frequency, Next Date      │
+│                    [Continue →]             │
+└─────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────┐
+│ Step 2: Bills                               │
+│ - Quick add suggestions                     │
+│ - Manual bill entry                         │
+│ - Bills list with delete                    │
+│           [See Your Forecast →]             │
+└─────────────────────────────────────────────┘
+                     │
+                     ▼
+           /dashboard/calendar
+```
+
+**Emergency Fund Calculation Logic:**
+
+```typescript
+// Calculate monthly expenses from bills
+const monthlyExpenses = bills.reduce((total, bill) => {
+  switch (bill.frequency) {
+    case 'weekly': return total + (bill.amount * 52) / 12;
+    case 'biweekly': return total + (bill.amount * 26) / 12;
+    case 'semi-monthly': return total + bill.amount * 2;
+    case 'monthly': return total + bill.amount;
+    case 'quarterly': return total + bill.amount / 3;
+    case 'annually': return total + bill.amount / 12;
+    default: return total;
+  }
+}, 0);
+
+// Emergency fund metrics
+const goalAmount = monthlyExpenses * goalMonths;
+const currentBalance = emergencyAccountId
+  ? accounts.find(a => a.id === emergencyAccountId)?.current_balance ?? 0
+  : accounts.reduce((sum, a) => sum + a.current_balance, 0);
+const progressPercent = Math.min((currentBalance / goalAmount) * 100, 100);
+const monthsCovered = currentBalance / monthlyExpenses;
+const amountToGo = Math.max(goalAmount - currentBalance, 0);
+```
+
+### Impact
+
+- **Reduced Friction:** Onboarding time cut from ~2-3 minutes to ~60 seconds
+- **Higher Completion:** Fewer steps = higher completion rate expected
+- **Financial Security:** Emergency Fund Tracker helps users build safety net
+- **Engagement:** New dashboard widget provides ongoing value
+- **Stickiness:** Users will return to check emergency fund progress
+
+### Commits (Day 41)
+
+1. `[pending]` - "feat: simplify onboarding to 2-step flow + add emergency fund tracker"
+   - Complete onboarding simplification (4 → 2 steps)
+   - Emergency fund database migration
+   - Dashboard widget and settings form
+   - Server action with PostHog tracking
+
+### Next Steps
+
+- Monitor onboarding completion rates via PostHog
+- Track Emergency Fund Tracker adoption (`emergency_fund_settings_updated` events)
+- A/B test onboarding variations if needed
+- Consider adding emergency fund tips/education content
 
 ---
 

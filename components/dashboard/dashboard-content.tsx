@@ -18,6 +18,7 @@ import { formatCurrency } from '@/lib/utils/format';
 import { SuccessMessage } from '@/components/ui/success-message';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { TaxSavingsWidget } from '@/components/dashboard/tax-savings-widget';
+import { EmergencyFundWidget } from '@/components/dashboard/emergency-fund-widget';
 import {
   DashboardFiltersPanel,
   useDashboardFilters,
@@ -75,6 +76,12 @@ interface DashboardContentProps {
     quarterlyPaid: [number, number, number, number];
     enabled: boolean;
   };
+  emergencyFundData: {
+    enabled: boolean;
+    goalMonths: number;
+    accountId: string | null;
+    accountName?: string;
+  };
   message?: string | string[];
   calendarError?: string | null;
 }
@@ -97,6 +104,7 @@ export function DashboardContent({
   topInvoices,
   forecastDays,
   taxData,
+  emergencyFundData,
   message,
   calendarError,
 }: DashboardContentProps) {
@@ -782,6 +790,25 @@ export function DashboardContent({
           quarterlyIncome={taxData.quarterlyIncome}
           quarterlyPaid={taxData.quarterlyPaid}
           enabled={taxData.enabled}
+        />
+      </div>
+
+      {/* Emergency Fund Widget */}
+      <div className="mb-6">
+        <EmergencyFundWidget
+          enabled={emergencyFundData.enabled}
+          goalMonths={emergencyFundData.goalMonths}
+          monthlyExpenses={monthlyBills}
+          currentBalance={
+            emergencyFundData.accountId
+              ? accounts.find((a) => a.id === emergencyFundData.accountId)?.current_balance ?? 0
+              : totalBalance
+          }
+          accountName={
+            emergencyFundData.accountId
+              ? accounts.find((a) => a.id === emergencyFundData.accountId)?.name
+              : undefined
+          }
         />
       </div>
     </div>

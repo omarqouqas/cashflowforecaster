@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.2
-**Last Updated:** January 19, 2026
-**Status:** Live - Accepting Payments - Comprehensive Filtering
+**Version:** 5.3
+**Last Updated:** January 20, 2026
+**Status:** Live - Accepting Payments - Simpler Onboarding + Emergency Fund Tracker
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -205,11 +205,11 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Payment reminder system (3 escalating templates)
 - Auto-sync invoices with income forecasts
 
-### Phase 7: Onboarding ✅ COMPLETE (Day 18)
-- 4-step guided wizard
-- Account, income, bills setup
-- Pre-populated bill suggestions
-- Auto-redirect for new users
+### Phase 7: Onboarding ✅ COMPLETE (Day 18, simplified Day 41)
+- 2-step guided wizard (Quick Setup + Bills)
+- Combined account balance + income in step 1
+- Pre-populated bill suggestions in step 2
+- Auto-redirect to calendar on completion (~60 seconds)
 
 ### Phase 8: Stripe Integration ✅ COMPLETE (Day 21)
 - Stripe Checkout for paid tiers (Pro)
@@ -320,9 +320,10 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - **Gated:** Pro+ only
 
 **9. Onboarding Wizard ✅**
-- 4-step guided setup
-- Pre-populated suggestions
-- Immediate value demonstration
+- 2-step guided setup (~60 seconds)
+- Step 1: Quick Setup (balance + optional income)
+- Step 2: Bills (with pre-populated suggestions)
+- Direct redirect to calendar on completion
 
 **10. Stripe Payments ✅**
 - Secure checkout via Stripe
@@ -354,6 +355,16 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Email notification to support team via Resend
 - PostHog event tracking for feedback submissions
 - User email captured for follow-up
+
+**15. Emergency Fund Tracker ✅**
+- Dashboard widget showing progress toward financial safety net
+- Configurable goal: 3, 6, or 12 months of expenses
+- Optional designated savings account (or uses total balance)
+- Progress bar with color-coded status (rose/amber/teal)
+- Displays months covered and amount remaining
+- Settings form in Settings page
+- Calculates goal from actual monthly bill expenses
+- PostHog event: `emergency_fund_settings_updated`
 
 ### Premium Features (Post-MVP / Planned)
 
@@ -433,7 +444,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 1. **accounts** - User bank accounts
 2. **income** - Income sources
 3. **bills** - Recurring expenses
-4. **user_settings** - User preferences (timezone, safety buffer, digest settings)
+4. **user_settings** - User preferences (timezone, safety buffer, digest settings, emergency fund)
 5. **scenarios** - "Can I afford it?" calculations
 6. **invoices** - Runway Collect invoices
 7. **invoice_reminders** - Payment reminder history
@@ -826,6 +837,26 @@ User Request
 
 ## Changelog
 
+### Version 5.3 (January 20, 2026)
+- Simpler Onboarding (2-step flow):
+  - Reduced from 4 steps to 2 steps (~60 seconds completion)
+  - Step 1: Quick Setup (balance + optional income)
+  - Step 2: Bills with pre-populated suggestions
+  - Direct redirect to calendar on completion
+  - Removed success screen for faster time-to-value
+- Emergency Fund Tracker:
+  - Dashboard widget showing progress toward savings goal
+  - Settings form with goal months selector (3/6/12)
+  - Optional designated savings account
+  - Progress bar with color-coded status
+  - Calculates goal from actual monthly bill expenses
+  - PostHog event tracking for settings changes
+- Technical improvements:
+  - Created `step-quick-setup.tsx` combining account + income
+  - Database migration for emergency fund columns
+  - Server action for emergency fund settings
+  - Removed personal name from customer-facing emails
+
 ### Version 5.2 (January 19, 2026)
 - Comprehensive filtering system:
   - Added reusable filter component library (`FilterPanel`, `FilterToggleGroup`, `FilterSegmentedControl`, `FilterAmountRange`, `FilterSearch`, `FilterDateRange`)
@@ -979,7 +1010,7 @@ User Request
 
 ---
 
-**Document Version:** 5.2
-**Last Updated:** January 19, 2026
-**Status:** Live - Comprehensive Filtering - Power User UX Complete 🎉
+**Document Version:** 5.3
+**Last Updated:** January 20, 2026
+**Status:** Live - Simpler Onboarding + Emergency Fund Tracker 🎉
 **Next Review:** February 2026

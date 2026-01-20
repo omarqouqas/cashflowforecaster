@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation'
 
 import { showError } from '@/lib/toast'
 import { ProgressSteps } from '@/components/onboarding/progress-steps'
-import { StepAccount } from '@/components/onboarding/step-account'
-import { StepIncome } from '@/components/onboarding/step-income'
+import { StepQuickSetup } from '@/components/onboarding/step-quick-setup'
 import { StepBills } from '@/components/onboarding/step-bills'
-import { StepSuccess } from '@/components/onboarding/step-success'
 
 import {
   onboardingCreateAccount,
@@ -20,7 +18,7 @@ import {
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const STORAGE_KEY = 'cff_onboarding_state_v1'
+  const STORAGE_KEY = 'cff_onboarding_state_v2' // Bumped version for new 2-step flow
 
   type PersistedState = {
     step: number
@@ -66,8 +64,8 @@ export default function OnboardingPage() {
       const parsed = JSON.parse(raw) as Partial<PersistedState>
       if (typeof parsed.step !== 'number') return null
       return {
-        step: Math.min(3, Math.max(0, parsed.step)),
-        completed: Array.isArray(parsed.completed) ? parsed.completed.map(Boolean).slice(0, 4) : [false, false, false, false],
+        step: Math.min(1, Math.max(0, parsed.step)), // Max step is now 1 (Bills)
+        completed: Array.isArray(parsed.completed) ? parsed.completed.map(Boolean).slice(0, 2) : [false, false],
         startingBalance:
           typeof parsed.startingBalance === 'number' || parsed.startingBalance === null
             ? parsed.startingBalance
@@ -75,7 +73,7 @@ export default function OnboardingPage() {
         currency: typeof parsed.currency === 'string' && parsed.currency ? parsed.currency : 'USD',
         billsTracked: typeof parsed.billsTracked === 'number' ? parsed.billsTracked : 0,
       }
-    } catch (err) {
+    } catch {
       // JSON parsing failed - corrupted data, start fresh
       if (!storageWarningShown.current) {
         storageWarningShown.current = true
@@ -96,19 +94,17 @@ export default function OnboardingPage() {
   const persisted = loadPersisted()
 
   const [step, setStep] = useState<number>(persisted?.step ?? 0)
-  const [completed, setCompleted] = useState<boolean[]>(persisted?.completed ?? [false, false, false, false])
+  const [completed, setCompleted] = useState<boolean[]>(persisted?.completed ?? [false, false])
 
   const [startingBalance, setStartingBalance] = useState<number | null>(persisted?.startingBalance ?? null)
   const [currency, setCurrency] = useState<string>(persisted?.currency ?? 'USD')
   const [billsTracked, setBillsTracked] = useState<number>(persisted?.billsTracked ?? 0)
 
   const [globalError, setGlobalError] = useState<string | null>(null)
-  const [isFinalizing, setIsFinalizing] = useState(false)
 
   useEffect(() => {
     // Persist wizard progress so server action refreshes don't reset the step back to 0.
     if (!isStorageAvailable()) {
-      // Already warned in loadPersisted, don't spam
       return
     }
     try {
@@ -132,13 +128,9 @@ export default function OnboardingPage() {
   const pageTitle = useMemo(() => {
     switch (step) {
       case 0:
-        return 'Account'
+        return 'Quick Setup'
       case 1:
-        return 'Income'
-      case 2:
         return 'Bills'
-      case 3:
-        return 'Done'
       default:
         return 'Onboarding'
     }
@@ -153,43 +145,23 @@ export default function OnboardingPage() {
   }
 
   function nextStep() {
-    setStep((s) => Math.min(3, s + 1))
+    setStep((s) => Math.min(1, s + 1))
   }
 
-  useEffect(() => {
-    // When user reaches the success step, mark onboarding complete.
-    if (step !== 3) return
-
-    let cancelled = false
-
-    async function run() {
-      setIsFinalizing(true)
-      setGlobalError(null)
-
-      const res = await onboardingMarkComplete()
-      if (cancelled) return
-
-      if ('error' in res) {
-        setGlobalError(res.error)
-        setIsFinalizing(false)
-        return
-      }
-
-      markStepComplete(3)
-      try {
-        window.sessionStorage.removeItem(STORAGE_KEY)
-      } catch {
-        // ignore
-      }
-      setIsFinalizing(false)
+  async function finishOnboarding() {
+    setGlobalError(null)
+    const res = await onboardingMarkComplete()
+    if ('error' in res) {
+      setGlobalError(res.error)
+      return false
     }
-
-    run()
-
-    return () => {
-      cancelled = true
+    try {
+      window.sessionStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // ignore
     }
-  }, [step])
+    return true
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50">
@@ -198,7 +170,7 @@ export default function OnboardingPage() {
           <p className="text-xs font-medium tracking-wide text-zinc-500">Setup</p>
           <h1 className="mt-1 text-2xl font-semibold">{pageTitle}</h1>
           <p className="mt-1 text-sm text-zinc-400">
-            See your first forecast in under 2 minutes.
+            See your first forecast in under 60 seconds.
           </p>
         </div>
 
@@ -212,22 +184,29 @@ export default function OnboardingPage() {
 
         <div key={step} className="mt-6 transition-opacity duration-200">
           {step === 0 && (
-            <StepAccount
-              defaultValues={{ name: 'Checking', account_type: 'checking' }}
+            <StepQuickSetup
               onContinue={async (values) => {
                 setGlobalError(null)
-                const res = await onboardingCreateAccount({
-                  name: values.name,
-                  account_type: values.account_type,
-                  current_balance: values.current_balance,
+
+                // Create account with defaults
+                const accountRes = await onboardingCreateAccount({
+                  name: 'Main Account',
+                  account_type: 'checking',
+                  current_balance: values.balance,
                   currency: 'USD',
                   is_spendable: true,
                 })
 
-                if ('error' in res) throw new Error(res.error)
+                if ('error' in accountRes) throw new Error(accountRes.error)
 
-                setStartingBalance(res.account.current_balance ?? values.current_balance)
-                setCurrency(res.account.currency ?? 'USD')
+                setStartingBalance(accountRes.account.current_balance ?? values.balance)
+                setCurrency(accountRes.account.currency ?? 'USD')
+
+                // Create income if provided
+                if (values.income) {
+                  const incomeRes = await onboardingCreateIncomes([values.income])
+                  if ('error' in incomeRes) throw new Error(incomeRes.error)
+                }
 
                 markStepComplete(0)
                 nextStep()
@@ -242,24 +221,6 @@ export default function OnboardingPage() {
           )}
 
           {step === 1 && (
-            <StepIncome
-              onContinue={async (income) => {
-                setGlobalError(null)
-                const res = await onboardingCreateIncomes([income])
-                if ('error' in res) throw new Error(res.error)
-
-                markStepComplete(1)
-                nextStep()
-              }}
-              onSkip={() => {
-                setGlobalError(null)
-                markStepComplete(1)
-                nextStep()
-              }}
-            />
-          )}
-
-          {step === 2 && (
             <StepBills
               onContinue={async (rows) => {
                 setGlobalError(null)
@@ -267,57 +228,26 @@ export default function OnboardingPage() {
                 if ('error' in res) throw new Error(res.error)
 
                 setBillsTracked(res.bills.length)
+                markStepComplete(1)
 
-                markStepComplete(2)
-                nextStep()
+                // Mark onboarding complete and redirect to calendar
+                const success = await finishOnboarding()
+                if (success) {
+                  router.push('/dashboard/calendar')
+                }
               }}
-              onSkip={() => {
+              onSkip={async () => {
                 setGlobalError(null)
                 setBillsTracked(0)
-                markStepComplete(2)
-                nextStep()
+                markStepComplete(1)
+
+                // Mark onboarding complete and redirect to calendar
+                const success = await finishOnboarding()
+                if (success) {
+                  router.push('/dashboard/calendar')
+                }
               }}
             />
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4">
-              <StepSuccess
-                startingBalance={startingBalance}
-                billsTracked={billsTracked}
-                currency={currency}
-                onSeeForecast={async () => {
-                  if (!completed[3] && !isFinalizing) {
-                    const res = await onboardingMarkComplete()
-                    if ('error' in res) {
-                      setGlobalError(res.error)
-                      return
-                    }
-                    markStepComplete(3)
-                  }
-
-                  router.push('/dashboard/calendar')
-                }}
-                onGoDashboard={async () => {
-                  if (!completed[3] && !isFinalizing) {
-                    const res = await onboardingMarkComplete()
-                    if ('error' in res) {
-                      setGlobalError(res.error)
-                      return
-                    }
-                    markStepComplete(3)
-                  }
-
-                  router.push('/dashboard')
-                }}
-              />
-
-              {isFinalizing && (
-                <p className="text-center text-xs text-zinc-500">
-                  Finalizing your setup…
-                </p>
-              )}
-            </div>
           )}
         </div>
       </div>

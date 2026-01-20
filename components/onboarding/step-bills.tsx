@@ -361,7 +361,7 @@ export function StepBills({
               'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-zinc-950',
             ].join(' ')}
           >
-            {isSubmitting ? 'Saving…' : 'Continue'}
+            {isSubmitting ? 'Saving…' : 'See Your Forecast'}
           </button>
 
           <button

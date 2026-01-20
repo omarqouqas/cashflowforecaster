@@ -2,7 +2,7 @@
 
 import { Check } from 'lucide-react'
 
-const STEPS = ['Account', 'Income', 'Bills', 'Done!'] as const
+const STEPS = ['Quick Setup', 'Bills'] as const
 
 export type OnboardingStepTitle = (typeof STEPS)[number]
 
@@ -15,7 +15,7 @@ export function ProgressSteps({
 }) {
   const safeCurrent = Math.min(Math.max(currentStep, 0), STEPS.length - 1)
   const doneCount = completed.filter(Boolean).length
-  const progress = (Math.min(doneCount, STEPS.length - 1) / (STEPS.length - 1)) * 100
+  const progress = (doneCount / STEPS.length) * 100
 
   return (
     <div className="w-full">

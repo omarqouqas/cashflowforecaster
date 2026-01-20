@@ -173,7 +173,7 @@ function generateEmailHtml(message) {
 
       <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #e4e4e7;">
         <p style="margin: 0; color: #71717a; font-size: 13px;">
-          Omar Qouqas<br>
+          Omar<br>
           Founder, <a href="https://cashflowforecaster.io" style="color: #0d9488; text-decoration: none;">Cash Flow Forecaster</a>
         </p>
       </div>
