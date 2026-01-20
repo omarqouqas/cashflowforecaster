@@ -44,6 +44,7 @@ const comparisonRows = [
   { feature: 'Free tier', cff: '✅ Yes (10 bills, 10 income)', typical: '❌ Trial only (14 days)' },
   { feature: 'Forecast length', cff: '60 days (Free) / 365 days (Pro)', typical: '~30 days' },
   { feature: 'Invoicing built-in', cff: '✅ Runway Collect', typical: '❌ No' },
+  { feature: 'One-click invoice payments', cff: '✅ Clients pay via Stripe', typical: '❌ No' },
   { feature: 'Invoice → Forecast sync', cff: '✅ Automatic', typical: '❌ No' },
   { feature: 'Payment reminders', cff: '✅ 3 escalating templates', typical: '❌ No' },
   { feature: 'Weekly email digest', cff: '✅ Yes', typical: '❌ No' },

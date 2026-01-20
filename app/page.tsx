@@ -378,14 +378,18 @@ export default async function Home({ searchParams }: HomeProps) {
                   </div>
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
-                    Create invoices, send them, and auto-remind clients who forget. Watch expected income appear in your
-                    forecast the moment you hit send.
+                    Create invoices, send them with a one-click &quot;Pay Now&quot; button, and auto-remind clients who forget.
+                    Watch expected income appear in your forecast the moment you hit send—and get paid directly via Stripe.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Professional PDF invoices</span>
+                      <span><strong className="text-white">One-click payments</strong> — clients pay instantly via Stripe</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
+                      <span>Professional PDF invoices with payment links</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
@@ -393,7 +397,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Invoice-to-forecast sync</span>
+                      <span>Invoice-to-forecast sync + auto status updates</span>
                     </li>
                   </ul>
                 </div>

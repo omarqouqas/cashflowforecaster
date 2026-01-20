@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.3
+**Version:** 5.4
 **Last Updated:** January 20, 2026
-**Status:** Live - Accepting Payments - Simpler Onboarding + Emergency Fund Tracker
+**Status:** Live - Accepting Payments - Stripe Payment Links + Simpler Onboarding
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -317,6 +317,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Auto-sync with cash flow forecasts
 - **Enhanced status badges** for dark theme (draft/sent/viewed/paid)
 - **Improved empty state** with value proposition messaging
+- **Stripe Payment Links** - One-click payment for clients via Stripe Connect
 - **Gated:** Pro+ only
 
 **9. Onboarding Wizard ✅**
@@ -837,6 +838,21 @@ User Request
 
 ## Changelog
 
+### Version 5.4 (January 20, 2026)
+- Stripe Payment Links for Invoices (Pro Feature):
+  - Stripe Connect integration for Pro users to receive payments directly
+  - One-click "Pay Now" button in invoice emails and PDFs
+  - Automatic invoice status update to "Paid" on successful payment
+  - Payment success page with session verification
+  - Database migration for `stripe_connect_accounts` table and invoice payment columns
+  - Settings UI for connecting/disconnecting Stripe account
+- Documentation updates:
+  - Added Resend configuration to `.env.example` (RESEND_API_KEY, RESEND_FROM_EMAIL)
+  - Created Apollo lead generation guide for outreach campaigns
+- Bug fixes:
+  - Fixed invoice payment status not updating on localhost
+  - Improved Stripe Connect error messaging when Connect not enabled
+
 ### Version 5.3 (January 20, 2026)
 - Simpler Onboarding (2-step flow):
   - Reduced from 4 steps to 2 steps (~60 seconds completion)
@@ -1010,7 +1026,7 @@ User Request
 
 ---
 
-**Document Version:** 5.3
+**Document Version:** 5.4
 **Last Updated:** January 20, 2026
-**Status:** Live - Simpler Onboarding + Emergency Fund Tracker 🎉
+**Status:** Live - Stripe Payment Links + Simpler Onboarding 🎉
 **Next Review:** February 2026

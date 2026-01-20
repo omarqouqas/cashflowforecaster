@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 20, 2026 (Day 41)
+**Last Updated:** January 20, 2026 (Day 42)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 41
-- **Commits:** 125+
-- **Database Tables:** 14
+- **Days in Development:** 42
+- **Commits:** 130+
+- **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker ✅ 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links ✅ 🎉
 
 **Completed Phases:**
 
@@ -43,13 +43,194 @@
 - ✅ Phase 20: Automated Welcome Email + User Outreach (Day 39) - COMPLETE
 - ✅ Phase 21: Low Balance Alerts + Safe to Spend Marketing (Day 40) - COMPLETE
 - ✅ Phase 22: Simpler Onboarding + Emergency Fund Tracker (Day 41) - COMPLETE
+- ✅ Phase 23: Stripe Payment Links for Invoices (Day 42) - COMPLETE
 
 **Current Focus:**
 
-- Monitor onboarding completion rates with new 2-step flow
-- Track Emergency Fund Tracker adoption
-- User acquisition
+- User acquisition via Apollo outreach campaign
+- Monitor Stripe Connect adoption among Pro users
+- Track invoice payment conversion rates
 - Monitor NPS survey responses (PostHog)
+
+---
+
+## Day 42: Stripe Payment Links for Invoices (January 20, 2026)
+
+### Shipped (today)
+
+#### Stripe Connect Integration for Invoice Payments ✅ 🎉
+
+**Major Pro feature** - Pro users can now receive invoice payments directly via Stripe. Clients get a "Pay Now" button in their invoice emails, and invoice status automatically updates to "Paid" upon successful payment.
+
+- [x] **Stripe Connect Library** (`lib/stripe/connect.ts`)
+  - `createConnectAccount()` - Create Express account for user
+  - `createAccountLink()` - Generate onboarding/refresh links
+  - `getConnectAccount()` - Fetch user's Connect account
+  - `refreshAccountStatus()` - Sync status from Stripe API
+  - `disconnectConnectAccount()` - Remove Connect account
+  - `createInvoiceCheckoutSession()` - Create payment session for invoice
+  - `verifyCheckoutSession()` - Verify payment completion
+
+- [x] **Database Migration** (`supabase/migrations/20260120000002_add_stripe_connect.sql`)
+  - New `stripe_connect_accounts` table with RLS
+  - Added columns to `invoices`: `payment_link_url`, `stripe_checkout_session_id`, `payment_method`, `paid_at`
+  - Indexes for performance
+
+- [x] **Settings UI** (`components/settings/stripe-connect-section.tsx`)
+  - Connect account status display (pending/active/restricted)
+  - Connect/Disconnect buttons
+  - Onboarding flow redirect
+  - Charges enabled indicator
+
+- [x] **Invoice Send Integration** (`lib/actions/send-invoice.ts`)
+  - Auto-generates payment link if Connect account active
+  - Includes payment URL in email template
+  - Includes payment URL in PDF invoice
+  - Stores checkout session ID for tracking
+
+- [x] **Payment Success Page** (`app/pay/success/page.tsx`)
+  - Verifies checkout session with Stripe API
+  - Updates invoice status to "paid" automatically
+  - Shows payment confirmation to client
+  - Handles edge cases (no session, already paid)
+
+- [x] **Webhook Handler Updates** (`app/api/webhooks/stripe/route.ts`)
+  - Handles `checkout.session.completed` for invoice payments
+  - Updates invoice status via webhook (backup to success page)
+  - Proper metadata extraction
+
+#### Documentation Updates ✅
+
+- [x] **Resend Configuration** (`.env.example`)
+  - Added `RESEND_API_KEY` documentation
+  - Added `RESEND_FROM_EMAIL` with verified domain requirement
+  - Explained `onboarding@resend.dev` limitation
+
+- [x] **Apollo Lead Generation Guide** (`docs/apollo-lead-generation-guide.md`)
+  - Target audience filters and job titles
+  - 3-email sequence templates for outreach
+  - Email signature recommendations
+  - Expected results benchmarks
+  - Reply handling scripts
+
+#### Bug Fixes ✅
+
+- [x] Fixed invoice status not updating on localhost payment success
+  - Root cause: Success page was static, didn't verify session
+  - Solution: Made page async, added `verifyCheckoutSession()` call
+
+- [x] Improved Stripe Connect error messaging
+  - Better error when Connect not enabled for account
+  - Clear guidance for users to complete onboarding
+
+### Files Created (Day 42)
+
+**Created:**
+
+```
+lib/stripe/connect.ts
+app/pay/success/page.tsx
+app/pay/cancelled/page.tsx
+components/settings/stripe-connect-section.tsx
+supabase/migrations/20260120000002_add_stripe_connect.sql
+docs/apollo-lead-generation-guide.md
+```
+
+### Files Modified (Day 42)
+
+**Modified:**
+
+```
+lib/actions/send-invoice.ts
+lib/email/templates/invoice-email.ts
+lib/pdf/invoice-template.tsx
+app/api/webhooks/stripe/route.ts
+app/dashboard/settings/page.tsx
+.env.example
+```
+
+### Technical Implementation Details
+
+**Stripe Connect Flow:**
+
+```
+User (Pro) → Settings → Connect Stripe
+     │
+     ▼
+┌─────────────────────────────────┐
+│  createConnectAccount()          │
+│  - Creates Express account       │
+│  - Saves to stripe_connect_accounts │
+│  - Returns onboarding URL        │
+└─────────────────────────────────┘
+     │
+     ▼
+┌─────────────────────────────────┐
+│  Stripe Onboarding (external)    │
+│  - User completes KYC            │
+│  - Stripe verifies identity      │
+└─────────────────────────────────┘
+     │
+     ▼
+┌─────────────────────────────────┐
+│  refreshAccountStatus()          │
+│  - Syncs charges_enabled         │
+│  - Updates account_status        │
+└─────────────────────────────────┘
+```
+
+**Invoice Payment Flow:**
+
+```
+Pro User sends invoice
+     │
+     ▼
+┌─────────────────────────────────┐
+│  sendInvoice() checks Connect    │
+│  - If active, creates checkout   │
+│  - Adds payment URL to email/PDF │
+└─────────────────────────────────┘
+     │
+     ▼
+Client clicks "Pay Now"
+     │
+     ▼
+┌─────────────────────────────────┐
+│  Stripe Checkout Session         │
+│  - Card payment                  │
+│  - Funds → Connected Account     │
+└─────────────────────────────────┘
+     │
+     ▼
+┌─────────────────────────────────┐
+│  /pay/success page               │
+│  - verifyCheckoutSession()       │
+│  - markInvoiceAsPaid()           │
+│  - Shows confirmation            │
+└─────────────────────────────────┘
+```
+
+### Impact
+
+- **Get Paid Faster:** Clients can pay invoices with one click
+- **Reduced Friction:** No manual payment tracking needed
+- **Pro Value:** Strong differentiator for Pro tier
+- **Revenue Potential:** Future platform fee opportunity
+- **User Acquisition:** Apollo guide enables scalable outreach
+
+### Commits (Day 42)
+
+1. `6a1acc5` - "feat: add Stripe payment links for invoices (Pro feature)"
+2. `2517bcb` - "fix: improve Stripe Connect error message when Connect not enabled"
+3. `c566037` - "fix: update invoice status on payment success page for localhost"
+4. `6e3322c` - "docs: add Resend config to .env.example and Apollo lead gen guide"
+
+### Next Steps
+
+- Monitor Stripe Connect adoption among Pro users
+- Track invoice payment conversion rates
+- Consider adding platform fee for future revenue
+- A/B test payment link placement in emails
 
 ---
 
