@@ -20,7 +20,15 @@
       "Bash(npx tsc:*)",
       "Bash(npm run dev:*)",
       "Bash(timeout:*)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(find:*)",
+      "Bash(npm show:*)",
+      "Bash(pnpm build:*)",
+      "Bash(wc:*)",
+      "Bash(dir:*)",
+      "Bash(pnpm add:*)",
+      "Bash(node scripts/send-outreach.mjs:*)",
+      "Bash(npx supabase:*)"
     ],
     "deny": [],
     "ask": []
