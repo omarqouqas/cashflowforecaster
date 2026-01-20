@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
+import { showError } from '@/lib/toast'
 import { ProgressSteps } from '@/components/onboarding/progress-steps'
 import { StepAccount } from '@/components/onboarding/step-account'
 import { StepIncome } from '@/components/onboarding/step-income'
@@ -29,8 +30,36 @@ export default function OnboardingPage() {
     billsTracked: number
   }
 
+  // Track if we've shown storage warning to avoid repeated toasts
+  const storageWarningShown = useRef(false)
+
+  function isStorageAvailable(): boolean {
+    if (typeof window === 'undefined') return false
+    try {
+      const testKey = '__storage_test__'
+      window.sessionStorage.setItem(testKey, testKey)
+      window.sessionStorage.removeItem(testKey)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   function loadPersisted(): PersistedState | null {
     if (typeof window === 'undefined') return null
+
+    // Check if storage is available (private browsing mode may block it)
+    if (!isStorageAvailable()) {
+      if (!storageWarningShown.current) {
+        storageWarningShown.current = true
+        // Delay toast to avoid hydration issues
+        setTimeout(() => {
+          showError('Private browsing detected. Your progress won\'t be saved if you refresh.')
+        }, 100)
+      }
+      return null
+    }
+
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY)
       if (!raw) return null
@@ -46,7 +75,20 @@ export default function OnboardingPage() {
         currency: typeof parsed.currency === 'string' && parsed.currency ? parsed.currency : 'USD',
         billsTracked: typeof parsed.billsTracked === 'number' ? parsed.billsTracked : 0,
       }
-    } catch {
+    } catch (err) {
+      // JSON parsing failed - corrupted data, start fresh
+      if (!storageWarningShown.current) {
+        storageWarningShown.current = true
+        setTimeout(() => {
+          showError('Could not restore your progress. Starting fresh.')
+        }, 100)
+      }
+      // Clear corrupted data
+      try {
+        window.sessionStorage.removeItem(STORAGE_KEY)
+      } catch {
+        // ignore cleanup failure
+      }
       return null
     }
   }
@@ -65,6 +107,10 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     // Persist wizard progress so server action refreshes don't reset the step back to 0.
+    if (!isStorageAvailable()) {
+      // Already warned in loadPersisted, don't spam
+      return
+    }
     try {
       const state: PersistedState = {
         step,
@@ -75,7 +121,11 @@ export default function OnboardingPage() {
       }
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     } catch {
-      // ignore storage failures (private mode / disabled storage)
+      // Storage write failed - only warn once
+      if (!storageWarningShown.current) {
+        storageWarningShown.current = true
+        showError('Could not save your progress. Complete setup without refreshing.')
+      }
     }
   }, [step, completed, startingBalance, currency, billsTracked])
 

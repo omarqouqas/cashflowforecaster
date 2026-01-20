@@ -25,12 +25,39 @@ export type UpdateInvoiceInput = {
   description?: string | null;
 };
 
-function nextInvoiceNumberFromLast(last?: string | null) {
+function extractInvoiceNumber(invoiceNumber: string | null | undefined): number {
   // Expected pattern: INV-0001, but we handle unknown formats gracefully.
-  const match = (last ?? '').match(/(\d+)\s*$/);
-  const lastNum = match ? Number.parseInt(match[1]!, 10) : 0;
-  const nextNum = Number.isFinite(lastNum) ? lastNum + 1 : 1;
+  const match = (invoiceNumber ?? '').match(/(\d+)\s*$/);
+  const num = match ? Number.parseInt(match[1]!, 10) : 0;
+  return Number.isFinite(num) ? num : 0;
+}
+
+function generateInvoiceNumber(maxNum: number): string {
+  const nextNum = maxNum + 1;
   return `INV-${String(nextNum).padStart(4, '0')}`;
+}
+
+async function getNextInvoiceNumber(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string
+): Promise<string> {
+  // Query ALL invoice numbers for this user and find the max
+  // This is more robust than querying "last created" which can have race conditions
+  const { data: invoices, error } = await supabase
+    .from('invoices')
+    .select('invoice_number')
+    .eq('user_id', userId);
+
+  if (error) throw new Error(error.message);
+
+  // Find the maximum invoice number
+  let maxNum = 0;
+  for (const inv of invoices ?? []) {
+    const num = extractInvoiceNumber(inv.invoice_number);
+    if (num > maxNum) maxNum = num;
+  }
+
+  return generateInvoiceNumber(maxNum);
 }
 
 export async function getInvoices(): Promise<Tables<'invoices'>[]> {
@@ -57,71 +84,87 @@ export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: st
 
   const requestedInvoiceNumber = input.invoice_number?.trim() || null;
 
-  // Generate invoice_number (fallback)
-  const { data: lastInvoice, error: lastErr } = await supabase
-    .from('invoices')
-    .select('invoice_number')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  // Retry logic for race condition handling
+  const MAX_RETRIES = 3;
+  let lastError: Error | null = null;
 
-  if (lastErr) throw new Error(lastErr.message);
-  const generatedInvoiceNumber = nextInvoiceNumberFromLast(lastInvoice?.invoice_number);
-  const invoice_number = requestedInvoiceNumber ?? generatedInvoiceNumber;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      // Generate invoice_number if not provided
+      // Uses MAX of all existing numbers to avoid race conditions
+      const invoice_number = requestedInvoiceNumber ?? await getNextInvoiceNumber(supabase, user.id);
 
-  // 1) Create invoice
-  const { data: invoice, error: invoiceErr } = await supabase
-    .from('invoices')
-    .insert({
-      user_id: user.id,
-      invoice_number,
-      client_name: input.client_name,
-      client_email: input.client_email || null,
-      amount: input.amount,
-      due_date: input.due_date,
-      description: input.description || null,
-      status: 'draft',
-    })
-    .select('id, invoice_number')
-    .single();
+      // 1) Create invoice
+      const { data: invoice, error: invoiceErr } = await supabase
+        .from('invoices')
+        .insert({
+          user_id: user.id,
+          invoice_number,
+          client_name: input.client_name,
+          client_email: input.client_email || null,
+          amount: input.amount,
+          due_date: input.due_date,
+          description: input.description || null,
+          status: 'draft',
+        })
+        .select('id, invoice_number')
+        .single();
 
-  if (invoiceErr) throw new Error(invoiceErr.message);
+      if (invoiceErr) {
+        // Check if it's a unique constraint violation (duplicate invoice number)
+        if (invoiceErr.code === '23505' && !requestedInvoiceNumber) {
+          // Retry with a new number (only if we auto-generated the number)
+          lastError = new Error(invoiceErr.message);
+          continue;
+        }
+        throw new Error(invoiceErr.message);
+      }
 
-  // If the DB has a trigger that auto-sets invoice_number on INSERT, it may overwrite
-  // the user's provided invoice number. Enforce the requested value after insert.
-  if (requestedInvoiceNumber && invoice.invoice_number !== requestedInvoiceNumber) {
-    const { error: enforceErr } = await supabase
-      .from('invoices')
-      .update({ invoice_number: requestedInvoiceNumber })
-      .eq('id', invoice.id)
-      .eq('user_id', user.id);
+      // If the DB has a trigger that auto-sets invoice_number on INSERT, it may overwrite
+      // the user's provided invoice number. Enforce the requested value after insert.
+      if (requestedInvoiceNumber && invoice.invoice_number !== requestedInvoiceNumber) {
+        const { error: enforceErr } = await supabase
+          .from('invoices')
+          .update({ invoice_number: requestedInvoiceNumber })
+          .eq('id', invoice.id)
+          .eq('user_id', user.id);
 
-    if (enforceErr) {
-      await supabase.from('invoices').delete().eq('id', invoice.id).eq('user_id', user.id);
-      throw new Error(enforceErr.message);
+        if (enforceErr) {
+          await supabase.from('invoices').delete().eq('id', invoice.id).eq('user_id', user.id);
+          throw new Error(enforceErr.message);
+        }
+      }
+
+      // 2) Create linked income entry (transaction-like: delete invoice on failure)
+      const { error: incomeErr } = await supabase.from('income').insert({
+        user_id: user.id,
+        name: `Invoice: ${input.client_name}`,
+        amount: input.amount,
+        frequency: 'one-time',
+        next_date: input.due_date,
+        status: 'pending',
+        invoice_id: invoice.id,
+        is_active: true,
+        notes: input.description || null,
+      });
+
+      if (incomeErr) {
+        await supabase.from('invoices').delete().eq('id', invoice.id).eq('user_id', user.id);
+        throw new Error(incomeErr.message);
+      }
+
+      return { id: invoice.id };
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      // Only retry on specific errors, otherwise throw immediately
+      if (!lastError.message.includes('duplicate') && !lastError.message.includes('unique')) {
+        throw lastError;
+      }
     }
   }
 
-  // 2) Create linked income entry (transaction-like: delete invoice on failure)
-  const { error: incomeErr } = await supabase.from('income').insert({
-    user_id: user.id,
-    name: `Invoice: ${input.client_name}`,
-    amount: input.amount,
-    frequency: 'one-time',
-    next_date: input.due_date,
-    status: 'pending',
-    invoice_id: invoice.id,
-    is_active: true,
-    notes: input.description || null,
-  });
-
-  if (incomeErr) {
-    await supabase.from('invoices').delete().eq('id', invoice.id).eq('user_id', user.id);
-    throw new Error(incomeErr.message);
-  }
-
-  return { id: invoice.id };
+  // All retries exhausted
+  throw lastError ?? new Error('Failed to create invoice after multiple attempts');
 }
 
 export async function updateInvoiceStatus(id: string, status: InvoiceStatus) {

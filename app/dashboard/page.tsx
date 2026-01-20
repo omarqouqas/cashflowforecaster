@@ -71,11 +71,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   // Generate calendar data if user has accounts
   let calendarData = null;
+  let calendarError: string | null = null;
   if (accounts.length > 0) {
     try {
       calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined, forecastDays);
     } catch (error) {
       console.error('Error generating calendar:', error);
+      calendarError = 'We couldn\'t generate your forecast. Please try refreshing the page.';
     }
   }
 
@@ -213,6 +215,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         enabled: taxTrackingEnabled,
       }}
       message={message}
+      calendarError={calendarError}
     />
   );
 }

@@ -23,6 +23,13 @@ export function CsvUpload({ onLoaded }: Props) {
       return;
     }
 
+    // Check file size (max 5MB to prevent browser freezing)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 5MB.`);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const text = await file.text();
@@ -84,7 +91,7 @@ export function CsvUpload({ onLoaded }: Props) {
             Choose file
           </Button>
           <p className="text-xs text-zinc-500 mt-3">
-            Accepts .csv files only
+            Accepts .csv files only (max 5MB)
           </p>
         </div>
       </div>

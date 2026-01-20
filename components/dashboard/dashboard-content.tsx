@@ -76,6 +76,7 @@ interface DashboardContentProps {
     enabled: boolean;
   };
   message?: string | string[];
+  calendarError?: string | null;
 }
 
 /**
@@ -97,6 +98,7 @@ export function DashboardContent({
   forecastDays,
   taxData,
   message,
+  calendarError,
 }: DashboardContentProps) {
   const { filters, setFilters } = useDashboardFilters(undefined, forecastDays);
   const currency = accounts[0]?.currency || 'USD';
@@ -249,6 +251,40 @@ export function DashboardContent({
           maxForecastDays={forecastDays}
         />
       </div>
+
+      {/* Calendar Generation Error */}
+      {calendarError && (
+        <div className="mb-6">
+          <div className="border border-rose-500/30 bg-rose-500/10 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-rose-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg
+                  className="w-4 h-4 text-rose-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-rose-300">{calendarError}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="inline-flex items-center text-sm text-rose-400 hover:text-rose-300 transition-colors mt-2 underline"
+                >
+                  Refresh page
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Critical Warning Banner - Overdraft Alert */}
       {forecastMetrics?.negativeCount ? (

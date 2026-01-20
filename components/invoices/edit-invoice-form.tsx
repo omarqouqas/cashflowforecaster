@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import type { Tables } from '@/types/supabase';
 import { updateInvoice } from '@/lib/actions/invoices';
 import { showError, showSuccess } from '@/lib/toast';
+import { optionalEmailSchema } from '@/lib/validations/email';
 
 const invoiceSchema = z.object({
   invoice_number: z
@@ -20,17 +21,14 @@ const invoiceSchema = z.object({
     .optional()
     .or(z.literal('')),
   client_name: z.string().min(1, 'Client name is required').max(100, 'Name too long'),
-  client_email: z
-    .string()
-    .email('Please enter a valid email')
-    .optional()
-    .or(z.literal('')),
+  client_email: optionalEmailSchema,
   amount: z.coerce
     .number({
       required_error: 'Amount is required',
       invalid_type_error: 'Amount must be a number',
     })
-    .positive('Amount must be positive'),
+    .positive('Amount must be positive')
+    .refine((n) => n >= 0.01, 'Amount must be at least $0.01'),
   due_date: z.string().min(1, 'Due date is required'),
   description: z.string().max(2000, 'Description too long').optional(),
 });

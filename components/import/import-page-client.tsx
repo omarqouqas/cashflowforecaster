@@ -314,14 +314,38 @@ export function ImportPageClient({ userId, usage }: Props) {
       incomeToInsert.length ? supabase.from('income').insert(incomeToInsert) : Promise.resolve({ error: null as any }),
     ]);
 
-    if (billsInsertRes.error || incomeInsertRes.error) {
-      // Note: we intentionally keep raw imported rows even if creation partially fails (per requirements).
-      const msg = billsInsertRes.error?.message || incomeInsertRes.error?.message || 'Import failed.';
-      showError(msg);
+    // Handle partial success - show user exactly what happened
+    const billsSucceeded = !billsInsertRes.error;
+    const incomeSucceeded = !incomeInsertRes.error;
+    const billsCount = billsToInsert.length;
+    const incomeCount = incomeToInsert.length;
+
+    if (!billsSucceeded && !incomeSucceeded) {
+      // Both failed
+      showError(`Import failed. Bills error: ${billsInsertRes.error?.message || 'Unknown'}. Income error: ${incomeInsertRes.error?.message || 'Unknown'}`);
       return;
     }
 
-    showSuccess(`Imported ${incomeToInsert.length} income and ${billsToInsert.length} bills`);
+    if (!billsSucceeded && billsCount > 0) {
+      // Bills failed, income succeeded (or was empty)
+      if (incomeCount > 0) {
+        showError(`Imported ${incomeCount} income, but ${billsCount} bills failed: ${billsInsertRes.error?.message || 'Unknown error'}`);
+      } else {
+        showError(`Failed to import ${billsCount} bills: ${billsInsertRes.error?.message || 'Unknown error'}`);
+        return;
+      }
+    } else if (!incomeSucceeded && incomeCount > 0) {
+      // Income failed, bills succeeded (or was empty)
+      if (billsCount > 0) {
+        showError(`Imported ${billsCount} bills, but ${incomeCount} income failed: ${incomeInsertRes.error?.message || 'Unknown error'}`);
+      } else {
+        showError(`Failed to import ${incomeCount} income: ${incomeInsertRes.error?.message || 'Unknown error'}`);
+        return;
+      }
+    } else {
+      // Both succeeded
+      showSuccess(`Imported ${incomeCount} income and ${billsCount} bills`);
+    }
     router.refresh();
     router.push('/dashboard');
   };

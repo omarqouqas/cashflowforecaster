@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createInvoice } from '@/lib/actions/invoices';
 import { showError, showSuccess } from '@/lib/toast';
+import { optionalEmailSchema } from '@/lib/validations/email';
 
 const invoiceSchema = z.object({
   invoice_number: z
@@ -19,18 +20,23 @@ const invoiceSchema = z.object({
     .optional()
     .or(z.literal('')),
   client_name: z.string().min(1, 'Client name is required').max(100, 'Name too long'),
-  client_email: z
-    .string()
-    .email('Please enter a valid email')
-    .optional()
-    .or(z.literal('')),
+  client_email: optionalEmailSchema,
   amount: z.coerce
     .number({
       required_error: 'Amount is required',
       invalid_type_error: 'Amount must be a number',
     })
-    .positive('Amount must be positive'),
-  due_date: z.string().min(1, 'Due date is required'),
+    .positive('Amount must be positive')
+    .refine((n) => n >= 0.01, 'Amount must be at least $0.01'),
+  due_date: z
+    .string()
+    .min(1, 'Due date is required')
+    .refine((dateStr) => {
+      const dueDate = new Date(dateStr);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return dueDate >= today;
+    }, 'Due date cannot be in the past'),
   description: z.string().max(2000, 'Description too long').optional(),
 });
 
