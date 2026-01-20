@@ -525,36 +525,36 @@ export default async function Home({ searchParams }: HomeProps) {
 
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div>
-                      <p className="text-sm text-zinc-500">Total Income</p>
-                      <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">$48,000</p>
+                      <p className="text-sm text-zinc-400">Total Income</p>
+                      <p className="mt-1 text-2xl font-semibold text-white">$48,000</p>
                     </div>
                     <div>
-                      <p className="text-sm text-zinc-500">After-Tax</p>
-                      <p className="mt-1 text-2xl font-semibold text-teal-600">$36,000</p>
+                      <p className="text-sm text-zinc-400">After-Tax</p>
+                      <p className="mt-1 text-2xl font-semibold text-teal-400">$36,000</p>
                     </div>
                   </div>
 
                   <div className="mt-4">
                     <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="text-zinc-500">Tax Progress</span>
-                      <span className="font-medium text-zinc-900 dark:text-white">$8,500 / $12,000</span>
+                      <span className="text-zinc-400">Tax Progress</span>
+                      <span className="font-medium text-white">$8,500 / $12,000</span>
                     </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                    <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
                       <div className="h-full bg-amber-400 transition-all" style={{ width: '71%' }} />
                     </div>
-                    <p className="mt-2 text-xs text-zinc-500">
+                    <p className="mt-2 text-xs text-zinc-400">
                       $3,500 remaining to save
                     </p>
                   </div>
 
-                  <div className="mt-5 rounded-lg border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-3">
+                  <div className="mt-5 rounded-lg border border-amber-500/25 bg-amber-500/10 p-3">
                     <div className="flex items-start gap-2">
-                      <Bell className="h-4 w-4 text-amber-600 dark:text-amber-300 mt-0.5 flex-shrink-0" />
+                      <Bell className="h-4 w-4 text-amber-300 mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                        <p className="text-sm font-medium text-amber-100">
                           Q4 deadline in 28 days
                         </p>
-                        <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">
+                        <p className="text-xs text-amber-200 mt-1">
                           $3,000 estimated tax due by January 15
                         </p>
                       </div>
