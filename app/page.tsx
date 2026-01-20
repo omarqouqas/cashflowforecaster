@@ -173,14 +173,14 @@ export default async function Home({ searchParams }: HomeProps) {
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              Know exactly what&apos;s <span className="text-teal-300 font-semibold">safe to spend</span> — today and for the next 365 days.
+              Know exactly what&apos;s <span className="text-teal-300 font-semibold">safe to spend</span> — today and for the next <span className="text-teal-300 font-semibold">365 days</span>.
               Your personal cash flow calendar with interactive charts, smart filters, and every bill mapped out.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
 
-              <p className="text-sm text-zinc-400">Set up in 3 minutes • No credit card • Free forever plan</p>
+              <p className="text-sm text-zinc-400">Set up in <span className="text-teal-300 font-medium">3 minutes</span> • No credit card • <span className="text-teal-300 font-medium">Free forever</span> plan</p>
 
               <p className="text-sm text-zinc-300">
                 Already have an account?{' '}
