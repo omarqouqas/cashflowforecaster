@@ -17,6 +17,11 @@ export default function OAuthSuccessPage() {
       }
     }
 
+    // Trigger welcome email (fire-and-forget, will skip if already sent)
+    fetch('/api/email/welcome', { method: 'POST' }).catch(() => {
+      // Ignore errors - welcome email is best-effort
+    });
+
     const next = searchParams.get('next') || '/dashboard';
     router.replace(next);
   }, [router, searchParams]);

@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 18, 2026
+**Last Updated:** January 19, 2026
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 37
-- **Commits:** 105+
-- **Database Tables:** 14 (added feedback)
+- **Days in Development:** 39
+- **Commits:** 115+
+- **Database Tables:** 14
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Import Page Polished ✅ 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Automated Welcome Email ✅ 🎉
 
 **Completed Phases:**
 
@@ -39,16 +39,384 @@
 - ✅ Phase 16: Tax Savings Tracker (Day 35) - COMPLETE
 - ✅ Phase 17: YNAB-Inspired Calendar Redesign (Day 36) - COMPLETE
 - ✅ Phase 18: Import Page UX Improvements (Day 37) - COMPLETE
+- ✅ Phase 19: Comprehensive Filters (Day 38) - COMPLETE
+- ✅ Phase 20: Automated Welcome Email + User Outreach (Day 39) - COMPLETE
 
 **Current Focus:**
 
-- Tax Savings Tracker feature adoption monitoring
+- Monitor welcome email delivery and open rates
+- Track user re-engagement from outreach emails
+- Filter adoption monitoring across all pages
 - User acquisition
 - Monitor NPS survey responses (PostHog)
-- Dashboard UX polish (freelancer-friendly day-to-day guidance)
-- Retention loop: weekly email digest (monitor open/click + settings adoption)
-- Calendar engagement analytics (chart interactions, day detail views)
-- Import flow adoption monitoring (step completion rates, duplicate detection usage)
+
+---
+
+## Day 39: Automated Welcome Email + User Outreach (January 19, 2026)
+
+### Shipped (today)
+
+#### Automated Welcome Email System ✅ 🎉
+
+**Complete email onboarding automation** - New users now receive a branded welcome email immediately after signup, with duplicate prevention and PostHog tracking.
+
+- [x] **Welcome Email Template** (`lib/email/templates/welcome-email.ts`)
+  - Clean, branded HTML design matching existing email aesthetic
+  - "Get started in 3 minutes" numbered steps section
+  - CTA button linking to dashboard
+  - Personal touch about being a solo founder
+  - Mobile-responsive inline styles
+
+- [x] **Welcome Email Sender** (`lib/email/send-welcome.ts`)
+  - Fetches user data from Supabase auth
+  - Checks if welcome email was already sent (prevents duplicates)
+  - Extracts user name from metadata if available
+  - Tracks `welcome_email_sent_at` in user_settings
+  - Logs `welcome_email_sent` event to PostHog
+  - Uses `info@cashflowforecaster.io` as reply-to
+
+- [x] **Welcome Email API Route** (`app/api/email/welcome/route.ts`)
+  - POST endpoint requiring authentication
+  - Returns success status and whether email was already sent
+  - Error handling with appropriate status codes
+
+- [x] **Signup Flow Integration**
+  - OAuth success page (`app/auth/oauth-success/page.tsx`) triggers welcome email
+  - Email/password signup page (`app/auth/signup/page.tsx`) triggers welcome email
+  - Fire-and-forget pattern (non-blocking)
+
+- [x] **Database Migration** (`supabase/migrations/20260119000001_add_welcome_email_tracking.sql`)
+  - Added `welcome_email_sent_at` column to `user_settings` table
+  - Prevents duplicate welcome emails across sessions
+
+#### User Outreach Campaign ✅
+
+**Sent personalized re-engagement emails** to 6 inactive users via Resend.
+
+- [x] **Outreach Script** (`scripts/send-outreach.mjs`)
+  - Standalone Node.js script using Resend API
+  - Personalized emails based on user segment:
+    - Never Started (2 users): Encouragement to complete setup
+    - Cooling Off (3 users): Feature updates and re-engagement
+    - Inactive (1 user): Check-in with new feature highlights
+  - HTML email generation with bullet points and P.S. styling
+  - Rate limiting (1 second between emails)
+
+- [x] **Admin Outreach API** (`app/api/admin/send-outreach/route.ts`)
+  - Protected by `ADMIN_SECRET` Bearer token
+  - Batch email sending with results tracking
+  - Uses `info@cashflowforecaster.io` as reply-to
+
+- [x] **Email Reply-to Standardization**
+  - All outreach emails use `info@cashflowforecaster.io`
+  - Removed personal email from codebase
+
+### Files Created (Day 39)
+
+**Created:**
+
+```
+lib/email/templates/welcome-email.ts
+lib/email/send-welcome.ts
+app/api/email/welcome/route.ts
+app/api/admin/send-outreach/route.ts
+scripts/send-outreach.mjs
+scripts/send-outreach-emails.ts
+supabase/migrations/20260119000001_add_welcome_email_tracking.sql
+```
+
+### Files Modified (Day 39)
+
+**Modified:**
+
+```
+app/auth/oauth-success/page.tsx
+app/auth/signup/page.tsx
+```
+
+**Deleted (old migrations already applied):**
+
+```
+supabase/migrations/202512290001_add_digest_settings.sql
+supabase/migrations/202512300001_import_transactions_mvp.sql
+supabase/migrations/202512300001_imported_transactions.sql
+supabase/migrations/20260113000000_feedback.sql
+supabase/migrations/20260113000001_add_semi_monthly_frequency.sql
+supabase/migrations/20260113000002_add_tax_settings.sql
+```
+
+### Technical Implementation Details
+
+**Welcome Email Flow:**
+
+```
+User Signs Up
+     │
+     ▼
+┌─────────────────────────────────┐
+│  OAuth Success / Signup Page    │
+│  fires POST /api/email/welcome  │
+└─────────────────────────────────┘
+     │
+     ▼
+┌─────────────────────────────────┐
+│  sendWelcomeEmail(userId)       │
+│  - Check if already sent        │
+│  - Get user email from auth     │
+│  - Build HTML template          │
+│  - Send via Resend              │
+│  - Update user_settings         │
+│  - Track in PostHog             │
+└─────────────────────────────────┘
+```
+
+**Duplicate Prevention:**
+
+```typescript
+// Check if welcome email was already sent
+const { data: settings } = await supabase
+  .from('user_settings')
+  .select('welcome_email_sent_at')
+  .eq('user_id', userId)
+  .single();
+
+if (settings?.welcome_email_sent_at) {
+  return { success: true, alreadySent: true };
+}
+```
+
+### Outreach Results
+
+| Segment | Users | Emails Sent | Status |
+|---------|-------|-------------|--------|
+| Never Started | 2 | 2 | ✅ Delivered |
+| Cooling Off | 3 | 3 | ✅ Delivered |
+| Inactive | 1 | 1 | ✅ Delivered |
+| **Total** | **6** | **6** | **100% success** |
+
+### Impact
+
+- **Onboarding:** Every new user now receives immediate welcome guidance
+- **Re-engagement:** 6 inactive users received personalized outreach
+- **Branding:** Consistent email styling across all transactional emails
+- **Analytics:** Welcome email events tracked in PostHog for funnel analysis
+- **Duplicate Prevention:** Users won't receive multiple welcome emails
+
+### Next Steps for Email
+
+- Monitor welcome email open rates in Resend dashboard
+- Track re-engagement from outreach emails
+- Consider sending welcome emails to existing 10 users who never received one
+- A/B test welcome email subject lines
+
+---
+
+## Day 38: Comprehensive Filters for All Pages (January 18-19, 2026)
+
+### Shipped (last 24 hours)
+
+#### Comprehensive Filter System ✅ 🎉
+
+**Major UX improvement** - Added powerful filtering capabilities to all list pages with URL persistence, instant client-side filtering, and consistent dark theme styling.
+
+- [x] **Reusable Filter Component System** (`components/filters/`)
+  - `FilterPanel` - Collapsible panel with active filter count badge
+  - `FilterToggleGroup` - Multi-select toggle buttons with icons and colors
+  - `FilterSegmentedControl` - Single-select segmented control
+  - `FilterAmountRange` - Min/max amount inputs with validation
+  - `FilterSearch` - Search input with instant filtering
+  - `FilterDateRange` - Date range picker
+  - `FilterSection` - Layout component for filter groupings
+
+- [x] **Calendar Filters** (`components/calendar/calendar-filters.tsx`)
+  - Transaction Type: Income / Bills (multi-select)
+  - Balance Status: Positive / Danger Zone / Negative (multi-select)
+  - Frequency: One-time / Weekly / Bi-weekly / Semi-monthly / Monthly / Quarterly / Yearly
+  - Amount Range: Min/Max filter
+  - Search: Filter by transaction name
+
+- [x] **Dashboard Filters** (`components/dashboard/dashboard-filters.tsx`)
+  - Forecast Horizon: 7 / 14 / 30 / 60 days (segmented control)
+  - Account Selection: Multi-select by account
+  - Account Type: Checking / Savings / Credit Card (multi-select)
+
+- [x] **Bills Page Filters** (`components/bills/bills-filters.tsx`)
+  - Status: Active / Inactive
+  - Frequency: All frequency types
+  - Category: Rent/Mortgage / Utilities / Subscriptions / Insurance / Other
+  - Amount Range: Min/Max filter
+  - Due Soon: Toggle for bills due in next 7 days
+  - Search: Filter by bill name
+
+- [x] **Income Page Filters** (`components/income/income-filters.tsx`)
+  - Status: Active / Inactive
+  - Frequency: All frequency types
+  - Source Type: Salary / Freelance / Invoice / Other
+  - Amount Range: Min/Max filter
+  - Search: Filter by income name
+
+- [x] **Invoices Page Filters** (`components/invoices/invoices-filters.tsx`)
+  - Status: Draft / Sent / Viewed / Paid
+  - Overdue: Toggle for overdue invoices
+  - Due Date Range: Start/End date picker
+  - Amount Range: Min/Max filter
+  - Search: Filter by client name or invoice number
+
+- [x] **Accounts Page Filters** (`components/accounts/accounts-filters.tsx`)
+  - Account Type: Checking / Savings / Credit Card
+  - Spendable Status: Spendable / Non-spendable
+  - Search: Filter by account name
+
+### Files Created (Day 38)
+
+**Created:**
+
+```
+components/filters/index.ts
+components/filters/filter-panel.tsx
+components/filters/filter-toggle-group.tsx
+components/filters/filter-segmented-control.tsx
+components/filters/filter-amount-range.tsx
+components/filters/filter-search.tsx
+components/filters/filter-date-range.tsx
+components/filters/filter-section.tsx
+components/calendar/calendar-filters.tsx
+components/dashboard/dashboard-filters.tsx
+components/bills/bills-filters.tsx
+components/bills/bills-content.tsx
+components/income/income-filters.tsx
+components/income/income-content.tsx
+components/invoices/invoices-filters.tsx
+components/invoices/invoices-content.tsx
+components/accounts/accounts-filters.tsx
+components/accounts/accounts-content.tsx
+```
+
+### Files Modified (Day 38)
+
+**Modified:**
+
+```
+app/dashboard/calendar/page.tsx
+app/dashboard/page.tsx
+app/dashboard/bills/page.tsx
+app/dashboard/income/page.tsx
+app/dashboard/invoices/page.tsx
+app/dashboard/accounts/page.tsx
+```
+
+### Technical Implementation Details
+
+**URL Persistence Architecture:**
+
+Each filter page has a custom hook (e.g., `useBillsFilters`, `useIncomeFilters`) that:
+1. Reads filter state from URL search params on mount
+2. Updates URL when filters change using `router.replace()`
+3. Uses `useSearchParams()` for reactive URL updates
+4. Supports deep linking and browser back/forward navigation
+
+```typescript
+// Example: useBillsFilters hook pattern
+export function useBillsFilters() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Parse filters from URL
+  const filtersFromUrl = useMemo((): BillsFilters => {
+    const status = searchParams.get('status');
+    const frequencies = searchParams.get('freq');
+    // ... more params
+    return { status, frequencies, /* ... */ };
+  }, [searchParams]);
+
+  // Update URL when filters change
+  const setFilters = useCallback((newFilters: BillsFilters) => {
+    const params = new URLSearchParams(searchParams.toString());
+    // Update or delete params based on filter values
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [router, pathname, searchParams]);
+
+  return { filters, setFilters, resetFilters, isFiltered };
+}
+```
+
+**Client Component Pattern:**
+
+Created wrapper client components (e.g., `BillsContent`, `IncomeContent`) that:
+1. Receive data from server components as props
+2. Manage filter state with custom hooks
+3. Apply client-side filtering with `useMemo`
+4. Render filtered results with empty states
+
+```typescript
+// Example: BillsContent component pattern
+export function BillsContent({ bills }: BillsContentProps) {
+  const { filters, setFilters } = useBillsFilters();
+
+  const filteredBills = useMemo(
+    () => filterBills(bills, filters),
+    [bills, filters]
+  );
+
+  return (
+    <>
+      <BillsFiltersPanel filters={filters} onChange={setFilters} />
+      {filteredBills.length === 0 ? (
+        <EmptyFilterState onClear={() => setFilters(defaultBillsFilters)} />
+      ) : (
+        <BillsList bills={filteredBills} />
+      )}
+    </>
+  );
+}
+```
+
+**Filter Panel Features:**
+
+- **Collapsible:** Filters collapse by default when no active filters
+- **Active Filter Count:** Badge shows number of active filters
+- **Clear All:** One-click reset to default filters
+- **Dark Theme:** Consistent zinc-900/800 backgrounds with teal-500 accents
+- **Instant Feedback:** Filters apply immediately with no loading states
+
+### TypeScript Fixes (Day 38)
+
+1. **AccountType comparison error:**
+   - Error: `Type 'AccountType' and '"credit"' have no overlap`
+   - Fix: Use raw string comparison first, then normalize to typed value
+
+2. **Set iteration error:**
+   - Error: `Type 'Set<string>' can only be iterated through when using '--downlevelIteration' flag`
+   - Fix: Changed `[...new Set()]` to `Array.from(new Set())`
+
+3. **Stripe API version mismatch:**
+   - Error: `Type '"2025-11-17.clover"' is not assignable to type '"2025-12-15.clover"'`
+   - Fix: Updated apiVersion to match installed SDK
+
+### Impact
+
+- **Power User UX:** Filters enable quick data exploration without page reloads
+- **URL Persistence:** Filters can be bookmarked and shared
+- **Instant Feedback:** Client-side filtering feels fast and responsive
+- **Consistent Design:** All filter panels follow the same visual pattern
+- **Empty States:** Clear messaging when filters exclude all results
+- **Discoverability:** Active filter count badge helps users understand current state
+
+### Commits (Day 38)
+
+1. `5d19795` - "feat: add comprehensive filters to all pages"
+   - Reusable filter component system
+   - Calendar, Dashboard, Bills, Income, Invoices, Accounts filters
+   - URL persistence with custom hooks
+   - Client component wrappers for filtered views
+
+### Next Steps for Filters
+
+- Monitor filter usage via PostHog (which filters are used most)
+- Consider filter presets (e.g., "Show overdue invoices")
+- Track empty state occurrences (filters too restrictive)
+- A/B test filter panel position (above vs. inline)
 
 ---
 

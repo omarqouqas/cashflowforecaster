@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.1
-**Last Updated:** January 18, 2026
-**Status:** Live - Accepting Payments - Import & Invoices Polished
+**Version:** 5.2
+**Last Updated:** January 19, 2026
+**Status:** Live - Accepting Payments - Comprehensive Filtering
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -280,6 +280,20 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Review table with search + filters
 - Date cutoff filter (defaults to first day of current month)
 - Select-all checkbox with indeterminate state
+
+**6b. Comprehensive Filtering System ✅**
+- **Reusable filter components** with dark theme styling
+- **URL persistence** - filters saved in URL for bookmarking and sharing
+- **Instant client-side filtering** - no page reloads
+- **Collapsible filter panels** with active filter count badges
+- **Page-specific filters:**
+  - **Calendar:** Transaction type, balance status, frequency, amount range, search
+  - **Dashboard:** Forecast horizon (7/14/30/60 days), account selection, account type
+  - **Bills:** Status, frequency, category, amount range, due soon toggle, search
+  - **Income:** Status, frequency, source type, amount range, search
+  - **Invoices:** Status, overdue toggle, due date range, amount range, search
+  - **Accounts:** Account type, spendable status, search
+- **Empty state handling** with clear filter option
 
 **7. Scenario Testing ✅**
 - "Can I afford it?" calculator
@@ -812,6 +826,25 @@ User Request
 
 ## Changelog
 
+### Version 5.2 (January 19, 2026)
+- Comprehensive filtering system:
+  - Added reusable filter component library (`FilterPanel`, `FilterToggleGroup`, `FilterSegmentedControl`, `FilterAmountRange`, `FilterSearch`, `FilterDateRange`)
+  - Calendar filters: transaction type, balance status, frequency, amount range, search
+  - Dashboard filters: forecast horizon, account selection, account type
+  - Bills filters: status, frequency, category, amount range, due soon, search
+  - Income filters: status, frequency, source type, amount range, search
+  - Invoices filters: status, overdue, due date range, amount range, search
+  - Accounts filters: account type, spendable status, search
+  - URL persistence for all filters (bookmarkable, shareable)
+  - Instant client-side filtering with no page reloads
+  - Collapsible filter panels with active filter count badges
+  - Empty state handling with "clear all filters" option
+  - Dark theme styling consistent with YNAB-inspired aesthetic
+- Technical improvements:
+  - Created wrapper client components for filtered views
+  - Custom hooks for URL-persisted filter state management
+  - TypeScript fixes for Set iteration and Stripe API version
+
 ### Version 5.1 (January 18, 2026)
 - Import page YNAB-inspired redesign:
   - Applied dark theme consistency (zinc-900/800 backgrounds, zinc-100/300/400 text)
@@ -946,7 +979,7 @@ User Request
 
 ---
 
-**Document Version:** 5.1
-**Last Updated:** January 18, 2026
-**Status:** Live - Import & Invoices Polished - YNAB-Inspired UX Complete 🎉
+**Document Version:** 5.2
+**Last Updated:** January 19, 2026
+**Status:** Live - Comprehensive Filtering - Power User UX Complete 🎉
 **Next Review:** February 2026

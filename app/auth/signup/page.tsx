@@ -89,6 +89,10 @@ export default function SignupPage() {
             // Ignore storage failures (privacy mode, blocked storage, etc.)
           }
         }
+        // Trigger welcome email (will skip if email not verified yet, or if already sent)
+        fetch('/api/email/welcome', { method: 'POST' }).catch(() => {
+          // Ignore errors - welcome email is best-effort
+        });
         // Optionally redirect after a delay
         setTimeout(() => {
           router.push('/dashboard');
