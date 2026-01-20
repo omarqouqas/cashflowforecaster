@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 19, 2026
+**Last Updated:** January 19, 2026 (Day 40)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 39
-- **Commits:** 115+
+- **Days in Development:** 40
+- **Commits:** 120+
 - **Database Tables:** 14
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Automated Welcome Email ✅ 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Safe to Spend Marketing ✅ 🎉
 
 **Completed Phases:**
 
@@ -41,14 +41,207 @@
 - ✅ Phase 18: Import Page UX Improvements (Day 37) - COMPLETE
 - ✅ Phase 19: Comprehensive Filters (Day 38) - COMPLETE
 - ✅ Phase 20: Automated Welcome Email + User Outreach (Day 39) - COMPLETE
+- ✅ Phase 21: Low Balance Alerts + Safe to Spend Marketing (Day 40) - COMPLETE
 
 **Current Focus:**
 
-- Monitor welcome email delivery and open rates
-- Track user re-engagement from outreach emails
-- Filter adoption monitoring across all pages
+- Monitor low balance alert delivery and effectiveness
+- Track "Safe to Spend" feature awareness
 - User acquisition
 - Monitor NPS survey responses (PostHog)
+
+---
+
+## Day 40: Low Balance Alerts + Safe to Spend Marketing (January 19, 2026)
+
+### Shipped (today)
+
+#### Proactive Low Balance Alerts ✅ 🎉
+
+**Major feature addition** - Users now receive proactive email alerts when their balance is projected to drop below their safety buffer within the next 7 days. Addresses freelancer pain point of being blindsided by cash crunches.
+
+- [x] **Database Migration** (`supabase/migrations/20260119000002_add_low_balance_alerts.sql`)
+  - Added `low_balance_alert_enabled` column (boolean, default true)
+  - Added `last_low_balance_alert_at` column (timestamp for cooldown tracking)
+
+- [x] **Alert Email Template** (`lib/email/templates/low-balance-alert.ts`)
+  - Urgent amber/red themed design for visibility
+  - Shows projected low date and amount
+  - Displays current balance for context
+  - Shows days until low balance
+  - CTA: "View Your Forecast"
+  - Footer link to manage alert settings
+
+- [x] **Alert Sender Function** (`lib/email/send-low-balance-alert.ts`)
+  - Checks if alerts are enabled for user
+  - Enforces 3-day cooldown between alerts (prevents alert fatigue)
+  - Generates 7-day forecast using existing `generateCalendar()`
+  - Finds first day below safety buffer
+  - Sends email via Resend
+  - Updates `last_low_balance_alert_at` timestamp
+  - Tracks PostHog event: `low_balance_alert_sent`
+
+- [x] **Cron Route** (`app/api/cron/low-balance-alerts/route.ts`)
+  - Runs daily at 10 AM UTC via Vercel Cron
+  - Auth: `CRON_SECRET` bearer token
+  - Queries users with alerts enabled + accounts + active bills
+  - Processes users in parallel (5 concurrent)
+  - Skips users within cooldown period
+  - Returns stats: checked, sent, skipped, failed
+
+- [x] **Settings UI** (`components/settings/low-balance-alert-form.tsx`)
+  - Toggle for enabling/disabling low balance alerts
+  - Uses existing safety buffer as threshold
+  - Info text explaining:
+    - Alerts use safety buffer setting as threshold
+    - 7-day lookahead window
+    - 3-day cooldown to prevent alert fatigue
+  - Link to adjust safety buffer in Preferences section
+
+- [x] **Server Action** (`lib/actions/update-alert-settings.ts`)
+  - Updates `low_balance_alert_enabled` in user_settings
+  - Tracks PostHog event: `alert_settings_updated`
+
+- [x] **Vercel Cron Configuration** (`vercel.json`)
+  - Added cron job: `/api/cron/low-balance-alerts` at `0 10 * * *` (10 AM UTC daily)
+
+#### Safe to Spend Marketing Highlights ✅
+
+**Marketing update** - Highlighted "Safe to Spend" as a core feature on landing page and comparison page.
+
+- [x] **Landing Page Hero** (`app/page.tsx`)
+  - Updated subtitle to: "Know exactly what's **safe to spend** — today and for the next 365 days."
+  - "safe to spend" highlighted in teal for emphasis
+
+- [x] **Pillar 1 Rebranding** (`app/page.tsx`)
+  - Renamed from "Know Your Number Today" to "Safe to Spend"
+  - Added "Core Feature" badge
+  - Updated description to explain Safe to Spend calculation
+  - Feature list now includes "Safe to Spend indicator" and "Low balance alerts"
+
+- [x] **Comparison Page** (`app/compare/cash-flow-calendar-apps/page.tsx`)
+  - Added two new feature comparison rows at top of table:
+    - "Safe to Spend" indicator: ✅ Prominently displayed daily (vs ❌ Not available)
+    - Low balance alerts: ✅ Proactive email warnings (vs ❌ No)
+
+### Files Created (Day 40)
+
+**Created:**
+
+```
+app/api/cron/low-balance-alerts/route.ts
+components/settings/low-balance-alert-form.tsx
+lib/actions/update-alert-settings.ts
+lib/email/send-low-balance-alert.ts
+lib/email/templates/low-balance-alert.ts
+supabase/migrations/20260119000002_add_low_balance_alerts.sql
+```
+
+### Files Modified (Day 40)
+
+**Modified:**
+
+```
+app/compare/cash-flow-calendar-apps/page.tsx
+app/dashboard/settings/page.tsx
+app/page.tsx
+vercel.json
+```
+
+### Technical Implementation Details
+
+**Alert Flow Architecture:**
+
+```
+Vercel Cron (Daily 10 AM UTC)
+     │
+     ▼
+┌─────────────────────────────────┐
+│  GET /api/cron/low-balance-alerts│
+│  - Auth: Bearer CRON_SECRET      │
+└─────────────────────────────────┘
+     │
+     ▼
+┌─────────────────────────────────┐
+│  Query users with:               │
+│  - low_balance_alert_enabled     │
+│  - At least one account          │
+│  - Not in cooldown period        │
+└─────────────────────────────────┘
+     │
+     ▼
+┌─────────────────────────────────┐
+│  For each user (5 concurrent):   │
+│  - Generate 7-day forecast       │
+│  - Check if any day < buffer     │
+│  - If low balance found:         │
+│    - Build email template        │
+│    - Send via Resend             │
+│    - Update last_alert_at        │
+│    - Track PostHog event         │
+└─────────────────────────────────┘
+```
+
+**Cooldown Logic:**
+
+```typescript
+const ALERT_COOLDOWN_DAYS = 3;
+
+function isWithinCooldown(lastSentAt: string | null): boolean {
+  if (!lastSentAt) return false;
+  const lastSent = new Date(lastSentAt);
+  const cooldownMs = ALERT_COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+  return Date.now() - lastSent.getTime() < cooldownMs;
+}
+```
+
+**Alert Decision Flow:**
+
+```
+User has accounts? ─No──► Skip
+     │
+     Yes
+     ▼
+Alerts enabled? ─No──► Skip
+     │
+     Yes
+     ▼
+Within cooldown? ─Yes─► Skip
+     │
+     No
+     ▼
+Generate 7-day forecast
+     │
+     ▼
+Any day below buffer? ─No──► Skip
+     │
+     Yes
+     ▼
+Send alert email
+```
+
+### Impact
+
+- **Proactive Warning:** Users get ahead of cash crunches instead of being surprised
+- **Reduced Anxiety:** Knowing about low balance days early allows planning
+- **Stickiness:** Regular valuable alerts keep users engaged
+- **Differentiation:** Most cash flow apps don't have proactive alerts
+- **Marketing Clarity:** "Safe to Spend" now prominently featured as core value prop
+
+### Commits (Day 40)
+
+1. `2c9c3d1` - "feat: add low balance alerts and highlight Safe to Spend in marketing"
+   - Complete low balance alert system (migration, template, sender, cron, settings UI)
+   - Landing page hero and Pillar 1 updates
+   - Comparison page new feature rows
+
+### Next Steps for Alerts
+
+- Monitor alert delivery rates in Resend dashboard
+- Track `low_balance_alert_sent` events in PostHog
+- Consider A/B testing alert timing (10 AM vs evening)
+- Consider adding SMS alerts for Pro users
+- Monitor alert-to-action conversion (do users log in after alert?)
 
 ---
 
