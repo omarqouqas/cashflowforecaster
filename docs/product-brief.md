@@ -796,7 +796,7 @@ User Request
 
 ### Phase 2 Features (Months 2-4)
 
-- [ ] Bill collision warnings (enhanced)
+- [x] Bill collision warnings (calendar banner + day detail + email digest)
 - [ ] Sentry error monitoring
 - [ ] Multi-currency support
 - [ ] Export to CSV/PDF

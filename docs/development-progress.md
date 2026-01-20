@@ -2174,7 +2174,6 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 - [ ] **Reddit Launch:** Post to r/freelance, r/smallbusiness
 - [ ] **Error Monitoring:** Sentry integration
-- [ ] **Bill Collision Warnings:** UX improvement for same-day bills
 
 ---
 
@@ -2269,13 +2268,15 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 | PostHog analytics | ✅ | Full event tracking |
 | Feature gating | ✅ | Bills/income limits, invoicing gate |
 | **Stripe live mode** | ✅ | **Real payments processing** |
+| Bill collision warnings | ✅ | Calendar banner + day detail + email digest |
+| Emergency Fund Tracker | ✅ | Dashboard widget + settings form |
+| Simpler Onboarding | ✅ | 2-step flow (~60 seconds) |
 
 ### Upcoming 📋
 
 | Feature | Priority | Est. Time |
 |---------|----------|-----------|
 | Reddit launch | HIGH | 2 hours |
-| Bill collision warnings | MEDIUM | 2-3 hours |
 | Sentry error monitoring | MEDIUM | 1-2 hours |
 | Weekly check-in prompts | LOW | 3-4 hours |
 | Email parser | LOW | 6-8 hours |
@@ -2340,8 +2341,9 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 - ✅ Complete MVP with all core features
 - ✅ Runway Collect fully featured (create → send → remind)
-- ✅ Onboarding wizard for new users
+- ✅ Simpler onboarding (2-step flow, ~60 seconds)
 - ✅ Polished calendar with warnings
+- ✅ Bill collision warnings (calendar + email digest)
 - ✅ Professional pricing section
 - ✅ Toast notifications throughout
 - ✅ Build and deployment stable
@@ -2358,14 +2360,14 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - ✅ **PostHog NPS survey (7 days after signup)**
 - ✅ **In-app feedback widget**
 - ✅ **Semi-monthly frequency support**
+- ✅ **Emergency Fund Tracker**
 
 ## What's Next
 
 1. **Reddit launch** - Post to target subreddits
 2. **Monitor NPS survey responses** - Watch for feedback patterns in PostHog
 3. **User feedback** - Iterate based on real usage + in-app feedback
-4. **Bill collision warnings** - Next UX improvement
-5. **Sentry error monitoring** - Catch production errors
+4. **Sentry error monitoring** - Catch production errors
 
 ---
 
