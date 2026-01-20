@@ -45,8 +45,14 @@ export async function initiateStripeConnect(): Promise<ConnectResult<{ onboardin
     const { onboardingUrl } = await createConnectAccount(user.id, user.email || '');
 
     return { ok: true, data: { onboardingUrl } };
-  } catch (e) {
+  } catch (e: any) {
     console.error('initiateStripeConnect failed:', e);
+
+    // Check for specific Stripe errors
+    if (e?.message?.includes("signed up for Connect")) {
+      return { ok: false, error: 'Stripe Connect is not enabled. Please contact support.' };
+    }
+
     return { ok: false, error: 'Failed to start Stripe Connect setup. Please try again.' };
   }
 }
