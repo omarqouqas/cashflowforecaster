@@ -63,7 +63,18 @@ export async function POST(request: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        await handleCheckoutCompleted(session);
+        // Check if this is an invoice payment or subscription checkout
+        if (session.metadata?.type === 'invoice_payment') {
+          await handleInvoicePaymentCompleted(session);
+        } else {
+          await handleCheckoutCompleted(session);
+        }
+        break;
+      }
+
+      case 'account.updated': {
+        const account = event.data.object as Stripe.Account;
+        await handleConnectAccountUpdated(account);
         break;
       }
 
@@ -463,25 +474,111 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
  */
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
-  
+
   // Find user and mark as past_due
   const { data } = await supabaseAdmin
     .from('subscriptions')
     .select('user_id')
     .eq('stripe_customer_id', customerId)
     .single();
-  
+
   if (data?.user_id) {
     const { error } = await supabaseAdmin
       .from('subscriptions')
       .update({ status: 'past_due' })
       .eq('user_id', data.user_id);
-    
+
     if (error) {
       console.error('Database error in handlePaymentFailed:', error);
       throw error;
     }
-    
+
     console.log(`Payment failed for user ${data.user_id}`);
   }
+}
+
+/**
+ * Handle invoice payment completed via Stripe Connect
+ */
+async function handleInvoicePaymentCompleted(session: Stripe.Checkout.Session) {
+  const invoiceId = session.metadata?.invoice_id;
+  const invoiceNumber = session.metadata?.invoice_number;
+
+  if (!invoiceId) {
+    console.error('Invoice payment webhook missing invoice_id in metadata');
+    return;
+  }
+
+  // Mark invoice as paid
+  const { data: invoiceData, error: invoiceError } = await supabaseAdmin
+    .from('invoices')
+    .update({
+      status: 'paid',
+      paid_at: new Date().toISOString(),
+      payment_method: 'stripe',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', invoiceId)
+    .select('user_id, linked_income_id')
+    .single();
+
+  if (invoiceError) {
+    console.error('Failed to update invoice as paid:', invoiceError);
+    throw invoiceError;
+  }
+
+  console.log(`Invoice ${invoiceNumber || invoiceId} marked as paid via Stripe`);
+
+  // If invoice is linked to an income record, update its status to confirmed
+  if (invoiceData?.linked_income_id) {
+    const { error: incomeError } = await supabaseAdmin
+      .from('income')
+      .update({
+        status: 'confirmed',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', invoiceData.linked_income_id);
+
+    if (incomeError) {
+      console.error('Failed to update linked income status:', incomeError);
+      // Don't throw - invoice is already marked paid, this is secondary
+    } else {
+      console.log(`Linked income ${invoiceData.linked_income_id} marked as confirmed`);
+    }
+  }
+}
+
+/**
+ * Handle Connect account status updates
+ */
+async function handleConnectAccountUpdated(account: Stripe.Account) {
+  // Determine status
+  let status: 'pending' | 'active' | 'restricted' = 'pending';
+  if (account.charges_enabled && account.payouts_enabled) {
+    status = 'active';
+  } else if (account.requirements?.disabled_reason) {
+    status = 'restricted';
+  } else if (account.details_submitted) {
+    status = 'pending'; // Submitted but not yet fully verified
+  }
+
+  // Update our database
+  const { error } = await supabaseAdmin
+    .from('stripe_connect_accounts')
+    .update({
+      account_status: status,
+      charges_enabled: account.charges_enabled ?? false,
+      payouts_enabled: account.payouts_enabled ?? false,
+      details_submitted: account.details_submitted ?? false,
+      onboarding_completed_at: status === 'active' ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('stripe_account_id', account.id);
+
+  if (error) {
+    console.error('Failed to update Connect account status:', error);
+    throw error;
+  }
+
+  console.log(`Connect account ${account.id} updated to status: ${status}`);
 }

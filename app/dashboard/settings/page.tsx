@@ -13,6 +13,7 @@ import {
   Mail,
   Calendar,
   Lock,
+  Banknote,
 } from 'lucide-react';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
@@ -24,6 +25,8 @@ import { SubscriptionStatus } from '@/components/subscription/subscription-statu
 import { getUserSubscription } from '@/lib/stripe/subscription';
 import { DeleteAccountSection } from '@/components/settings/delete-account-section';
 import { ChangePasswordButton } from '@/components/settings/change-password-button';
+import { StripeConnectForm } from '@/components/settings/stripe-connect-form';
+import { getConnectAccount } from '@/lib/stripe/connect';
 
 export const metadata = {
   title: 'Settings | Cash Flow Forecaster',
@@ -90,8 +93,11 @@ export default async function SettingsPage() {
     }
   }, 0);
 
-  // Fetch subscription status
-  const subscription = await getUserSubscription(user.id);
+  // Fetch subscription status and connect account in parallel
+  const [subscription, connectAccount] = await Promise.all([
+    getUserSubscription(user.id),
+    getConnectAccount(user.id),
+  ]);
 
   // Format the created_at date
   const accountCreatedDate = user.created_at
@@ -193,6 +199,22 @@ export default async function SettingsPage() {
             <LowBalanceAlertForm initialEnabled={lowBalanceAlertEnabled} safetyBuffer={safetyBuffer} />
           </div>
         </section>
+
+        {/* ===== STRIPE PAYMENTS SECTION (Pro Only) ===== */}
+        {subscription.tier !== 'free' && (
+          <section>
+            <SectionHeader icon={Banknote} title="Invoice Payments" />
+            <StripeConnectForm
+              initialStatus={
+                connectAccount
+                  ? (connectAccount.accountStatus as 'pending' | 'active' | 'restricted')
+                  : 'not_connected'
+              }
+              chargesEnabled={connectAccount?.chargesEnabled}
+              payoutsEnabled={connectAccount?.payoutsEnabled}
+            />
+          </section>
+        )}
 
         {/* ===== TAX TRACKING SECTION ===== */}
         <section>

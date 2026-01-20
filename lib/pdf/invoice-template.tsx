@@ -107,14 +107,37 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 10,
   },
+  paymentBox: {
+    marginTop: 16,
+    padding: 12,
+    backgroundColor: '#F0FDFA',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#99F6E4',
+  },
+  paymentLabel: {
+    fontSize: 10,
+    color: '#0F766E',
+    fontWeight: 700,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  paymentUrl: {
+    fontSize: 9,
+    color: '#115E59',
+    wordBreak: 'break-all',
+  },
 });
 
 export function InvoiceTemplate({
   invoice,
   fromEmail,
+  paymentUrl,
 }: {
   invoice: Invoice;
   fromEmail: string;
+  paymentUrl?: string;
 }): React.ReactElement<DocumentProps> {
   const status = invoice.status ?? 'draft';
 
@@ -167,6 +190,14 @@ export function InvoiceTemplate({
               : 'No description provided.'}
           </Text>
         </View>
+
+        {/* Payment URL */}
+        {paymentUrl && (
+          <View style={styles.paymentBox}>
+            <Text style={styles.paymentLabel}>Pay Online</Text>
+            <Text style={styles.paymentUrl}>{paymentUrl}</Text>
+          </View>
+        )}
 
         {/* Footer */}
         <Text style={styles.footer}>Thank you for your business</Text>

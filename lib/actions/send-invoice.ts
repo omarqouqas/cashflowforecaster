@@ -8,6 +8,7 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { InvoiceTemplate } from '@/lib/pdf/invoice-template';
 import { revalidatePath } from 'next/cache';
 import type { Tables } from '@/types/supabase';
+import { getConnectAccount, createInvoiceCheckoutSession } from '@/lib/stripe/connect';
 
 export type SendInvoiceInput = {
   invoiceId: string;
@@ -82,10 +83,38 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
 
     const senderName = getSenderName(user);
 
-    // Generate PDF
+    // Check if user has an active Stripe Connect account for payment links
+    let paymentLinkUrl: string | null = null;
+    let checkoutSessionId: string | null = null;
+
+    const connectAccount = await getConnectAccount(user.id);
+    if (connectAccount?.accountStatus === 'active' && connectAccount.chargesEnabled) {
+      try {
+        const amountInCents = Math.round((invoice.amount ?? 0) * 100);
+        if (amountInCents > 0) {
+          const session = await createInvoiceCheckoutSession({
+            invoiceId: invoice.id,
+            invoiceNumber: invoice.invoice_number ?? invoice.id,
+            amount: amountInCents,
+            clientEmail: toEmail,
+            clientName: invoice.client_name ?? 'Client',
+            connectAccountId: connectAccount.stripeAccountId,
+            description: invoice.notes ?? undefined,
+          });
+          paymentLinkUrl = session.url;
+          checkoutSessionId = session.sessionId;
+        }
+      } catch (err) {
+        // Log but don't fail the invoice send if payment link creation fails
+        console.error('Failed to create payment link:', err);
+      }
+    }
+
+    // Generate PDF (include payment URL if available)
     const doc = InvoiceTemplate({
       invoice,
       fromEmail: user.email ?? 'Unknown',
+      paymentUrl: paymentLinkUrl ?? undefined,
     });
     const pdfBuffer = await renderToBuffer(doc);
 
@@ -96,6 +125,7 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
       client_name: invoice.client_name,
       sender_name: senderName,
       note: input.message,
+      payment_url: paymentLinkUrl ?? undefined,
     });
 
     const from =
@@ -123,13 +153,22 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
 
     const sentAt = new Date().toISOString();
 
+    const updateData: Record<string, any> = {
+      status: 'sent',
+      sent_at: sentAt,
+      updated_at: sentAt,
+    };
+
+    // Add payment link data if created
+    if (paymentLinkUrl) {
+      updateData.payment_link_url = paymentLinkUrl;
+      updateData.stripe_checkout_session_id = checkoutSessionId;
+      updateData.payment_method = 'stripe';
+    }
+
     const { error: updateErr } = await supabase
       .from('invoices')
-      .update({
-        status: 'sent',
-        sent_at: sentAt,
-        updated_at: sentAt,
-      })
+      .update(updateData)
       .eq('id', invoice.id)
       .eq('user_id', user.id);
 

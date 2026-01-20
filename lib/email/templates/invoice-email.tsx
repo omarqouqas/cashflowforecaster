@@ -8,6 +8,7 @@ export type InvoiceEmailTemplateData = {
   client_name?: string | null;
   sender_name: string;
   note?: string | null;
+  payment_url?: string | null;
 };
 
 function escapeHtml(input: string) {
@@ -26,6 +27,7 @@ export function buildInvoiceEmail({
   client_name,
   sender_name,
   note,
+  payment_url,
 }: InvoiceEmailTemplateData): { subject: string; html: string } {
   const safeInvoiceNumber = escapeHtml(invoice_number);
   const safeSenderName = escapeHtml(sender_name);
@@ -96,6 +98,31 @@ export function buildInvoiceEmail({
                 </table>
               </td>
             </tr>
+
+            ${
+              payment_url
+                ? `<tr>
+              <td style="padding:0 24px 20px 24px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center">
+                      <a href="${escapeHtml(payment_url)}" target="_blank" style="display:inline-block;padding:14px 32px;background-color:#0f766e;color:#ffffff;font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;text-decoration:none;border-radius:8px;">
+                        Pay Now &mdash; ${escapeHtml(amountFormatted)}
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" style="padding-top:10px;">
+                      <div style="font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#71717a;">
+                        Secure payment powered by Stripe
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>`
+                : ''
+            }
 
             <tr>
               <td style="padding:0 24px 24px 24px;">

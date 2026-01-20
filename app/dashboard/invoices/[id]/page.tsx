@@ -9,6 +9,7 @@ import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button
 import { SendInvoiceButton } from '@/components/invoices/send-invoice-button';
 import { SendReminderButton } from '@/components/invoices/send-reminder-button';
 import { CheckCircle2, Pencil } from 'lucide-react';
+import { PaymentLinkSection } from '@/components/invoices/payment-link-section';
 import { canUseInvoicing } from '@/lib/stripe/subscription';
 
 function statusBadge(status: string | null | undefined) {
@@ -250,6 +251,15 @@ export default async function InvoiceDetailPage({
           </div>
         )}
       </div>
+
+      {/* Payment Link Section */}
+      {invoiceData.payment_link_url && (
+        <PaymentLinkSection
+          paymentUrl={invoiceData.payment_link_url}
+          status={status}
+          paymentMethod={invoiceData.payment_method}
+        />
+      )}
 
       {/* Reminder History */}
       {Array.isArray(reminderHistory) && reminderHistory.length > 0 ? (
