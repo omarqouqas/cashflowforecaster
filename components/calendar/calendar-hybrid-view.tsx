@@ -157,7 +157,6 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
         <CalendarFilterBar
           filters={filters}
           onChange={setFilters}
-          resultCount={filteredDays.length}
           visibleFilters={visibleFilters}
           onVisibleFiltersChange={setVisibleFilters}
         />

@@ -36,94 +36,43 @@ export function StickyCalendarHeader({
   safetyBuffer,
   currency = 'USD',
 }: StickyHeaderProps) {
-  const lowestBalanceColor = lowestBalance < 0 ? 'text-rose-400' : 'text-zinc-100'
+  const lowestBalanceColor = lowestBalance < 0 ? 'text-rose-400' : 'text-amber-400'
   const safeToSpendIsZero = safeToSpend <= 0
 
+  // Split safe to spend into dollars and cents for styling
+  const safeToSpendStr = safeToSpend.toFixed(2)
+  const [rawDollars, cents] = safeToSpendStr.split('.')
+  // Format dollars with commas for thousands
+  const dollars = Number(rawDollars).toLocaleString('en-US')
+
   return (
-    <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800 px-3 py-2.5 sm:px-4 sm:py-3">
+    <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800 px-3 py-3 sm:px-4 sm:py-4">
       <div className="max-w-full mx-auto">
-        {/* Safe to Spend - Hero metric */}
+        {/* Safe to Spend - Hero Card (Desktop) */}
         <div
           className={[
-            'hidden sm:block mb-3 p-3 border rounded-lg',
+            'hidden sm:block relative overflow-hidden mb-4 p-6 border rounded-2xl',
             safeToSpendIsZero
-              ? 'bg-amber-500/10 border-amber-500/30'
-              : 'bg-teal-500/10 border-teal-500/30',
+              ? 'bg-gradient-to-br from-amber-500/10 via-zinc-900 to-zinc-900 border-amber-500/20'
+              : 'bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-900 border-emerald-500/20',
           ].join(' ')}
         >
-          <div className="flex items-center gap-1">
-            <p
-              className={[
-                'text-xs font-medium uppercase tracking-wide',
-                safeToSpendIsZero ? 'text-amber-200' : 'text-teal-200',
-              ].join(' ')}
-            >
-              Safe to Spend
-            </p>
-            <InfoTooltip
-              content={
-                <div className="space-y-2">
-                  <p className="font-medium text-white">How is this calculated?</p>
-                  <p className="text-zinc-300">
-                    This is how much you can spend today without your balance ever dropping below your
-                    safety buffer in the next 14 days.
-                  </p>
-                  <div className="pt-2 border-t border-zinc-700 text-xs space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Lowest balance (14 days):</span>
-                      <span className="text-zinc-200 tabular-nums">
-                        {formatCurrency(lowestIn14Days, currency)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Safety buffer:</span>
-                      <span className="text-zinc-200 tabular-nums">− {formatCurrency(safetyBuffer, currency)}</span>
-                    </div>
-                    <div className="flex justify-between pt-1 border-t border-zinc-700">
-                      <span className="text-zinc-300 font-medium">Safe to spend:</span>
-                      <span className="text-white font-medium tabular-nums">
-                        {formatCurrency(safeToSpend, currency)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              }
-            />
-          </div>
-          <p
-            className={[
-              'text-2xl font-bold tabular-nums tracking-tight mt-0.5',
-              safeToSpendIsZero ? 'text-amber-100' : 'text-teal-200',
-            ].join(' ')}
-          >
-            {formatCurrency(safeToSpend, currency)}
-          </p>
-          <p className={['text-xs mt-0.5', safeToSpendIsZero ? 'text-amber-200' : 'text-teal-300'].join(' ')}>
-            {safeToSpendIsZero
-              ? 'No room for extra spending right now'
-              : `Without going below your ${formatCurrency(safetyBuffer, currency)} buffer`}
-          </p>
-        </div>
+          {/* Subtle glow effect */}
+          <div className={[
+            'absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none',
+            safeToSpendIsZero ? 'bg-amber-500/5' : 'bg-emerald-500/5'
+          ].join(' ')} />
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {/* Safe to Spend (mobile-only, compact) */}
-          <div
-            className={[
-              'sm:hidden border rounded-lg p-3 min-w-0',
-              safeToSpendIsZero
-                ? 'bg-amber-500/10 border-amber-500/30'
-                : 'bg-teal-500/10 border-teal-500/30',
-            ].join(' ')}
-          >
-            <div className="flex items-center gap-1">
-              <p
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-2">
+              <span
                 className={[
-                  'text-xs font-medium uppercase tracking-wide',
-                  safeToSpendIsZero ? 'text-amber-200' : 'text-teal-200',
+                  'text-sm font-semibold uppercase tracking-wider',
+                  safeToSpendIsZero ? 'text-amber-400' : 'text-emerald-400',
                 ].join(' ')}
               >
                 Safe to Spend
-              </p>
+              </span>
               <InfoTooltip
                 content={
                   <div className="space-y-2">
@@ -154,10 +103,76 @@ export function StickyCalendarHeader({
                 }
               />
             </div>
+
+            <div className="flex items-baseline gap-1">
+              <span
+                className={[
+                  'text-5xl md:text-6xl font-bold tabular-nums tracking-tight',
+                  safeToSpendIsZero ? 'text-amber-100' : 'text-zinc-50',
+                ].join(' ')}
+              >
+                ${dollars}
+              </span>
+              <span className="text-2xl font-semibold text-zinc-400 tabular-nums">
+                .{cents}
+              </span>
+            </div>
+
+            <p className={['text-sm mt-2', safeToSpendIsZero ? 'text-amber-300/80' : 'text-zinc-500'].join(' ')}>
+              {safeToSpendIsZero ? (
+                'No room for extra spending right now'
+              ) : (
+                <>
+                  Without going below your{' '}
+                  <Link
+                    href="/dashboard/settings"
+                    className="inline-flex items-center gap-1 text-zinc-400 hover:text-emerald-400 transition-colors"
+                  >
+                    {formatCurrency(safetyBuffer, currency)} buffer
+                    <Pencil className="w-3 h-3" />
+                  </Link>
+                </>
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          {/* Safe to Spend (mobile-only, compact) */}
+          <div
+            className={[
+              'sm:hidden relative overflow-hidden border rounded-xl p-3 min-w-0',
+              safeToSpendIsZero
+                ? 'bg-gradient-to-br from-amber-500/10 via-zinc-900 to-zinc-900 border-amber-500/20'
+                : 'bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-900 border-emerald-500/20',
+            ].join(' ')}
+          >
+            <div className="flex items-center gap-1">
+              <p
+                className={[
+                  'text-xs font-semibold uppercase tracking-wide',
+                  safeToSpendIsZero ? 'text-amber-400' : 'text-emerald-400',
+                ].join(' ')}
+              >
+                Safe to Spend
+              </p>
+              <InfoTooltip
+                content={
+                  <div className="space-y-2">
+                    <p className="font-medium text-white">How is this calculated?</p>
+                    <p className="text-zinc-300">
+                      This is how much you can spend today without your balance ever dropping below your
+                      safety buffer in the next 14 days.
+                    </p>
+                  </div>
+                }
+              />
+            </div>
             <p
               className={[
-                'text-xl font-bold tabular-nums tracking-tight mt-1',
-                safeToSpendIsZero ? 'text-amber-100' : 'text-teal-200',
+                'text-2xl font-bold tabular-nums tracking-tight mt-1',
+                safeToSpendIsZero ? 'text-amber-100' : 'text-emerald-300',
               ].join(' ')}
             >
               {formatCurrency(safeToSpend, currency)}
@@ -165,39 +180,39 @@ export function StickyCalendarHeader({
           </div>
 
           {/* Starting */}
-          <div className="hidden sm:block border border-zinc-800 bg-zinc-900 rounded-lg p-3 sm:p-4 min-w-0">
+          <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">STARTING</p>
-            <p className="text-lg font-semibold tabular-nums tracking-tight text-zinc-100 mt-1">
+            <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-100 mt-1.5">
               {formatCurrency(startingBalance, currency)}
             </p>
-            <p className="text-sm text-zinc-400 mt-1">Today</p>
+            <p className="text-xs text-zinc-500 mt-1">Today</p>
           </div>
 
           {/* Lowest */}
-          <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-3 sm:p-4 min-w-0">
+          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">LOWEST</p>
-            <p className={`text-lg font-semibold tabular-nums tracking-tight mt-1 ${lowestBalanceColor}`}>
+            <p className={`text-xl font-bold tabular-nums tracking-tight mt-1.5 ${lowestBalanceColor}`}>
               {formatCurrency(lowestBalance, currency)}
             </p>
-            <p className="text-sm text-zinc-400 mt-1">{formatShortDate(lowestBalanceDate)}</p>
+            <p className="text-xs text-zinc-500 mt-1">{formatShortDate(lowestBalanceDate)}</p>
           </div>
 
           {/* Income */}
-          <div className="hidden sm:block border border-zinc-800 bg-zinc-900 rounded-lg p-3 sm:p-4 min-w-0">
+          <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">INCOME</p>
-            <p className="text-lg font-semibold tabular-nums tracking-tight text-emerald-400 mt-1">
+            <p className="text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5">
               {formatCurrency(totalIncome, currency)}
             </p>
-            <p className="text-sm text-zinc-400 mt-1">Next 60 days</p>
+            <p className="text-xs text-zinc-500 mt-1">Next 60 days</p>
           </div>
 
           {/* Bills */}
-          <div className="hidden sm:block border border-zinc-800 bg-zinc-900 rounded-lg p-3 sm:p-4 min-w-0">
+          <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">BILLS</p>
-            <p className="text-lg font-semibold tabular-nums tracking-tight text-rose-400 mt-1">
+            <p className="text-xl font-bold tabular-nums tracking-tight text-rose-400 mt-1.5">
               {formatCurrency(totalBills, currency)}
             </p>
-            <p className="text-sm text-zinc-400 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
+            <p className="text-xs text-zinc-500 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
           </div>
         </div>
 
@@ -221,46 +236,31 @@ export function StickyCalendarHeader({
             </div>
           </summary>
           <div className="mt-2 grid grid-cols-2 gap-3">
-            <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-3 min-w-0">
+            <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
               <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">STARTING</p>
-              <p className="text-lg font-semibold tabular-nums tracking-tight text-zinc-100 mt-1">
+              <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-100 mt-1.5">
                 {formatCurrency(startingBalance, currency)}
               </p>
-              <p className="text-sm text-zinc-400 mt-1">Today</p>
+              <p className="text-xs text-zinc-500 mt-1">Today</p>
             </div>
 
-            <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-3 min-w-0">
+            <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
               <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">INCOME</p>
-              <p className="text-lg font-semibold tabular-nums tracking-tight text-emerald-400 mt-1">
+              <p className="text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5">
                 {formatCurrency(totalIncome, currency)}
               </p>
-              <p className="text-sm text-zinc-400 mt-1">Next 60 days</p>
+              <p className="text-xs text-zinc-500 mt-1">Next 60 days</p>
             </div>
 
-            <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-3 min-w-0 col-span-2">
+            <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 col-span-2 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
               <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">BILLS</p>
-              <p className="text-lg font-semibold tabular-nums tracking-tight text-rose-400 mt-1">
+              <p className="text-xl font-bold tabular-nums tracking-tight text-rose-400 mt-1.5">
                 {formatCurrency(totalBills, currency)}
               </p>
-              <p className="text-sm text-zinc-400 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
-              <Link
-                href="/dashboard/settings"
-                className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 text-sm py-1 px-2 -mx-2 rounded hover:bg-zinc-800/50 transition-colors mt-1"
-              >
-                Safety buffer: {formatCurrency(safetyBuffer, currency)}
-                <Pencil className="w-3 h-3" aria-hidden="true" />
-              </Link>
+              <p className="text-xs text-zinc-500 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
             </div>
           </div>
         </details>
-
-        <Link
-          href="/dashboard/settings"
-          className="hidden sm:inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 text-sm py-1 px-2 -mx-2 rounded hover:bg-zinc-800/50 transition-colors mt-3"
-        >
-          Safety buffer: {formatCurrency(safetyBuffer, currency)}
-          <Pencil className="w-3 h-3" aria-hidden="true" />
-        </Link>
       </div>
     </div>
   )

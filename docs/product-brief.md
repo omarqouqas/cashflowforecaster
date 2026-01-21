@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.4
-**Last Updated:** January 20, 2026
-**Status:** Live - Accepting Payments - Stripe Payment Links + Simpler Onboarding
+**Version:** 5.5
+**Last Updated:** January 21, 2026
+**Status:** Live - Accepting Payments - Interactive Hero Dashboard + Calendar Polish
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -838,6 +838,28 @@ User Request
 
 ## Changelog
 
+### Version 5.5 (January 21, 2026)
+- Interactive Hero Dashboard for Landing Page:
+  - New `HeroDashboard` React component replacing static mockup image
+  - "Safe to Spend" hero card with gradient background and glow effect
+  - Stats row showing Starting, Lowest, Income, Bills totals
+  - Interactive SVG line chart with hover states
+  - 7-day weekly calendar preview with transaction badges
+  - Staggered entrance animations (0ms → 600ms delays)
+  - Responsive layout for all screen sizes
+- Calendar Page Visual Polish:
+  - Safe to Spend card redesign with gradient/glow matching landing page
+  - Stats row with color-coded amounts (amber for LOWEST, rose for BILLS)
+  - Balance trend chart: increased height to 380px, compact $60K Y-axis labels
+  - Quick Summary cards with color tints (emerald for income, orange for bills)
+  - Balance status legend made collapsible
+  - Day cards: dot notation for transaction count, collision badge moved to bottom-left
+  - Filter bar made collapsible with active filter count badge
+- Technical improvements:
+  - Compact currency formatting ($60K format) for chart axes
+  - Thousands separator for Safe to Spend card
+  - Collapsible filter panel with state management
+
 ### Version 5.4 (January 20, 2026)
 - Stripe Payment Links for Invoices (Pro Feature):
   - Stripe Connect integration for Pro users to receive payments directly
@@ -1035,7 +1057,7 @@ User Request
 
 ---
 
-**Document Version:** 5.4
-**Last Updated:** January 20, 2026
-**Status:** Live - Stripe Payment Links + Simpler Onboarding 🎉
+**Document Version:** 5.5
+**Last Updated:** January 21, 2026
+**Status:** Live - Interactive Hero Dashboard + Calendar Polish 🎉
 **Next Review:** February 2026

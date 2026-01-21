@@ -11,7 +11,7 @@ import { FilterDropdown, type FilterDropdownOption } from '@/components/filters/
 import { FilterAmountPresets } from '@/components/filters/filter-amount-presets';
 import { AddFilterMenu, type AddFilterOption } from '@/components/filters/add-filter-menu';
 import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/active-filter-pills';
-import { TrendingUp, Receipt, CircleDot, RefreshCw, DollarSign } from 'lucide-react';
+import { TrendingUp, Receipt, CircleDot, RefreshCw, DollarSign, SlidersHorizontal, ChevronDown } from 'lucide-react';
 
 export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually' | 'irregular';
 
@@ -71,7 +71,6 @@ const defaultVisibleFilters = ['transactionType', 'balanceStatus'];
 interface CalendarFilterBarProps {
   filters: CalendarFilters;
   onChange: (filters: CalendarFilters) => void;
-  resultCount?: number;
   visibleFilters: string[];
   onVisibleFiltersChange: (filters: string[]) => void;
 }
@@ -82,7 +81,6 @@ interface CalendarFilterBarProps {
 export function CalendarFilterBar({
   filters,
   onChange,
-  resultCount,
   visibleFilters,
   onVisibleFiltersChange,
 }: CalendarFilterBarProps) {
@@ -202,69 +200,99 @@ export function CalendarFilterBar({
     onVisibleFiltersChange([...visibleFilters, filterKey]);
   };
 
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const hasActiveFilters = activeFilterPills.length > 0;
+
   return (
-    <FilterBar>
-      <FilterBarRow>
-        <FilterBarSearch
-          value={filters.search}
-          onChange={(value) => onChange({ ...filters, search: value })}
-          placeholder="Search transactions..."
-        />
+    <div className="space-y-2">
+      {/* Collapsible filter toggle */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors bg-zinc-800/50 hover:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-700/50"
+        >
+          <SlidersHorizontal className="w-4 h-4" />
+          <span>Filters</span>
+          {hasActiveFilters && (
+            <span className="bg-teal-500/20 text-teal-400 text-xs font-medium px-1.5 py-0.5 rounded">
+              {activeFilterPills.length}
+            </span>
+          )}
+          <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+        </button>
 
-        <FilterDropdown
-          label="Show"
-          options={transactionTypeOptions}
-          value={filters.transactionTypes}
-          onChange={(value) =>
-            onChange({ ...filters, transactionTypes: value as ('income' | 'bill')[] })
-          }
-          allowEmpty={false}
-        />
-
-        <FilterDropdown
-          label="Balance"
-          options={balanceStatusOptions}
-          value={filters.balanceStatuses}
-          onChange={(value) =>
-            onChange({ ...filters, balanceStatuses: value as ('green' | 'yellow' | 'orange' | 'red')[] })
-          }
-          allowEmpty={false}
-        />
-
-        {visibleFilters.includes('frequency') && (
-          <FilterDropdown
-            label="Frequency"
-            options={frequencyOptions}
-            value={filters.frequencies}
-            onChange={(value) =>
-              onChange({ ...filters, frequencies: value as FrequencyType[] })
-            }
-            allowEmpty={false}
+        {/* Quick search always visible */}
+        <div className="flex-1">
+          <FilterBarSearch
+            value={filters.search}
+            onChange={(value) => onChange({ ...filters, search: value })}
+            placeholder="Search transactions..."
           />
-        )}
+        </div>
+      </div>
 
-        {visibleFilters.includes('amount') && (
-          <FilterAmountPresets
-            value={{ min: filters.amountMin, max: filters.amountMax }}
-            onChange={({ min, max }) =>
-              onChange({ ...filters, amountMin: min, amountMax: max })
-            }
-          />
-        )}
+      {/* Expanded filter controls */}
+      {isExpanded && (
+        <FilterBar className="bg-zinc-800/30 rounded-lg p-3 border border-zinc-700/30">
+          <FilterBarRow>
+            <FilterDropdown
+              label="Show"
+              options={transactionTypeOptions}
+              value={filters.transactionTypes}
+              onChange={(value) =>
+                onChange({ ...filters, transactionTypes: value as ('income' | 'bill')[] })
+              }
+              allowEmpty={false}
+            />
 
-        <AddFilterMenu
-          availableFilters={availableFilters}
-          onAdd={handleAddFilter}
+            <FilterDropdown
+              label="Balance"
+              options={balanceStatusOptions}
+              value={filters.balanceStatuses}
+              onChange={(value) =>
+                onChange({ ...filters, balanceStatuses: value as ('green' | 'yellow' | 'orange' | 'red')[] })
+              }
+              allowEmpty={false}
+            />
+
+            {visibleFilters.includes('frequency') && (
+              <FilterDropdown
+                label="Frequency"
+                options={frequencyOptions}
+                value={filters.frequencies}
+                onChange={(value) =>
+                  onChange({ ...filters, frequencies: value as FrequencyType[] })
+                }
+                allowEmpty={false}
+              />
+            )}
+
+            {visibleFilters.includes('amount') && (
+              <FilterAmountPresets
+                value={{ min: filters.amountMin, max: filters.amountMax }}
+                onChange={({ min, max }) =>
+                  onChange({ ...filters, amountMin: min, amountMax: max })
+                }
+              />
+            )}
+
+            <AddFilterMenu
+              availableFilters={availableFilters}
+              onAdd={handleAddFilter}
+            />
+          </FilterBarRow>
+        </FilterBar>
+      )}
+
+      {/* Active filter pills - always visible when there are active filters */}
+      {hasActiveFilters && (
+        <ActiveFilterPills
+          filters={activeFilterPills}
+          onRemove={handleRemoveFilter}
+          onClearAll={handleClearAll}
         />
-      </FilterBarRow>
-
-      <ActiveFilterPills
-        filters={activeFilterPills}
-        onRemove={handleRemoveFilter}
-        onClearAll={activeFilterPills.length > 0 ? handleClearAll : undefined}
-        resultCount={resultCount}
-      />
-    </FilterBar>
+      )}
+    </div>
   );
 }
 

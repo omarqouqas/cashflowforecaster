@@ -15,9 +15,9 @@ export function formatCurrency(amount: number, currency: string = 'USD', compact
     const currencySymbol = currency === 'USD' ? '$' : currency;
 
     if (absAmount >= 1000000) {
-      return `${sign}${currencySymbol}${(absAmount / 1000000).toFixed(1)}m`;
+      return `${sign}${currencySymbol}${(absAmount / 1000000).toFixed(absAmount % 1000000 === 0 ? 0 : 1)}M`;
     } else if (absAmount >= 1000) {
-      return `${sign}${currencySymbol}${(absAmount / 1000).toFixed(1)}k`;
+      return `${sign}${currencySymbol}${(absAmount / 1000).toFixed(absAmount % 1000 === 0 ? 0 : 0)}K`;
     } else {
       return `${sign}${currencySymbol}${absAmount.toFixed(0)}`;
     }

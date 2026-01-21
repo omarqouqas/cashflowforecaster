@@ -3,7 +3,7 @@
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format } from 'date-fns';
-import { TrendingUp, TrendingDown, MousePointer2 } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useMemo } from 'react';
 import {
   AreaChart,
@@ -28,7 +28,7 @@ interface BalanceTrendChartInteractiveProps {
  *
  * Features:
  * - Smooth gradient area chart
- * - Interactive tooltips
+ * - Interactive tooltips with crosshair
  * - Professional styling
  * - Reference lines for key thresholds
  */
@@ -50,6 +50,8 @@ export function BalanceTrendChartInteractive({
       bills: day.bills.reduce((sum, t) => sum + t.amount, 0),
       formattedDate: format(day.date, 'MMM d'),
       fullDate: format(day.date, 'EEE, MMM d, yyyy'),
+      // For sparse X-axis labels - show only certain dates
+      shortLabel: format(day.date, 'MMM'),
     }));
   }, [days]);
 
@@ -61,11 +63,51 @@ export function BalanceTrendChartInteractive({
   // Find today's date for marker
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const todayData = chartData.find((d) => {
+  const todayIndex = chartData.findIndex((d) => {
     const dayDate = new Date(d.date);
     dayDate.setHours(0, 0, 0, 0);
     return dayDate.getTime() === today.getTime();
   });
+
+  // Generate sparse X-axis ticks (approximately 5-6 labels)
+  const xAxisTicks = useMemo(() => {
+    if (chartData.length === 0) return [];
+
+    const tickIndices: number[] = [];
+    const totalDays = chartData.length;
+
+    // Always include first day
+    tickIndices.push(0);
+
+    // Add roughly quarterly intervals
+    const interval = Math.floor(totalDays / 4);
+    for (let i = 1; i <= 3; i++) {
+      const idx = i * interval;
+      if (idx < totalDays - interval / 2) {
+        tickIndices.push(idx);
+      }
+    }
+
+    // Always include last day
+    tickIndices.push(totalDays - 1);
+
+    return tickIndices
+      .map(idx => chartData[idx]?.formattedDate)
+      .filter((tick): tick is string => tick !== undefined);
+  }, [chartData]);
+
+  // Custom Y-axis formatter - $60K format
+  const formatYAxis = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1)}M`;
+    } else if (value >= 1000) {
+      return `$${Math.round(value / 1000)}K`;
+    } else if (value <= -1000) {
+      return `-$${Math.round(Math.abs(value) / 1000)}K`;
+    } else {
+      return `$${value}`;
+    }
+  };
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload }: any) => {
@@ -126,11 +168,10 @@ export function BalanceTrendChartInteractive({
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-zinc-100 mb-1 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-zinc-100 mb-1">
             Balance Forecast
-            <MousePointer2 className="w-4 h-4 text-zinc-500" />
           </h3>
-          <p className="text-sm text-zinc-500">{days.length}-day projection • Hover & click chart to view day</p>
+          <p className="text-sm text-zinc-500">{days.length}-day projection</p>
         </div>
 
         {/* Trend indicator */}
@@ -162,13 +203,13 @@ export function BalanceTrendChartInteractive({
       {/* Mobile fallback message */}
       <div className="sm:hidden p-6 bg-zinc-800/40 border border-zinc-700/50 rounded-lg text-center">
         <p className="text-sm text-zinc-400">
-          📊 Chart hidden on small screens. View daily details in the calendar below.
+          Chart hidden on small screens. View daily details in the calendar below.
         </p>
       </div>
 
       {/* Chart */}
       <div className={`w-full -mx-2 ${onDayClick ? 'cursor-pointer' : ''} max-sm:hidden`}>
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height={380}>
           <AreaChart
             data={chartData}
             margin={{ top: 20, right: 30, left: 10, bottom: 0 }}
@@ -200,8 +241,8 @@ export function BalanceTrendChartInteractive({
               tick={{ fill: 'rgb(161, 161, 170)', fontSize: 11 }}
               tickLine={false}
               axisLine={{ stroke: 'rgb(63, 63, 70)', strokeWidth: 1 }}
+              ticks={xAxisTicks}
               interval="preserveStartEnd"
-              minTickGap={40}
             />
 
             <YAxis
@@ -209,26 +250,26 @@ export function BalanceTrendChartInteractive({
               tick={{ fill: 'rgb(161, 161, 170)', fontSize: 11 }}
               tickLine={false}
               axisLine={{ stroke: 'rgb(63, 63, 70)', strokeWidth: 1 }}
-              tickFormatter={(value) => formatCurrency(value, 'USD', true)}
+              tickFormatter={formatYAxis}
               width={60}
             />
 
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgb(20, 184, 166)', strokeWidth: 2, strokeDasharray: '5 5', opacity: 0.5 }} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{
+                stroke: 'rgb(82, 82, 91)',
+                strokeWidth: 1,
+                strokeDasharray: '4 4',
+              }}
+            />
 
-            {/* Safety buffer line */}
+            {/* Safety buffer line - positioned at actual buffer amount */}
             <ReferenceLine
               y={safetyBuffer}
               stroke="rgb(251, 191, 36)"
               strokeDasharray="5 5"
               strokeWidth={1.5}
               opacity={0.6}
-              label={{
-                value: 'Safety Buffer',
-                position: 'insideTopRight',
-                fill: 'rgb(251, 191, 36)',
-                fontSize: 10,
-                fontWeight: 600,
-              }}
             />
 
             {/* Zero line */}
@@ -241,21 +282,12 @@ export function BalanceTrendChartInteractive({
             />
 
             {/* Today marker */}
-            {todayData && (
+            {todayIndex >= 0 && chartData[todayIndex] && (
               <ReferenceLine
-                x={todayData.formattedDate}
-                stroke="rgb(99, 102, 241)"
-                strokeDasharray="4 4"
+                x={chartData[todayIndex].formattedDate}
+                stroke="rgb(82, 82, 91)"
                 strokeWidth={1.5}
-                opacity={0.4}
-                label={{
-                  value: 'Today',
-                  position: 'top',
-                  fill: 'rgb(99, 102, 241)',
-                  fontSize: 10,
-                  fontWeight: 600,
-                  offset: 10,
-                }}
+                opacity={0.6}
               />
             )}
 
@@ -270,21 +302,33 @@ export function BalanceTrendChartInteractive({
               strokeLinecap="round"
               strokeLinejoin="round"
               activeDot={{
-                r: 6,
+                r: 8,
                 fill: 'rgb(16, 185, 129)',
                 stroke: 'rgb(0, 0, 0)',
                 strokeWidth: 2,
                 filter: 'url(#glow)',
                 onClick: handleClick,
               }}
-              dot={onDayClick ? { r: 3, fill: 'rgb(16, 185, 129)', cursor: 'pointer' } : false}
+              dot={onDayClick ? { r: 2, fill: 'rgb(16, 185, 129)', cursor: 'pointer' } : false}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
+      {/* Today indicator badge - below chart */}
+      {todayIndex >= 0 && (
+        <div className="max-sm:hidden flex items-center gap-2 mt-4 mb-2">
+          <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full text-xs font-medium">
+            Today
+          </span>
+          <span className="text-xs text-zinc-500">
+            {chartData[todayIndex]?.fullDate}
+          </span>
+        </div>
+      )}
+
       {/* Legend */}
-      <div className="grid grid-cols-3 gap-3 mt-6 text-xs">
+      <div className="grid grid-cols-3 gap-3 mt-4 text-xs max-sm:hidden">
         <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
           <div className="w-8 h-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full" />
           <span className="text-zinc-400">Balance trend</span>

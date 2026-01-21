@@ -9,7 +9,7 @@ import { DayCard } from './day-card';
 import { DayDetailModal } from './day-detail-modal';
 import { BalanceTrendChartInteractive } from './balance-trend-chart-interactive';
 import { StickyCalendarHeader } from './sticky-header';
-import { TrendingUp, AlertCircle } from 'lucide-react';
+import { TrendingUp, AlertCircle, ChevronDown, Info } from 'lucide-react';
 
 interface CalendarViewProps {
   calendarData: CalendarData;
@@ -144,26 +144,26 @@ export function CalendarView({
             Quick Summary
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Next Income */}
+            {/* Next Income - Green tint */}
             {nextIncome && daysUntilIncome !== null ? (
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 hover:border-emerald-500/30 transition-all">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingUp className="w-4 h-4 text-emerald-400" />
-                  <p className="text-xs font-medium text-emerald-300 uppercase tracking-wide">
+                  <p className="text-xs font-medium text-emerald-400 uppercase tracking-wide">
                     Next Income
                   </p>
                 </div>
                 <p className="text-lg font-bold text-emerald-400 tabular-nums">
                   {formatCurrency(nextIncomeAmount, currency)}
                 </p>
-                <p className="text-xs text-emerald-300/80 mt-0.5">
+                <p className="text-xs text-emerald-400/70 mt-0.5">
                   {daysUntilIncome === 0 ? 'Today' : `in ${daysUntilIncome} day${daysUntilIncome === 1 ? '' : 's'}`}
                   {' • '}
                   {format(nextIncome.date, 'MMM d')}
                 </p>
               </div>
             ) : (
-              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+              <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingUp className="w-4 h-4 text-zinc-400" />
                   <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
@@ -176,24 +176,24 @@ export function CalendarView({
               </div>
             )}
 
-            {/* Urgent Bills */}
+            {/* Urgent Bills - Orange tint */}
             {urgentBillsCount > 0 ? (
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 hover:border-orange-500/30 transition-all">
                 <div className="flex items-center gap-2 mb-1">
-                  <AlertCircle className="w-4 h-4 text-amber-400" />
-                  <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">
+                  <AlertCircle className="w-4 h-4 text-orange-400" />
+                  <p className="text-xs font-medium text-orange-400 uppercase tracking-wide">
                     Bills This Week
                   </p>
                 </div>
-                <p className="text-lg font-bold text-amber-400 tabular-nums">
+                <p className="text-lg font-bold text-orange-400 tabular-nums">
                   {urgentBillsCount} bill{urgentBillsCount === 1 ? '' : 's'}
                 </p>
-                <p className="text-xs text-amber-300/80 mt-0.5">
+                <p className="text-xs text-orange-400/70 mt-0.5">
                   {formatCurrency(urgentBillsTotal, currency)} total
                 </p>
               </div>
             ) : (
-              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+              <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <AlertCircle className="w-4 h-4 text-zinc-400" />
                   <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
@@ -208,12 +208,16 @@ export function CalendarView({
           </div>
         </div>
 
-        {/* Legend - Moved to top */}
-        <div className="mb-8 pb-6 border-b border-zinc-800">
-          <h4 className="text-sm font-semibold text-zinc-100 mb-3">
-            Balance Status
-          </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* Legend - Collapsible */}
+        <details className="group mb-8 pb-6 border-b border-zinc-800">
+          <summary className="list-none cursor-pointer select-none">
+            <div className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors">
+              <Info className="w-4 h-4" />
+              <span>Balance status legend</span>
+              <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+            </div>
+          </summary>
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
             <LegendItem
               color="green"
               label="Safe"
@@ -235,7 +239,7 @@ export function CalendarView({
               description={`Below ${formatCurrency(thresholds.low)}`}
             />
           </div>
-        </div>
+        </details>
 
         {/* Month sections */}
         {Object.entries(daysByMonth).map(([monthKey, days], index) => (

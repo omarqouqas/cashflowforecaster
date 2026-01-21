@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 20, 2026 (Day 42)
+**Last Updated:** January 21, 2026 (Day 43)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 42
-- **Commits:** 130+
+- **Days in Development:** 43
+- **Commits:** 135+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links ✅ 🎉
+**Overall Progress:** MVP Complete + Feature Gating Complete + Analytics Complete + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish ✅ 🎉
 
 **Completed Phases:**
 
@@ -44,6 +44,7 @@
 - ✅ Phase 21: Low Balance Alerts + Safe to Spend Marketing (Day 40) - COMPLETE
 - ✅ Phase 22: Simpler Onboarding + Emergency Fund Tracker (Day 41) - COMPLETE
 - ✅ Phase 23: Stripe Payment Links for Invoices (Day 42) - COMPLETE
+- ✅ Phase 24: Landing Page Hero Dashboard + Calendar Polish (Day 43) - COMPLETE
 
 **Current Focus:**
 
@@ -51,6 +52,177 @@
 - Monitor Stripe Connect adoption among Pro users
 - Track invoice payment conversion rates
 - Monitor NPS survey responses (PostHog)
+- A/B test landing page hero conversion
+
+---
+
+## Day 43: Landing Page Hero Dashboard + Calendar Visual Polish (January 21, 2026)
+
+### Shipped (today)
+
+#### Interactive Hero Dashboard Component ✅ 🎉
+
+**Major landing page enhancement** - Replaced static mockup image with an interactive React component that demonstrates product features before signup.
+
+- [x] **HeroDashboard Component** (`components/landing/hero-dashboard.tsx`)
+  - Interactive "Safe to Spend" hero card with gradient background and glow effect
+  - Stats row showing Starting, Lowest, Income, and Bills totals
+  - SVG line chart with hover interaction showing balance trend
+  - 7-day weekly calendar preview with transaction badges
+  - Staggered entrance animations (0ms → 200ms → 400ms → 600ms delays)
+  - Responsive layout (2-col on mobile, 4-col on desktop)
+  - Dark theme consistent with YNAB-inspired aesthetic
+
+- [x] **Safe to Spend Card Design**
+  - Gradient background: `from-emerald-500/10 via-zinc-900 to-zinc-900`
+  - Subtle glow effect with `blur-3xl` on accent color
+  - Large typography: `text-6xl md:text-7xl font-bold`
+  - Split dollar/cents display for visual hierarchy
+  - "Without going below $500 buffer" subtitle
+
+- [x] **Interactive Balance Chart**
+  - Custom SVG-based chart with viewBox coordinates
+  - Hover state showing balance and net change badge
+  - Gradient area fill under line
+  - Responsive Y-axis labels with $60K compact formatting
+  - "365-day projection" inline label
+
+- [x] **Weekly Calendar Preview**
+  - 7-day horizontal scroll
+  - Transaction badges (income: emerald, bills: rose)
+  - "Today" indicator with teal accent
+  - Compact day cards with status colors
+
+#### Calendar Page Visual Polish ✅
+
+Applied matching polish to the `/dashboard/calendar` page for consistency with landing page hero.
+
+- [x] **Safe to Spend Card Redesign** (`components/calendar/sticky-header.tsx`)
+  - Gradient background matching hero component
+  - Glow effect with `blur-3xl` accent
+  - Large hero typography (`text-5xl md:text-6xl`)
+  - Split dollar/cents display with thousands separator
+  - Mobile-compact version below `sm` breakpoint
+
+- [x] **Stats Row Improvements**
+  - Color-coded amounts: `text-amber-400` for LOWEST, `text-rose-400` for BILLS
+  - Increased visual hierarchy: `text-xl font-bold` amounts, `text-xs` subtitles
+  - Hover states: `hover:border-zinc-700 hover:bg-zinc-900`
+  - Spacing: `mt-1.5` between label and amount
+
+- [x] **Balance Trend Chart Refinements** (`components/calendar/balance-trend-chart-interactive.tsx`)
+  - Chart height increased to 380px for better visibility
+  - Y-axis formatter updated for compact $60K format
+  - X-axis ticks reduced to ~5-6 labels for cleaner look
+  - Today badge moved below chart as pill style
+  - Removed "Safety Buffer" label from chart (kept in legend)
+
+- [x] **Quick Summary Cards** (`components/calendar/calendar-view.tsx`)
+  - NEXT INCOME card: `bg-emerald-500/10` green tint
+  - BILLS THIS WEEK card: `bg-orange-500/10` orange tint
+  - Hover effects with `hover:border-*/30` transitions
+
+- [x] **Balance Status Legend**
+  - Made collapsible with `<details>` element
+  - "Balance status legend" toggle with chevron icon
+  - Collapsed by default to reduce visual noise
+
+- [x] **Day Card Improvements** (`components/calendar/day-card.tsx`)
+  - Transaction count as dot notation: `• {totalTransactions}`
+  - Collision indicator moved from top-left to bottom-left
+  - Amount displayed before name with `font-bold`
+
+- [x] **Filter Bar Refinements** (`components/calendar/calendar-filters.tsx`)
+  - Made collapsible with toggle button
+  - Shows active filter count badge when collapsed
+  - Search always visible outside collapsible panel
+  - Removed "X days" result count label
+
+### Files Created (Day 43)
+
+**Created:**
+
+```
+components/landing/hero-dashboard.tsx
+```
+
+### Files Modified (Day 43)
+
+**Modified:**
+
+```
+app/page.tsx
+lib/utils/format.ts
+components/calendar/sticky-header.tsx
+components/calendar/balance-trend-chart-interactive.tsx
+components/calendar/calendar-view.tsx
+components/calendar/day-card.tsx
+components/calendar/calendar-filters.tsx
+components/calendar/calendar-hybrid-view.tsx
+```
+
+### Technical Implementation Details
+
+**Staggered Animation Pattern:**
+
+```tsx
+// CSS variables for stagger timing
+<div style={{ animationDelay: '0ms' }}>Safe to Spend</div>
+<div style={{ animationDelay: '200ms' }}>Stats Row</div>
+<div style={{ animationDelay: '400ms' }}>Chart</div>
+<div style={{ animationDelay: '600ms' }}>Calendar</div>
+
+// Animation keyframes in globals.css
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+**Compact Currency Formatting:**
+
+```typescript
+// lib/utils/format.ts - formatCurrencyCompact
+if (absAmount >= 1000) {
+  return `${sign}${currencySymbol}${Math.round(absAmount / 1000)}K`;
+}
+```
+
+**Collapsible Filter Pattern:**
+
+```tsx
+const [isExpanded, setIsExpanded] = useState(false);
+
+<button onClick={() => setIsExpanded(!isExpanded)}>
+  <SlidersHorizontal className="w-4 h-4" />
+  <span>Filters</span>
+  {hasActiveFilters && (
+    <span className="bg-teal-500/20 text-teal-400 text-xs px-1.5 rounded">
+      {activeFilterPills.length}
+    </span>
+  )}
+  <ChevronDown className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+</button>
+```
+
+### Impact
+
+- **First Impression:** Interactive hero demonstrates product value before signup
+- **Visual Consistency:** Calendar page now matches landing page polish level
+- **Reduced Friction:** Collapsible filters/legend reduce visual noise
+- **Mobile Experience:** Responsive layouts work well on all screen sizes
+- **Conversion Potential:** Interactive demo may increase signup conversion
+
+### Commits (Day 43)
+
+1. `feat: interactive hero dashboard component for landing page`
+2. `style: calendar page visual polish matching landing page hero`
 
 ---
 

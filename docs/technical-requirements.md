@@ -888,6 +888,6 @@ cash-flow-forecaster/
 
 ---
 
-**Document Version:** 3.0
-**Last Updated:** January 16, 2026
+**Document Version:** 3.1
+**Last Updated:** January 21, 2026
 **Maintained By:** Development Team

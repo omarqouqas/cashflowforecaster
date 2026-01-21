@@ -15,15 +15,16 @@ interface DayCardProps {
 
 /**
  * DayCard component - displays a single day in the calendar
- * 
+ *
  * Features:
  * - Color-coded background based on status
  * - Day of week and day number
  * - Formatted balance
  * - Transaction indicators with icons
- * - Transaction count badge
+ * - Transaction count badge (in header)
  * - Status dot indicator
  * - Special styling for today and lowest balance day
+ * - Tooltip shows full transaction names on hover
  */
 export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCardProps) {
   // Calculate balance delta
@@ -81,6 +82,12 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCa
   const totalTransactions = day.income.length + day.bills.length;
   const hasBillCollision = day.bills.length >= 2;
 
+  // Truncate name with more generous threshold
+  const truncateName = (name: string, maxLen: number = 18) => {
+    if (name.length <= maxLen) return name;
+    return name.slice(0, maxLen - 1) + '…';
+  };
+
   return (
     <button
       onClick={onClick}
@@ -100,40 +107,50 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCa
       )}
       aria-label={`View details for ${format(day.date, 'EEEE, MMMM d, yyyy')}`}
     >
-      {/* Status dot indicator - top right */}
-      <div className={cn(
-        'absolute top-2 right-2 w-2 h-2 rounded-full',
-        colors.indicator,
-        (day.status === 'red' || day.status === 'orange') && 'animate-pulse'
-      )} />
-
-      {/* Collision indicator (small, non-overlapping) */}
-      {hasBillCollision && (
-        <div className="absolute top-2 left-2 z-10">
-          <div className="bg-amber-500/15 border border-amber-500/30 rounded-full p-1">
-            <Layers className="w-3 h-3 text-amber-300" aria-hidden="true" />
-          </div>
-        </div>
+      {/* Status dot indicator - top right (only if not lowest day) */}
+      {!isLowestDay && (
+        <div className={cn(
+          'absolute top-2 right-2 w-2 h-2 rounded-full',
+          colors.indicator,
+          (day.status === 'red' || day.status === 'orange') && 'animate-pulse'
+        )} />
       )}
 
-      {/* AlertTriangle badge for lowest balance day */}
+      {/* AlertTriangle badge for lowest balance day - top right */}
       {isLowestDay && (
-        <div className="absolute top-1 right-1 bg-rose-500 text-white rounded-full p-0.5">
+        <div className="absolute top-1.5 right-1.5 bg-rose-500 text-white rounded-full p-0.5">
           <AlertTriangle className="w-3 h-3" />
         </div>
       )}
 
-      {/* Date header */}
+      {/* Collision indicator - bottom left corner */}
+      {hasBillCollision && (
+        <div className="absolute bottom-2 left-2 z-10">
+          <div className="bg-amber-500/15 border border-amber-500/30 rounded-full p-0.5">
+            <Layers className="w-2.5 h-2.5 text-amber-300" aria-hidden="true" />
+          </div>
+        </div>
+      )}
+
+      {/* Date header with transaction count */}
       <div className="flex items-center justify-between mb-2">
-        {isToday ? (
-          <span className="text-xs font-bold text-teal-400 uppercase tracking-wide">
-            Today
-          </span>
-        ) : (
-          <span className="text-xs font-medium text-zinc-400">
-            {format(day.date, 'EEE')}
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {isToday ? (
+            <span className="text-xs font-bold text-teal-400 uppercase tracking-wide">
+              Today
+            </span>
+          ) : (
+            <span className="text-xs font-medium text-zinc-400">
+              {format(day.date, 'EEE')}
+            </span>
+          )}
+          {/* Transaction count - subtle dot notation */}
+          {totalTransactions > 0 && (
+            <span className="text-zinc-500 text-[10px]">
+              • {totalTransactions}
+            </span>
+          )}
+        </div>
         <span className="text-sm font-semibold text-zinc-100">
           {format(day.date, 'd')}
         </span>
@@ -154,53 +171,45 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCa
         )}
       </div>
 
-      {/* Transaction indicators - Compact version */}
+      {/* Transaction indicators - Amount first, then name */}
       <div className="flex-1 min-h-0">
         {totalTransactions > 0 && (
           <div className="space-y-1">
-            {/* Top Income - Compact */}
+            {/* Top Income - Amount more prominent */}
             {day.income.length > 0 && day.income[0] && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 group/tx" title={day.income[0].name}>
                 <TrendingUp className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                <p className="text-xs font-medium text-zinc-300 truncate flex-1">
-                  {day.income[0].name}
-                </p>
-                <p className="text-xs font-semibold text-emerald-400 tabular-nums">
+                <p className="text-xs font-bold text-emerald-400 tabular-nums">
                   +{formatCurrency(day.income[0].amount)}
+                </p>
+                <p className="text-xs text-zinc-400 truncate flex-1">
+                  {truncateName(day.income[0].name)}
                 </p>
               </div>
             )}
 
-            {/* Top Bill - Compact */}
+            {/* Top Bill - Amount more prominent */}
             {day.bills.length > 0 && day.bills[0] && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 group/tx" title={day.bills[0].name}>
                 <TrendingDown className="w-3 h-3 text-rose-400 flex-shrink-0" />
-                <p className="text-xs font-medium text-zinc-300 truncate flex-1">
-                  {day.bills[0].name}
-                </p>
-                <p className="text-xs font-semibold text-rose-400 tabular-nums">
+                <p className="text-xs font-bold text-rose-400 tabular-nums">
                   -{formatCurrency(day.bills[0].amount)}
+                </p>
+                <p className="text-xs text-zinc-400 truncate flex-1">
+                  {truncateName(day.bills[0].name)}
                 </p>
               </div>
             )}
 
             {/* More indicator */}
             {totalTransactions > 2 && (
-              <p className="text-xs text-zinc-400 italic">
+              <p className="text-xs text-zinc-500 italic">
                 +{totalTransactions - 2} more
               </p>
             )}
           </div>
         )}
       </div>
-
-      {/* Transaction count badge - bottom right */}
-      {totalTransactions > 0 && (
-        <div className="absolute bottom-2 right-2 bg-zinc-950 text-zinc-100 text-xs font-medium px-1.5 py-0.5 rounded border border-zinc-800">
-          {totalTransactions} {totalTransactions === 1 ? 'item' : 'items'}
-        </div>
-      )}
     </button>
   );
 }
-
