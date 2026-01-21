@@ -6,6 +6,7 @@ import LandingHeader from '@/components/landing/landing-header';
 import { FAQSection } from '@/components/landing/faq-section';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 import { LandingFooter } from '@/components/landing/footer';
+import HeroDashboard from '@/components/landing/hero-dashboard';
 import {
   BadgeDollarSign,
   Bell,
@@ -196,16 +197,8 @@ export default async function Home({ searchParams }: HomeProps) {
                 <span className="h-3 w-3 rounded-full bg-yellow-500" />
                 <span className="h-3 w-3 rounded-full bg-green-500" />
               </div>
-              <div className="relative">
-                <Image
-                  src="/hero-dashboard.png"
-                  alt="Cash Flow Forecaster dashboard preview"
-                  width={1600}
-                  height={900}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 896px"
-                  priority
-                  className="w-full h-auto"
-                />
+              <div className="p-4 md:p-6">
+                <HeroDashboard />
               </div>
             </div>
           </div>
