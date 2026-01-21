@@ -3,20 +3,24 @@
 import * as React from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
-  FilterPanel,
-  FilterSection,
-  FilterToggleGroup,
-  FilterAmountRange,
-  FilterSearch,
-  FilterDateRange,
-  type FilterOption,
-} from '@/components/filters';
+  FilterBar,
+  FilterBarRow,
+} from '@/components/filters/filter-bar';
+import { FilterBarSearch } from '@/components/filters/filter-bar-search';
+import { FilterDropdown, type FilterDropdownOption } from '@/components/filters/filter-dropdown';
+import { FilterAmountPresets } from '@/components/filters/filter-amount-presets';
+import { FilterDateRangeDropdown } from '@/components/filters/filter-date-range-dropdown';
+import { AddFilterMenu, type AddFilterOption } from '@/components/filters/add-filter-menu';
+import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/active-filter-pills';
+import { format } from 'date-fns';
 import {
   FileEdit,
   Send,
   Eye,
   CheckCircle,
   AlertTriangle,
+  Calendar,
+  DollarSign,
 } from 'lucide-react';
 
 export type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'paid';
@@ -43,150 +47,207 @@ export const defaultInvoicesFilters: InvoicesFilters = {
   search: '',
 };
 
-interface InvoicesFiltersProps {
+// Filter dropdown options
+const statusOptions: FilterDropdownOption[] = [
+  { value: 'draft', label: 'Draft', icon: <FileEdit className="w-3.5 h-3.5" /> },
+  { value: 'sent', label: 'Sent', icon: <Send className="w-3.5 h-3.5" /> },
+  { value: 'viewed', label: 'Viewed', icon: <Eye className="w-3.5 h-3.5" /> },
+  { value: 'paid', label: 'Paid', icon: <CheckCircle className="w-3.5 h-3.5" /> },
+];
+
+const overdueOptions: FilterDropdownOption[] = [
+  { value: 'overdue', label: 'Overdue Only', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
+];
+
+// Filters that can be added via "+ Add filter" menu
+const additionalFilters: AddFilterOption[] = [
+  { key: 'overdue', label: 'Overdue', icon: <AlertTriangle className="w-4 h-4" /> },
+  { key: 'dueDate', label: 'Due Date', icon: <Calendar className="w-4 h-4" /> },
+  { key: 'amount', label: 'Amount', icon: <DollarSign className="w-4 h-4" /> },
+];
+
+// Default visible filters (always shown)
+const defaultVisibleFilters = ['status'];
+
+interface InvoicesFilterBarProps {
   filters: InvoicesFilters;
   onChange: (filters: InvoicesFilters) => void;
+  resultCount: number;
+  visibleFilters: string[];
+  onVisibleFiltersChange: (filters: string[]) => void;
 }
 
-const statusOptions: FilterOption[] = [
-  {
-    value: 'draft',
-    label: 'Draft',
-    icon: <FileEdit className="w-3.5 h-3.5" />,
-    color: 'default',
-  },
-  {
-    value: 'sent',
-    label: 'Sent',
-    icon: <Send className="w-3.5 h-3.5" />,
-    color: 'teal',
-  },
-  {
-    value: 'viewed',
-    label: 'Viewed',
-    icon: <Eye className="w-3.5 h-3.5" />,
-    color: 'yellow',
-  },
-  {
-    value: 'paid',
-    label: 'Paid',
-    icon: <CheckCircle className="w-3.5 h-3.5" />,
-    color: 'green',
-  },
-];
-
-const overdueOptions: FilterOption[] = [
-  {
-    value: 'overdue',
-    label: 'Overdue Only',
-    icon: <AlertTriangle className="w-3.5 h-3.5" />,
-    color: 'red',
-  },
-];
-
 /**
- * InvoicesFiltersPanel - Filter controls for the Invoices page
- *
- * Allows filtering by:
- * - Status (Draft / Sent / Viewed / Paid)
- * - Overdue toggle
- * - Due date range
- * - Amount range (min/max)
- * - Search by client name or invoice number
+ * InvoicesFilterBar - Linear-style filter bar for the Invoices page
  */
-export function InvoicesFiltersPanel({ filters, onChange }: InvoicesFiltersProps) {
-  // Count active filters (filters that differ from defaults)
-  const activeFilterCount = React.useMemo(() => {
-    let count = 0;
-    if (filters.statuses.length !== allStatuses.length) count++;
-    if (filters.overdue) count++;
-    if (filters.dueDateStart !== null || filters.dueDateEnd !== null) count++;
-    if (filters.amountMin !== null || filters.amountMax !== null) count++;
-    if (filters.search) count++;
-    return count;
+export function InvoicesFilterBar({
+  filters,
+  onChange,
+  resultCount,
+  visibleFilters,
+  onVisibleFiltersChange,
+}: InvoicesFilterBarProps) {
+  // Build active filter pills
+  const activeFilterPills = React.useMemo((): ActiveFilter[] => {
+    const pills: ActiveFilter[] = [];
+
+    // Status filter
+    if (filters.statuses.length > 0 && filters.statuses.length < allStatuses.length) {
+      filters.statuses.forEach((status) => {
+        const option = statusOptions.find((o) => o.value === status);
+        if (option) {
+          pills.push({ key: 'status', label: 'Status', value: option.label });
+        }
+      });
+    }
+
+    // Overdue filter
+    if (filters.overdue) {
+      pills.push({ key: 'overdue', label: 'Overdue', value: 'Yes' });
+    }
+
+    // Due date filter
+    if (filters.dueDateStart || filters.dueDateEnd) {
+      let dateLabel = '';
+      if (filters.dueDateStart && filters.dueDateEnd) {
+        dateLabel = `${format(filters.dueDateStart, 'MMM d')} - ${format(filters.dueDateEnd, 'MMM d')}`;
+      } else if (filters.dueDateStart) {
+        dateLabel = `From ${format(filters.dueDateStart, 'MMM d')}`;
+      } else if (filters.dueDateEnd) {
+        dateLabel = `Until ${format(filters.dueDateEnd, 'MMM d')}`;
+      }
+      pills.push({ key: 'dueDate', label: 'Due Date', value: dateLabel });
+    }
+
+    // Amount filter
+    if (filters.amountMin !== null || filters.amountMax !== null) {
+      let amountLabel = '';
+      if (filters.amountMin !== null && filters.amountMax !== null) {
+        amountLabel = `$${filters.amountMin} - $${filters.amountMax}`;
+      } else if (filters.amountMin !== null) {
+        amountLabel = `$${filters.amountMin}+`;
+      } else if (filters.amountMax !== null) {
+        amountLabel = `Under $${filters.amountMax}`;
+      }
+      pills.push({ key: 'amount', label: 'Amount', value: amountLabel });
+    }
+
+    // Search filter
+    if (filters.search) {
+      pills.push({ key: 'search', label: 'Search', value: filters.search });
+    }
+
+    return pills;
   }, [filters]);
 
+  // Handle removing a filter pill
+  const handleRemoveFilter = (key: string, value: string) => {
+    switch (key) {
+      case 'status': {
+        const statusValue = statusOptions.find((o) => o.label === value)?.value as InvoiceStatus;
+        if (statusValue) {
+          const newStatuses = filters.statuses.filter((s) => s !== statusValue);
+          onChange({
+            ...filters,
+            statuses: newStatuses.length > 0 ? newStatuses : allStatuses,
+          });
+        }
+        break;
+      }
+      case 'overdue':
+        onChange({ ...filters, overdue: false });
+        break;
+      case 'dueDate':
+        onChange({ ...filters, dueDateStart: null, dueDateEnd: null });
+        break;
+      case 'amount':
+        onChange({ ...filters, amountMin: null, amountMax: null });
+        break;
+      case 'search':
+        onChange({ ...filters, search: '' });
+        break;
+    }
+  };
+
+  // Handle clearing all filters
   const handleClearAll = () => {
     onChange(defaultInvoicesFilters);
+    onVisibleFiltersChange(defaultVisibleFilters);
+  };
+
+  // Get available filters for the "Add filter" menu
+  const availableFilters = additionalFilters.filter(
+    (f) => !visibleFilters.includes(f.key)
+  );
+
+  // Handle adding a filter to visible filters
+  const handleAddFilter = (filterKey: string) => {
+    onVisibleFiltersChange([...visibleFilters, filterKey]);
   };
 
   return (
-    <FilterPanel
-      activeFilterCount={activeFilterCount}
-      onClearAll={handleClearAll}
-      collapsible={true}
-      defaultCollapsed={activeFilterCount === 0}
-    >
-      <FilterSection>
-        <FilterToggleGroup
+    <FilterBar>
+      <FilterBarRow>
+        <FilterBarSearch
+          value={filters.search}
+          onChange={(value) => onChange({ ...filters, search: value })}
+          placeholder="Search invoices..."
+        />
+
+        <FilterDropdown
           label="Status"
           options={statusOptions}
           value={filters.statuses}
           onChange={(value) =>
-            onChange({
-              ...filters,
-              statuses: value as InvoiceStatus[],
-            })
+            onChange({ ...filters, statuses: value as InvoiceStatus[] })
           }
           allowEmpty={false}
         />
 
-        <FilterToggleGroup
-          label="Overdue"
-          options={overdueOptions}
-          value={filters.overdue ? ['overdue'] : []}
-          onChange={(value) =>
-            onChange({
-              ...filters,
-              overdue: value.includes('overdue'),
-            })
-          }
-          allowEmpty={true}
-        />
-      </FilterSection>
+        {visibleFilters.includes('overdue') && (
+          <FilterDropdown
+            label="Overdue"
+            options={overdueOptions}
+            value={filters.overdue ? ['overdue'] : []}
+            onChange={(value) =>
+              onChange({ ...filters, overdue: value.includes('overdue') })
+            }
+            allowEmpty={true}
+          />
+        )}
 
-      <FilterSection>
-        <FilterDateRange
-          label="Due Date"
-          startDate={filters.dueDateStart}
-          endDate={filters.dueDateEnd}
-          onChange={(start, end) =>
-            onChange({
-              ...filters,
-              dueDateStart: start,
-              dueDateEnd: end,
-            })
-          }
-        />
-      </FilterSection>
+        {visibleFilters.includes('dueDate') && (
+          <FilterDateRangeDropdown
+            label="Due Date"
+            value={{ start: filters.dueDateStart, end: filters.dueDateEnd }}
+            onChange={({ start, end }) =>
+              onChange({ ...filters, dueDateStart: start, dueDateEnd: end })
+            }
+          />
+        )}
 
-      <FilterSection>
-        <FilterAmountRange
-          label="Amount Range"
-          minValue={filters.amountMin}
-          maxValue={filters.amountMax}
-          onChange={(min, max) =>
-            onChange({
-              ...filters,
-              amountMin: min,
-              amountMax: max,
-            })
-          }
-        />
+        {visibleFilters.includes('amount') && (
+          <FilterAmountPresets
+            value={{ min: filters.amountMin, max: filters.amountMax }}
+            onChange={({ min, max }) =>
+              onChange({ ...filters, amountMin: min, amountMax: max })
+            }
+          />
+        )}
 
-        <FilterSearch
-          label="Search"
-          value={filters.search}
-          onChange={(value) =>
-            onChange({
-              ...filters,
-              search: value,
-            })
-          }
-          placeholder="Search by client or invoice #..."
+        <AddFilterMenu
+          availableFilters={availableFilters}
+          onAdd={handleAddFilter}
         />
-      </FilterSection>
-    </FilterPanel>
+      </FilterBarRow>
+
+      <ActiveFilterPills
+        filters={activeFilterPills}
+        onRemove={handleRemoveFilter}
+        onClearAll={activeFilterPills.length > 0 ? handleClearAll : undefined}
+        resultCount={resultCount}
+      />
+    </FilterBar>
   );
 }
 
@@ -197,6 +258,17 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Parse visible filters from URL
+  const visibleFiltersFromUrl = React.useMemo((): string[] => {
+    const show = searchParams.get('show');
+    if (show) {
+      return [...defaultVisibleFilters, ...show.split(',')];
+    }
+    return defaultVisibleFilters;
+  }, [searchParams]);
+
+  const [visibleFilters, setVisibleFiltersState] = React.useState<string[]>(visibleFiltersFromUrl);
 
   // Parse filters from URL on initial load
   const filtersFromUrl = React.useMemo((): InvoicesFilters => {
@@ -235,12 +307,13 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
     });
   }, [filtersFromUrl]);
 
-  // Update URL when filters change
-  const setFilters = React.useCallback(
-    (newFilters: InvoicesFilters) => {
-      setFiltersState(newFilters);
+  React.useEffect(() => {
+    setVisibleFiltersState(visibleFiltersFromUrl);
+  }, [visibleFiltersFromUrl]);
 
-      // Update URL params
+  // Update URL when filters change
+  const updateUrl = React.useCallback(
+    (newFilters: InvoicesFilters, newVisibleFilters: string[]) => {
       const params = new URLSearchParams(searchParams.toString());
 
       // Statuses
@@ -264,7 +337,6 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
       } else {
         params.delete('due_start');
       }
-
       if (newFilters.dueDateEnd) {
         params.set('due_end', newFilters.dueDateEnd.toISOString().split('T')[0]!);
       } else {
@@ -277,7 +349,6 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
       } else {
         params.delete('min');
       }
-
       if (newFilters.amountMax !== null) {
         params.set('max', newFilters.amountMax.toString());
       } else {
@@ -291,7 +362,16 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
         params.delete('q');
       }
 
-      // Update URL without scroll
+      // Visible filters
+      const additionalVisible = newVisibleFilters.filter(
+        (f) => !defaultVisibleFilters.includes(f)
+      );
+      if (additionalVisible.length > 0) {
+        params.set('show', additionalVisible.join(','));
+      } else {
+        params.delete('show');
+      }
+
       const queryString = params.toString();
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
       router.replace(newUrl, { scroll: false });
@@ -299,9 +379,27 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
     [router, pathname, searchParams]
   );
 
+  const setFilters = React.useCallback(
+    (newFilters: InvoicesFilters) => {
+      setFiltersState(newFilters);
+      updateUrl(newFilters, visibleFilters);
+    },
+    [updateUrl, visibleFilters]
+  );
+
+  const setVisibleFilters = React.useCallback(
+    (newVisibleFilters: string[]) => {
+      setVisibleFiltersState(newVisibleFilters);
+      updateUrl(filters, newVisibleFilters);
+    },
+    [updateUrl, filters]
+  );
+
   const resetFilters = React.useCallback(() => {
-    setFilters(defaultInvoicesFilters);
-  }, [setFilters]);
+    setFiltersState(defaultInvoicesFilters);
+    setVisibleFiltersState(defaultVisibleFilters);
+    updateUrl(defaultInvoicesFilters, defaultVisibleFilters);
+  }, [updateUrl]);
 
   const isFiltered = React.useMemo(() => {
     return (
@@ -318,6 +416,8 @@ export function useInvoicesFilters(initialFilters?: Partial<InvoicesFilters>) {
   return {
     filters,
     setFilters,
+    visibleFilters,
+    setVisibleFilters,
     resetFilters,
     isFiltered,
   };

@@ -3,15 +3,16 @@
 import * as React from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
-  FilterPanel,
-  FilterSection,
-  FilterSegmentedControl,
-  FilterToggleGroup,
-  type FilterOption,
-} from '@/components/filters';
-import { Wallet, CreditCard, PiggyBank, Building2 } from 'lucide-react';
+  FilterBar,
+  FilterBarRow,
+} from '@/components/filters/filter-bar';
+import { FilterDropdown, type FilterDropdownOption } from '@/components/filters/filter-dropdown';
+import { FilterDropdownSingle, type FilterDropdownSingleOption } from '@/components/filters/filter-dropdown-single';
+import { AddFilterMenu, type AddFilterOption } from '@/components/filters/add-filter-menu';
+import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/active-filter-pills';
+import { Wallet, PiggyBank, Building2, Users } from 'lucide-react';
 
-export type AccountType = 'checking' | 'savings' | 'credit_card';
+export type AccountType = 'checking' | 'savings';
 
 export interface DashboardFilters {
   forecastHorizon: '7' | '14' | '30' | '60';
@@ -19,7 +20,7 @@ export interface DashboardFilters {
   accountTypes: AccountType[];
 }
 
-const allAccountTypes: AccountType[] = ['checking', 'savings', 'credit_card'];
+const allAccountTypes: AccountType[] = ['checking', 'savings'];
 
 export const defaultDashboardFilters: DashboardFilters = {
   forecastHorizon: '60',
@@ -35,157 +36,223 @@ interface Account {
   is_spendable?: boolean | null;
 }
 
-interface DashboardFiltersProps {
-  filters: DashboardFilters;
-  onChange: (filters: DashboardFilters) => void;
-  accounts: Account[];
-  maxForecastDays: number;
-}
-
-const forecastHorizonOptions = [
+// Forecast horizon options
+const forecastHorizonOptions: FilterDropdownSingleOption[] = [
   { value: '7', label: '7 Days' },
   { value: '14', label: '14 Days' },
   { value: '30', label: '30 Days' },
   { value: '60', label: '60 Days' },
 ];
 
-const accountTypeOptions: FilterOption[] = [
-  {
-    value: 'checking',
-    label: 'Checking',
-    icon: <Building2 className="w-3.5 h-3.5" />,
-    color: 'teal',
-  },
-  {
-    value: 'savings',
-    label: 'Savings',
-    icon: <PiggyBank className="w-3.5 h-3.5" />,
-    color: 'green',
-  },
-  {
-    value: 'credit_card',
-    label: 'Credit Card',
-    icon: <CreditCard className="w-3.5 h-3.5" />,
-    color: 'orange',
-  },
+const accountTypeOptions: FilterDropdownOption[] = [
+  { value: 'checking', label: 'Checking', icon: <Building2 className="w-3.5 h-3.5" /> },
+  { value: 'savings', label: 'Savings', icon: <PiggyBank className="w-3.5 h-3.5" /> },
 ];
 
+// Filters that can be added via "+ Add filter" menu
+const additionalFilters: AddFilterOption[] = [
+  { key: 'accounts', label: 'Specific Accounts', icon: <Users className="w-4 h-4" /> },
+];
+
+// Default visible filters (always shown)
+const defaultVisibleFilters = ['horizon', 'accountType'];
+
+interface DashboardFilterBarProps {
+  filters: DashboardFilters;
+  onChange: (filters: DashboardFilters) => void;
+  accounts: Account[];
+  maxForecastDays: number;
+  visibleFilters: string[];
+  onVisibleFiltersChange: (filters: string[]) => void;
+}
+
 /**
- * DashboardFiltersPanel - Filter controls for the Dashboard page
- *
- * Allows filtering by:
- * - Forecast horizon (7/14/30/60 days)
- * - Account selection (filter which accounts to include)
- * - Account type (Checking / Savings / Credit Card)
+ * DashboardFilterBar - Linear-style filter bar for the Dashboard page
  */
-export function DashboardFiltersPanel({
+export function DashboardFilterBar({
   filters,
   onChange,
   accounts,
   maxForecastDays,
-}: DashboardFiltersProps) {
+  visibleFilters,
+  onVisibleFiltersChange,
+}: DashboardFilterBarProps) {
   // Filter horizon options based on subscription limit
   const availableHorizons = forecastHorizonOptions.filter(
     (opt) => parseInt(opt.value, 10) <= maxForecastDays
   );
 
   // Build account options dynamically
-  const accountOptions: FilterOption[] = accounts.map((acc) => ({
+  const accountOptions: FilterDropdownOption[] = accounts.map((acc) => ({
     value: acc.id,
     label: acc.name,
     icon: <Wallet className="w-3.5 h-3.5" />,
-    color: 'teal' as const,
   }));
 
   // Get unique account types from the user's accounts
-  const userAccountTypes = Array.from(new Set(accounts.map((a) => a.account_type)));
+  const userAccountTypes = Array.from(new Set(accounts.map((a) => a.account_type))) as AccountType[];
   const availableAccountTypeOptions = accountTypeOptions.filter((opt) =>
-    userAccountTypes.includes(opt.value)
+    userAccountTypes.includes(opt.value as AccountType)
   );
 
-  // Count active filters
-  const activeFilterCount = React.useMemo(() => {
-    let count = 0;
-    const defaultHorizon =
-      maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
-    if (filters.forecastHorizon !== defaultHorizon) count++;
-    if (filters.selectedAccountIds.length > 0) count++;
-    if (filters.accountTypes.length !== allAccountTypes.length) count++;
-    return count;
-  }, [filters, maxForecastDays]);
+  const defaultHorizon =
+    maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
 
+  // Normalize accountTypes to only include types that exist in user's accounts
+  // This handles the case where default state has types the user doesn't have
+  const normalizedAccountTypes = React.useMemo(() => {
+    return filters.accountTypes.filter((type) => userAccountTypes.includes(type));
+  }, [filters.accountTypes, userAccountTypes]);
+
+  // Check if all available account types are selected
+  const allAccountTypesSelected = userAccountTypes.length > 0 &&
+    userAccountTypes.every((type) => normalizedAccountTypes.includes(type));
+
+  // Build active filter pills
+  const activeFilterPills = React.useMemo((): ActiveFilter[] => {
+    const pills: ActiveFilter[] = [];
+
+    // Horizon filter (only if not default)
+    if (filters.forecastHorizon !== defaultHorizon) {
+      const option = forecastHorizonOptions.find((o) => o.value === filters.forecastHorizon);
+      if (option) {
+        pills.push({ key: 'horizon', label: 'Horizon', value: option.label });
+      }
+    }
+
+    // Account type filter - only show pills when not all available types are selected
+    if (normalizedAccountTypes.length > 0 && !allAccountTypesSelected) {
+      normalizedAccountTypes.forEach((type) => {
+        const option = accountTypeOptions.find((o) => o.value === type);
+        if (option) {
+          pills.push({ key: 'accountType', label: 'Type', value: option.label });
+        }
+      });
+    }
+
+    // Selected accounts filter
+    if (filters.selectedAccountIds.length > 0) {
+      filters.selectedAccountIds.forEach((id) => {
+        const account = accounts.find((a) => a.id === id);
+        if (account) {
+          pills.push({ key: 'account', label: 'Account', value: account.name });
+        }
+      });
+    }
+
+    return pills;
+  }, [filters, accounts, defaultHorizon, normalizedAccountTypes, allAccountTypesSelected]);
+
+  // Handle removing a filter pill
+  const handleRemoveFilter = (key: string, value: string) => {
+    switch (key) {
+      case 'horizon':
+        onChange({ ...filters, forecastHorizon: defaultHorizon as DashboardFilters['forecastHorizon'] });
+        break;
+      case 'accountType': {
+        const typeValue = accountTypeOptions.find((o) => o.label === value)?.value as AccountType;
+        if (typeValue) {
+          const newTypes = filters.accountTypes.filter((t) => t !== typeValue);
+          onChange({
+            ...filters,
+            accountTypes: newTypes.length > 0 ? newTypes : allAccountTypes,
+          });
+        }
+        break;
+      }
+      case 'account': {
+        const account = accounts.find((a) => a.name === value);
+        if (account) {
+          const newIds = filters.selectedAccountIds.filter((id) => id !== account.id);
+          onChange({ ...filters, selectedAccountIds: newIds });
+        }
+        break;
+      }
+    }
+  };
+
+  // Handle clearing all filters
   const handleClearAll = () => {
     onChange({
       ...defaultDashboardFilters,
-      forecastHorizon:
-        maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14',
+      forecastHorizon: defaultHorizon as DashboardFilters['forecastHorizon'],
     });
+    onVisibleFiltersChange(defaultVisibleFilters);
   };
 
-  // If only one account or no accounts, don't show account filter
-  const showAccountFilter = accounts.length > 1;
+  // Get available filters for the "Add filter" menu
+  const availableFiltersForMenu = additionalFilters.filter(
+    (f) => !visibleFilters.includes(f.key) && accounts.length > 1
+  );
+
+  // Handle adding a filter to visible filters
+  const handleAddFilter = (filterKey: string) => {
+    onVisibleFiltersChange([...visibleFilters, filterKey]);
+  };
+
   // Show account type filter if there are multiple types
   const showAccountTypeFilter = availableAccountTypeOptions.length > 1;
 
   return (
-    <FilterPanel
-      activeFilterCount={activeFilterCount}
-      onClearAll={handleClearAll}
-      collapsible={true}
-      defaultCollapsed={activeFilterCount === 0}
-    >
-      <FilterSection>
-        <FilterSegmentedControl
-          label="Forecast Horizon"
+    <FilterBar>
+      <FilterBarRow>
+        <FilterDropdownSingle
+          label="Horizon"
           options={availableHorizons}
           value={filters.forecastHorizon}
           onChange={(value) =>
-            onChange({
-              ...filters,
-              forecastHorizon: value as DashboardFilters['forecastHorizon'],
-            })
+            onChange({ ...filters, forecastHorizon: value as DashboardFilters['forecastHorizon'] })
           }
         />
 
         {showAccountTypeFilter && (
-          <FilterToggleGroup
+          <FilterDropdown
             label="Account Type"
             options={availableAccountTypeOptions}
-            value={filters.accountTypes}
+            value={normalizedAccountTypes}
             onChange={(value) =>
-              onChange({
-                ...filters,
-                accountTypes: value as AccountType[],
-              })
+              onChange({ ...filters, accountTypes: value as AccountType[] })
             }
             allowEmpty={false}
           />
         )}
-      </FilterSection>
 
-      {showAccountFilter && (
-        <FilterSection>
-          <FilterToggleGroup
+        {visibleFilters.includes('accounts') && accounts.length > 1 && (
+          <FilterDropdown
             label="Accounts"
             options={accountOptions}
             value={
               filters.selectedAccountIds.length === 0
-                ? accounts.map((a) => a.id) // All selected when empty
+                ? accounts.map((a) => a.id)
                 : filters.selectedAccountIds
             }
             onChange={(value) => {
-              // If all accounts are selected, store as empty array (means "all")
               const allSelected = value.length === accounts.length;
               onChange({
                 ...filters,
                 selectedAccountIds: allSelected ? [] : value,
               });
             }}
+            searchable={accounts.length > 5}
+            searchPlaceholder="Search accounts..."
             allowEmpty={false}
           />
-        </FilterSection>
-      )}
-    </FilterPanel>
+        )}
+
+        {availableFiltersForMenu.length > 0 && (
+          <AddFilterMenu
+            availableFilters={availableFiltersForMenu}
+            onAdd={handleAddFilter}
+          />
+        )}
+      </FilterBarRow>
+
+      <ActiveFilterPills
+        filters={activeFilterPills}
+        onRemove={handleRemoveFilter}
+        onClearAll={activeFilterPills.length > 0 ? handleClearAll : undefined}
+      />
+    </FilterBar>
   );
 }
 
@@ -202,6 +269,17 @@ export function useDashboardFilters(
 
   const defaultHorizon =
     maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
+
+  // Parse visible filters from URL
+  const visibleFiltersFromUrl = React.useMemo((): string[] => {
+    const show = searchParams.get('show');
+    if (show) {
+      return [...defaultVisibleFilters, ...show.split(',')];
+    }
+    return defaultVisibleFilters;
+  }, [searchParams]);
+
+  const [visibleFilters, setVisibleFiltersState] = React.useState<string[]>(visibleFiltersFromUrl);
 
   // Parse filters from URL on initial load
   const filtersFromUrl = React.useMemo((): DashboardFilters => {
@@ -233,12 +311,13 @@ export function useDashboardFilters(
     });
   }, [filtersFromUrl, defaultHorizon]);
 
-  // Update URL when filters change
-  const setFilters = React.useCallback(
-    (newFilters: DashboardFilters) => {
-      setFiltersState(newFilters);
+  React.useEffect(() => {
+    setVisibleFiltersState(visibleFiltersFromUrl);
+  }, [visibleFiltersFromUrl]);
 
-      // Update URL params
+  // Update URL when filters change
+  const updateUrl = React.useCallback(
+    (newFilters: DashboardFilters, newVisibleFilters: string[]) => {
       const params = new URLSearchParams(searchParams.toString());
 
       // Forecast horizon
@@ -263,7 +342,16 @@ export function useDashboardFilters(
         params.set('types', newFilters.accountTypes.join(','));
       }
 
-      // Update URL without scroll
+      // Visible filters
+      const additionalVisible = newVisibleFilters.filter(
+        (f) => !defaultVisibleFilters.includes(f)
+      );
+      if (additionalVisible.length > 0) {
+        params.set('show', additionalVisible.join(','));
+      } else {
+        params.delete('show');
+      }
+
       const queryString = params.toString();
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
       router.replace(newUrl, { scroll: false });
@@ -271,12 +359,31 @@ export function useDashboardFilters(
     [router, pathname, searchParams, defaultHorizon]
   );
 
+  const setFilters = React.useCallback(
+    (newFilters: DashboardFilters) => {
+      setFiltersState(newFilters);
+      updateUrl(newFilters, visibleFilters);
+    },
+    [updateUrl, visibleFilters]
+  );
+
+  const setVisibleFilters = React.useCallback(
+    (newVisibleFilters: string[]) => {
+      setVisibleFiltersState(newVisibleFilters);
+      updateUrl(filters, newVisibleFilters);
+    },
+    [updateUrl, filters]
+  );
+
   const resetFilters = React.useCallback(() => {
-    setFilters({
+    const defaultFilters = {
       ...defaultDashboardFilters,
       forecastHorizon: defaultHorizon as DashboardFilters['forecastHorizon'],
-    });
-  }, [setFilters, defaultHorizon]);
+    };
+    setFiltersState(defaultFilters);
+    setVisibleFiltersState(defaultVisibleFilters);
+    updateUrl(defaultFilters, defaultVisibleFilters);
+  }, [updateUrl, defaultHorizon]);
 
   const isFiltered = React.useMemo(() => {
     return (
@@ -289,6 +396,8 @@ export function useDashboardFilters(
   return {
     filters,
     setFilters,
+    visibleFilters,
+    setVisibleFilters,
     resetFilters,
     isFiltered,
   };

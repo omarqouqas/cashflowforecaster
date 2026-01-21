@@ -535,6 +535,20 @@ async function handleInvoicePaymentCompleted(session: Stripe.Checkout.Session) {
     throw invoiceError;
   }
 
+  // Also update the linked income record status to 'confirmed'
+  const { error: incomeError } = await supabaseAdmin
+    .from('income')
+    .update({
+      status: 'confirmed',
+      status_updated_at: new Date().toISOString(),
+    })
+    .eq('invoice_id', invoiceId);
+
+  if (incomeError) {
+    console.error('Failed to update income status:', incomeError);
+    // Don't throw - invoice is already marked paid, this is secondary
+  }
+
   console.log(`Invoice ${invoiceNumber || invoiceId} marked as paid via Stripe`);
 }
 

@@ -99,6 +99,38 @@
   - Updates invoice status via webhook (backup to success page)
   - Proper metadata extraction
 
+#### Linear-Style Filter Bar Refinements ✅
+
+- [x] **Sort Dropdown Separation** - Moved sort dropdown to right side of filter bar
+  - New layout: `[Search] [Filters] [+ Add filter] ... [Sort: Due Date ▼] 14 results`
+  - Added `showLabelPrefix` prop to `FilterDropdownSingle` for "Sort: Value" format
+  - Updated `FilterBarRow` to support `rightSection` prop
+
+- [x] **Result Count Format** - Shows "X of Y results" when filtering
+  - Updated `ActiveFilterPills` to accept `totalCount` prop
+  - Displays "14 of 20 results" when filters reduce results
+  - Shows "20 results" when no filters active
+
+- [x] **Active Filter Pills Cleanup** - Removed duplicate result count
+  - Pills row now only shows active filters and "Clear all" button
+  - Result count only appears once (on sort row)
+  - Row hides entirely when no filters are active
+
+#### Bug Fixes ✅
+
+- [x] **Invoice-linked income status sync bug** 🐛
+  - **Problem:** Income page showed "Pending" but Invoices page showed "Paid" for same invoice
+  - **Root cause:** When invoice paid via Stripe webhook or pay/success page, only invoice status was updated - linked income record stayed as "pending"
+  - **Fix:** Updated `handleInvoicePaymentCompleted()` in webhook and `markInvoiceAsPaid()` in pay/success to also update income status to 'confirmed'
+  - **Files fixed:** `app/api/webhooks/stripe/route.ts`, `app/pay/success/page.tsx`
+
+- [x] **Calendar showing wrong invoice status** - Same root cause as above, now fixed
+
+- [x] **Removed paid invoice edit restriction**
+  - Previously: Editing a paid invoice redirected to invoice detail page with error
+  - Now: Paid invoices can be edited like any other invoice
+  - **File:** `app/dashboard/invoices/[id]/edit/page.tsx`
+
 #### Documentation Updates ✅
 
 - [x] **Resend Configuration** (`.env.example`)
@@ -113,7 +145,7 @@
   - Expected results benchmarks
   - Reply handling scripts
 
-#### Bug Fixes ✅
+#### Earlier Bug Fixes (Day 42) ✅
 
 - [x] Fixed invoice status not updating on localhost payment success
   - Root cause: Success page was static, didn't verify session
@@ -146,6 +178,15 @@ lib/email/templates/invoice-email.ts
 lib/pdf/invoice-template.tsx
 app/api/webhooks/stripe/route.ts
 app/dashboard/settings/page.tsx
+app/pay/success/page.tsx
+app/dashboard/invoices/[id]/edit/page.tsx
+components/filters/filter-bar.tsx
+components/filters/filter-dropdown-single.tsx
+components/filters/active-filter-pills.tsx
+components/bills/bills-filters.tsx
+components/bills/bills-content.tsx
+components/income/income-filters.tsx
+components/income/income-content.tsx
 .env.example
 ```
 

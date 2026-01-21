@@ -20,7 +20,7 @@ import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { TaxSavingsWidget } from '@/components/dashboard/tax-savings-widget';
 import { EmergencyFundWidget } from '@/components/dashboard/emergency-fund-widget';
 import {
-  DashboardFiltersPanel,
+  DashboardFilterBar,
   useDashboardFilters,
 } from './dashboard-filters';
 import type { CalendarDay } from '@/lib/calendar/types';
@@ -108,7 +108,7 @@ export function DashboardContent({
   message,
   calendarError,
 }: DashboardContentProps) {
-  const { filters, setFilters } = useDashboardFilters(undefined, forecastDays);
+  const { filters, setFilters, visibleFilters, setVisibleFilters } = useDashboardFilters(undefined, forecastDays);
   const currency = accounts[0]?.currency || 'USD';
 
   // Filter accounts based on selection
@@ -252,11 +252,13 @@ export function DashboardContent({
 
       {/* Filters Panel */}
       <div className="mb-6">
-        <DashboardFiltersPanel
+        <DashboardFilterBar
           filters={filters}
           onChange={setFilters}
           accounts={accounts}
           maxForecastDays={forecastDays}
+          visibleFilters={visibleFilters}
+          onVisibleFiltersChange={setVisibleFilters}
         />
       </div>
 

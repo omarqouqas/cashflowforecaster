@@ -20,10 +20,5 @@ export default async function EditInvoicePage({
     redirect('/dashboard/invoices');
   }
 
-  const status = invoice.status ?? 'draft';
-  if (status === 'paid') {
-    redirect(`/dashboard/invoices/${id}?error=paid-cannot-edit`);
-  }
-
   return <EditInvoiceForm invoice={invoice} />;
 }

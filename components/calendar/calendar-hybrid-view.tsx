@@ -5,7 +5,7 @@ import { CalendarView } from './calendar-view';
 import { CalendarContainer } from './calendar-container';
 import type { CalendarContainerProps } from './calendar-container';
 import {
-  CalendarFiltersPanel,
+  CalendarFilterBar,
   useCalendarFilters,
   defaultCalendarFilters,
   type CalendarFilters,
@@ -93,7 +93,7 @@ function filterCalendarDays(
  * Provides the best experience for each screen size.
  */
 export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
-  const { filters, setFilters } = useCalendarFilters();
+  const { filters, setFilters, visibleFilters, setVisibleFilters } = useCalendarFilters();
 
   // Apply filters to the calendar data
   const filteredDays = useMemo(
@@ -154,7 +154,13 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
     <>
       {/* Filters Panel */}
       <div className="px-4 pt-4">
-        <CalendarFiltersPanel filters={filters} onChange={setFilters} />
+        <CalendarFilterBar
+          filters={filters}
+          onChange={setFilters}
+          resultCount={filteredDays.length}
+          visibleFilters={visibleFilters}
+          onVisibleFiltersChange={setVisibleFilters}
+        />
       </div>
 
       {showEmptyState ? (

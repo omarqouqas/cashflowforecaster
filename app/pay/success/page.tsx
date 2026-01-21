@@ -38,6 +38,20 @@ async function markInvoiceAsPaid(invoiceId: string) {
     return false;
   }
 
+  // Also update the linked income record status to 'confirmed'
+  const { error: incomeError } = await supabase
+    .from('income')
+    .update({
+      status: 'confirmed',
+      status_updated_at: new Date().toISOString(),
+    })
+    .eq('invoice_id', invoiceId);
+
+  if (incomeError) {
+    console.error('Failed to update income status:', incomeError);
+    // Don't return false - invoice is already marked paid, this is secondary
+  }
+
   return true;
 }
 

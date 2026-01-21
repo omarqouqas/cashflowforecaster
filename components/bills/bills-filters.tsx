@@ -3,22 +3,26 @@
 import * as React from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
-  FilterPanel,
-  FilterSection,
-  FilterToggleGroup,
-  FilterAmountRange,
-  FilterSearch,
-  type FilterOption,
-} from '@/components/filters';
+  FilterBar,
+  FilterBarRow,
+} from '@/components/filters/filter-bar';
+import { FilterBarSearch } from '@/components/filters/filter-bar-search';
+import { FilterDropdown, type FilterDropdownOption } from '@/components/filters/filter-dropdown';
+import { FilterDropdownSingle } from '@/components/filters/filter-dropdown-single';
+import { FilterAmountPresets } from '@/components/filters/filter-amount-presets';
+import { AddFilterMenu, type AddFilterOption } from '@/components/filters/add-filter-menu';
+import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/active-filter-pills';
 import {
   CheckCircle,
   XCircle,
   RefreshCw,
   Clock,
+  DollarSign,
 } from 'lucide-react';
 
 export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually';
 export type CategoryType = 'rent' | 'utilities' | 'subscriptions' | 'insurance' | 'other';
+export type SortOption = 'due_date' | 'name' | 'amount' | 'created_at';
 
 export interface BillsFilters {
   status: ('active' | 'inactive')[];
@@ -26,8 +30,9 @@ export interface BillsFilters {
   categories: CategoryType[];
   amountMin: number | null;
   amountMax: number | null;
-  dueSoon: boolean;
+  dueSoonDays: number | null; // null = no filter, 7/14/21/30 = days
   search: string;
+  sortBy: SortOption;
 }
 
 const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'monthly', 'quarterly', 'annually'];
@@ -39,176 +44,306 @@ export const defaultBillsFilters: BillsFilters = {
   categories: allCategories,
   amountMin: null,
   amountMax: null,
-  dueSoon: false,
+  dueSoonDays: null,
   search: '',
+  sortBy: 'due_date',
 };
 
-interface BillsFiltersProps {
+// Filter dropdown options
+const statusOptions: FilterDropdownOption[] = [
+  { value: 'active', label: 'Active', icon: <CheckCircle className="w-3.5 h-3.5" /> },
+  { value: 'inactive', label: 'Inactive', icon: <XCircle className="w-3.5 h-3.5" /> },
+];
+
+const categoryOptions: FilterDropdownOption[] = [
+  { value: 'rent', label: 'Rent/Mortgage' },
+  { value: 'utilities', label: 'Utilities' },
+  { value: 'subscriptions', label: 'Subscriptions' },
+  { value: 'insurance', label: 'Insurance' },
+  { value: 'other', label: 'Other' },
+];
+
+const frequencyOptions: FilterDropdownOption[] = [
+  { value: 'one-time', label: 'One-time' },
+  { value: 'weekly', label: 'Weekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'quarterly', label: 'Quarterly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'annually', label: 'Annually', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+];
+
+const dueSoonOptions: FilterDropdownOption[] = [
+  { value: '7', label: 'Next 7 days', icon: <Clock className="w-3.5 h-3.5" /> },
+  { value: '14', label: 'Next 14 days', icon: <Clock className="w-3.5 h-3.5" /> },
+  { value: '21', label: 'Next 21 days', icon: <Clock className="w-3.5 h-3.5" /> },
+  { value: '30', label: 'Next 30 days', icon: <Clock className="w-3.5 h-3.5" /> },
+];
+
+const sortOptions: FilterDropdownOption[] = [
+  { value: 'due_date', label: 'Due Date', icon: <Clock className="w-3.5 h-3.5" /> },
+  { value: 'name', label: 'Name' },
+  { value: 'amount', label: 'Amount', icon: <DollarSign className="w-3.5 h-3.5" /> },
+  { value: 'created_at', label: 'Date Added' },
+];
+
+// Filters that can be added via "+ Add filter" menu
+const additionalFilters: AddFilterOption[] = [
+  { key: 'frequency', label: 'Frequency', icon: <RefreshCw className="w-4 h-4" /> },
+  { key: 'amount', label: 'Amount', icon: <DollarSign className="w-4 h-4" /> },
+  { key: 'dueSoon', label: 'Due Soon', icon: <Clock className="w-4 h-4" /> },
+];
+
+// Default visible filters (always shown)
+const defaultVisibleFilters = ['status', 'category'];
+
+interface BillsFilterBarProps {
   filters: BillsFilters;
   onChange: (filters: BillsFilters) => void;
+  resultCount: number;
+  totalCount: number;
+  visibleFilters: string[];
+  onVisibleFiltersChange: (filters: string[]) => void;
 }
 
-const statusOptions: FilterOption[] = [
-  {
-    value: 'active',
-    label: 'Active',
-    icon: <CheckCircle className="w-3.5 h-3.5" />,
-    color: 'green',
-  },
-  {
-    value: 'inactive',
-    label: 'Inactive',
-    icon: <XCircle className="w-3.5 h-3.5" />,
-    color: 'default',
-  },
-];
-
-const frequencyOptions: FilterOption[] = [
-  { value: 'one-time', label: 'One-time', color: 'default' },
-  { value: 'weekly', label: 'Weekly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'quarterly', label: 'Quarterly', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-  { value: 'annually', label: 'Annually', icon: <RefreshCw className="w-3.5 h-3.5" />, color: 'teal' },
-];
-
-const categoryOptions: FilterOption[] = [
-  { value: 'rent', label: 'Rent/Mortgage', color: 'teal' },
-  { value: 'utilities', label: 'Utilities', color: 'teal' },
-  { value: 'subscriptions', label: 'Subscriptions', color: 'teal' },
-  { value: 'insurance', label: 'Insurance', color: 'green' },
-  { value: 'other', label: 'Other', color: 'default' },
-];
-
-const dueSoonOptions: FilterOption[] = [
-  {
-    value: 'due-soon',
-    label: 'Due in 7 days',
-    icon: <Clock className="w-3.5 h-3.5" />,
-    color: 'orange',
-  },
-];
-
 /**
- * BillsFiltersPanel - Filter controls for the Bills page
- *
- * Allows filtering by:
- * - Status (Active / Inactive)
- * - Frequency (One-time, Weekly, Monthly, etc.)
- * - Category (Rent, Utilities, Subscriptions, etc.)
- * - Amount range (min/max)
- * - Due Soon (bills due in next 7 days)
- * - Search by name
+ * BillsFilterBar - Linear-style filter bar for the Bills page
  */
-export function BillsFiltersPanel({ filters, onChange }: BillsFiltersProps) {
-  // Count active filters (filters that differ from defaults)
-  const activeFilterCount = React.useMemo(() => {
-    let count = 0;
-    if (filters.status.length !== 2) count++;
-    if (filters.frequencies.length !== allFrequencies.length) count++;
-    if (filters.categories.length !== allCategories.length) count++;
-    if (filters.amountMin !== null || filters.amountMax !== null) count++;
-    if (filters.dueSoon) count++;
-    if (filters.search) count++;
-    return count;
+export function BillsFilterBar({
+  filters,
+  onChange,
+  resultCount,
+  totalCount,
+  visibleFilters,
+  onVisibleFiltersChange,
+}: BillsFilterBarProps) {
+  // Build active filter pills
+  const activeFilterPills = React.useMemo((): ActiveFilter[] => {
+    const pills: ActiveFilter[] = [];
+
+    // Status filter (only if not "all selected")
+    if (filters.status.length > 0 && filters.status.length < 2) {
+      filters.status.forEach((status) => {
+        const option = statusOptions.find((o) => o.value === status);
+        if (option) {
+          pills.push({ key: 'status', label: 'Status', value: option.label });
+        }
+      });
+    }
+
+    // Category filter (only if not "all selected")
+    if (filters.categories.length > 0 && filters.categories.length < allCategories.length) {
+      filters.categories.forEach((cat) => {
+        const option = categoryOptions.find((o) => o.value === cat);
+        if (option) {
+          pills.push({ key: 'category', label: 'Category', value: option.label });
+        }
+      });
+    }
+
+    // Frequency filter (only if not "all selected")
+    if (filters.frequencies.length > 0 && filters.frequencies.length < allFrequencies.length) {
+      filters.frequencies.forEach((freq) => {
+        const option = frequencyOptions.find((o) => o.value === freq);
+        if (option) {
+          pills.push({ key: 'frequency', label: 'Frequency', value: option.label });
+        }
+      });
+    }
+
+    // Amount filter
+    if (filters.amountMin !== null || filters.amountMax !== null) {
+      let amountLabel = '';
+      if (filters.amountMin !== null && filters.amountMax !== null) {
+        amountLabel = `$${filters.amountMin} - $${filters.amountMax}`;
+      } else if (filters.amountMin !== null) {
+        amountLabel = `$${filters.amountMin}+`;
+      } else if (filters.amountMax !== null) {
+        amountLabel = `Under $${filters.amountMax}`;
+      }
+      pills.push({ key: 'amount', label: 'Amount', value: amountLabel });
+    }
+
+    // Due soon filter
+    if (filters.dueSoonDays !== null) {
+      const option = dueSoonOptions.find((o) => o.value === String(filters.dueSoonDays));
+      if (option) {
+        pills.push({ key: 'dueSoon', label: 'Due', value: option.label });
+      }
+    }
+
+    // Search filter
+    if (filters.search) {
+      pills.push({ key: 'search', label: 'Search', value: filters.search });
+    }
+
+    return pills;
   }, [filters]);
 
+  // Handle removing a filter pill
+  const handleRemoveFilter = (key: string, value: string) => {
+    switch (key) {
+      case 'status': {
+        const statusValue = statusOptions.find((o) => o.label === value)?.value;
+        if (statusValue) {
+          const newStatus = filters.status.filter((s) => s !== statusValue);
+          // Don't allow empty status - reset to all if removing last one
+          onChange({
+            ...filters,
+            status: newStatus.length > 0 ? newStatus : ['active', 'inactive'],
+          });
+        }
+        break;
+      }
+      case 'category': {
+        const catValue = categoryOptions.find((o) => o.label === value)?.value as CategoryType;
+        if (catValue) {
+          const newCategories = filters.categories.filter((c) => c !== catValue);
+          onChange({
+            ...filters,
+            categories: newCategories.length > 0 ? newCategories : allCategories,
+          });
+        }
+        break;
+      }
+      case 'frequency': {
+        const freqValue = frequencyOptions.find((o) => o.label === value)?.value as FrequencyType;
+        if (freqValue) {
+          const newFrequencies = filters.frequencies.filter((f) => f !== freqValue);
+          onChange({
+            ...filters,
+            frequencies: newFrequencies.length > 0 ? newFrequencies : allFrequencies,
+          });
+        }
+        break;
+      }
+      case 'amount':
+        onChange({ ...filters, amountMin: null, amountMax: null });
+        break;
+      case 'dueSoon':
+        onChange({ ...filters, dueSoonDays: null });
+        break;
+      case 'search':
+        onChange({ ...filters, search: '' });
+        break;
+    }
+  };
+
+  // Handle clearing all filters
   const handleClearAll = () => {
     onChange(defaultBillsFilters);
+    onVisibleFiltersChange(defaultVisibleFilters);
+  };
+
+  // Get available filters for the "Add filter" menu
+  const availableFilters = additionalFilters.filter(
+    (f) => !visibleFilters.includes(f.key)
+  );
+
+  // Handle adding a filter to visible filters
+  const handleAddFilter = (filterKey: string) => {
+    onVisibleFiltersChange([...visibleFilters, filterKey]);
   };
 
   return (
-    <FilterPanel
-      activeFilterCount={activeFilterCount}
-      onClearAll={handleClearAll}
-      collapsible={true}
-      defaultCollapsed={activeFilterCount === 0}
-    >
-      <FilterSection>
-        <FilterToggleGroup
+    <FilterBar>
+      {/* First row: Search + dropdowns + Add filter */}
+      <FilterBarRow>
+        <FilterBarSearch
+          value={filters.search}
+          onChange={(value) => onChange({ ...filters, search: value })}
+          placeholder="Search bills..."
+        />
+
+        <FilterDropdown
           label="Status"
           options={statusOptions}
           value={filters.status}
           onChange={(value) =>
-            onChange({
-              ...filters,
-              status: value as ('active' | 'inactive')[],
-            })
+            onChange({ ...filters, status: value as ('active' | 'inactive')[] })
           }
           allowEmpty={false}
         />
 
-        <FilterToggleGroup
-          label="Due Soon"
-          options={dueSoonOptions}
-          value={filters.dueSoon ? ['due-soon'] : []}
-          onChange={(value) =>
-            onChange({
-              ...filters,
-              dueSoon: value.includes('due-soon'),
-            })
-          }
-          allowEmpty={true}
-        />
-      </FilterSection>
-
-      <FilterSection>
-        <FilterToggleGroup
-          label="Frequency"
-          options={frequencyOptions}
-          value={filters.frequencies}
-          onChange={(value) =>
-            onChange({
-              ...filters,
-              frequencies: value as FrequencyType[],
-            })
-          }
-          allowEmpty={false}
-        />
-      </FilterSection>
-
-      <FilterSection>
-        <FilterToggleGroup
+        <FilterDropdown
           label="Category"
           options={categoryOptions}
           value={filters.categories}
           onChange={(value) =>
-            onChange({
-              ...filters,
-              categories: value as CategoryType[],
-            })
+            onChange({ ...filters, categories: value as CategoryType[] })
           }
+          searchable
+          searchPlaceholder="Search categories..."
           allowEmpty={false}
         />
-      </FilterSection>
 
-      <FilterSection>
-        <FilterAmountRange
-          label="Amount Range"
-          minValue={filters.amountMin}
-          maxValue={filters.amountMax}
-          onChange={(min, max) =>
-            onChange({
-              ...filters,
-              amountMin: min,
-              amountMax: max,
-            })
-          }
-        />
+        {visibleFilters.includes('frequency') && (
+          <FilterDropdown
+            label="Frequency"
+            options={frequencyOptions}
+            value={filters.frequencies}
+            onChange={(value) =>
+              onChange({ ...filters, frequencies: value as FrequencyType[] })
+            }
+            allowEmpty={false}
+          />
+        )}
 
-        <FilterSearch
-          label="Search"
-          value={filters.search}
-          onChange={(value) =>
-            onChange({
-              ...filters,
-              search: value,
-            })
-          }
-          placeholder="Search bills..."
+        {visibleFilters.includes('amount') && (
+          <FilterAmountPresets
+            value={{ min: filters.amountMin, max: filters.amountMax }}
+            onChange={({ min, max }) =>
+              onChange({ ...filters, amountMin: min, amountMax: max })
+            }
+          />
+        )}
+
+        {visibleFilters.includes('dueSoon') && (
+          <FilterDropdownSingle
+            label="Due Soon"
+            options={dueSoonOptions}
+            value={filters.dueSoonDays !== null ? String(filters.dueSoonDays) : ''}
+            onChange={(value) =>
+              onChange({ ...filters, dueSoonDays: value ? parseInt(value, 10) : null })
+            }
+            allowClear
+          />
+        )}
+
+        <AddFilterMenu
+          availableFilters={availableFilters}
+          onAdd={handleAddFilter}
         />
-      </FilterSection>
-    </FilterPanel>
+      </FilterBarRow>
+
+      {/* Sort row - separated from filters */}
+      <FilterBarRow
+        rightSection={
+          <>
+            <FilterDropdownSingle
+              label="Sort"
+              options={sortOptions}
+              value={filters.sortBy}
+              onChange={(value) =>
+                onChange({ ...filters, sortBy: value as SortOption })
+              }
+              showLabelPrefix
+            />
+            <span className="text-xs text-zinc-500">
+              {resultCount !== totalCount
+                ? `${resultCount} of ${totalCount} results`
+                : `${resultCount} ${resultCount === 1 ? 'result' : 'results'}`}
+            </span>
+          </>
+        }
+      />
+
+      {/* Active filter pills row (only shown when filters are active) */}
+      <ActiveFilterPills
+        filters={activeFilterPills}
+        onRemove={handleRemoveFilter}
+        onClearAll={activeFilterPills.length > 0 ? handleClearAll : undefined}
+      />
+    </FilterBar>
   );
 }
 
@@ -220,6 +355,17 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Parse visible filters from URL
+  const visibleFiltersFromUrl = React.useMemo((): string[] => {
+    const show = searchParams.get('show');
+    if (show) {
+      return [...defaultVisibleFilters, ...show.split(',')];
+    }
+    return defaultVisibleFilters;
+  }, [searchParams]);
+
+  const [visibleFilters, setVisibleFiltersState] = React.useState<string[]>(visibleFiltersFromUrl);
+
   // Parse filters from URL on initial load
   const filtersFromUrl = React.useMemo((): BillsFilters => {
     const status = searchParams.get('status');
@@ -229,6 +375,7 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
     const maxAmount = searchParams.get('max');
     const dueSoon = searchParams.get('due');
     const search = searchParams.get('q');
+    const sort = searchParams.get('sort');
 
     return {
       status: status
@@ -242,8 +389,9 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         : defaultBillsFilters.categories,
       amountMin: minAmount ? parseFloat(minAmount) : null,
       amountMax: maxAmount ? parseFloat(maxAmount) : null,
-      dueSoon: dueSoon === 'true',
+      dueSoonDays: dueSoon ? parseInt(dueSoon, 10) : null,
       search: search || '',
+      sortBy: (sort as SortOption) || defaultBillsFilters.sortBy,
     };
   }, [searchParams]);
 
@@ -261,12 +409,13 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
     });
   }, [filtersFromUrl]);
 
-  // Update URL when filters change
-  const setFilters = React.useCallback(
-    (newFilters: BillsFilters) => {
-      setFiltersState(newFilters);
+  React.useEffect(() => {
+    setVisibleFiltersState(visibleFiltersFromUrl);
+  }, [visibleFiltersFromUrl]);
 
-      // Update URL params
+  // Update URL when filters change
+  const updateUrl = React.useCallback(
+    (newFilters: BillsFilters, newVisibleFilters: string[]) => {
       const params = new URLSearchParams(searchParams.toString());
 
       // Status
@@ -274,7 +423,6 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         newFilters.status.length === 2 &&
         newFilters.status.includes('active') &&
         newFilters.status.includes('inactive');
-
       if (isDefaultStatus) {
         params.delete('status');
       } else {
@@ -303,7 +451,6 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
       } else {
         params.delete('min');
       }
-
       if (newFilters.amountMax !== null) {
         params.set('max', newFilters.amountMax.toString());
       } else {
@@ -311,10 +458,17 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
       }
 
       // Due soon
-      if (newFilters.dueSoon) {
-        params.set('due', 'true');
+      if (newFilters.dueSoonDays !== null) {
+        params.set('due', newFilters.dueSoonDays.toString());
       } else {
         params.delete('due');
+      }
+
+      // Sort
+      if (newFilters.sortBy !== defaultBillsFilters.sortBy) {
+        params.set('sort', newFilters.sortBy);
+      } else {
+        params.delete('sort');
       }
 
       // Search
@@ -322,6 +476,16 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         params.set('q', newFilters.search);
       } else {
         params.delete('q');
+      }
+
+      // Visible filters (only non-default ones)
+      const additionalVisible = newVisibleFilters.filter(
+        (f) => !defaultVisibleFilters.includes(f)
+      );
+      if (additionalVisible.length > 0) {
+        params.set('show', additionalVisible.join(','));
+      } else {
+        params.delete('show');
       }
 
       // Update URL without scroll
@@ -332,9 +496,27 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
     [router, pathname, searchParams]
   );
 
+  const setFilters = React.useCallback(
+    (newFilters: BillsFilters) => {
+      setFiltersState(newFilters);
+      updateUrl(newFilters, visibleFilters);
+    },
+    [updateUrl, visibleFilters]
+  );
+
+  const setVisibleFilters = React.useCallback(
+    (newVisibleFilters: string[]) => {
+      setVisibleFiltersState(newVisibleFilters);
+      updateUrl(filters, newVisibleFilters);
+    },
+    [updateUrl, filters]
+  );
+
   const resetFilters = React.useCallback(() => {
-    setFilters(defaultBillsFilters);
-  }, [setFilters]);
+    setFiltersState(defaultBillsFilters);
+    setVisibleFiltersState(defaultVisibleFilters);
+    updateUrl(defaultBillsFilters, defaultVisibleFilters);
+  }, [updateUrl]);
 
   const isFiltered = React.useMemo(() => {
     return (
@@ -343,7 +525,7 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
       filters.categories.length !== allCategories.length ||
       filters.amountMin !== null ||
       filters.amountMax !== null ||
-      filters.dueSoon ||
+      filters.dueSoonDays !== null ||
       filters.search !== ''
     );
   }, [filters]);
@@ -351,6 +533,8 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
   return {
     filters,
     setFilters,
+    visibleFilters,
+    setVisibleFilters,
     resetFilters,
     isFiltered,
   };

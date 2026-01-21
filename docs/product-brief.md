@@ -846,10 +846,19 @@ User Request
   - Payment success page with session verification
   - Database migration for `stripe_connect_accounts` table and invoice payment columns
   - Settings UI for connecting/disconnecting Stripe account
+- Linear-style filter bar refinements:
+  - Moved sort dropdown to right side with "Sort: Value" format
+  - Result count shows "X of Y results" when filtering reduces results
+  - Active filter pills row cleaned up (no duplicate result count)
+  - Added `rightSection` prop to `FilterBarRow` component
+  - Added `showLabelPrefix` prop to `FilterDropdownSingle` component
 - Documentation updates:
   - Added Resend configuration to `.env.example` (RESEND_API_KEY, RESEND_FROM_EMAIL)
   - Created Apollo lead generation guide for outreach campaigns
 - Bug fixes:
+  - Fixed invoice-linked income status sync: Income page now shows "Paid" when invoice is paid via Stripe
+  - Fixed calendar showing wrong status for invoice-linked income
+  - Removed restriction on editing paid invoices
   - Fixed invoice payment status not updating on localhost
   - Improved Stripe Connect error messaging when Connect not enabled
 

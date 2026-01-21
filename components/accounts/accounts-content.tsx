@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { AccountCard } from './account-card';
 import {
-  AccountsFiltersPanel,
+  AccountsFilterBar,
   useAccountsFilters,
   defaultAccountsFilters,
   type AccountsFilters,
@@ -34,13 +34,7 @@ function filterAccounts(accounts: Account[], filters: AccountsFilters): Account[
   return accounts.filter((account) => {
     // Filter by account type
     const rawAccountType = (account.account_type ?? 'checking').toLowerCase();
-    // Handle credit_card variations
-    const normalizedType: AccountType =
-      rawAccountType === 'credit' || rawAccountType === 'card' || rawAccountType === 'credit_card'
-        ? 'credit_card'
-        : rawAccountType === 'savings'
-        ? 'savings'
-        : 'checking';
+    const normalizedType: AccountType = rawAccountType === 'savings' ? 'savings' : 'checking';
     if (!filters.accountTypes.includes(normalizedType)) return false;
 
     // Filter by spendable status
@@ -75,10 +69,14 @@ export function AccountsContent({ accounts }: AccountsContentProps) {
 
   return (
     <>
-      {/* Filters Panel */}
+      {/* Filter Bar */}
       {accounts.length > 0 && (
         <div className="mb-6">
-          <AccountsFiltersPanel filters={filters} onChange={setFilters} />
+          <AccountsFilterBar
+            filters={filters}
+            onChange={setFilters}
+            resultCount={filteredAccounts.length}
+          />
         </div>
       )}
 

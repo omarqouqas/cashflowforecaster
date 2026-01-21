@@ -8,7 +8,7 @@ import { DownloadPdfButton } from './download-pdf-button';
 import { DeleteInvoiceIconButton } from './delete-invoice-icon-button';
 import { SendInvoiceButton } from './send-invoice-button';
 import {
-  InvoicesFiltersPanel,
+  InvoicesFilterBar,
   useInvoicesFilters,
   defaultInvoicesFilters,
   type InvoicesFilters,
@@ -120,7 +120,7 @@ function filterInvoices(invoices: Invoice[], filters: InvoicesFilters): Invoice[
  * InvoicesContent - Client component for Invoices page with filtering
  */
 export function InvoicesContent({ invoices }: InvoicesContentProps) {
-  const { filters, setFilters } = useInvoicesFilters();
+  const { filters, setFilters, visibleFilters, setVisibleFilters } = useInvoicesFilters();
   const now = new Date();
 
   // Apply filters to invoices
@@ -140,10 +140,16 @@ export function InvoicesContent({ invoices }: InvoicesContentProps) {
 
   return (
     <>
-      {/* Filters Panel */}
+      {/* Filter Bar */}
       {invoices.length > 0 && (
         <div className="mb-6">
-          <InvoicesFiltersPanel filters={filters} onChange={setFilters} />
+          <InvoicesFilterBar
+            filters={filters}
+            onChange={setFilters}
+            resultCount={filteredInvoices.length}
+            visibleFilters={visibleFilters}
+            onVisibleFiltersChange={setVisibleFilters}
+          />
         </div>
       )}
 

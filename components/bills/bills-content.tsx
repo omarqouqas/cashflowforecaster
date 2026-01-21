@@ -3,12 +3,13 @@
 import { useMemo } from 'react';
 import { BillCard } from './bill-card';
 import {
-  BillsFiltersPanel,
+  BillsFilterBar,
   useBillsFilters,
   defaultBillsFilters,
   type BillsFilters,
   type FrequencyType,
   type CategoryType,
+  type SortOption,
 } from './bills-filters';
 
 interface Bill {
@@ -88,8 +89,11 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
 function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const sevenDaysFromNow = new Date(today);
-  sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+
+  // Calculate due soon cutoff date based on selected days
+  const dueSoonCutoff = filters.dueSoonDays !== null
+    ? new Date(today.getTime() + filters.dueSoonDays * 24 * 60 * 60 * 1000)
+    : null;
 
   return bills.filter((bill) => {
     // Filter by status (active/inactive)
@@ -109,12 +113,11 @@ function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
     if (filters.amountMin !== null && bill.amount < filters.amountMin) return false;
     if (filters.amountMax !== null && bill.amount > filters.amountMax) return false;
 
-    // Filter by due soon (next 7 days)
-    if (filters.dueSoon && bill.due_date) {
+    // Filter by due soon
+    if (dueSoonCutoff !== null) {
+      if (!bill.due_date) return false;
       const nextDueDate = getActualNextDueDate(bill.due_date, bill.frequency);
-      if (nextDueDate < today || nextDueDate > sevenDaysFromNow) return false;
-    } else if (filters.dueSoon && !bill.due_date) {
-      return false;
+      if (nextDueDate < today || nextDueDate > dueSoonCutoff) return false;
     }
 
     // Filter by search term
@@ -128,14 +131,38 @@ function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
 }
 
 /**
+ * Sort bills based on the selected sort option
+ */
+function sortBills(bills: Bill[], sortBy: SortOption): Bill[] {
+  return [...bills].sort((a, b) => {
+    switch (sortBy) {
+      case 'due_date': {
+        // Sort by next due date (soonest first)
+        const dateA = a.due_date ? getActualNextDueDate(a.due_date, a.frequency) : new Date(9999, 11, 31);
+        const dateB = b.due_date ? getActualNextDueDate(b.due_date, b.frequency) : new Date(9999, 11, 31);
+        return dateA.getTime() - dateB.getTime();
+      }
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'amount':
+        return b.amount - a.amount; // Highest first
+      case 'created_at':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Newest first
+      default:
+        return 0;
+    }
+  });
+}
+
+/**
  * BillsContent - Client component for Bills page with filtering
  */
 export function BillsContent({ bills }: BillsContentProps) {
-  const { filters, setFilters } = useBillsFilters();
+  const { filters, setFilters, visibleFilters, setVisibleFilters } = useBillsFilters();
 
-  // Apply filters to bills
+  // Apply filters and sorting to bills
   const filteredBills = useMemo(
-    () => filterBills(bills, filters),
+    () => sortBills(filterBills(bills, filters), filters.sortBy),
     [bills, filters]
   );
 
@@ -144,10 +171,17 @@ export function BillsContent({ bills }: BillsContentProps) {
 
   return (
     <>
-      {/* Filters Panel */}
+      {/* Filter Bar */}
       {bills.length > 0 && (
         <div className="mb-6">
-          <BillsFiltersPanel filters={filters} onChange={setFilters} />
+          <BillsFilterBar
+            filters={filters}
+            onChange={setFilters}
+            resultCount={filteredBills.length}
+            totalCount={bills.length}
+            visibleFilters={visibleFilters}
+            onVisibleFiltersChange={setVisibleFilters}
+          />
         </div>
       )}
 

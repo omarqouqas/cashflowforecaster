@@ -3,12 +3,13 @@
 import { useMemo } from 'react';
 import { IncomeCard } from './income-card';
 import {
-  IncomeFiltersPanel,
+  IncomeFilterBar,
   useIncomeFilters,
   defaultIncomeFilters,
   type IncomeFilters,
   type FrequencyType,
   type SourceType,
+  type SortOption,
 } from './income-filters';
 
 interface Income {
@@ -29,10 +30,53 @@ interface IncomeContentProps {
   incomes: Income[];
 }
 
+// Helper function to calculate next payment date for recurring income
+function getActualNextDate(nextDate: string, frequency: string | null | undefined): Date {
+  const storedDate = new Date(nextDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (storedDate >= today) {
+    return storedDate;
+  }
+
+  const freq = (frequency ?? 'monthly').toLowerCase();
+  let currentDate = new Date(storedDate);
+
+  switch (freq) {
+    case 'weekly':
+      while (currentDate < today) {
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+      break;
+    case 'biweekly':
+      while (currentDate < today) {
+        currentDate.setDate(currentDate.getDate() + 14);
+      }
+      break;
+    case 'monthly':
+      while (currentDate < today) {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      }
+      break;
+    default:
+      return storedDate;
+  }
+  return currentDate;
+}
+
 /**
  * Filter income sources based on the current filter settings
  */
 function filterIncomes(incomes: Income[], filters: IncomeFilters): Income[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Calculate expected soon cutoff date based on selected days
+  const expectedSoonCutoff = filters.expectedSoonDays !== null
+    ? new Date(today.getTime() + filters.expectedSoonDays * 24 * 60 * 60 * 1000)
+    : null;
+
   return incomes.filter((income) => {
     // Filter by status (active/inactive)
     const isActive = income.is_active ?? true;
@@ -52,6 +96,13 @@ function filterIncomes(incomes: Income[], filters: IncomeFilters): Income[] {
     if (filters.amountMin !== null && income.amount < filters.amountMin) return false;
     if (filters.amountMax !== null && income.amount > filters.amountMax) return false;
 
+    // Filter by expected soon
+    if (expectedSoonCutoff !== null) {
+      if (!income.next_date) return false;
+      const nextPaymentDate = getActualNextDate(income.next_date, income.frequency);
+      if (nextPaymentDate < today || nextPaymentDate > expectedSoonCutoff) return false;
+    }
+
     // Filter by search term
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
@@ -63,14 +114,38 @@ function filterIncomes(incomes: Income[], filters: IncomeFilters): Income[] {
 }
 
 /**
+ * Sort income sources based on the selected sort option
+ */
+function sortIncomes(incomes: Income[], sortBy: SortOption): Income[] {
+  return [...incomes].sort((a, b) => {
+    switch (sortBy) {
+      case 'next_date': {
+        // Sort by next payment date (soonest first)
+        const dateA = a.next_date ? getActualNextDate(a.next_date, a.frequency) : new Date(9999, 11, 31);
+        const dateB = b.next_date ? getActualNextDate(b.next_date, b.frequency) : new Date(9999, 11, 31);
+        return dateA.getTime() - dateB.getTime();
+      }
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'amount':
+        return b.amount - a.amount; // Highest first
+      case 'created_at':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Newest first
+      default:
+        return 0;
+    }
+  });
+}
+
+/**
  * IncomeContent - Client component for Income page with filtering
  */
 export function IncomeContent({ incomes }: IncomeContentProps) {
-  const { filters, setFilters } = useIncomeFilters();
+  const { filters, setFilters, visibleFilters, setVisibleFilters } = useIncomeFilters();
 
-  // Apply filters to incomes
+  // Apply filters and sorting to incomes
   const filteredIncomes = useMemo(
-    () => filterIncomes(incomes, filters),
+    () => sortIncomes(filterIncomes(incomes, filters), filters.sortBy),
     [incomes, filters]
   );
 
@@ -79,10 +154,17 @@ export function IncomeContent({ incomes }: IncomeContentProps) {
 
   return (
     <>
-      {/* Filters Panel */}
+      {/* Filter Bar */}
       {incomes.length > 0 && (
         <div className="mb-6">
-          <IncomeFiltersPanel filters={filters} onChange={setFilters} />
+          <IncomeFilterBar
+            filters={filters}
+            onChange={setFilters}
+            resultCount={filteredIncomes.length}
+            totalCount={incomes.length}
+            visibleFilters={visibleFilters}
+            onVisibleFiltersChange={setVisibleFilters}
+          />
         </div>
       )}
 
