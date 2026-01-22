@@ -324,29 +324,32 @@ export default function HeroDashboard() {
       >
         <h3 className="text-base font-semibold text-zinc-100 mb-3">January 2026</h3>
 
-        <div className="grid grid-cols-7 gap-1.5">
+        {/* Mobile: horizontal scroll with snap, Desktop: grid */}
+        <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-7 sm:gap-1.5 sm:overflow-visible sm:pb-0">
           {weekDays.map((day, i) => (
             <div
               key={i}
-              className={`relative rounded-xl border px-4 py-2.5 transition-all hover:scale-[1.02] cursor-pointer ${getStatusColor(
+              className={`relative rounded-xl border min-w-[72px] sm:min-w-0 px-3 sm:px-4 py-2.5 transition-all hover:scale-[1.02] cursor-pointer snap-start ${getStatusColor(
                 day.status
               )} ${day.day === 'TODAY' ? 'ring-2 ring-emerald-500/50' : ''}`}
             >
-              <div className="flex items-center justify-between mb-1.5">
+              {/* Mobile: stacked vertically, Desktop: side by side */}
+              <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between mb-1.5">
                 <span className={`text-xs font-medium ${day.day === 'TODAY' ? 'text-emerald-400' : 'text-zinc-500'}`}>
                   {day.day}
                 </span>
-                <span className="text-sm font-semibold text-zinc-300">{day.date}</span>
+                <span className="text-lg sm:text-sm font-semibold text-zinc-300">{day.date}</span>
               </div>
 
-              <p className={`text-base font-bold tabular-nums ${day.status === 'safe' ? 'text-zinc-100' : 'text-amber-400'}`}>
+              <p className={`text-base font-bold tabular-nums text-center sm:text-left ${day.status === 'safe' ? 'text-zinc-100' : 'text-amber-400'}`}>
                 ${day.balance.toFixed(0)}
               </p>
 
               {day.change && (
                 <div className="mt-1.5 pt-1.5 border-t border-zinc-800/50">
-                  <p className="text-xs text-rose-400 tabular-nums font-medium">-${Math.abs(day.change).toFixed(0)}</p>
-                  <p className="text-xs text-zinc-400 truncate mt-0.5">{day.expense}</p>
+                  <p className="text-xs text-rose-400 tabular-nums font-medium text-center sm:text-left">-${Math.abs(day.change).toFixed(0)}</p>
+                  {/* Hide transaction name on mobile, show on sm+ */}
+                  <p className="hidden sm:block text-xs text-zinc-400 truncate mt-0.5">{day.expense}</p>
                 </div>
               )}
             </div>
