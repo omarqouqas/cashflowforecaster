@@ -53,10 +53,25 @@ export async function createCheckoutSession(
       .select('stripe_customer_id')
       .eq('user_id', user.id)
       .single();
-    
+
     let customerId = existingSubscription?.stripe_customer_id ?? null;
-    
-    // Create or retrieve Stripe customer
+
+    // Verify customer exists in Stripe (handles dev/prod mismatch)
+    if (customerId) {
+      try {
+        await stripe.customers.retrieve(customerId);
+      } catch (err: unknown) {
+        // Customer doesn't exist in this Stripe environment - create a new one
+        if (err && typeof err === 'object' && 'code' in err && err.code === 'resource_missing') {
+          console.warn(`Stripe customer ${customerId} not found - creating new customer (likely dev/prod mismatch)`);
+          customerId = null;
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    // Create Stripe customer if needed
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
@@ -65,7 +80,7 @@ export async function createCheckoutSession(
         },
       });
       customerId = customer.id;
-      
+
       // Save customer ID to database (billing data lives in `subscriptions`)
       await supabase
         .from('subscriptions')
@@ -131,11 +146,21 @@ export async function createPortalSession(): Promise<{ url: string } | { error: 
       .select('stripe_customer_id')
       .eq('user_id', user.id)
       .single();
-    
+
     if (!subscription?.stripe_customer_id) {
       return { error: 'No subscription found' };
     }
-    
+
+    // Verify customer exists in Stripe (handles dev/prod mismatch)
+    try {
+      await stripe.customers.retrieve(subscription.stripe_customer_id);
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'code' in err && err.code === 'resource_missing') {
+        return { error: 'Customer not found in Stripe. Please contact support or re-subscribe.' };
+      }
+      throw err;
+    }
+
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripe_customer_id,
       return_url: `${getURL()}/dashboard/settings`,
