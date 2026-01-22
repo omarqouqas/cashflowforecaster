@@ -2,15 +2,26 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Bell, FileText, Mail, TrendingUp } from 'lucide-react';
+import { Bell, CreditCard, FileText, Lock } from 'lucide-react';
 
 import { createCheckoutSession } from '@/lib/actions/stripe';
 
 const FEATURES = [
-  { icon: FileText, text: 'Generate PDF invoices' },
-  { icon: Mail, text: 'Email invoices directly to clients' },
-  { icon: Bell, text: 'Payment reminder system (friendly → firm → final)' },
-  { icon: TrendingUp, text: 'Auto-sync pending income with forecasts' },
+  {
+    icon: FileText,
+    title: 'PDF Invoices',
+    description: 'Professional, branded documents',
+  },
+  {
+    icon: CreditCard,
+    title: 'Get Paid Online',
+    description: 'Stripe payment links included',
+  },
+  {
+    icon: Bell,
+    title: 'Auto Reminders',
+    description: 'Friendly \u2192 Firm \u2192 Final sequence',
+  },
 ] as const;
 
 export function InvoicingUpgradePrompt() {
@@ -36,93 +47,113 @@ export function InvoicingUpgradePrompt() {
     }
   };
 
+  const price = billingInterval === 'month' ? '$7.99/month' : '$79/year';
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-10">
-      <div className="max-w-md w-full text-center">
-        <div className="w-16 h-16 bg-teal-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <FileText className="w-8 h-8 text-teal-600 dark:text-teal-400" />
+    <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-800">
+      {/* Subtle radial glow behind content */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative max-w-2xl mx-auto text-center space-y-8">
+        {/* Icon with glow */}
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-teal-500/10 rounded-full ring-1 ring-teal-500/20">
+          <FileText className="w-10 h-10 text-teal-500" />
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-zinc-100 mb-2">
-          Unlock Runway Collect
-        </h1>
-        <p className="text-slate-600 dark:text-zinc-400 mb-8">
-          Create professional invoices, send them via email, and track payments — all synced with
-          your cash flow forecast.
+        {/* Headline & Subhead */}
+        <div className="space-y-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-white">
+            Get Paid Faster with Runway Collect
+          </h1>
+          <p className="text-lg text-zinc-400 max-w-lg mx-auto">
+            Stop chasing payments. Send professional invoices and get paid directly — all synced
+            with your forecast.
+          </p>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          {FEATURES.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={feature.title}
+                className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-6 text-center"
+              >
+                <Icon className="w-8 h-8 text-teal-500 mx-auto mb-3" />
+                <h3 className="font-semibold text-white mb-1">{feature.title}</h3>
+                <p className="text-sm text-zinc-400">{feature.description}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Social Proof */}
+        <p className="text-sm text-zinc-500">
+          Join 100+ freelancers getting paid faster
         </p>
 
-        <div className="bg-white dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-lg p-6 mb-6 text-left">
-          <ul className="space-y-4">
-            {FEATURES.map((feature, i) => {
-              const Icon = feature.icon;
-              return (
-                <li key={i} className="flex items-center gap-3">
-                  <Icon className="w-5 h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" />
-                  <span className="text-slate-700 dark:text-zinc-300">{feature.text}</span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* Billing toggle */}
-        <div className="flex items-center justify-center gap-3 mb-6">
+        {/* Billing Toggle */}
+        <div className="flex items-center justify-center gap-2">
           <button
             type="button"
             onClick={() => setBillingInterval('month')}
-            className={[
-              'px-3 py-1 rounded text-sm font-medium transition-colors',
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               billingInterval === 'month'
                 ? 'bg-teal-600 text-white'
-                : 'text-slate-600 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200',
-            ].join(' ')}
+                : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300'
+            }`}
           >
             Monthly
           </button>
           <button
             type="button"
             onClick={() => setBillingInterval('year')}
-            className={[
-              'px-3 py-1 rounded text-sm font-medium transition-colors',
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               billingInterval === 'year'
                 ? 'bg-teal-600 text-white'
-                : 'text-slate-600 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200',
-            ].join(' ')}
+                : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300'
+            }`}
           >
-            Yearly <span className="ml-1 text-xs text-teal-700 dark:text-teal-400">Save 17%</span>
+            Yearly
+            <span className="text-teal-400 text-xs ml-1">Save 17%</span>
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={handleUpgrade}
-          disabled={isLoading}
-          className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
-        >
-          {isLoading
-            ? 'Redirecting...'
-            : billingInterval === 'month'
-              ? 'Upgrade to Pro — $7.99/month'
-              : 'Upgrade to Pro — $79/year'}
-        </button>
+        {/* CTA Button */}
+        <div className="space-y-4">
+          <button
+            type="button"
+            onClick={handleUpgrade}
+            disabled={isLoading}
+            className="w-full max-w-md py-4 text-lg font-semibold bg-teal-500 hover:bg-teal-400 text-zinc-900 rounded-xl transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+          >
+            {isLoading ? 'Redirecting to checkout...' : `Upgrade to Pro — ${price}`}
+          </button>
 
-        <div className="mt-3">
+          {error && (
+            <p className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-4 py-2 max-w-md mx-auto">
+              {error}
+            </p>
+          )}
+        </div>
+
+        {/* Trust Elements */}
+        <div className="space-y-3">
           <Link
             href="/pricing"
-            className="text-sm text-slate-600 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 underline underline-offset-4"
+            className="text-teal-400 hover:text-teal-300 underline text-sm transition-colors"
           >
             Learn more about Pro features
           </Link>
+          <p className="text-sm text-zinc-500 flex items-center justify-center gap-2">
+            <Lock className="w-4 h-4" />
+            Cancel anytime. Secure checkout powered by Stripe.
+          </p>
         </div>
-
-        {error && <p className="text-sm text-rose-600 mt-4">{error}</p>}
-
-        <p className="text-slate-500 dark:text-zinc-500 text-sm mt-4">
-          Cancel anytime. No questions asked.
-        </p>
       </div>
     </div>
   );
 }
-
-
