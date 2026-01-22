@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   // Onboarding gate: if user has no accounts and has not completed onboarding,
   // redirect them to the guided setup wizard.
   const supabase = await createClient()
-  const [{ count: accountCount }, settingsRow] = await Promise.all([
+  const [{ count: accountCount }, settingsRow, userRow, subscriptionRow] = await Promise.all([
     supabase
       .from('accounts')
       .select('*', { count: 'exact', head: true })
@@ -27,11 +27,26 @@ export default async function DashboardLayout({
       .select('onboarding_complete')
       .eq('user_id', user.id)
       .maybeSingle(),
+    supabase
+      .from('users')
+      .select('full_name')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('subscriptions')
+      .select('tier')
+      .eq('user_id', user.id)
+      .maybeSingle(),
   ])
 
-  const settingsData = settingsRow.data as any
+  const settingsData = settingsRow.data as { onboarding_complete?: boolean } | null
+  const userData = userRow.data as { full_name?: string } | null
+  const subscriptionData = subscriptionRow.data as { tier?: string } | null
+
   const isOnboarded = settingsData?.onboarding_complete === true
   const hasAccounts = (accountCount ?? 0) > 0
+  const userName = userData?.full_name ?? undefined
+  const userTier = (subscriptionData?.tier as 'free' | 'pro' | 'premium') ?? 'free'
 
   if (!isOnboarded && !hasAccounts) {
     redirect('/onboarding')
@@ -45,12 +60,12 @@ export default async function DashboardLayout({
       <header className="bg-zinc-900 border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/dashboard">
-              <h1 className="text-xl font-bold text-zinc-100 hover:text-teal-400 transition-colors cursor-pointer">
+            <Link href="/dashboard" className="flex-shrink-0">
+              <h1 className="text-xl font-bold text-zinc-100 hover:text-teal-400 transition-colors cursor-pointer whitespace-nowrap">
                 Cash Flow Forecaster
               </h1>
             </Link>
-            <DashboardNav userEmail={user.email ?? ''} />
+            <DashboardNav userEmail={user.email ?? ''} userName={userName} userTier={userTier} />
           </div>
         </div>
       </header>
