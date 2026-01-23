@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.5
-**Last Updated:** January 21, 2026
-**Status:** Live - Accepting Payments - Interactive Hero Dashboard + Calendar Polish
+**Version:** 5.6
+**Last Updated:** January 22, 2026
+**Status:** Live - Accepting Payments - User Profile Dropdown + Conversion UX Polish
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -838,6 +838,24 @@ User Request
 
 ## Changelog
 
+### Version 5.6 (January 22, 2026)
+- User Profile Dropdown Redesign:
+  - New `UserAvatar` component showing initials from name or email
+  - User identity section with email and plan badge (Free/Pro)
+  - Menu items: Settings, Billing, Help & Support with icons
+  - Billing opens Stripe portal (Pro) or pricing page (Free)
+  - Separated Log out with subtle destructive hover styling
+  - Mobile-friendly with 44px touch targets
+- Invoices Upgrade Prompt Redesign:
+  - Benefit-focused headline: "Get Paid Faster with Runway Collect"
+  - 3 feature cards in responsive grid replacing bullet list
+  - Social proof line and trust elements with lock icon
+  - Gradient background with radial glow for visual depth
+  - More prominent billing toggle and CTA with hover animation
+- Bug Fixes:
+  - Stripe customer ID dev/prod mismatch: Verify customer exists before using stored ID
+  - Landing page mobile layout: Calendar day cards horizontally scrollable with snap
+
 ### Version 5.5 (January 21, 2026)
 - Interactive Hero Dashboard for Landing Page:
   - New `HeroDashboard` React component replacing static mockup image
@@ -1057,7 +1075,7 @@ User Request
 
 ---
 
-**Document Version:** 5.5
-**Last Updated:** January 21, 2026
-**Status:** Live - Interactive Hero Dashboard + Calendar Polish 🎉
+**Document Version:** 5.6
+**Last Updated:** January 22, 2026
+**Status:** Live - User Profile Dropdown + Conversion UX Polish 🎉
 **Next Review:** February 2026
