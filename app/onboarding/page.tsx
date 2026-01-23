@@ -14,6 +14,14 @@ import {
   onboardingCreateIncomes,
   onboardingMarkComplete,
 } from '@/lib/actions/onboarding'
+import {
+  trackOnboardingStarted,
+  trackOnboardingStep,
+  trackOnboardingCompleted,
+  trackAccountCreated,
+  trackIncomeAdded,
+  trackBillAdded,
+} from '@/lib/posthog/events'
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -101,6 +109,15 @@ export default function OnboardingPage() {
   const [billsTracked, setBillsTracked] = useState<number>(persisted?.billsTracked ?? 0)
 
   const [globalError, setGlobalError] = useState<string | null>(null)
+  const onboardingStartedRef = useRef(false)
+
+  // Track onboarding started (only once per session)
+  useEffect(() => {
+    if (!onboardingStartedRef.current) {
+      onboardingStartedRef.current = true
+      trackOnboardingStarted()
+    }
+  }, [])
 
   useEffect(() => {
     // Persist wizard progress so server action refreshes don't reset the step back to 0.
@@ -199,6 +216,9 @@ export default function OnboardingPage() {
 
                 if ('error' in accountRes) throw new Error(accountRes.error)
 
+                // Track account creation
+                trackAccountCreated('checking')
+
                 setStartingBalance(accountRes.account.current_balance ?? values.balance)
                 setCurrency(accountRes.account.currency ?? 'USD')
 
@@ -206,8 +226,16 @@ export default function OnboardingPage() {
                 if (values.income) {
                   const incomeRes = await onboardingCreateIncomes([values.income])
                   if ('error' in incomeRes) throw new Error(incomeRes.error)
+                  // Track income addition
+                  trackIncomeAdded({
+                    frequency: values.income.frequency,
+                    isRecurring: values.income.frequency !== 'one-time',
+                    hasEndDate: !!values.income.end_date,
+                  })
                 }
 
+                // Track step completion
+                trackOnboardingStep(0, 'account')
                 markStepComplete(0)
                 nextStep()
               }}
@@ -227,8 +255,26 @@ export default function OnboardingPage() {
                 const res = await onboardingCreateBills(rows)
                 if ('error' in res) throw new Error(res.error)
 
+                // Track each bill added
+                rows.forEach((bill) => {
+                  trackBillAdded({
+                    frequency: bill.frequency,
+                    category: bill.category,
+                  })
+                })
+
                 setBillsTracked(res.bills.length)
+
+                // Track step completion
+                trackOnboardingStep(1, 'bills')
                 markStepComplete(1)
+
+                // Track onboarding completed
+                trackOnboardingCompleted({
+                  accountsCreated: 1,
+                  incomeSourcesCreated: startingBalance !== null ? 1 : 0,
+                  billsCreated: res.bills.length,
+                })
 
                 // Mark onboarding complete and redirect to calendar
                 const success = await finishOnboarding()
@@ -239,7 +285,17 @@ export default function OnboardingPage() {
               onSkip={async () => {
                 setGlobalError(null)
                 setBillsTracked(0)
+
+                // Track step completion (even if skipped)
+                trackOnboardingStep(1, 'bills')
                 markStepComplete(1)
+
+                // Track onboarding completed
+                trackOnboardingCompleted({
+                  accountsCreated: 1,
+                  incomeSourcesCreated: startingBalance !== null ? 1 : 0,
+                  billsCreated: 0,
+                })
 
                 // Mark onboarding complete and redirect to calendar
                 const success = await finishOnboarding()

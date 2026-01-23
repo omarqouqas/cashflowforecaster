@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
 import { OrDivider } from '@/components/auth/or-divider';
 import { signInWithGoogle } from '@/lib/auth/oauth';
+import { trackSignup } from '@/lib/posthog/events';
 
 const signupSchema = z
   .object({
@@ -80,6 +81,8 @@ export default function SignupPage() {
       if (signUpError) {
         setError(formatErrorMessage(signUpError.message));
       } else {
+        // Track signup event
+        trackSignup('email');
         setSuccess('Account created successfully! Please check your email to verify your account.');
         // Mark that the user has created an account (client-side only)
         if (typeof window !== 'undefined') {

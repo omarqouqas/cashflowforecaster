@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { trackCalendarView } from '@/lib/posthog/events';
 import { CalendarView } from './calendar-view';
 import { CalendarContainer } from './calendar-container';
 import type { CalendarContainerProps } from './calendar-container';
@@ -94,6 +95,15 @@ function filterCalendarDays(
  */
 export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useCalendarFilters();
+  const trackedRef = useRef(false);
+
+  // Track calendar view once on mount
+  useEffect(() => {
+    if (!trackedRef.current) {
+      trackedRef.current = true;
+      trackCalendarView(calendarData.days.length);
+    }
+  }, [calendarData.days.length]);
 
   // Apply filters to the calendar data
   const filteredDays = useMemo(

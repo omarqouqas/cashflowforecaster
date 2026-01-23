@@ -19,6 +19,7 @@ import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
 import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
+import { trackIncomeAdded } from '@/lib/posthog/events';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
@@ -133,6 +134,11 @@ export default function NewIncomePage() {
       showError(insertError.message);
       setError(insertError.message);
     } else {
+      trackIncomeAdded({
+        frequency: data.frequency,
+        isRecurring: data.frequency !== 'one-time',
+        hasEndDate: false,
+      });
       showSuccess('Income added');
       router.refresh();
       router.push('/dashboard/income');

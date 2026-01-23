@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
+import { trackAccountCreated } from '@/lib/posthog/events';
 
 const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required').max(50, 'Name too long'),
@@ -77,7 +78,7 @@ export default function NewAccountPage() {
       showError(insertError.message);
       setError(insertError.message);
     } else {
-      // Success - redirect to accounts list
+      trackAccountCreated(data.account_type);
       showSuccess('Account created');
       router.push('/dashboard/accounts');
     }

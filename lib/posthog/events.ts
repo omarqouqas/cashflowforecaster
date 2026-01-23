@@ -65,6 +65,13 @@ export const trackDayDetailOpened = (dayData: {
 // ============================================
 
 /**
+ * Track when user starts onboarding
+ */
+export const trackOnboardingStarted = () => {
+  posthog.capture('onboarding_started')
+}
+
+/**
  * Track each step of the onboarding wizard
  */
 export const trackOnboardingStep = (

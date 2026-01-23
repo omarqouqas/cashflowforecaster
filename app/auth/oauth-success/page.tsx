@@ -2,12 +2,16 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { trackSignup } from '@/lib/posthog/events';
 
 export default function OAuthSuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    // Track Google signup/login event
+    trackSignup('google');
+
     // If OAuth succeeded, the user has an account; mark as "hasSignedUp".
     if (typeof window !== 'undefined') {
       try {

@@ -18,6 +18,7 @@ import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
 import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
+import { trackBillAdded } from '@/lib/posthog/events';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -118,6 +119,10 @@ export default function NewBillPage() {
       setError(insertError.message);
       setIsLoading(false);
     } else {
+      trackBillAdded({
+        frequency: data.frequency,
+        category: data.category,
+      });
       showSuccess('Bill added');
       router.refresh();
       router.push('/dashboard/bills');

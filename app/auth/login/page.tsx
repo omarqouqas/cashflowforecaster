@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
 import { OrDivider } from '@/components/auth/or-divider';
 import { signInWithGoogle } from '@/lib/auth/oauth';
+import { trackLogin } from '@/lib/posthog/events';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -87,6 +88,8 @@ export default function LoginPage() {
       if (signInError) {
         setError(formatErrorMessage(signInError.message));
       } else {
+        // Track login event
+        trackLogin('email');
         router.push('/dashboard');
       }
     } catch (err) {
