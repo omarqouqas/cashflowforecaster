@@ -11,7 +11,7 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     question: "How does Cash Flow Forecaster predict my balance?",
-    answer: "Cash Flow Forecaster uses a simple but powerful algorithm. You enter your current account balance, recurring income (with frequencies like weekly, bi-weekly, or monthly), and recurring bills with their due dates. The app then projects your balance day-by-day for the next 60 days, showing you exactly when money comes in and goes out. It's like having a financial crystal ball that answers 'Will I have enough on the 15th?' with precision."
+    answer: "Cash Flow Forecaster uses a simple but powerful algorithm. You enter your current account balance, recurring income (with frequencies like weekly, bi-weekly, or monthly), and recurring bills with their due dates. The app then projects your balance day-by-day—up to 60 days on Free, or a full 365 days on Pro—showing you exactly when money comes in and goes out. It's like having a financial crystal ball that answers 'Will I have enough on the 15th?' with precision."
   },
   {
     question: "What's included in the weekly email digest?",
@@ -19,7 +19,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "How is this different from Mint or YNAB?",
-    answer: "Traditional budgeting apps like Mint and YNAB focus on tracking where your money went—they're backward-looking. Cash Flow Forecaster is forward-looking. Instead of categorizing past expenses, we show you your projected daily balance for the next 60 days. The calendar interface answers the real question freelancers have: 'Can I afford this expense before my next paycheck arrives?' Plus, our 'Can I Afford It?' feature lets you test hypothetical purchases and see exactly how they'd impact your future balance."
+    answer: "Traditional budgeting apps like Mint and YNAB focus on tracking where your money went—they're backward-looking. Cash Flow Forecaster is forward-looking. Instead of categorizing past expenses, we show you your projected daily balance for up to a full year ahead. The calendar interface answers the real question freelancers have: 'Can I afford this expense before my next paycheck arrives?' Plus, our 'Can I Afford It?' feature lets you test hypothetical purchases and see exactly how they'd impact your future balance."
   },
   {
     question: "Is my financial data secure?",
@@ -40,6 +40,10 @@ const faqs: FAQItem[] = [
   {
     question: "What is Runway Collect?",
     answer: "Runway Collect is our built-in invoicing system for Pro users. Create professional invoices, generate PDFs, and email them directly to clients—from your dashboard. When you create an invoice, it automatically appears as expected income in your cash flow forecast. You can also send payment reminders (friendly, firm, or final) to chase down late payments. It's invoicing that actually connects to your cash flow planning."
+  },
+  {
+    question: "How do clients pay my invoices?",
+    answer: "With Runway Collect, each invoice includes a secure Stripe payment link. Your client clicks 'Pay Now', enters their card details on Stripe's hosted checkout page, and the payment goes directly to your connected Stripe account. You can also add your logo and business name to invoices for a professional look. When they pay, the invoice status updates automatically and syncs with your forecast—no manual tracking required."
   },
   {
     question: "Can I try it before I pay?",

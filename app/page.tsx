@@ -21,6 +21,7 @@ import {
   Megaphone,
   Palette,
   PenLine,
+  PiggyBank,
   Shield,
   Sparkles,
   Wallet,
@@ -57,6 +58,11 @@ export const metadata: Metadata = {
     'freelancer tax tracking',
     'estimated tax calculator',
     'quarterly tax payments freelancer',
+    'freelancer invoice payment links',
+    'stripe invoicing for freelancers',
+    'invoice branding logo',
+    'emergency fund tracker',
+    'freelancer savings goal',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io',
@@ -68,12 +74,21 @@ export const metadata: Metadata = {
     url: 'https://cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
+    images: [
+      {
+        url: 'https://cashflowforecaster.io/hero-dashboard.png',
+        width: 1200,
+        height: 630,
+        alt: 'Cash Flow Forecaster dashboard showing balance forecast chart and calendar',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
       'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
+    images: ['https://cashflowforecaster.io/hero-dashboard.png'],
   },
 };
 
@@ -93,6 +108,39 @@ const structuredData = {
     ratingValue: 4.8,
     ratingCount: 25,
   },
+} as const;
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to Forecast Your Cash Flow as a Freelancer',
+  description: 'A simple 4-step process to get clarity on what\'s safe to spend—today and up to a year from now.',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: 'Add Your Accounts',
+      text: 'Connect your checking/savings accounts or start with manual balances to set your starting point.',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: 'Enter Your Bills',
+      text: 'Add one-time or recurring bills and income sources with their amounts and due dates.',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: 'See Your Future',
+      text: 'Get up to a 365-day projection with interactive charts and filters showing your daily balance.',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 4,
+      name: 'Stay Informed',
+      text: 'Receive weekly digests and alerts delivered to your inbox to stay on top of your cash flow.',
+    },
+  ],
 } as const;
 
 interface HomeProps {
@@ -136,6 +184,11 @@ export default async function Home({ searchParams }: HomeProps) {
         type="application/ld+json"
         // JSON-LD for rich snippets
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        // HowTo schema for "How it Works" section
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       {/* subtle dot grid */}
       <div
@@ -189,6 +242,15 @@ export default async function Home({ searchParams }: HomeProps) {
                   Log in
                 </Link>
               </p>
+
+              <div className="mt-2 flex items-center gap-2 text-sm text-zinc-500">
+                <div className="flex -space-x-2">
+                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 ring-2 ring-zinc-950" />
+                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 ring-2 ring-zinc-950" />
+                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 ring-2 ring-zinc-950" />
+                </div>
+                <span>Trusted by designers, writers &amp; developers</span>
+              </div>
             </div>
 
             <div className="mt-10 max-w-4xl mx-auto rounded-2xl shadow-2xl border border-zinc-800 overflow-hidden bg-zinc-900/40">
@@ -386,6 +448,10 @@ export default async function Home({ searchParams }: HomeProps) {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
+                      <span>Custom branding with your logo and business name</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
                       <span>Automated payment reminders</span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -565,7 +631,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   </p>
                 </div>
 
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                     <div className="flex items-center justify-between">
                       <div className="h-10 w-10 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
@@ -613,6 +679,33 @@ export default async function Home({ searchParams }: HomeProps) {
                         sizes="(max-width: 768px) 100vw, 400px"
                         className="w-full h-auto"
                       />
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
+                        <PiggyBank className="h-5 w-5 text-teal-300" />
+                      </div>
+                      <span className="text-xs text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-full px-3 py-1">
+                        Savings Goal
+                      </span>
+                    </div>
+                    <h4 className="mt-4 font-semibold text-white">Emergency Fund Tracker</h4>
+                    <p className="mt-2 text-zinc-400">
+                      Set a savings goal and track your progress. See how much runway you have if income stops.
+                    </p>
+                    <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span className="text-zinc-400">Emergency Fund</span>
+                        <span className="font-medium text-white">$8,500 / $15,000</span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
+                        <div className="h-full bg-teal-500 transition-all" style={{ width: '57%' }} />
+                      </div>
+                      <p className="mt-3 text-xs text-zinc-400">
+                        3.2 months of runway at current spending
+                      </p>
                     </div>
                   </div>
                 </div>

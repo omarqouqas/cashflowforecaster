@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 export const metadata: Metadata = {
   title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
   description:
-    'Cash flow calendar for freelancers with irregular income—see your bank balance 60 days ahead and avoid overdrafts before they happen.',
+    'Cash flow calendar for freelancers with irregular income—see your bank balance up to 365 days ahead and avoid overdrafts before they happen.',
   keywords: [
     'cash flow calendar',
     'cash flow calendar app',
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'Cash flow calendar for freelancers with irregular income—see your bank balance 60 days ahead and avoid overdrafts before they happen.',
+      'Cash flow calendar for freelancers with irregular income—see your bank balance up to 365 days ahead and avoid overdrafts before they happen.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'Cash flow calendar for freelancers with irregular income—see your bank balance 60 days ahead and avoid overdrafts before they happen.',
+      'Cash flow calendar for freelancers with irregular income—see your bank balance up to 365 days ahead and avoid overdrafts before they happen.',
   },
   // PWA metadata
   manifest: '/manifest.json',

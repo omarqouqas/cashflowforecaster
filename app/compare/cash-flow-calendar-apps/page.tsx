@@ -18,6 +18,10 @@ export const metadata: Metadata = {
     'cash flow forecasting tool',
     'cash flow forecast software',
     'cash flow forecasting software',
+    'freelancer invoice branding',
+    'invoice payment links freelancer',
+    'emergency fund tracker freelancer',
+    'freelancer tax savings tracker',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps',
@@ -45,8 +49,11 @@ const comparisonRows = [
   { feature: 'Forecast length', cff: '60 days (Free) / 365 days (Pro)', typical: '~30 days' },
   { feature: 'Invoicing built-in', cff: '✅ Runway Collect', typical: '❌ No' },
   { feature: 'One-click invoice payments', cff: '✅ Clients pay via Stripe', typical: '❌ No' },
+  { feature: 'Custom invoice branding', cff: '✅ Logo + business name', typical: '❌ No' },
   { feature: 'Invoice → Forecast sync', cff: '✅ Automatic', typical: '❌ No' },
   { feature: 'Payment reminders', cff: '✅ 3 escalating templates', typical: '❌ No' },
+  { feature: 'Emergency fund tracker', cff: '✅ Track savings + runway', typical: '❌ No' },
+  { feature: 'Tax savings tracker', cff: '✅ Quarterly estimates', typical: '❌ No' },
   { feature: 'Weekly email digest', cff: '✅ Yes', typical: '❌ No' },
   { feature: 'Freelancer-focused', cff: '✅ Built for irregular income', typical: '⚠️ Generic' },
   { feature: 'Bank connection required', cff: '❌ Optional', typical: '⚠️ Often required' },
@@ -250,10 +257,11 @@ export default function CashFlowCalendarAppsComparePage() {
           <section className="mt-14">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-10 text-center">
               <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">
-                Get your 60‑day cash flow calendar—free
+                Get your cash flow calendar—free
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
                 See the exact days you&apos;ll run low, map invoices and bills on a calendar, and stop guessing if rent is safe.
+                Start with 60 days free, or go Pro for a full 365-day forecast.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950 px-8" />
