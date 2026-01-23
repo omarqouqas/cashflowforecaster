@@ -12,18 +12,32 @@ export const metadata: Metadata = {
   description:
     "Compare cash flow calendar apps for freelancers. See why Cash Flow Forecaster's invoicing integration and free tier beats the competition.",
   keywords: [
+    // Core comparison terms
     'cash flow calendar',
     'cash flow calendar app',
-    'budget calendar app',
-    'freelance cash flow',
-    'cash flow forecaster vs',
     'cash flow forecasting tool',
     'cash flow forecast software',
-    'cash flow forecasting software',
-    'freelancer invoice branding',
+    'best cash flow app',
+    // Freelancer terms
+    'freelance cash flow',
+    'freelancer budget app',
+    'freelancer finances app',
+    // Solopreneur terms
+    'solopreneur cash flow app',
+    'solopreneur budget tool',
+    // Self-employed terms
+    'self-employed cash flow',
+    'self-employed budget app',
+    // Gig worker terms
+    'gig worker finances app',
+    '1099 contractor budget app',
+    // Comparison terms
+    'cash flow forecaster vs',
+    'best budget app for freelancers',
+    'best cash flow app for solopreneurs',
+    // Feature terms
     'invoice payment links freelancer',
     'emergency fund tracker freelancer',
-    'freelancer tax savings tracker',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps',

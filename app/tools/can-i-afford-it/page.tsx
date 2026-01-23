@@ -15,10 +15,16 @@ export const metadata: Metadata = {
     'can I afford it calculator',
     'cash flow projection',
     'bank balance forecast',
-    'overdraft risk',
-    'freelancer budgeting',
     'when will I run out of money calculator',
     'predict bank balance',
+    'overdraft risk calculator',
+    // Audience terms
+    'freelancer budgeting tool',
+    'solopreneur budget calculator',
+    'self-employed spending calculator',
+    'gig worker finances calculator',
+    '1099 contractor budget tool',
+    'side hustle budget calculator',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io/tools/can-i-afford-it',

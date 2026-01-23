@@ -13,18 +13,35 @@ export const metadata: Metadata = {
   description:
     'Cash flow calendar for freelancers with irregular income—see your bank balance up to 365 days ahead and avoid overdrafts before they happen.',
   keywords: [
+    // Core product terms
     'cash flow calendar',
     'cash flow calendar app',
-    'budget calendar app',
-    'cash flow calendar for freelancers',
     'cash flow forecasting',
     'cash flow forecast app',
-    'cash flow forecasting tool',
-    'cash flow forecasting software',
+    // Freelancer terms
+    'freelancer cash flow',
     'freelancer budgeting',
+    'freelancer finances',
+    // Solopreneur terms
+    'solopreneur cash flow',
+    'solopreneur finances',
+    'solopreneur budgeting app',
+    // Self-employed terms
+    'self-employed budgeting',
+    'self-employed money management',
+    'self-employed cash flow',
+    // Gig worker / 1099 terms
+    'gig worker budget',
+    'gig worker finances',
+    '1099 contractor finances',
+    '1099 income tracking',
+    // Income type terms
     'irregular income budgeting',
+    'variable income budgeting',
+    'side hustle income tracking',
+    // Feature terms
     'bank balance forecast',
-    'bill tracking',
+    'bill tracking app',
   ],
   openGraph: {
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
