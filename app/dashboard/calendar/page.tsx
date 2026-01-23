@@ -70,12 +70,13 @@ export default async function CalendarPage() {
           </Link>
         </div>
 
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-slate-600 dark:text-zinc-400">{forecastDays}-day projection</p>
-        </div>
-
         <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+          {/* Page Header - inside card for consistency */}
+          <div className="px-4 py-4 border-b border-zinc-800">
+            <h1 className="text-2xl font-bold text-zinc-100">Cash Flow Calendar</h1>
+            <p className="text-sm text-zinc-400">{forecastDays}-day projection</p>
+          </div>
+
           <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center py-10">
             <div className="w-20 h-20 bg-teal-500/10 rounded-full flex items-center justify-center mb-6">
               <CalendarIcon className="w-10 h-10 text-teal-500" />
@@ -123,13 +124,18 @@ export default async function CalendarPage() {
           </Link>
         </div>
 
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-slate-600 dark:text-zinc-400">{forecastDays}-day projection</p>
-        </div>
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+          {/* Page Header - inside card for consistency */}
+          <div className="px-4 py-4 border-b border-zinc-800">
+            <h1 className="text-2xl font-bold text-zinc-100">Cash Flow Calendar</h1>
+            <p className="text-sm text-zinc-400">{forecastDays}-day projection</p>
+          </div>
 
-        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 rounded-md px-4 py-3 mb-6">
-          {calendarError || 'Error generating calendar. Please try again.'}
+          <div className="p-4">
+            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 rounded-md px-4 py-3">
+              {calendarError || 'Error generating calendar. Please try again.'}
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -179,7 +185,7 @@ export default async function CalendarPage() {
       <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
         {/* Page Header */}
         <div className="px-4 py-4 border-b border-zinc-800">
-          <h1 className="text-xl font-semibold text-zinc-100">Cash Flow Calendar</h1>
+          <h1 className="text-2xl font-bold text-zinc-100">Cash Flow Calendar</h1>
           <p className="text-sm text-zinc-400">{forecastDays}-day projection</p>
         </div>
 
