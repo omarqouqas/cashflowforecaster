@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 22, 2026 (Day 44)
+**Last Updated:** January 23, 2026 (Day 45)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 44
-- **Commits:** 140+
+- **Days in Development:** 45
+- **Commits:** 145+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish
 
 **Current Focus:**
 
@@ -29,7 +29,33 @@
 
 ---
 
-## Recent Development (Days 40-44)
+## Recent Development (Days 40-45)
+
+### Day 45: Form UX Polish + Currency Input (January 23, 2026)
+
+**CurrencyInput Component** - Numbers now format with commas as you type for better readability.
+
+- New reusable `CurrencyInput` component with live comma formatting (e.g., `12,430.97`)
+- Uses `inputMode="decimal"` for optimal mobile numeric keyboard
+- Supports negative values via `allowNegative` prop (for account balances)
+- Returns raw numeric value to forms while displaying formatted text
+- Applied to all amount fields: Bills, Income, Accounts, Invoices
+
+**Form Consistency & Mobile UX** - All dashboard forms now have consistent styling.
+
+- Select/dropdown fields: Added visible borders (`border border-zinc-700`), consistent background (`bg-zinc-800`)
+- Chevron icons: Increased size (`w-5 h-5`) and visibility (`text-zinc-400`)
+- Date inputs: Added `[color-scheme:dark]` for proper dark mode date picker
+- Button labels: Standardized to action verbs ("Add Bill", "Add Income", "Create Account", "Create Invoice")
+- Touch targets: All interactive elements have `min-h-[44px]` for mobile accessibility
+- Cursor feedback: Added `cursor-pointer` to all clickable form elements
+
+**Bug Fixes:**
+- Fixed invoice amount field white background (was missing dark theme classes)
+
+**Files:** `components/ui/currency-input.tsx` (created), `app/dashboard/accounts/new/page.tsx`, `app/dashboard/bills/new/page.tsx`, `app/dashboard/income/new/page.tsx`, `components/invoices/new-invoice-form.tsx`
+
+---
 
 ### Day 44: User Profile Dropdown + Invoice Branding + UX Polish (January 22, 2026)
 
@@ -290,6 +316,8 @@
 | Interactive landing hero | Demonstrates product pre-signup |
 | User profile dropdown | Avatar, plan badge, quick actions |
 | Invoice branding | Logo upload, business name on PDFs |
+| Currency input formatting | Comma formatting as you type |
+| Form UX consistency | Unified styling, mobile touch targets |
 
 ### Upcoming
 
@@ -320,6 +348,8 @@
 - Emergency Fund + Tax Savings trackers
 - Low balance email alerts
 - Polished user profile dropdown with avatar
+- Consistent form UX with comma-formatted currency inputs
+- Mobile-optimized touch targets (44px minimum)
 
 ## What's Next
 
