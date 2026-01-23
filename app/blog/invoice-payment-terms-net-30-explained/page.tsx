@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import LandingHeader from '@/components/landing/landing-header';
-import { LandingFooter } from '@/components/landing/footer';
 import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { breadcrumbs } from '@/components/seo/schemas';
 import { getPostBySlug } from '@/lib/blog/posts';
@@ -93,7 +91,7 @@ const definitionListSchema = {
 
 export default function InvoicePaymentTermsPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-white selection-teal">
+    <article className="mx-auto max-w-3xl">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
@@ -102,21 +100,6 @@ export default function InvoicePaymentTermsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(definitionListSchema) }}
       />
-
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 opacity-[0.22]"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)',
-          backgroundSize: '28px 28px',
-          backgroundPosition: 'center',
-        }}
-      />
-
-      <LandingHeader />
-
-      <main className="px-6 py-12">
-        <article className="mx-auto max-w-3xl">
           <Breadcrumbs
             items={[
               breadcrumbs.home,
@@ -472,9 +455,5 @@ export default function InvoicePaymentTermsPage() {
             </div>
           </section>
         </article>
-      </main>
-
-      <LandingFooter />
-    </div>
   );
 }

@@ -5,7 +5,7 @@ import { LandingFooter } from '@/components/landing/footer';
 import { CanIAffordCalculator } from '@/components/tools/can-i-afford-calculator';
 import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { breadcrumbs } from '@/components/seo/schemas';
-import { BadgeDollarSign, CalendarDays, Sparkles, ArrowRight, BookOpen } from 'lucide-react';
+import { BadgeDollarSign, CalendarDays, Sparkles, ArrowRight, BookOpen, HelpCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Free “Can I Afford It?” Calculator | Cash Flow Forecaster',
@@ -60,13 +60,74 @@ const structuredData = {
   url: 'https://cashflowforecaster.io/tools/can-i-afford-it',
 } as const;
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How do I know if I can afford a purchase?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'To know if you can afford a purchase, look at your future cash flow, not just your current balance. Add up your upcoming bills before your next income, subtract them from your balance, then see if there\'s room for the purchase without going negative at any point.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is safe to spend?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Safe to spend is the amount you can spend right now without causing your balance to go negative before your next income arrives. It\'s your current balance minus all upcoming bills and expenses that will hit before you get paid again.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why can\'t I just look at my bank balance?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Your bank balance only shows what you have now, not what you\'ll have after upcoming bills hit. If you have $1,000 today but $800 in bills due before payday, your safe-to-spend is only $200—even though your balance says $1,000.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How far ahead should I project my cash flow?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'At minimum, project until your next paycheck or expected income. For freelancers with irregular income, projecting 2-4 weeks ahead helps catch timing issues. For long-term planning, a 90-day view helps identify seasonal patterns and larger expenses.',
+      },
+    },
+  ],
+} as const;
+
+const faqs = [
+  {
+    question: 'How do I know if I can afford a purchase?',
+    answer: 'Look at your future cash flow, not just your current balance. Add up upcoming bills before your next income, subtract from your balance, then see if there\'s room for the purchase without going negative.',
+  },
+  {
+    question: 'What is "safe to spend"?',
+    answer: 'The amount you can spend now without your balance going negative before your next income. It\'s your current balance minus all upcoming bills due before you get paid.',
+  },
+  {
+    question: 'Why can\'t I just look at my bank balance?',
+    answer: 'Your balance shows what you have now, not after upcoming bills. $1,000 today with $800 in bills due means only $200 is truly safe to spend.',
+  },
+  {
+    question: 'How far ahead should I project?',
+    answer: 'At minimum, until your next income. Freelancers should project 2-4 weeks to catch timing issues. A 90-day view helps identify seasonal patterns.',
+  },
+];
+
 export default function CanIAffordItToolPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white selection-teal">
       <script
         type="application/ld+json"
-        // JSON-LD for rich snippets
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       {/* subtle dot grid */}
@@ -145,8 +206,32 @@ export default function CanIAffordItToolPage() {
             </p>
           </div>
 
-          {/* Related content for internal linking */}
+          {/* FAQ Section */}
           <section className="mt-16 max-w-3xl">
+            <div className="flex items-center gap-2 mb-6">
+              <HelpCircle className="h-5 w-5 text-teal-400" />
+              <h2 className="text-xl font-semibold text-white">Frequently Asked Questions</h2>
+            </div>
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <details
+                  key={index}
+                  className="group rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden"
+                >
+                  <summary className="flex cursor-pointer items-center justify-between p-5 text-white font-medium hover:bg-zinc-900/60 transition-colors">
+                    {faq.question}
+                    <span className="ml-4 text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <div className="px-5 pb-5 text-zinc-400 text-sm leading-relaxed">
+                    {faq.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          {/* Related content for internal linking */}
+          <section className="mt-12 max-w-3xl">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="h-5 w-5 text-teal-400" />
               <h2 className="text-lg font-semibold text-white">Learn more about cash flow</h2>
