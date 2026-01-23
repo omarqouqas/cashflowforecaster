@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import LandingHeader from '@/components/landing/landing-header';
+import { LandingFooter } from '@/components/landing/footer';
 import { CanIAffordCalculator } from '@/components/tools/can-i-afford-calculator';
-import { BadgeDollarSign, CalendarDays, Sparkles } from 'lucide-react';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
+import { breadcrumbs } from '@/components/seo/schemas';
+import { BadgeDollarSign, CalendarDays, Sparkles, ArrowRight, BookOpen } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Free “Can I Afford It?” Calculator | Cash Flow Forecaster',
@@ -74,6 +78,15 @@ export default function CanIAffordItToolPage() {
 
       <main className="px-6 py-12">
         <div className="mx-auto max-w-6xl">
+          <Breadcrumbs
+            items={[
+              breadcrumbs.home,
+              breadcrumbs.tools,
+              { name: 'Can I Afford It?', url: 'https://cashflowforecaster.io/tools/can-i-afford-it' },
+            ]}
+            className="mb-8"
+          />
+
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 border border-zinc-800 px-4 py-2 text-sm text-zinc-200">
               <Sparkles className="h-4 w-4 text-teal-400" />
@@ -125,8 +138,61 @@ export default function CanIAffordItToolPage() {
               Forecaster.
             </p>
           </div>
+
+          {/* Related content for internal linking */}
+          <section className="mt-16 max-w-3xl">
+            <div className="flex items-center gap-2 mb-6">
+              <BookOpen className="h-5 w-5 text-teal-400" />
+              <h2 className="text-lg font-semibold text-white">Learn more about cash flow</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link
+                href="/blog/what-is-safe-to-spend"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+              >
+                <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                  What is &quot;Safe to Spend&quot;?
+                </p>
+                <p className="mt-1 text-sm text-zinc-400">
+                  The one number every freelancer needs to know before making a purchase.
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+                  Read article <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+              <Link
+                href="/blog/cash-flow-forecasting-for-freelancers"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+              >
+                <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                  Cash Flow Forecasting for Freelancers
+                </p>
+                <p className="mt-1 text-sm text-zinc-400">
+                  Why day-by-day visibility matters more than monthly budgets.
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+                  Read article <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 text-center">
+              <p className="text-zinc-300">
+                Want a full 365-day forecast with recurring bills and income?
+              </p>
+              <Link
+                href="/auth/signup"
+                className="mt-4 inline-flex items-center justify-center h-10 px-6 rounded-lg bg-teal-500 hover:bg-teal-400 text-zinc-950 font-semibold text-sm transition-colors"
+              >
+                Try Cash Flow Forecaster Free
+              </Link>
+            </div>
+          </section>
         </div>
       </main>
+
+      <LandingFooter />
     </div>
   );
 }

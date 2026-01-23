@@ -4,6 +4,7 @@ import './globals.css';
 import { AppToaster } from '@/components/ui/toaster';
 import { PostHogProvider } from './providers/posthog-provider';
 import { Analytics } from '@vercel/analytics/next';
+import { organizationSchema, websiteSchema } from '@/components/seo/schemas';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -68,11 +69,21 @@ export default function RootLayout({
         {/* Preconnect to improve performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* PWA icons - TODO: Add proper icons when branding is ready */}
-        {/* <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" /> */}
-        {/* <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" /> */}
-        {/* <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" /> */}
+
+        {/* PWA icons */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+        {/* Organization and Website structured data for SEO/AEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
       </head>
       <body className={`${inter.variable} font-sans antialiased bg-white text-zinc-900 selection-teal h-full`}>
         <PostHogProvider>

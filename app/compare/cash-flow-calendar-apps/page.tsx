@@ -3,7 +3,9 @@ import Link from 'next/link';
 import LandingHeader from '@/components/landing/landing-header';
 import { LandingFooter } from '@/components/landing/footer';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
-import { CheckCircle2, XCircle, AlertTriangle, Sparkles } from 'lucide-react';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
+import { breadcrumbs } from '@/components/seo/schemas';
+import { CheckCircle2, XCircle, AlertTriangle, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Best Cash Flow Calendar Apps for Freelancers (2026) | Cash Flow Forecaster',
@@ -141,6 +143,15 @@ export default function CashFlowCalendarAppsComparePage() {
 
       <main className="px-6 py-12">
         <div className="mx-auto max-w-6xl">
+          <Breadcrumbs
+            items={[
+              breadcrumbs.home,
+              breadcrumbs.compare,
+              { name: 'Cash Flow Calendar Apps', url: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps' },
+            ]}
+            className="mb-8"
+          />
+
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 border border-zinc-800 px-4 py-2 text-sm text-zinc-200">
               <Sparkles className="h-4 w-4 text-teal-400" />
@@ -303,6 +314,58 @@ export default function CashFlowCalendarAppsComparePage() {
                   sync, and a free tier—areas where typical cash flow calendar apps are often limited.
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* Related articles for internal linking */}
+          <section className="mt-14">
+            <div className="flex items-center gap-2 mb-6">
+              <BookOpen className="h-5 w-5 text-teal-400" />
+              <h2 className="text-xl font-semibold text-white">Related guides</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Link
+                href="/blog/how-to-manage-irregular-income-as-freelancer"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+              >
+                <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                  How to Manage Irregular Income
+                </p>
+                <p className="mt-1 text-sm text-zinc-400">
+                  A complete guide for freelancers
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+                  Read guide <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+              <Link
+                href="/blog/what-is-safe-to-spend"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+              >
+                <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                  What is &quot;Safe to Spend&quot;?
+                </p>
+                <p className="mt-1 text-sm text-zinc-400">
+                  The one number every freelancer needs
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+                  Read guide <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+              <Link
+                href="/blog/cash-flow-forecasting-for-freelancers"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+              >
+                <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                  Cash Flow Forecasting Guide
+                </p>
+                <p className="mt-1 text-sm text-zinc-400">
+                  Why day-by-day visibility matters
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+                  Read guide <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
             </div>
           </section>
         </div>

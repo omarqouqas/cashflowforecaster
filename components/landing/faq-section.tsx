@@ -10,6 +10,14 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
+    question: "What is a cash flow calendar?",
+    answer: "A cash flow calendar is a visual tool that maps your expected income (like invoices, paychecks, or client payments) and upcoming bills onto specific dates. Unlike a traditional budget that shows monthly totals, a cash flow calendar shows your projected bank balance day-by-day. This helps you spot low-balance days before they happen, see when multiple bills land on the same day (bill collisions), and know exactly what's safe to spend. Also known as: bill calendar, payment calendar, balance forecast, income calendar."
+  },
+  {
+    question: "What does 'Safe to Spend' mean?",
+    answer: "Safe to Spend is the maximum amount you can spend today without risking an overdraft in the next 14 days. It's calculated by taking your lowest projected balance over the next two weeks and subtracting your safety buffer. For example, if your lowest upcoming balance will be $2,500 and your buffer is $500, your Safe to Spend is $2,000. This gives freelancers with irregular income a clear, single number that answers 'Can I afford this?' without guessing. Also known as: available balance, spendable amount, discretionary income."
+  },
+  {
     question: "How does Cash Flow Forecaster predict my balance?",
     answer: "Cash Flow Forecaster uses a simple but powerful algorithm. You enter your current account balance, recurring income (with frequencies like weekly, bi-weekly, or monthly), and recurring bills with their due dates. The app then projects your balance day-by-day—up to 60 days on Free, or a full 365 days on Pro—showing you exactly when money comes in and goes out. It's like having a financial crystal ball that answers 'Will I have enough on the 15th?' with precision."
   },
@@ -48,6 +56,14 @@ const faqs: FAQItem[] = [
   {
     question: "Can I try it before I pay?",
     answer: "Yes! Our Free tier is fully functional—not a limited trial. You get 10 bills, 10 income sources, 60-day forecasting, and the 'Can I Afford It?' scenario tester. If you want unlimited entries, a longer forecast, or invoicing (Runway Collect), you can upgrade anytime. There's no credit card required to sign up."
+  },
+  {
+    question: "How do I budget with irregular income?",
+    answer: "Budgeting with irregular income requires a different approach than traditional monthly budgets. First, calculate your baseline expenses—the minimum you need each month for rent, utilities, insurance, and essentials. Second, build a buffer fund of 2-3 months of expenses to smooth out income fluctuations. Third, use a cash flow calendar (not a monthly budget) to see your projected balance day-by-day. Finally, pay yourself a consistent 'salary' from your business income rather than spending whatever comes in. Cash Flow Forecaster automates the cash flow calendar part, showing you exactly when you'll run low and what's safe to spend."
+  },
+  {
+    question: "What is cash flow forecasting?",
+    answer: "Cash flow forecasting is predicting your future bank balance based on known income and expenses. For freelancers, this means projecting when invoices will be paid, when bills are due, and what your balance will be on any given day. A good cash flow forecast helps you avoid overdrafts, plan large purchases, and manage irregular income. Unlike monthly budgets that hide timing problems, a day-by-day cash flow forecast reveals exactly when you'll run low—before it happens. Also known as: balance projection, cash projection, liquidity forecast."
   }
 ]
 
