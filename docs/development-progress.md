@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit
 
 **Current Focus:**
 
@@ -31,7 +31,7 @@
 
 ## Recent Development (Days 40-45)
 
-### Day 45: Form UX Polish + Currency Input (January 23, 2026)
+### Day 45: Form UX Polish + Currency Input + SEO/AEO Audit (January 23, 2026)
 
 **CurrencyInput Component** - Numbers now format with commas as you type for better readability.
 
@@ -50,10 +50,33 @@
 - Touch targets: All interactive elements have `min-h-[44px]` for mobile accessibility
 - Cursor feedback: Added `cursor-pointer` to all clickable form elements
 
+**SEO/AEO Improvements** - Comprehensive audit and updates for search optimization.
+
+- Fixed canonical URL mismatch (sitemap.ts now uses non-www to match robots.ts)
+- Updated meta descriptions from "60 days" to "365 days" across layout and page
+- Added OG image (hero-dashboard.png) to homepage for social sharing
+- Added HowTo JSON-LD schema for "How it Works" section (AEO optimization)
+- Added 5 new keywords: invoice payment links, stripe invoicing, branding, emergency fund
+- Added new FAQ: "How do clients pay my invoices?" covering Stripe payment links
+- Updated existing FAQ answers to clarify Pro 365-day forecast
+
+**Landing Page Updates** - New features and social proof.
+
+- Added "Custom branding with your logo and business name" to Get Paid Faster section
+- Added Emergency Fund Tracker card to "More ways we help" section (3-column grid)
+- Added social proof avatar stack below hero CTA: "Trusted by designers, writers & developers"
+- Updated pricing cards: Added "Low Balance Alerts" (Free), "Custom invoice branding" (Pro)
+
+**Compare Page Updates** - New feature rows and keywords.
+
+- Added 3 comparison rows: Invoice branding, Emergency fund tracker, Tax savings tracker
+- Updated CTA to mention "60 days free, or 365-day with Pro"
+- Added 4 new keywords for new features
+
 **Bug Fixes:**
 - Fixed invoice amount field white background (was missing dark theme classes)
 
-**Files:** `components/ui/currency-input.tsx` (created), `app/dashboard/accounts/new/page.tsx`, `app/dashboard/bills/new/page.tsx`, `app/dashboard/income/new/page.tsx`, `components/invoices/new-invoice-form.tsx`
+**Files:** `app/page.tsx`, `app/layout.tsx`, `app/sitemap.ts`, `components/landing/faq-section.tsx`, `components/pricing/pricing-section.tsx`, `app/compare/cash-flow-calendar-apps/page.tsx`, `docs/seo-landing-page-audit.md` (created)
 
 ---
 

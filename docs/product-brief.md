@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.7
-**Last Updated:** January 22, 2026
-**Status:** Live - Accepting Payments - Invoice Branding + User Profile Dropdown
+**Version:** 5.8
+**Last Updated:** January 23, 2026
+**Status:** Live - Accepting Payments - SEO/AEO Audit Complete + Landing Page Updates
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -18,9 +18,9 @@
 
 **One-Liner:** "Stop guessing if you can cover rent."
 
-**Hook:** "Your personal cash flow calendar for the next 60 days — with every invoice, bill, and payday mapped out."
+**Hook:** "Your personal cash flow calendar for the next 365 days — with every invoice, bill, and payday mapped out."
 
-Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance 60 days into the future. Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
+Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance up to 365 days into the future (60 days free, 365 days Pro). Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
 
 ### Problem Statement
 
@@ -135,7 +135,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 **Hero:**
 - **Headline:** "Stop Guessing If You Can Cover Rent"
-- **Subhead:** "Your personal cash flow calendar for the next 60 days — with every invoice, bill, and payday mapped out. Built for freelancers with irregular income."
+- **Subhead:** "Know exactly what's safe to spend — today and for the next 365 days. Your personal cash flow calendar with interactive charts, smart filters, and every bill mapped out."
 - **Badge:** "Built for freelancers with irregular income"
 
 **Stat Callout:**
