@@ -6,7 +6,11 @@ import { PostHogProvider } from './providers/posthog-provider';
 import { Analytics } from '@vercel/analytics/next';
 import { organizationSchema, websiteSchema } from '@/components/seo/schemas';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://cashflowforecaster.io'),

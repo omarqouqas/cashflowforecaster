@@ -433,7 +433,8 @@ export default async function Home({ searchParams }: HomeProps) {
                     width={1600}
                     height={900}
                     sizes="(max-width: 1024px) 100vw, 560px"
-                    className="w-full h-auto"
+                    className="w-full h-auto aspect-video"
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -495,7 +496,8 @@ export default async function Home({ searchParams }: HomeProps) {
                     width={1600}
                     height={900}
                     sizes="(max-width: 1024px) 100vw, 560px"
-                    className="w-full h-auto"
+                    className="w-full h-auto aspect-video"
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -673,7 +675,8 @@ export default async function Home({ searchParams }: HomeProps) {
                         width={800}
                         height={600}
                         sizes="(max-width: 768px) 100vw, 400px"
-                        className="w-full h-auto"
+                        className="w-full h-auto aspect-[4/3]"
+                        loading="lazy"
                       />
                     </div>
                   </div>
@@ -698,7 +701,8 @@ export default async function Home({ searchParams }: HomeProps) {
                         width={800}
                         height={600}
                         sizes="(max-width: 768px) 100vw, 400px"
-                        className="w-full h-auto"
+                        className="w-full h-auto aspect-[4/3]"
+                        loading="lazy"
                       />
                     </div>
                   </div>
