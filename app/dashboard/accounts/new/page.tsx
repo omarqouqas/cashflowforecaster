@@ -1,12 +1,13 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function NewAccountPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
@@ -156,20 +158,26 @@ export default function NewAccountPage() {
               Current Balance<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">
                 $
               </span>
-              <Input
-                id="current_balance"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                className={[
-                  'pl-8 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
-                  'focus:border-teal-500 focus:ring-teal-500/20',
-                  errors.current_balance ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
-                ].join(' ')}
-                {...register('current_balance')}
+              <Controller
+                name="current_balance"
+                control={control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    id="current_balance"
+                    placeholder="0.00"
+                    value={field.value}
+                    onChange={field.onChange}
+                    allowNegative
+                    className={[
+                      'pl-8 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                      'focus:border-teal-500 focus:ring-teal-500/20',
+                      errors.current_balance ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+                    ].join(' ')}
+                  />
+                )}
               />
             </div>
             {errors.current_balance?.message && (
