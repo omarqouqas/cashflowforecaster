@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UpgradePrompt } from './upgrade-prompt';
+import { trackFeatureGateHit } from '@/lib/posthog/events';
 
 interface GatedAddButtonProps {
   href: string;
@@ -34,9 +35,12 @@ export function GatedAddButton({
   if (isAtLimit) {
     return (
       <>
-        <Button 
-          variant="primary" 
-          onClick={() => setShowUpgradeModal(true)}
+        <Button
+          variant="primary"
+          onClick={() => {
+            trackFeatureGateHit(feature);
+            setShowUpgradeModal(true);
+          }}
         >
           <Plus className="w-4 h-4 mr-2" />
           {buttonLabel}

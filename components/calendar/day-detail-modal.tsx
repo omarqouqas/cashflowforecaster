@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { AlertTriangle, Clock, Layers, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getBalanceStatus } from '@/lib/calendar/constants';
+import { trackDayDetailOpened } from '@/lib/posthog/events';
 
 interface DayDetailModalProps {
   day: CalendarDay;
@@ -31,6 +32,23 @@ interface DayDetailModalProps {
  */
 export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const trackedRef = useRef(false);
+
+  // Track day detail opened once on mount
+  useEffect(() => {
+    if (!trackedRef.current) {
+      trackedRef.current = true;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const daysFromToday = differenceInDays(day.date, today);
+      trackDayDetailOpened({
+        balance: day.balance,
+        isNegative: day.balance < 0,
+        transactionCount: day.income.length + day.bills.length,
+        daysFromToday,
+      });
+    }
+  }, [day]);
 
   // Handle Escape key to close
   useEffect(() => {

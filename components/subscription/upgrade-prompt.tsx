@@ -5,10 +5,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Sparkles, Check } from 'lucide-react';
 import { createCheckoutSession } from '@/lib/actions/stripe';
 import { PRICING_TIERS } from '@/lib/stripe/config';
+import { trackUpgradeClicked, trackFeatureGateHit } from '@/lib/posthog/events';
 
 interface UpgradePromptProps {
   isOpen: boolean;
@@ -44,6 +45,18 @@ const FEATURE_COPY: Record<UpgradePromptProps['feature'], { title: string; descr
 export function UpgradePrompt({ isOpen, onClose, feature, currentCount, limit }: UpgradePromptProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
+  const trackedRef = useRef(false);
+
+  // Track feature gate hit when modal opens
+  useEffect(() => {
+    if (isOpen && !trackedRef.current) {
+      trackedRef.current = true;
+      trackFeatureGateHit(feature);
+    }
+    if (!isOpen) {
+      trackedRef.current = false;
+    }
+  }, [isOpen, feature]);
 
   if (!isOpen) return null;
 
@@ -52,6 +65,12 @@ export function UpgradePrompt({ isOpen, onClose, feature, currentCount, limit }:
 
   async function handleUpgrade() {
     setIsLoading(true);
+    trackUpgradeClicked({
+      fromTier: 'free',
+      toTier: 'pro',
+      interval: billingInterval,
+      location: 'feature_gate',
+    });
     try {
       const result = await createCheckoutSession('pro', billingInterval);
       if ('url' in result) {
@@ -232,7 +251,10 @@ export function UpgradeBanner({
           </div>
         </div>
         <button
-          onClick={onUpgradeClick}
+          onClick={() => {
+            trackFeatureGateHit(feature);
+            onUpgradeClick();
+          }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             isAtLimit
               ? 'bg-amber-600 hover:bg-amber-700 text-white'

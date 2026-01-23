@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { createInvoice } from '@/lib/actions/invoices';
 import { showError, showSuccess } from '@/lib/toast';
 import { optionalEmailSchema } from '@/lib/validations/email';
+import { trackInvoiceCreated } from '@/lib/posthog/events';
 
 const invoiceSchema = z.object({
   invoice_number: z
@@ -87,6 +88,11 @@ export function NewInvoiceForm() {
         description: data.description ? data.description : null,
       });
 
+      trackInvoiceCreated({
+        amount: data.amount,
+        hasLineItems: false,
+        lineItemCount: 0,
+      });
       showSuccess('Invoice created');
       router.refresh();
       router.push('/dashboard/invoices');

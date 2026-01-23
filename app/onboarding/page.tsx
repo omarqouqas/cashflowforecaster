@@ -230,7 +230,7 @@ export default function OnboardingPage() {
                   trackIncomeAdded({
                     frequency: values.income.frequency,
                     isRecurring: values.income.frequency !== 'one-time',
-                    hasEndDate: !!values.income.end_date,
+                    hasEndDate: false,
                   })
                 }
 

@@ -24,6 +24,7 @@ import {
   useDashboardFilters,
 } from './dashboard-filters';
 import type { CalendarDay } from '@/lib/calendar/types';
+import { trackDashboardViewed } from '@/lib/posthog/events';
 
 interface Account {
   id: string;
@@ -110,6 +111,20 @@ export function DashboardContent({
 }: DashboardContentProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useDashboardFilters(undefined, forecastDays);
   const currency = accounts[0]?.currency || 'USD';
+  const trackedRef = React.useRef(false);
+
+  // Track dashboard view once on mount
+  React.useEffect(() => {
+    if (!trackedRef.current) {
+      trackedRef.current = true;
+      trackDashboardViewed({
+        accountCount: accounts.length,
+        totalBalance: accounts.reduce((sum, acc) => sum + (acc.current_balance || 0), 0),
+        upcomingBillsCount: activeBillsCount,
+        pendingIncomeCount: incomeCount,
+      });
+    }
+  }, [accounts, activeBillsCount, incomeCount]);
 
   // Filter accounts based on selection
   const filteredAccounts = React.useMemo(() => {
