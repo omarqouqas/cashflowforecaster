@@ -27,6 +27,8 @@ import { DeleteAccountSection } from '@/components/settings/delete-account-secti
 import { ChangePasswordButton } from '@/components/settings/change-password-button';
 import { StripeConnectForm } from '@/components/settings/stripe-connect-form';
 import { getConnectAccount } from '@/lib/stripe/connect';
+import { InvoiceBrandingForm } from '@/components/settings/invoice-branding-form';
+import { FileImage } from 'lucide-react';
 
 export const metadata = {
   title: 'Settings | Cash Flow Forecaster',
@@ -42,7 +44,7 @@ export default async function SettingsPage() {
     supabase
       .from('user_settings')
       .select(
-        'safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id'
+        'safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id, business_name, logo_url'
       )
       .eq('user_id', user.id)
       .single(),
@@ -79,6 +81,10 @@ export default async function SettingsPage() {
   const emergencyFundEnabled = settingsData?.emergency_fund_enabled ?? false;
   const emergencyFundGoalMonths = settingsData?.emergency_fund_goal_months ?? 3;
   const emergencyFundAccountId = settingsData?.emergency_fund_account_id ?? null;
+
+  // Invoice branding settings
+  const businessName = settingsData?.business_name ?? null;
+  const logoUrl = settingsData?.logo_url ?? null;
 
   // Calculate monthly expenses from bills
   const monthlyExpenses = bills.reduce((total: number, bill: any) => {
@@ -215,6 +221,16 @@ export default async function SettingsPage() {
             />
           </section>
         )}
+
+        {/* ===== INVOICE BRANDING SECTION ===== */}
+        <section>
+          <SectionHeader icon={FileImage} title="Invoice Branding" />
+          <InvoiceBrandingForm
+            initialBusinessName={businessName}
+            initialLogoUrl={logoUrl}
+            userEmail={user.email || 'your@email.com'}
+          />
+        </section>
 
         {/* ===== TAX TRACKING SECTION ===== */}
         <section>

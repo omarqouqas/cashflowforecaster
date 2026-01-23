@@ -2,9 +2,20 @@
 const nextConfig = {
   // Prevent 307 redirects for API routes (fixes Stripe webhook issues)
   skipTrailingSlashRedirect: true,
-  
+
   eslint: {
     ignoreDuringBuilds: true,
+  },
+
+  // Allow images from Supabase storage
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
   },
   
   // Windows + synced folders (e.g. Google Drive) can throw filesystem errors during

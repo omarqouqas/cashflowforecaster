@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding
 
 **Current Focus:**
 
@@ -31,7 +31,19 @@
 
 ## Recent Development (Days 40-44)
 
-### Day 44: User Profile Dropdown + UX Polish (January 22, 2026)
+### Day 44: User Profile Dropdown + Invoice Branding + UX Polish (January 22, 2026)
+
+**Invoice Branding Feature** - Users can customize invoices with logo and business name.
+
+- Logo upload to Supabase storage (JPG/PNG/WebP, max 512KB)
+- Business name field displayed on invoices instead of email
+- Live invoice preview in settings showing exactly how branding appears
+- Drag-and-drop upload zone with visual feedback
+- Character count for business name (0/100)
+- Logo appears in PDF header next to "INVOICE" title
+- Business name shows in "From" section above email
+- Database migration for `business_name` and `logo_url` columns
+- Storage bucket with RLS policies for user folder isolation
 
 **User Profile Dropdown Redesign** - Enhanced navigation with avatar and improved UX.
 
@@ -54,7 +66,7 @@
 - Stripe customer ID dev/prod mismatch: Verify customer exists before using stored ID, create new if not found
 - Landing page mobile layout: Calendar day cards now horizontally scrollable with snap, stacked day labels
 
-**Files:** `components/dashboard/nav.tsx`, `components/invoices/invoicing-upgrade-prompt.tsx`, `components/landing/hero-dashboard.tsx`, `lib/actions/stripe.ts`
+**Files:** `components/dashboard/nav.tsx`, `components/invoices/invoicing-upgrade-prompt.tsx`, `components/landing/hero-dashboard.tsx`, `lib/actions/stripe.ts`, `components/settings/invoice-branding-form.tsx`, `lib/actions/update-invoice-branding.ts`, `lib/pdf/invoice-template.tsx`
 
 ---
 
@@ -277,6 +289,7 @@
 | YNAB-inspired UI | Dark theme, interactive chart |
 | Interactive landing hero | Demonstrates product pre-signup |
 | User profile dropdown | Avatar, plan badge, quick actions |
+| Invoice branding | Logo upload, business name on PDFs |
 
 ### Upcoming
 

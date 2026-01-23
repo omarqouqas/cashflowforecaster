@@ -5,6 +5,7 @@ import {
   Text,
   View,
   StyleSheet,
+  Image,
 } from '@react-pdf/renderer';
 import type { DocumentProps } from '@react-pdf/renderer';
 import type { Tables } from '@/types/supabase';
@@ -27,6 +28,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 24,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logo: {
+    width: 48,
+    height: 48,
+    objectFit: 'contain',
   },
   title: {
     fontSize: 22,
@@ -134,10 +145,14 @@ export function InvoiceTemplate({
   invoice,
   fromEmail,
   paymentUrl,
+  businessName,
+  logoUrl,
 }: {
   invoice: Invoice;
   fromEmail: string;
   paymentUrl?: string;
+  businessName?: string | null;
+  logoUrl?: string | null;
 }): React.ReactElement<DocumentProps> {
   const status = invoice.status ?? 'draft';
 
@@ -150,7 +165,12 @@ export function InvoiceTemplate({
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.headerRow}>
-          <Text style={styles.title}>INVOICE</Text>
+          <View style={styles.headerLeft}>
+            {logoUrl && (
+              <Image src={logoUrl} style={styles.logo} />
+            )}
+            <Text style={styles.title}>INVOICE</Text>
+          </View>
           <View>
             <Text style={styles.invoiceNumber}>{invoice.invoice_number}</Text>
             <Text style={styles.invoiceNumber}>Status: {status}</Text>
@@ -161,6 +181,9 @@ export function InvoiceTemplate({
         <View style={styles.sectionRow}>
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>From</Text>
+            {businessName && (
+              <Text style={styles.sectionValue}>{businessName}</Text>
+            )}
             <Text style={styles.sectionValue}>{fromEmail}</Text>
           </View>
           <View style={styles.section}>

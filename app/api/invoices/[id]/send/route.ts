@@ -57,12 +57,23 @@ export async function POST(
     // allow empty body
   }
 
-  const { data: invoice, error } = await supabase
-    .from('invoices')
-    .select('*')
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .maybeSingle();
+  // Fetch invoice and branding settings in parallel
+  const [invoiceResult, brandingResult] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('user_settings')
+      .select('business_name, logo_url')
+      .eq('user_id', user.id)
+      .single(),
+  ]);
+
+  const { data: invoice, error } = invoiceResult;
+  const branding = brandingResult.data;
 
   if (error || !invoice) {
     return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
@@ -96,7 +107,12 @@ export async function POST(
 
   const senderName = getSenderName(user);
 
-  const doc = InvoiceTemplate({ invoice: invoiceData, fromEmail: user.email ?? 'Unknown' });
+  const doc = InvoiceTemplate({
+    invoice: invoiceData,
+    fromEmail: user.email ?? 'Unknown',
+    businessName: branding?.business_name,
+    logoUrl: branding?.logo_url,
+  });
   const pdfBuffer = await renderToBuffer(doc);
 
   const { subject, html } = buildInvoiceEmail({

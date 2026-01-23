@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.6
+**Version:** 5.7
 **Last Updated:** January 22, 2026
-**Status:** Live - Accepting Payments - User Profile Dropdown + Conversion UX Polish
+**Status:** Live - Accepting Payments - Invoice Branding + User Profile Dropdown
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -318,6 +318,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - **Enhanced status badges** for dark theme (draft/sent/viewed/paid)
 - **Improved empty state** with value proposition messaging
 - **Stripe Payment Links** - One-click payment for clients via Stripe Connect
+- **Invoice Branding** - Upload logo and set business name for professional invoices
 - **Gated:** Pro+ only
 
 **9. Onboarding Wizard ✅**
@@ -838,6 +839,19 @@ User Request
 
 ## Changelog
 
+### Version 5.7 (January 22, 2026)
+- Invoice Branding Feature:
+  - Logo upload to Supabase storage (JPG/PNG/WebP, max 512KB)
+  - Business name field displayed on invoices instead of email
+  - Live invoice preview in settings showing branding appearance
+  - Drag-and-drop upload zone with visual feedback
+  - Character count for business name (0/100)
+  - Logo appears in PDF header next to "INVOICE" title
+  - Business name shows in "From" section above email
+  - Database migration for `business_name` and `logo_url` columns
+  - Storage bucket with RLS policies for user folder isolation
+  - Next.js image config updated for Supabase storage domains
+
 ### Version 5.6 (January 22, 2026)
 - User Profile Dropdown Redesign:
   - New `UserAvatar` component showing initials from name or email
@@ -1075,7 +1089,7 @@ User Request
 
 ---
 
-**Document Version:** 5.6
+**Document Version:** 5.7
 **Last Updated:** January 22, 2026
-**Status:** Live - User Profile Dropdown + Conversion UX Polish 🎉
+**Status:** Live - Invoice Branding + User Profile Dropdown 🎉
 **Next Review:** February 2026

@@ -29,11 +29,22 @@ export async function GET(
     );
   }
 
-  const { data: invoice, error } = await supabase
-    .from('invoices')
-    .select('*')
-    .eq('id', id)
-    .single();
+  // Fetch invoice and branding settings in parallel
+  const [invoiceResult, brandingResult] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('*')
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('user_settings')
+      .select('business_name, logo_url')
+      .eq('user_id', user.id)
+      .single(),
+  ]);
+
+  const { data: invoice, error } = invoiceResult;
+  const branding = brandingResult.data;
 
   if (error || !invoice) {
     // RLS + not found will typically look like a "no rows" error
@@ -43,6 +54,8 @@ export async function GET(
   const doc = InvoiceTemplate({
     invoice: invoice as any,
     fromEmail: user.email ?? 'Unknown',
+    businessName: branding?.business_name,
+    logoUrl: branding?.logo_url,
   });
 
   const pdfBuffer = await renderToBuffer(doc);

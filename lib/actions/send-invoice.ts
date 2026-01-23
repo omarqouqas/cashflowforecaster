@@ -61,7 +61,17 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
     const user = await requireAuth();
     const supabase = await createClient();
 
-    const invoice = await fetchOwnedInvoice(supabase, input.invoiceId, user.id);
+    // Fetch invoice and branding settings in parallel
+    const [invoice, brandingResult] = await Promise.all([
+      fetchOwnedInvoice(supabase, input.invoiceId, user.id),
+      supabase
+        .from('user_settings')
+        .select('business_name, logo_url')
+        .eq('user_id', user.id)
+        .single(),
+    ]);
+    const branding = brandingResult.data;
+
     if (!invoice) {
       return { ok: false, code: 'not_found', error: 'Invoice not found' };
     }
@@ -115,6 +125,8 @@ export async function sendInvoice(input: SendInvoiceInput): Promise<SendInvoiceR
       invoice,
       fromEmail: user.email ?? 'Unknown',
       paymentUrl: paymentLinkUrl ?? undefined,
+      businessName: branding?.business_name,
+      logoUrl: branding?.logo_url,
     });
     const pdfBuffer = await renderToBuffer(doc);
 
