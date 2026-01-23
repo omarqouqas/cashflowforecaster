@@ -249,9 +249,9 @@ export default function NewBillPage() {
               type="date"
               {...register('due_date')}
               className={[
-                'bg-zinc-900 border-zinc-700 text-zinc-100',
-                'focus:border-teal-500 focus:ring-teal-500/20',
-                errors.due_date ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+                'bg-zinc-800 border-zinc-700 text-zinc-100 cursor-pointer',
+                '[color-scheme:dark]',
+                errors.due_date ? 'border-rose-400 focus:ring-rose-400' : '',
               ].join(' ')}
             />
             {errors.due_date?.message && (
@@ -270,16 +270,15 @@ export default function NewBillPage() {
                 id="frequency"
                 {...register('frequency')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
-                  'text-zinc-100 font-medium',
-                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
-                  '[&>option:first-child]:text-zinc-500',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
-                  'appearance-none pr-10',
-                  errors.frequency ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100',
+                  '[&>option]:bg-zinc-800 [&>option]:text-zinc-100',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
+                  'appearance-none pr-10 cursor-pointer',
+                  errors.frequency ? 'border-rose-400 focus:ring-rose-400' : '',
                 ].join(' ')}
               >
-                <option value="">Select frequency...</option>
+                <option value="" className="text-zinc-500">Select frequency...</option>
                 <option value="weekly">Weekly</option>
                 <option value="biweekly">Biweekly</option>
                 <option value="semi-monthly">Semi-monthly (twice a month)</option>
@@ -288,7 +287,7 @@ export default function NewBillPage() {
                 <option value="annually">Annually</option>
                 <option value="one-time">One-time</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.frequency?.message && (
               <p className="text-sm text-rose-400 mt-1.5">{errors.frequency.message}</p>
@@ -305,23 +304,22 @@ export default function NewBillPage() {
                 id="category"
                 {...register('category')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
-                  'text-zinc-100 font-medium',
-                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
-                  '[&>option:first-child]:text-zinc-500',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
-                  'appearance-none pr-10',
-                  errors.category ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100',
+                  '[&>option]:bg-zinc-800 [&>option]:text-zinc-100',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
+                  'appearance-none pr-10 cursor-pointer',
+                  errors.category ? 'border-rose-400 focus:ring-rose-400' : '',
                 ].join(' ')}
               >
-                <option value="">Select category...</option>
+                <option value="" className="text-zinc-500">Select category...</option>
                 <option value="rent">Rent/Mortgage</option>
                 <option value="utilities">Utilities</option>
                 <option value="subscriptions">Subscriptions</option>
                 <option value="insurance">Insurance</option>
                 <option value="other">Other</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.category?.message && (
               <p className="text-sm text-rose-400 mt-1.5">{errors.category.message}</p>
@@ -363,7 +361,7 @@ export default function NewBillPage() {
               disabled={isLoading || !canAddBill}
               className="w-full bg-teal-600 hover:bg-teal-500 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/20 transition-all hover:shadow-teal-500/30"
             >
-              {isLoading ? 'Saving...' : 'Save'}
+              {isLoading ? 'Adding...' : 'Add Bill'}
             </button>
           </div>
         </form>

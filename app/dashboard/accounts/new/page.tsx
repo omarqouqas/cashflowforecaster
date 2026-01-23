@@ -132,20 +132,19 @@ export default function NewAccountPage() {
                 id="account_type"
                 {...register('account_type')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
-                  'text-zinc-100 font-medium',
-                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
-                  '[&>option:first-child]:text-zinc-500',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
-                  'appearance-none pr-10',
-                  errors.account_type ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100',
+                  '[&>option]:bg-zinc-800 [&>option]:text-zinc-100',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
+                  'appearance-none pr-10 cursor-pointer',
+                  errors.account_type ? 'border-rose-400 focus:ring-rose-400' : '',
                 ].join(' ')}
               >
-                <option value="">Select type...</option>
+                <option value="" className="text-zinc-500">Select type...</option>
                 <option value="checking">Checking</option>
                 <option value="savings">Savings</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             {errors.account_type?.message && (
               <p className="text-sm text-rose-400 mt-1.5">{errors.account_type.message}</p>
@@ -196,11 +195,11 @@ export default function NewAccountPage() {
                 id="currency"
                 {...register('currency')}
                 className={[
-                  'w-full bg-zinc-900 border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
-                  'text-zinc-100 font-medium',
-                  '[&>option]:bg-zinc-900 [&>option]:text-zinc-100',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500',
-                  'appearance-none pr-10',
+                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
+                  'text-zinc-100',
+                  '[&>option]:bg-zinc-800 [&>option]:text-zinc-100',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
+                  'appearance-none pr-10 cursor-pointer',
                 ].join(' ')}
               >
                 <option value="USD">USD ($)</option>
@@ -208,7 +207,7 @@ export default function NewAccountPage() {
                 <option value="EUR">EUR (€)</option>
                 <option value="GBP">GBP (£)</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 

@@ -232,7 +232,10 @@ export function NewInvoiceForm() {
               id="due_date"
               type="date"
               {...register('due_date')}
-              className={errors.due_date ? 'border-rose-500 focus:ring-rose-500' : undefined}
+              className={[
+                'cursor-pointer [color-scheme:dark]',
+                errors.due_date ? 'border-rose-500 focus:ring-rose-500' : '',
+              ].join(' ')}
             />
             {errors.due_date?.message && (
               <p className="text-sm text-rose-400 mt-1.5">{errors.due_date.message}</p>
