@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.8
+**Version:** 5.9
 **Last Updated:** January 23, 2026
-**Status:** Live - Accepting Payments - SEO/AEO Audit Complete + Landing Page Updates
+**Status:** Live - SEO Content Expansion + 10 Blog Posts + Glossary Page
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -839,6 +839,46 @@ User Request
 
 ## Changelog
 
+### Version 5.9 (January 23, 2026)
+- SEO Content Expansion:
+  - **4 New Blog Posts** with OpenGraph images:
+    - Best Cash Flow Apps for Freelancers 2026 (comparison article)
+    - How to Track Freelance Income and Expenses (HowTo schema)
+    - Quarterly Tax Savings for 1099 Contractors (FAQ schema)
+    - When to Raise Your Freelance Rates (tips with email templates)
+  - **Glossary Page** (`/glossary`) with 30+ freelance finance terms
+    - DefinedTermSet schema for AEO/AI search optimization
+    - Alphabetical navigation with quick-jump links
+    - Internal links to related blog posts and tools
+  - Blog count: 10 total posts for organic SEO
+- Core Web Vitals Fixes:
+  - Added `font-display: swap` for faster text rendering
+  - Added `loading="lazy"` to below-fold images
+  - Added `aspect-ratio` classes to prevent CLS
+  - Removed ~320KB of unused old hero images
+- Blog Typography Improvements:
+  - Increased paragraph spacing (`mb-4` → `mb-6`)
+  - Custom prose styles in globals.css (line-height 1.8, better heading spacing)
+  - Improved list, blockquote, and strong text styling for dark mode
+
+### Version 5.8 (January 23, 2026)
+- CurrencyInput Component:
+  - Live comma formatting as you type (e.g., `12,430.97`)
+  - `inputMode="decimal"` for mobile numeric keyboard
+  - Applied to all amount fields across Bills, Income, Accounts, Invoices
+- Form Consistency & Mobile UX:
+  - Visible borders on select/dropdown fields
+  - Standardized button labels to action verbs
+  - 44px touch targets on all interactive elements
+- SEO/AEO Audit:
+  - Fixed canonical URL mismatch in sitemap
+  - Added HowTo schema for landing page
+  - Updated meta descriptions to "365 days"
+  - New FAQ about Stripe payment links
+- Landing Page Updates:
+  - Social proof avatar stack below hero CTA
+  - Emergency Fund Tracker in "More ways we help" section
+
 ### Version 5.7 (January 22, 2026)
 - Invoice Branding Feature:
   - Logo upload to Supabase storage (JPG/PNG/WebP, max 512KB)
@@ -1089,7 +1129,7 @@ User Request
 
 ---
 
-**Document Version:** 5.7
-**Last Updated:** January 22, 2026
-**Status:** Live - Invoice Branding + User Profile Dropdown 🎉
+**Document Version:** 5.9
+**Last Updated:** January 23, 2026
+**Status:** Live - SEO Content Expansion + 10 Blog Posts + Glossary 🎉
 **Next Review:** February 2026

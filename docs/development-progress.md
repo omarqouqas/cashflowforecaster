@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary)
 
 **Current Focus:**
 
@@ -31,7 +31,7 @@
 
 ## Recent Development (Days 40-45)
 
-### Day 45: Form UX Polish + Currency Input + SEO/AEO Audit (January 23, 2026)
+### Day 45: Form UX Polish + Currency Input + SEO/AEO Audit + Content Expansion (January 23, 2026)
 
 **CurrencyInput Component** - Numbers now format with commas as you type for better readability.
 
@@ -73,10 +73,37 @@
 - Updated CTA to mention "60 days free, or 365-day with Pro"
 - Added 4 new keywords for new features
 
+**Core Web Vitals Fixes** - Performance optimizations for better page speed.
+
+- Added `font-display: swap` for faster text rendering (prevents FOIT)
+- Added `loading="lazy"` to all below-fold images on landing page
+- Added `aspect-ratio` classes to prevent layout shift (CLS)
+- Removed ~320KB of unused old hero images (`hero-dashboardOLD.png`, `hero-dashboardsecondOLD.png`)
+
+**Content Expansion (SEO/AEO)** - 4 new blog posts + glossary page.
+
+- **Blog: Best Cash Flow Apps for Freelancers 2026** - Comparison of 5 apps with pros/cons, pricing table
+- **Blog: How to Track Freelance Income and Expenses** - Practical guide with HowTo schema
+- **Blog: Quarterly Tax Savings for 1099 Contractors** - Tax guide with FAQ schema, due dates
+- **Blog: When to Raise Your Freelance Rates** - Tips with email templates for rate increases
+- **Glossary Page (`/glossary`)** - 30+ freelance finance terms with DefinedTermSet schema for AEO
+- All new blog posts have dynamic OpenGraph images via `next/og`
+
+**Blog Typography Improvements** - Better readability across all blog posts.
+
+- Increased paragraph spacing from `mb-4` to `mb-6` for more breathing room
+- Added custom prose typography styles in `globals.css`:
+  - Paragraph line-height increased to 1.8
+  - Heading spacing: h2 gets 2.5em top margin, h3 gets 2em
+  - Improved list and blockquote spacing
+  - Better strong/bold text visibility in dark mode
+
 **Bug Fixes:**
 - Fixed invoice amount field white background (was missing dark theme classes)
+- Fixed unused `Calendar` import in quarterly tax blog post
+- Fixed TypeScript errors in glossary page (term grouping)
 
-**Files:** `app/page.tsx`, `app/layout.tsx`, `app/sitemap.ts`, `components/landing/faq-section.tsx`, `components/pricing/pricing-section.tsx`, `app/compare/cash-flow-calendar-apps/page.tsx`, `docs/seo-landing-page-audit.md` (created)
+**Files:** `app/page.tsx`, `app/layout.tsx`, `app/sitemap.ts`, `app/globals.css`, `lib/blog/posts.ts`, `app/glossary/page.tsx` (created), `app/blog/best-cash-flow-apps-freelancers-2026/` (created), `app/blog/how-to-track-freelance-income-expenses/` (created), `app/blog/quarterly-tax-savings-1099-contractors/` (created), `app/blog/when-to-raise-freelance-rates/` (created)
 
 ---
 
