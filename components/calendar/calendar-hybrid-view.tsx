@@ -154,6 +154,7 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
       safeToSpend: calendarData.safeToSpend,
       currency: calendarData.currency,
       collisions: calendarData.collisions,
+      forecastDays: calendarData.forecastDays,
     };
   }, [filteredDays, calendarData]);
 
@@ -220,6 +221,7 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
               totalIncome={filteredCalendarData.totalIncome}
               totalBills={filteredCalendarData.totalBills}
               endingBalance={filteredCalendarData.endingBalance}
+              forecastDays={filteredCalendarData.forecastDays}
             />
           </div>
 

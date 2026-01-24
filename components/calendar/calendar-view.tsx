@@ -19,6 +19,7 @@ interface CalendarViewProps {
   totalBills: number;
   endingBalance: number;
   currency?: string;
+  forecastDays?: number;
 }
 
 /**
@@ -35,6 +36,7 @@ export function CalendarView({
   totalBills,
   endingBalance,
   currency = 'USD',
+  forecastDays,
 }: CalendarViewProps) {
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const dayRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -127,6 +129,7 @@ export function CalendarView({
         safetyBuffer={buffer}
         safeToSpend={calendarData.safeToSpend}
         currency={currency}
+        forecastDays={forecastDays}
       />
 
       {/* Balance Trend Chart - Interactive */}

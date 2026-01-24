@@ -14,6 +14,21 @@ export interface StickyHeaderProps {
   safetyBuffer: number
   safeToSpend: number
   currency?: string
+  forecastDays?: number
+}
+
+/**
+ * Format forecast period for display
+ * e.g., 60 -> "Next 60 days", 365 -> "Next 12 months"
+ */
+function formatForecastPeriod(days: number): string {
+  if (days === 365) {
+    return 'Next 12 months'
+  }
+  if (days === 90) {
+    return 'Next 3 months'
+  }
+  return `Next ${days} days`
 }
 
 function formatShortDate(date: Date) {
@@ -35,7 +50,9 @@ export function StickyCalendarHeader({
   endingBalance,
   safetyBuffer,
   currency = 'USD',
+  forecastDays = 60,
 }: StickyHeaderProps) {
+  const forecastPeriodLabel = formatForecastPeriod(forecastDays)
   const lowestBalanceColor = lowestBalance < 0 ? 'text-rose-400' : 'text-amber-400'
   const safeToSpendIsZero = safeToSpend <= 0
 
@@ -203,7 +220,7 @@ export function StickyCalendarHeader({
             <p className="text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5">
               {formatCurrency(totalIncome, currency)}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">Next 60 days</p>
+            <p className="text-xs text-zinc-500 mt-1">{forecastPeriodLabel}</p>
           </div>
 
           {/* Bills */}
@@ -249,7 +266,7 @@ export function StickyCalendarHeader({
               <p className="text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5">
                 {formatCurrency(totalIncome, currency)}
               </p>
-              <p className="text-xs text-zinc-500 mt-1">Next 60 days</p>
+              <p className="text-xs text-zinc-500 mt-1">{forecastPeriodLabel}</p>
             </div>
 
             <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 col-span-2 hover:border-zinc-700 hover:bg-zinc-900 transition-all">

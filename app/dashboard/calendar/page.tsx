@@ -164,9 +164,10 @@ export default async function CalendarPage() {
     totalBills,
     endingBalance,
     safetyBuffer,
-    safeToSpend, // NEW
+    safeToSpend,
     currency,
     collisions: calendarData.collisions,
+    forecastDays,
   }
 
   return (

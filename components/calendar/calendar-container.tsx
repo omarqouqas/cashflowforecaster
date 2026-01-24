@@ -25,6 +25,7 @@ interface CalendarContainerProps {
     safetyBuffer: number
     currency?: string
     collisions: CollisionSummary
+    forecastDays?: number
   }
 }
 
@@ -104,6 +105,7 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
       safetyBuffer: calendarData.safetyBuffer,
       safeToSpend: calendarData.safeToSpend,
       currency: calendarData.currency,
+      forecastDays: calendarData.forecastDays,
     }),
     [calendarData],
   )
