@@ -141,7 +141,7 @@ const howToSchema = {
       '@type': 'HowToStep',
       position: 1,
       name: 'Add Your Accounts',
-      text: 'Connect your checking/savings accounts or start with manual balances to set your starting point.',
+      text: 'Enter your checking and savings balances to set your starting point.',
     },
     {
       '@type': 'HowToStep',
@@ -321,7 +321,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 </div>
                 <h3 className="mt-4 font-semibold text-white">Add Your Accounts</h3>
                 <p className="mt-2 text-zinc-400">
-                  Connect your checking/savings (or start with manual balances).
+                  Enter your checking and savings balances to set your starting point.
                 </p>
               </div>
 
@@ -369,6 +369,11 @@ export default async function Home({ searchParams }: HomeProps) {
                 <h3 className="mt-4 font-semibold text-white">Stay Informed</h3>
                 <p className="mt-2 text-zinc-400">Get weekly digests and alerts delivered to your inbox.</p>
               </div>
+            </div>
+
+            <div className="mt-10 text-center">
+              <p className="text-zinc-400 mb-4">Most users are set up in under 3 minutes</p>
+              <GetStartedCTA className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 px-6 py-2.5 rounded-lg text-sm font-medium h-auto" />
             </div>
           </div>
         </section>
@@ -795,6 +800,9 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="mx-auto max-w-4xl">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-10 text-center">
               <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">Ready to stop guessing?</h3>
+              <p className="mt-3 text-zinc-400 max-w-lg mx-auto">
+                See your cash flow calendar in minutes. No credit card, no commitment.
+              </p>
               <div className="mt-6 flex justify-center">
                 <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
               </div>

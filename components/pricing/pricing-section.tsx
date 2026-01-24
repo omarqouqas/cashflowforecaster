@@ -153,7 +153,7 @@ export default function PricingSection({
 
     // Pro tier - trigger Stripe checkout (or signup)
     return {
-      label: isLoading ? 'Loading...' : isLoggedIn ? 'Upgrade to Pro' : 'Get Started Free',
+      label: isLoading ? 'Loading...' : isLoggedIn ? 'Upgrade to Pro' : 'Try Pro Free for 14 Days',
       variant: 'solid',
       onClick: () => handleSubscribe(tier as Exclude<SubscriptionTier, 'free'>),
       loading: isLoading,
@@ -211,9 +211,9 @@ export default function PricingSection({
               ctaSubtext={
                 tierConfig.ctaSubtext ??
                 (tierConfig.tier === 'pro' && !isLoggedIn
-                  ? 'Start free, upgrade anytime'
+                  ? 'Cancel anytime during trial'
                   : tierConfig.tier === 'free' && !isLoggedIn
-                    ? '\u00A0'
+                    ? 'No credit card required'
                     : undefined)
               }
               period={period}
