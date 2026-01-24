@@ -15,6 +15,7 @@ import {
   CreditCard,
   HelpCircle,
   LogOut,
+  Home,
 } from 'lucide-react';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { createPortalSession } from '@/lib/actions/stripe';
@@ -74,18 +75,22 @@ export function DashboardNav({ userEmail, userName, userTier }: DashboardNavProp
   ];
 
   const isLinkActive = (href: string) => {
+    if (href === '/dashboard') {
+      // Home is active only on exact /dashboard match
+      return pathname === '/dashboard';
+    }
     if (href === '/dashboard/calendar') {
-      return pathname === '/dashboard' || pathname.startsWith('/dashboard/calendar');
+      return pathname.startsWith('/dashboard/calendar');
     }
     return pathname.startsWith(href);
   };
 
   const mobileLinks = [
-    { href: '/dashboard/calendar', label: 'Home', icon: Calendar },
+    { href: '/dashboard', label: 'Home', icon: Home },
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
     { href: '/dashboard/bills', label: 'Bills', icon: Receipt },
-    { href: '/dashboard/import', label: 'Import', icon: Upload },
+    { href: '/dashboard/calendar', label: 'Calendar', icon: Calendar },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
   ];
 
