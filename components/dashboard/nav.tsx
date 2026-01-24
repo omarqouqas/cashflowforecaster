@@ -139,6 +139,89 @@ export function DashboardNav({ userEmail, userName, userTier }: DashboardNavProp
 
   return (
     <>
+      {/* Mobile User Avatar - Visible only on mobile, in header */}
+      <div className="flex md:hidden items-center">
+        <div className="relative">
+          <button
+            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            className="flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            <UserAvatar email={userEmail} name={userName} className="w-8 h-8 text-xs" />
+            <ChevronDown
+              className={`w-4 h-4 text-zinc-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {/* Mobile Dropdown Menu */}
+          {isUserMenuOpen && (
+            <>
+              {/* Backdrop to close dropdown */}
+              <div className="fixed inset-0 z-10" onClick={() => setIsUserMenuOpen(false)} />
+
+              {/* Menu */}
+              <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-20 p-1">
+                {/* User Identity Section */}
+                <div className="flex items-center gap-3 p-3 bg-zinc-700/30 rounded-lg mb-1">
+                  <UserAvatar email={userEmail} name={userName} className="w-10 h-10 text-sm" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-zinc-100 truncate">{userEmail}</p>
+                    <p
+                      className={`text-xs ${userTier === 'free' ? 'text-zinc-400' : 'text-teal-400'}`}
+                    >
+                      {getPlanLabel()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-zinc-700 my-1" />
+
+                {/* Navigation Items */}
+                <Link
+                  href="/dashboard/settings"
+                  onClick={() => setIsUserMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-3 min-h-[44px] text-sm text-zinc-200 hover:bg-zinc-700/50 rounded-md transition-colors"
+                >
+                  <Settings className="w-4 h-4 text-zinc-400" />
+                  Settings
+                </Link>
+
+                <button
+                  onClick={handleBilling}
+                  disabled={isBillingLoading}
+                  className="w-full flex items-center gap-3 px-3 py-3 min-h-[44px] text-sm text-zinc-200 hover:bg-zinc-700/50 rounded-md transition-colors disabled:opacity-50"
+                >
+                  <CreditCard className="w-4 h-4 text-zinc-400" />
+                  {isBillingLoading ? 'Loading...' : 'Billing'}
+                </button>
+
+                <a
+                  href="mailto:support@cashflowforecaster.io"
+                  onClick={() => setIsUserMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-3 min-h-[44px] text-sm text-zinc-200 hover:bg-zinc-700/50 rounded-md transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4 text-zinc-400" />
+                  Help & Support
+                </a>
+
+                {/* Divider */}
+                <div className="border-t border-zinc-700 my-1" />
+
+                {/* Log Out */}
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="w-full flex items-center gap-3 px-3 py-3 min-h-[44px] text-sm text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-md transition-colors disabled:opacity-50"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {isLoggingOut ? 'Logging out...' : 'Log out'}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Desktop Navigation - Hidden on mobile */}
       <div className="hidden md:flex items-center gap-4">
         <nav className="flex gap-1">
