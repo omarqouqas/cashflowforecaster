@@ -605,27 +605,6 @@ export function DashboardContent({
         </div>
       </div>
 
-      {/* Import Transactions */}
-      <div className="mb-6">
-        <Link href="/dashboard/import" className="block">
-          <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-5 hover:bg-zinc-700/60 transition-colors">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Upload className="w-5 h-5 text-zinc-300" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-zinc-100">
-                  Import Transactions
-                </p>
-                <p className="text-sm text-zinc-400 mt-1">
-                  Upload a bank CSV to quickly add bills and income
-                </p>
-              </div>
-            </div>
-          </div>
-        </Link>
-      </div>
-
       {/* Calendar Forecast Card */}
       {forecastMetrics && (
         <div className="mb-6">
@@ -709,11 +688,6 @@ export function DashboardContent({
           </Link>
         </div>
       )}
-
-      {/* Scenario Button */}
-      <div className="my-6">
-        <ScenarioButton variant="card" source="dashboard" className="p-4 sm:p-6" />
-      </div>
 
       {/* Outstanding Invoices */}
       <div
@@ -845,6 +819,33 @@ export function DashboardContent({
               : undefined
           }
         />
+      </div>
+
+      {/* Tools Section */}
+      {/* Scenario Tester */}
+      <div className="mb-6">
+        <ScenarioButton variant="card" source="dashboard" className="p-4 sm:p-6" />
+      </div>
+
+      {/* Import Transactions */}
+      <div className="mb-6">
+        <Link href="/dashboard/import" className="block">
+          <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-5 hover:bg-zinc-700/60 transition-colors">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Upload className="w-5 h-5 text-zinc-300" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-zinc-100">
+                  Import Transactions
+                </p>
+                <p className="text-sm text-zinc-400 mt-1">
+                  Upload a bank CSV to quickly add bills and income
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
       </div>
     </div>
   );
