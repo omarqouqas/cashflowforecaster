@@ -548,6 +548,7 @@ export function DashboardContent({
               <div>
                 <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-400">
                   {formatCurrency(monthlyIncome, currency)}
+                  <span className="text-base font-normal text-emerald-400/70">/mo</span>
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                   {incomeCount > 0
@@ -583,6 +584,7 @@ export function DashboardContent({
               <div>
                 <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-400">
                   {formatCurrency(monthlyBills, currency)}
+                  <span className="text-base font-normal text-rose-400/70">/mo</span>
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                   {activeBillsCount > 0
