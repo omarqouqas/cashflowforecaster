@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 23, 2026 (Day 45)
+**Last Updated:** January 24, 2026 (Day 46)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 45
-- **Commits:** 145+
+- **Days in Development:** 46
+- **Commits:** 155+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary)
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish
 
 **Current Focus:**
 
@@ -29,7 +29,43 @@
 
 ---
 
-## Recent Development (Days 40-45)
+## Recent Development (Days 40-46)
+
+### Day 46: Dashboard & Calendar Mobile UX Polish (January 24, 2026)
+
+**Dashboard Forecast Fixes** - Dynamic forecast period labels and extended filter options.
+
+- Fixed hardcoded "60 days" label - now dynamically shows period based on user's filter selection
+- Added 90-day and 365-day ("12 Months") forecast filter options for Pro users
+- Pro users now default to 90-day forecast view (was 60 days)
+- Added "/mo" suffix to Income/Bills metric cards for clarity
+- Added formatting helpers: `formatHorizonPeriod()` and `formatHorizonTitle()`
+
+**Dashboard Layout Improvements** - Better information hierarchy and mobile optimization.
+
+- Removed redundant "View Calendar" CTA under Daily Budget, replaced with "Adjust Buffer" → Settings
+- Removed generic "Welcome to Cash Flow Forecaster!" heading
+- Reorganized sections: Metric cards → Forecast → Invoices → Tax → Emergency Fund → Scenario Tester → Import
+- Mobile responsive text sizing (text-xl sm:text-2xl md:text-3xl)
+- Added min-w-0 and truncate for overflow prevention
+
+**Mobile Navigation Improvements** - Better user experience on mobile devices.
+
+- Added user avatar dropdown to mobile header (profile, billing, logout access)
+- Changed mobile "Home" tab to link to Dashboard instead of Calendar
+- Replaced "Import" with "Calendar" in mobile bottom nav for better discoverability
+
+**Calendar Mobile UX Improvements** - Touch-friendly design following Apple HIG.
+
+- Removed "Tap for more" expandable stats - now shows all 4 stats in 2x2 grid on mobile
+- Increased close button touch target to 44px minimum (was ~28px)
+- Added `whitespace-nowrap` to currency displays to prevent awkward line breaks
+- Increased padding in mobile header cards (p-3 → p-4)
+- Removed redundant "Specific Accounts" from Dashboard "Add filter" menu
+
+**Files:** `components/calendar/sticky-header.tsx`, `components/calendar/day-detail.tsx`, `components/dashboard/dashboard-content.tsx`, `components/dashboard/dashboard-filters.tsx`, `components/dashboard/nav.tsx`, `app/dashboard/calendar/page.tsx`, `components/calendar/calendar-container.tsx`, `components/calendar/calendar-hybrid-view.tsx`, `components/calendar/calendar-view.tsx`
+
+---
 
 ### Day 45: Form UX Polish + Currency Input + SEO/AEO Audit + Content Expansion (January 23, 2026)
 
@@ -400,6 +436,9 @@
 - Polished user profile dropdown with avatar
 - Consistent form UX with comma-formatted currency inputs
 - Mobile-optimized touch targets (44px minimum)
+- Dashboard mobile layout with responsive text and no overflow
+- Calendar mobile UX with always-visible stats (no "Tap for more")
+- Mobile navigation with user avatar menu and Dashboard as Home
 
 ## What's Next
 

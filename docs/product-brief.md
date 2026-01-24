@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 5.9
-**Last Updated:** January 23, 2026
-**Status:** Live - SEO Content Expansion + 10 Blog Posts + Glossary Page
+**Version:** 6.0
+**Last Updated:** January 24, 2026
+**Status:** Live - Dashboard & Calendar Mobile UX Polish
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -839,6 +839,28 @@ User Request
 
 ## Changelog
 
+### Version 6.0 (January 24, 2026)
+- Dashboard Forecast Improvements:
+  - Fixed hardcoded "60 days" label - now dynamically shows period based on filter
+  - Added 90-day and 365-day ("12 Months") forecast filter options for Pro users
+  - Pro users now default to 90-day forecast view
+  - Added "/mo" suffix to Income/Bills metric cards for clarity
+- Dashboard Layout Improvements:
+  - Removed redundant "View Calendar" CTA, replaced with "Adjust Buffer" → Settings
+  - Removed generic welcome heading
+  - Reorganized sections for better information hierarchy
+  - Mobile responsive text sizing with overflow prevention
+- Mobile Navigation:
+  - Added user avatar dropdown to mobile header (profile, billing, logout)
+  - Changed mobile "Home" to Dashboard (was Calendar)
+  - Replaced "Import" with "Calendar" in mobile bottom nav
+- Calendar Mobile UX (Apple HIG compliance):
+  - Removed "Tap for more" - all 4 stats now visible in 2x2 grid
+  - Increased close button touch target to 44px minimum
+  - Added `whitespace-nowrap` to currency displays
+  - Increased mobile header card padding (p-3 → p-4)
+  - Removed redundant "Specific Accounts" filter option
+
 ### Version 5.9 (January 23, 2026)
 - SEO Content Expansion:
   - **4 New Blog Posts** with OpenGraph images:
@@ -1129,7 +1151,7 @@ User Request
 
 ---
 
-**Document Version:** 5.9
-**Last Updated:** January 23, 2026
-**Status:** Live - SEO Content Expansion + 10 Blog Posts + Glossary 🎉
+**Document Version:** 6.0
+**Last Updated:** January 24, 2026
+**Status:** Live - Dashboard & Calendar Mobile UX Polish 🎉
 **Next Review:** February 2026
