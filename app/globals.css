@@ -209,3 +209,60 @@
     background: #52525b; /* zinc-600 */
   }
 }
+
+/* Blog prose typography improvements */
+.prose p {
+  margin-bottom: 1.5em;
+  line-height: 1.8;
+}
+
+.prose h2 {
+  margin-top: 2.5em;
+  margin-bottom: 1em;
+}
+
+.prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose li p {
+  margin-bottom: 0.5em;
+}
+
+/* Ensure first paragraph after heading doesn't have extra top margin */
+.prose h2 + p,
+.prose h3 + p {
+  margin-top: 0;
+}
+
+/* Improve blockquote styling */
+.prose blockquote {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  padding-left: 1.25em;
+  border-left-width: 3px;
+}
+
+/* Better code block spacing */
+.prose pre {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+/* Improve strong/bold readability in dark mode */
+.prose-invert strong {
+  color: #fff;
+  font-weight: 600;
+}

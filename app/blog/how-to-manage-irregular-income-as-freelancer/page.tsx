@@ -218,7 +218,7 @@ export default function IrregularIncomeGuidePage() {
             <h2 className="text-2xl font-semibold text-white mb-4">
               What is irregular income?
             </h2>
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Irregular income is money that doesn&apos;t arrive on a predictable schedule or in consistent amounts.
               If you&apos;re a freelancer, consultant, or gig worker, you likely know this reality well: one month
               you might earn $8,000, the next month $3,000, and the month after that $12,000.
@@ -248,7 +248,7 @@ export default function IrregularIncomeGuidePage() {
               </div>
             </div>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               The problem with monthly budgets for freelancers:
             </p>
 
@@ -279,7 +279,7 @@ export default function IrregularIncomeGuidePage() {
               Step 1: Calculate your baseline expenses
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Your baseline is the minimum you need to survive each month—the non-negotiables that must be paid
               regardless of income. This becomes your &quot;survival number.&quot;
             </p>
@@ -347,13 +347,13 @@ export default function IrregularIncomeGuidePage() {
               </div>
             </div>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               A buffer fund (also called an income smoothing fund) is different from an emergency fund. Your emergency
               fund is for unexpected expenses—car repairs, medical bills. Your buffer fund is specifically for
               smoothing out the gaps between payments.
             </p>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Here&apos;s how it works: When you have a good month, excess money goes into the buffer. When you have
               a slow month, you pull from the buffer to cover the gap. This creates artificial consistency.
             </p>
@@ -399,7 +399,7 @@ export default function IrregularIncomeGuidePage() {
               </p>
             </div>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               A cash flow calendar is the single most important tool for freelancers. Instead of looking at
               monthly totals, you see your projected balance on every single day. This lets you:
             </p>
@@ -443,12 +443,12 @@ export default function IrregularIncomeGuidePage() {
               Step 4: Pay yourself a consistent salary
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               One of the most effective strategies for managing irregular income is to stop thinking of client
               payments as &quot;your money&quot; and start treating your business like an employer.
             </p>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Here&apos;s the framework:
             </p>
 
@@ -504,7 +504,7 @@ export default function IrregularIncomeGuidePage() {
               </div>
             </div>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               As a freelancer, no one withholds taxes from your payments. This means you&apos;re responsible for
               paying estimated quarterly taxes to the IRS (and potentially state). The biggest mistake freelancers
               make is treating all income as spendable, then scrambling when tax season hits.
@@ -523,7 +523,7 @@ export default function IrregularIncomeGuidePage() {
               </div>
             </div>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               The system is simple: every time you get paid, immediately transfer 25-30% to a separate savings
               account labeled &quot;Taxes.&quot; Don&apos;t touch it. When quarterly taxes are due, the money is there.
             </p>

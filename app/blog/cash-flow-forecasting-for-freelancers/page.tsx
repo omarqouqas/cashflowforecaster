@@ -167,12 +167,12 @@ export default function CashFlowForecastingPage() {
               The problem with monthly thinking
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Traditional financial advice tells you to budget monthly: calculate your monthly income, subtract
               monthly expenses, save the rest. Simple, right?
             </p>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Not if you&apos;re a freelancer. Here&apos;s why monthly budgeting fails:
             </p>
 
@@ -209,7 +209,7 @@ export default function CashFlowForecastingPage() {
               What cash flow forecasting actually shows you
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Instead of monthly totals, a cash flow forecast shows your <strong className="text-white">projected
               balance on every single day</strong>. It&apos;s like a weather forecast for your bank account.
             </p>
@@ -249,7 +249,7 @@ export default function CashFlowForecastingPage() {
               The freelancer&apos;s forecasting challenge
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Cash flow forecasting is harder for freelancers than employees because of three factors:
             </p>
 
@@ -299,7 +299,7 @@ export default function CashFlowForecastingPage() {
               How far ahead should you forecast?
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               The further you look, the less accurate your forecast becomes. Here&apos;s a practical framework:
             </p>
 
@@ -349,7 +349,7 @@ export default function CashFlowForecastingPage() {
               Building your first cash flow forecast
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               You can build a basic cash flow forecast in a spreadsheet, or use a tool like Cash Flow Forecaster
               that does the heavy lifting. Either way, here&apos;s the process:
             </p>
@@ -426,7 +426,7 @@ export default function CashFlowForecastingPage() {
               What to do when the forecast looks bad
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               The whole point of forecasting is to see problems before they happen. When your forecast shows
               a low-balance day or negative territory, you have options:
             </p>
@@ -465,7 +465,7 @@ export default function CashFlowForecastingPage() {
               Spreadsheet vs. dedicated tool
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               You can absolutely build a cash flow forecast in Excel or Google Sheets. Many freelancers start
               there. But spreadsheets have limitations:
             </p>

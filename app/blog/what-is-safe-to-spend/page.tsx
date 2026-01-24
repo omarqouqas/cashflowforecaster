@@ -167,7 +167,7 @@ export default function SafeToSpendPage() {
               Why your bank balance lies to you
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               You check your bank account: $3,500. Feels good, right? But here&apos;s what your bank balance
               doesn&apos;t tell you:
             </p>
@@ -187,7 +187,7 @@ export default function SafeToSpendPage() {
               </li>
             </ul>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Your real available money isn&apos;t $3,500. It&apos;s $3,500 minus everything that&apos;s about to
               come out, with a buffer for safety.
             </p>
@@ -229,7 +229,7 @@ export default function SafeToSpendPage() {
 
             <h3 className="text-xl font-semibold text-white mb-3">Example calculation</h3>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Let&apos;s say today is January 23rd and your current balance is $4,200:
             </p>
 
@@ -295,7 +295,7 @@ export default function SafeToSpendPage() {
               Why 14 days? Why not 30?
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               We chose 14 days as the default window because:
             </p>
 
@@ -334,7 +334,7 @@ export default function SafeToSpendPage() {
               Setting your safety buffer
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Your safety buffer is personal. It depends on your risk tolerance and income stability. Here are
               some guidelines:
             </p>
@@ -379,7 +379,7 @@ export default function SafeToSpendPage() {
               Using Safe to Spend in daily life
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Once you know your Safe to Spend number, decision-making becomes simple:
             </p>
 

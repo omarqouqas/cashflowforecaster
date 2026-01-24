@@ -155,7 +155,7 @@ export default function VariableIncomeBudgetPage() {
               Why traditional budgets fail with variable income
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Most budgeting advice starts with &quot;calculate your monthly income.&quot; But what if your
               income is $8,000 one month, $3,000 the next, and $12,000 the month after? Traditional
               percentage-based budgets break down immediately.
@@ -259,7 +259,7 @@ export default function VariableIncomeBudgetPage() {
               Step 1: Find your floor income
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Your &quot;floor income&quot; is the minimum you can realistically expect to earn. Look at your
               last 6-12 months and find your lowest month—that&apos;s your floor.
             </p>
@@ -309,7 +309,7 @@ export default function VariableIncomeBudgetPage() {
               Step 2: Calculate your tier totals
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Add up everything in each tier. Your goal is to have Tier 1 fit comfortably within your
               floor income.
             </p>
@@ -365,7 +365,7 @@ export default function VariableIncomeBudgetPage() {
               Step 3: Fund tiers as money comes in
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Here&apos;s where the system shines. Each time you get paid, allocate money in tier order:
             </p>
 
@@ -418,7 +418,7 @@ export default function VariableIncomeBudgetPage() {
               Making it work day-to-day
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               A tiered budget tells you what to prioritize, but you still need to track timing. Bills
               don&apos;t care about your tier system—they&apos;re due when they&apos;re due.
             </p>

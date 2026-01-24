@@ -167,7 +167,7 @@ export default function EmergencyFundPage() {
               Why freelancers need a bigger emergency fund
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               The standard advice is &quot;save 3-6 months of expenses.&quot; But that advice assumes you have
               a steady paycheck and unemployment benefits as a backstop. Freelancers have neither.
             </p>
@@ -222,7 +222,7 @@ export default function EmergencyFundPage() {
               Emergency fund vs. buffer fund
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Many freelancers confuse these two, but they serve different purposes:
             </p>
 
@@ -276,7 +276,7 @@ export default function EmergencyFundPage() {
               How to calculate your number
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Your emergency fund target depends on your monthly expenses and risk factors.
             </p>
 
@@ -354,7 +354,7 @@ export default function EmergencyFundPage() {
               Where to keep your emergency fund
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Your emergency fund needs to be:
             </p>
 
@@ -373,7 +373,7 @@ export default function EmergencyFundPage() {
               </li>
             </ul>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Best options:
             </p>
 
@@ -422,7 +422,7 @@ export default function EmergencyFundPage() {
               How to build it up
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               Building a 6-12 month emergency fund takes time. Here&apos;s a realistic approach:
             </p>
 
@@ -474,7 +474,7 @@ export default function EmergencyFundPage() {
               Tracking your runway
             </h2>
 
-            <p className="text-zinc-300 leading-relaxed mb-4">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               &quot;Runway&quot; is how long you could survive if all income stopped today. It&apos;s a more
               useful metric than a raw dollar amount because it accounts for your actual spending.
             </p>
