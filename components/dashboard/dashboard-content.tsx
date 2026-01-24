@@ -490,11 +490,10 @@ export function DashboardContent({
             </div>
           </Link>
           <Link
-            href="/dashboard/calendar"
+            href="/dashboard/settings"
             className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-300 hover:text-teal-400 transition-colors"
           >
-            <Calendar className="w-3.5 h-3.5" />
-            View Calendar
+            Adjust Buffer
           </Link>
         </div>
 
