@@ -10,7 +10,7 @@ import { FilterDropdown, type FilterDropdownOption } from '@/components/filters/
 import { FilterDropdownSingle, type FilterDropdownSingleOption } from '@/components/filters/filter-dropdown-single';
 import { AddFilterMenu, type AddFilterOption } from '@/components/filters/add-filter-menu';
 import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/active-filter-pills';
-import { Wallet, PiggyBank, Building2, Users } from 'lucide-react';
+import { Wallet, PiggyBank, Building2 } from 'lucide-react';
 
 export type AccountType = 'checking' | 'savings';
 
@@ -52,9 +52,7 @@ const accountTypeOptions: FilterDropdownOption[] = [
 ];
 
 // Filters that can be added via "+ Add filter" menu
-const additionalFilters: AddFilterOption[] = [
-  { key: 'accounts', label: 'Specific Accounts', icon: <Users className="w-4 h-4" /> },
-];
+const additionalFilters: AddFilterOption[] = [];
 
 // Default visible filters (always shown)
 const defaultVisibleFilters = ['horizon', 'accountType'];

@@ -52,10 +52,10 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-md transition-colors"
+          className="p-2.5 -m-1 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-md transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Close day details"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 

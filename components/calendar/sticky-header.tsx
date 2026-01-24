@@ -154,18 +154,18 @@ export function StickyCalendarHeader({
           </div>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        {/* Stats Row - Mobile: 2x2 grid, Desktop: 4 columns */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
           {/* Safe to Spend (mobile-only, compact) */}
           <div
             className={[
-              'sm:hidden relative overflow-hidden border rounded-xl p-3 min-w-0',
+              'sm:hidden relative overflow-hidden border rounded-xl p-4 min-w-0',
               safeToSpendIsZero
                 ? 'bg-gradient-to-br from-amber-500/10 via-zinc-900 to-zinc-900 border-amber-500/20'
                 : 'bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-900 border-emerald-500/20',
             ].join(' ')}
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <p
                 className={[
                   'text-xs font-semibold uppercase tracking-wide',
@@ -188,7 +188,7 @@ export function StickyCalendarHeader({
             </div>
             <p
               className={[
-                'text-2xl font-bold tabular-nums tracking-tight mt-1',
+                'text-xl font-bold tabular-nums tracking-tight mt-1.5 whitespace-nowrap',
                 safeToSpendIsZero ? 'text-amber-100' : 'text-emerald-300',
               ].join(' ')}
             >
@@ -196,88 +196,42 @@ export function StickyCalendarHeader({
             </p>
           </div>
 
-          {/* Starting */}
+          {/* Starting - Desktop only */}
           <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">STARTING</p>
-            <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-100 mt-1.5">
+            <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-100 mt-1.5 whitespace-nowrap">
               {formatCurrency(startingBalance, currency)}
             </p>
             <p className="text-xs text-zinc-500 mt-1">Today</p>
           </div>
 
-          {/* Lowest */}
-          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
+          {/* Lowest - Always visible */}
+          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">LOWEST</p>
-            <p className={`text-xl font-bold tabular-nums tracking-tight mt-1.5 ${lowestBalanceColor}`}>
+            <p className={`text-lg sm:text-xl font-bold tabular-nums tracking-tight mt-1.5 whitespace-nowrap ${lowestBalanceColor}`}>
               {formatCurrency(lowestBalance, currency)}
             </p>
             <p className="text-xs text-zinc-500 mt-1">{formatShortDate(lowestBalanceDate)}</p>
           </div>
 
-          {/* Income */}
-          <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
+          {/* Income - Always visible */}
+          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">INCOME</p>
-            <p className="text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5">
+            <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5 whitespace-nowrap">
               {formatCurrency(totalIncome, currency)}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">{forecastPeriodLabel}</p>
+            <p className="text-xs text-zinc-500 mt-1 truncate">{forecastPeriodLabel}</p>
           </div>
 
-          {/* Bills */}
-          <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
+          {/* Bills - Always visible */}
+          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">BILLS</p>
-            <p className="text-xl font-bold tabular-nums tracking-tight text-rose-400 mt-1.5">
+            <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-rose-400 mt-1.5 whitespace-nowrap">
               {formatCurrency(totalBills, currency)}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
+            <p className="text-xs text-zinc-500 mt-1 truncate">End: {formatCurrency(endingBalance, currency)}</p>
           </div>
         </div>
-
-        {/* Mobile: keep header compact, allow expanding for extra metrics */}
-        <details className="group sm:hidden mt-2">
-          <summary className="list-none cursor-pointer select-none">
-            <div className="flex items-center justify-center gap-2 text-xs text-zinc-400">
-              <span>Tap for more</span>
-              <svg
-                className="h-4 w-4 transition-transform group-open:rotate-180"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.24 4.5a.75.75 0 0 1-1.08 0l-4.24-4.5a.75.75 0 0 1 .02-1.06Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </summary>
-          <div className="mt-2 grid grid-cols-2 gap-3">
-            <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-              <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">STARTING</p>
-              <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-100 mt-1.5">
-                {formatCurrency(startingBalance, currency)}
-              </p>
-              <p className="text-xs text-zinc-500 mt-1">Today</p>
-            </div>
-
-            <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-              <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">INCOME</p>
-              <p className="text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5">
-                {formatCurrency(totalIncome, currency)}
-              </p>
-              <p className="text-xs text-zinc-500 mt-1">{forecastPeriodLabel}</p>
-            </div>
-
-            <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-3 min-w-0 col-span-2 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-              <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">BILLS</p>
-              <p className="text-xl font-bold tabular-nums tracking-tight text-rose-400 mt-1.5">
-                {formatCurrency(totalBills, currency)}
-              </p>
-              <p className="text-xs text-zinc-500 mt-1">End: {formatCurrency(endingBalance, currency)}</p>
-            </div>
-          </div>
-        </details>
       </div>
     </div>
   )
