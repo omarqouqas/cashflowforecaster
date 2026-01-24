@@ -1,12 +1,14 @@
-# Email Invoice Scanning Feature - Implementation Plan
+# Email Parser Feature - Implementation Plan
 
 ## Overview
 
-Enable users to connect their email accounts (Gmail, Outlook) and automatically scan incoming emails for invoices and bills. The app extracts invoice data using AI, presents it for user review, and allows one-click import into the bills system.
+Enable users to import bills by forwarding emails to `bills@cashflowforecaster.io`. The app receives the forwarded email, extracts invoice data using AI, and presents it for user review before creating a bill.
 
-**Problem it solves:** Freelancers receive bills via email from various vendors (utilities, software subscriptions, contractors). Manually entering each bill is tedious and error-prone. This feature automates bill capture while keeping the user in control through a confirmation workflow.
+**Problem it solves:** Freelancers receive bills via email from various vendors (utilities, software subscriptions, contractors). Manually entering each bill is tedious and error-prone. This feature automates bill capture while keeping the user in full control - they only share what they explicitly forward.
 
 **Target Users:** Pro subscribers
+
+**Privacy Advantage:** Unlike OAuth-based email scanning, this approach never accesses the user's inbox. Users explicitly choose which emails to share by forwarding them.
 
 ---
 
@@ -14,38 +16,37 @@ Enable users to connect their email accounts (Gmail, Outlook) and automatically 
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  1. CONNECT EMAIL                                                        │
-│  ┌──────────────────┐    ┌──────────────────┐                           │
-│  │   Connect Gmail  │    │  Connect Outlook │                           │
-│  │   (OAuth 2.0)    │    │  (OAuth 2.0)     │                           │
-│  └────────┬─────────┘    └────────┬─────────┘                           │
-│           └──────────┬───────────┘                                      │
-│                      ▼                                                   │
-│  2. SCAN EMAILS (Manual trigger or scheduled)                           │
-│  ┌──────────────────────────────────────────┐                           │
-│  │  Fetch unread emails with attachments    │                           │
-│  │  Filter: PDF, images, invoice keywords   │                           │
-│  └────────────────────┬─────────────────────┘                           │
-│                       ▼                                                  │
+│  1. USER FORWARDS EMAIL                                                  │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  User forwards invoice email to bills@cashflowforecaster.io      │   │
+│  │  Works from ANY email provider (Gmail, Outlook, Yahoo, etc.)     │   │
+│  └────────────────────────────┬─────────────────────────────────────┘   │
+│                               ▼                                          │
+│  2. RESEND RECEIVES EMAIL                                                │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  Resend inbound webhook → /api/email/inbound                     │   │
+│  │  Identifies user by sender email address                         │   │
+│  └────────────────────────────┬─────────────────────────────────────┘   │
+│                               ▼                                          │
 │  3. AI EXTRACTION                                                        │
-│  ┌──────────────────────────────────────────┐                           │
-│  │  OpenAI GPT-4 Vision / Google Doc AI     │                           │
-│  │  Extract: vendor, amount, due date, etc  │                           │
-│  │  Confidence score per field              │                           │
-│  └────────────────────┬─────────────────────┘                           │
-│                       ▼                                                  │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  OpenAI GPT-4 Vision analyzes email body + attachments           │   │
+│  │  Extracts: vendor, amount, due date, category                    │   │
+│  │  Confidence score per field                                      │   │
+│  └────────────────────────────┬─────────────────────────────────────┘   │
+│                               ▼                                          │
 │  4. REVIEW QUEUE                                                         │
-│  ┌──────────────────────────────────────────┐                           │
-│  │  User sees extracted bills in table      │                           │
-│  │  Can edit any field before confirming    │                           │
-│  │  Actions: Confirm | Edit | Reject        │                           │
-│  └────────────────────┬─────────────────────┘                           │
-│                       ▼                                                  │
-│  5. IMPORT TO BILLS                                                      │
-│  ┌──────────────────────────────────────────┐                           │
-│  │  Confirmed items → bills table           │                           │
-│  │  Appears on calendar & forecasts         │                           │
-│  └──────────────────────────────────────────┘                           │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  User sees extracted bill in Import Bills page                   │   │
+│  │  Can edit any field before confirming                            │   │
+│  │  Actions: Confirm | Edit | Reject                                │   │
+│  └────────────────────────────┬─────────────────────────────────────┘   │
+│                               ▼                                          │
+│  5. BILL CREATED                                                         │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  Confirmed → creates entry in bills table                        │   │
+│  │  Appears on calendar & cash flow forecasts                       │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -56,95 +57,35 @@ Enable users to connect their email accounts (Gmail, Outlook) and automatically 
 **New dedicated page:** `/dashboard/import-bills`
 
 - Located in navigation after "Bills"
-- Sub-pages:
-  - `/dashboard/import-bills` - Review queue (pending imports)
-  - `/dashboard/import-bills/connect` - Email connection management
-  - `/dashboard/import-bills/history` - Import history
+- Shows pending imports awaiting review
+- Badge shows count of pending items
 
-**Navigation Label:** "Import Bills" with badge showing pending count
+**Additional UI elements:**
+- Instructions card explaining how to forward emails
+- Copy button for `bills@cashflowforecaster.io`
+- Import history view
 
 ---
 
 ## Database Changes
 
-### 1. New Table: `email_connections`
+### 1. New Table: `parsed_emails`
 
-Stores OAuth tokens for connected email providers.
+Stores received emails and extraction results.
 
-**Migration:** `supabase/migrations/[timestamp]_add_email_connections.sql`
-
-| Column | Type | Description |
-|--------|------|-------------|
-| id | UUID | Primary key |
-| user_id | UUID | Foreign key to auth.users |
-| provider | VARCHAR(20) | 'gmail' or 'outlook' |
-| email_address | VARCHAR(255) | Connected email address |
-| access_token | TEXT | Encrypted OAuth access token |
-| refresh_token | TEXT | Encrypted OAuth refresh token |
-| token_expires_at | TIMESTAMPTZ | Token expiration time |
-| scopes | TEXT[] | Granted OAuth scopes |
-| last_sync_at | TIMESTAMPTZ | Last successful email scan |
-| sync_from_date | DATE | Only scan emails after this date |
-| is_active | BOOLEAN | Connection enabled/disabled |
-| created_at | TIMESTAMPTZ | Created timestamp |
-| updated_at | TIMESTAMPTZ | Updated timestamp |
-
-```sql
-CREATE TABLE email_connections (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  provider VARCHAR(20) NOT NULL CHECK (provider IN ('gmail', 'outlook')),
-  email_address VARCHAR(255) NOT NULL,
-  access_token TEXT NOT NULL,
-  refresh_token TEXT NOT NULL,
-  token_expires_at TIMESTAMPTZ NOT NULL,
-  scopes TEXT[] NOT NULL DEFAULT '{}',
-  last_sync_at TIMESTAMPTZ,
-  sync_from_date DATE DEFAULT CURRENT_DATE,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, provider, email_address)
-);
-
--- RLS policies
-ALTER TABLE email_connections ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own email connections"
-  ON email_connections FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own email connections"
-  ON email_connections FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own email connections"
-  ON email_connections FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own email connections"
-  ON email_connections FOR DELETE USING (auth.uid() = user_id);
-
--- Index for faster lookups
-CREATE INDEX idx_email_connections_user_provider
-  ON email_connections(user_id, provider);
-```
-
-### 2. New Table: `pending_bill_imports`
-
-Staging table for extracted bills awaiting user confirmation.
-
-**Migration:** `supabase/migrations/[timestamp]_add_pending_bill_imports.sql`
+**Migration:** `supabase/migrations/[timestamp]_add_parsed_emails.sql`
 
 | Column | Type | Description |
 |--------|------|-------------|
 | id | UUID | Primary key |
-| user_id | UUID | Foreign key to auth.users |
-| email_connection_id | UUID | Source email connection |
-| email_id | VARCHAR(255) | Provider's email message ID |
-| email_subject | VARCHAR(500) | Email subject line |
-| email_from | VARCHAR(255) | Sender email address |
-| email_date | TIMESTAMPTZ | Email received date |
-| attachment_name | VARCHAR(255) | Invoice file name |
-| attachment_type | VARCHAR(50) | MIME type (application/pdf, image/png) |
-| attachment_url | TEXT | Supabase storage URL |
+| user_id | UUID | Foreign key to auth.users (matched by sender) |
+| message_id | VARCHAR(255) | Resend message ID (for deduplication) |
+| from_email | VARCHAR(255) | Original sender (before forwarding) |
+| forwarded_by | VARCHAR(255) | User's email that forwarded |
+| subject | VARCHAR(500) | Email subject line |
+| body_text | TEXT | Plain text body |
+| body_html | TEXT | HTML body (if available) |
+| received_at | TIMESTAMPTZ | When Resend received the email |
 | extracted_vendor | VARCHAR(255) | AI-extracted vendor name |
 | extracted_amount | DECIMAL(12,2) | AI-extracted amount |
 | extracted_currency | VARCHAR(3) | AI-extracted currency (USD, EUR, etc) |
@@ -154,24 +95,25 @@ Staging table for extracted bills awaiting user confirmation.
 | extraction_confidence | DECIMAL(3,2) | Overall confidence (0.00-1.00) |
 | field_confidences | JSONB | Per-field confidence scores |
 | raw_extraction | JSONB | Full AI response for debugging |
-| status | VARCHAR(20) | pending, confirmed, rejected, duplicate |
+| attachments | JSONB | Array of attachment metadata |
+| status | VARCHAR(20) | pending, confirmed, rejected, failed |
 | confirmed_bill_id | UUID | Link to created bill (after confirm) |
 | rejection_reason | VARCHAR(255) | Why user rejected (optional) |
-| created_at | TIMESTAMPTZ | When imported |
+| error_message | TEXT | If processing failed |
+| created_at | TIMESTAMPTZ | When record was created |
 | updated_at | TIMESTAMPTZ | Last modified |
 
 ```sql
-CREATE TABLE pending_bill_imports (
+CREATE TABLE parsed_emails (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  email_connection_id UUID NOT NULL REFERENCES email_connections(id) ON DELETE CASCADE,
-  email_id VARCHAR(255) NOT NULL,
-  email_subject VARCHAR(500),
-  email_from VARCHAR(255),
-  email_date TIMESTAMPTZ,
-  attachment_name VARCHAR(255),
-  attachment_type VARCHAR(50),
-  attachment_url TEXT,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  message_id VARCHAR(255) NOT NULL UNIQUE,
+  from_email VARCHAR(255),
+  forwarded_by VARCHAR(255) NOT NULL,
+  subject VARCHAR(500),
+  body_text TEXT,
+  body_html TEXT,
+  received_at TIMESTAMPTZ NOT NULL,
   extracted_vendor VARCHAR(255),
   extracted_amount DECIMAL(12, 2),
   extracted_currency VARCHAR(3) DEFAULT 'USD',
@@ -181,108 +123,104 @@ CREATE TABLE pending_bill_imports (
   extraction_confidence DECIMAL(3, 2),
   field_confidences JSONB DEFAULT '{}',
   raw_extraction JSONB,
+  attachments JSONB DEFAULT '[]',
   status VARCHAR(20) NOT NULL DEFAULT 'pending'
-    CHECK (status IN ('pending', 'confirmed', 'rejected', 'duplicate')),
+    CHECK (status IN ('pending', 'confirmed', 'rejected', 'failed', 'no_user')),
   confirmed_bill_id UUID REFERENCES bills(id) ON DELETE SET NULL,
   rejection_reason VARCHAR(255),
+  error_message TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, email_id)
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- RLS policies
-ALTER TABLE pending_bill_imports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE parsed_emails ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view own pending imports"
-  ON pending_bill_imports FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can view own parsed emails"
+  ON parsed_emails FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert own pending imports"
-  ON pending_bill_imports FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own parsed emails"
+  ON parsed_emails FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own pending imports"
-  ON pending_bill_imports FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own parsed emails"
+  ON parsed_emails FOR DELETE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete own pending imports"
-  ON pending_bill_imports FOR DELETE USING (auth.uid() = user_id);
+-- Service role can insert (webhook doesn't have user context)
+CREATE POLICY "Service can insert parsed emails"
+  ON parsed_emails FOR INSERT WITH CHECK (true);
 
 -- Indexes
-CREATE INDEX idx_pending_imports_user_status
-  ON pending_bill_imports(user_id, status);
-CREATE INDEX idx_pending_imports_email_id
-  ON pending_bill_imports(email_id);
+CREATE INDEX idx_parsed_emails_user_status
+  ON parsed_emails(user_id, status);
+CREATE INDEX idx_parsed_emails_forwarded_by
+  ON parsed_emails(forwarded_by);
+CREATE INDEX idx_parsed_emails_message_id
+  ON parsed_emails(message_id);
 ```
 
-### 3. New Table: `email_scan_logs`
+### 2. Extend users table (if needed)
 
-Audit trail for email scanning operations.
+Add verified email addresses for matching forwarded emails.
 
 ```sql
-CREATE TABLE email_scan_logs (
+-- Users may forward from different emails than their auth email
+-- This table allows multiple verified sender addresses per user
+CREATE TABLE user_verified_emails (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  email_connection_id UUID NOT NULL REFERENCES email_connections(id) ON DELETE CASCADE,
-  scan_started_at TIMESTAMPTZ NOT NULL,
-  scan_completed_at TIMESTAMPTZ,
-  emails_scanned INT DEFAULT 0,
-  invoices_found INT DEFAULT 0,
-  errors JSONB DEFAULT '[]',
-  status VARCHAR(20) DEFAULT 'running'
-    CHECK (status IN ('running', 'completed', 'failed')),
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  email VARCHAR(255) NOT NULL,
+  verified_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(email)
 );
 
-ALTER TABLE email_scan_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_verified_emails ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view own scan logs"
-  ON email_scan_logs FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can view own verified emails"
+  ON user_verified_emails FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own verified emails"
+  ON user_verified_emails FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own verified emails"
+  ON user_verified_emails FOR DELETE USING (auth.uid() = user_id);
+
+CREATE INDEX idx_verified_emails_email
+  ON user_verified_emails(email);
 ```
 
 ---
 
-## OAuth Integration
+## Resend Inbound Email Setup
 
-### Gmail (Google)
+### 1. Domain Configuration
 
-**Prerequisites:**
-1. Google Cloud Console project
-2. Enable Gmail API
-3. OAuth 2.0 credentials (Web application)
-4. Authorized redirect URI: `https://cashflowforecaster.io/api/auth/callback/google`
+Add MX record for receiving emails at `bills@cashflowforecaster.io`:
 
-**Required Scopes:**
 ```
-https://www.googleapis.com/auth/gmail.readonly
-https://www.googleapis.com/auth/userinfo.email
+Type: MX
+Host: bills (or @ for root)
+Value: inbound.resend.com
+Priority: 10
 ```
 
-**Environment Variables:**
+### 2. Resend Webhook Configuration
+
+In Resend dashboard, configure inbound webhook:
+- **Endpoint:** `https://cashflowforecaster.io/api/email/inbound`
+- **Events:** `email.received`
+
+### 3. Environment Variables
+
 ```env
-GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=https://cashflowforecaster.io/api/auth/callback/google
-```
+# Already configured for outbound
+RESEND_API_KEY=re_xxxxxxxxxxxxx
 
-### Outlook (Microsoft)
+# Webhook secret for verifying inbound requests
+RESEND_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxx
 
-**Prerequisites:**
-1. Azure AD app registration
-2. Microsoft Graph API permissions
-3. OAuth 2.0 credentials
-4. Redirect URI: `https://cashflowforecaster.io/api/auth/callback/microsoft`
-
-**Required Permissions (Delegated):**
-```
-Mail.Read
-User.Read
-offline_access
-```
-
-**Environment Variables:**
-```env
-MICROSOFT_CLIENT_ID=your-azure-app-id
-MICROSOFT_CLIENT_SECRET=your-client-secret
-MICROSOFT_TENANT_ID=common
-MICROSOFT_REDIRECT_URI=https://cashflowforecaster.io/api/auth/callback/microsoft
+# Inbound email address
+BILL_PARSER_EMAIL=bills@cashflowforecaster.io
 ```
 
 ---
@@ -290,370 +228,269 @@ MICROSOFT_REDIRECT_URI=https://cashflowforecaster.io/api/auth/callback/microsoft
 ## File Structure
 
 ```
-lib/email-import/
-├── providers/
-│   ├── types.ts                 # Shared types for all providers
-│   ├── base-provider.ts         # Abstract base class
-│   ├── gmail-provider.ts        # Gmail implementation
-│   └── outlook-provider.ts      # Outlook implementation
+lib/email-parser/
 ├── extraction/
-│   ├── invoice-extractor.ts     # AI extraction orchestration
+│   ├── types.ts                 # Extraction result types
 │   ├── openai-extractor.ts      # OpenAI GPT-4 Vision implementation
-│   └── extraction-types.ts      # Extraction result types
+│   └── parse-email-content.ts   # Email body parsing utilities
 ├── services/
-│   ├── email-scanner.ts         # Main scanning service
-│   ├── token-manager.ts         # OAuth token refresh logic
-│   └── duplicate-detector.ts    # Prevent duplicate imports
+│   ├── process-inbound.ts       # Main inbound email processor
+│   ├── user-matcher.ts          # Match sender email to user
+│   └── attachment-handler.ts    # Download and store attachments
 └── index.ts                     # Public exports
 
 lib/actions/
-├── email-connections.ts         # CRUD for email connections
-├── pending-imports.ts           # CRUD for pending imports
-└── scan-emails.ts               # Trigger email scanning
+├── parsed-emails.ts             # CRUD for parsed emails
+└── verify-email.ts              # Add verified sender emails
 
-app/api/
-├── auth/callback/
-│   ├── google/route.ts          # Gmail OAuth callback
-│   └── microsoft/route.ts       # Outlook OAuth callback
-├── email-import/
-│   ├── scan/route.ts            # Trigger scan endpoint
-│   └── webhook/route.ts         # Gmail push notifications (future)
-└── cron/
-    └── email-scan/route.ts      # Scheduled scanning (optional)
+app/api/email/
+├── inbound/route.ts             # Resend webhook endpoint
+└── verify-sender/route.ts       # Email verification endpoint
 
 app/dashboard/import-bills/
 ├── page.tsx                     # Review queue (main page)
-├── connect/page.tsx             # Email connection management
 ├── history/page.tsx             # Import history
 └── loading.tsx                  # Loading state
 
 components/import-bills/
 ├── import-bills-content.tsx     # Main content wrapper
-├── pending-import-card.tsx      # Individual import card
-├── pending-import-table.tsx     # Table view of imports
+├── how-it-works-card.tsx        # Instructions for forwarding
+├── parsed-email-card.tsx        # Individual import card
 ├── confirm-import-dialog.tsx    # Edit & confirm modal
-├── email-connection-card.tsx    # Connected account card
-├── connect-email-button.tsx     # OAuth trigger button
-├── scan-progress.tsx            # Scanning progress indicator
+├── add-sender-email.tsx         # Add verified email form
 └── import-stats.tsx             # Summary statistics
 ```
 
 ---
 
-## Provider Abstraction Layer
+## Inbound Email Webhook
 
-### Base Types (`lib/email-import/providers/types.ts`)
+### Webhook Handler (`app/api/email/inbound/route.ts`)
 
 ```typescript
-export interface EmailMessage {
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/admin';
+import { processInboundEmail } from '@/lib/email-parser/services/process-inbound';
+import { verifyResendWebhook } from '@/lib/email-parser/verify-webhook';
+
+export async function POST(request: NextRequest) {
+  try {
+    // Verify webhook signature
+    const signature = request.headers.get('resend-signature');
+    const body = await request.text();
+
+    if (!verifyResendWebhook(body, signature)) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
+
+    const payload = JSON.parse(body);
+
+    // Only process email.received events
+    if (payload.type !== 'email.received') {
+      return NextResponse.json({ received: true });
+    }
+
+    const emailData = payload.data;
+
+    // Process asynchronously - return 200 immediately
+    // (Resend expects quick response)
+    processInboundEmail(emailData).catch(console.error);
+
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    console.error('Inbound email webhook error:', error);
+    return NextResponse.json({ error: 'Processing failed' }, { status: 500 });
+  }
+}
+```
+
+### Email Processor (`lib/email-parser/services/process-inbound.ts`)
+
+```typescript
+import { createClient } from '@/lib/supabase/admin';
+import { extractInvoiceFromEmail } from '../extraction/openai-extractor';
+import { matchUserByEmail } from './user-matcher';
+import { storeAttachments } from './attachment-handler';
+
+interface ResendEmailPayload {
   id: string;
-  subject: string;
   from: string;
-  date: Date;
-  snippet: string;
-  hasAttachments: boolean;
+  to: string[];
+  subject: string;
+  text?: string;
+  html?: string;
+  attachments?: Array<{
+    filename: string;
+    content_type: string;
+    content: string; // base64
+  }>;
+  created_at: string;
 }
 
-export interface EmailAttachment {
-  id: string;
-  messageId: string;
-  filename: string;
-  mimeType: string;
-  size: number;
-  data?: Buffer;
-}
+export async function processInboundEmail(email: ResendEmailPayload) {
+  const supabase = createClient();
 
-export interface EmailProvider {
-  name: 'gmail' | 'outlook';
+  // Extract the forwarder's email (the "from" address)
+  const forwardedBy = extractEmail(email.from);
 
-  // OAuth
-  getAuthUrl(state: string): string;
-  exchangeCodeForTokens(code: string): Promise<OAuthTokens>;
-  refreshAccessToken(refreshToken: string): Promise<OAuthTokens>;
+  // Try to match to a user
+  const user = await matchUserByEmail(forwardedBy);
 
-  // Email operations
-  listMessages(options: ListMessagesOptions): Promise<EmailMessage[]>;
-  getMessage(messageId: string): Promise<EmailMessage>;
-  getAttachment(messageId: string, attachmentId: string): Promise<EmailAttachment>;
-  markAsProcessed(messageId: string): Promise<void>;
-}
+  // Store the email record
+  const { data: parsedEmail, error: insertError } = await supabase
+    .from('parsed_emails')
+    .insert({
+      user_id: user?.id || null,
+      message_id: email.id,
+      from_email: extractOriginalSender(email.text || email.html || ''),
+      forwarded_by: forwardedBy,
+      subject: email.subject,
+      body_text: email.text,
+      body_html: email.html,
+      received_at: email.created_at,
+      status: user ? 'pending' : 'no_user',
+      attachments: email.attachments?.map(a => ({
+        filename: a.filename,
+        content_type: a.content_type,
+        size: a.content.length,
+      })) || [],
+    })
+    .select()
+    .single();
 
-export interface OAuthTokens {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: Date;
-  scopes: string[];
-}
-
-export interface ListMessagesOptions {
-  after?: Date;
-  maxResults?: number;
-  query?: string;
-  hasAttachment?: boolean;
-}
-```
-
-### Gmail Provider (`lib/email-import/providers/gmail-provider.ts`)
-
-```typescript
-import { google } from 'googleapis';
-import type { EmailProvider, EmailMessage, OAuthTokens } from './types';
-
-export class GmailProvider implements EmailProvider {
-  name = 'gmail' as const;
-
-  private oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-  );
-
-  getAuthUrl(state: string): string {
-    return this.oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: [
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/userinfo.email',
-      ],
-      state,
-      prompt: 'consent', // Force refresh token
-    });
+  if (insertError) {
+    console.error('Failed to insert parsed email:', insertError);
+    return;
   }
 
-  async exchangeCodeForTokens(code: string): Promise<OAuthTokens> {
-    const { tokens } = await this.oauth2Client.getToken(code);
-    return {
-      accessToken: tokens.access_token!,
-      refreshToken: tokens.refresh_token!,
-      expiresAt: new Date(tokens.expiry_date!),
-      scopes: tokens.scope?.split(' ') || [],
-    };
+  // If no user found, we're done (they can claim later)
+  if (!user) {
+    console.log(`No user found for ${forwardedBy}`);
+    return;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
-    this.oauth2Client.setCredentials({ refresh_token: refreshToken });
-    const { credentials } = await this.oauth2Client.refreshAccessToken();
-    return {
-      accessToken: credentials.access_token!,
-      refreshToken: credentials.refresh_token || refreshToken,
-      expiresAt: new Date(credentials.expiry_date!),
-      scopes: credentials.scope?.split(' ') || [],
-    };
+  // Store attachments in Supabase Storage
+  let attachmentUrls: string[] = [];
+  if (email.attachments?.length) {
+    attachmentUrls = await storeAttachments(
+      user.id,
+      parsedEmail.id,
+      email.attachments
+    );
   }
 
-  async listMessages(options: ListMessagesOptions): Promise<EmailMessage[]> {
-    const gmail = google.gmail({ version: 'v1', auth: this.oauth2Client });
-
-    // Build search query for invoice-like emails
-    let query = 'has:attachment';
-    if (options.after) {
-      query += ` after:${Math.floor(options.after.getTime() / 1000)}`;
-    }
-    // Look for invoice-related keywords
-    query += ' (invoice OR bill OR receipt OR statement OR payment due)';
-
-    const response = await gmail.users.messages.list({
-      userId: 'me',
-      q: query,
-      maxResults: options.maxResults || 50,
-    });
-
-    const messages: EmailMessage[] = [];
-    for (const msg of response.data.messages || []) {
-      const full = await gmail.users.messages.get({
-        userId: 'me',
-        id: msg.id!,
-      });
-
-      const headers = full.data.payload?.headers || [];
-      const getHeader = (name: string) =>
-        headers.find(h => h.name?.toLowerCase() === name.toLowerCase())?.value || '';
-
-      messages.push({
-        id: msg.id!,
-        subject: getHeader('subject'),
-        from: getHeader('from'),
-        date: new Date(parseInt(full.data.internalDate || '0')),
-        snippet: full.data.snippet || '',
-        hasAttachments: (full.data.payload?.parts?.length || 0) > 0,
-      });
-    }
-
-    return messages;
-  }
-
-  async getAttachment(messageId: string, attachmentId: string): Promise<EmailAttachment> {
-    const gmail = google.gmail({ version: 'v1', auth: this.oauth2Client });
-
-    const attachment = await gmail.users.messages.attachments.get({
-      userId: 'me',
-      messageId,
-      id: attachmentId,
-    });
-
-    return {
-      id: attachmentId,
-      messageId,
-      filename: '', // Retrieved from message parts
-      mimeType: '', // Retrieved from message parts
-      size: attachment.data.size || 0,
-      data: Buffer.from(attachment.data.data || '', 'base64'),
-    };
-  }
-
-  setCredentials(tokens: OAuthTokens): void {
-    this.oauth2Client.setCredentials({
-      access_token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-    });
-  }
-}
-```
-
-### Outlook Provider (`lib/email-import/providers/outlook-provider.ts`)
-
-```typescript
-import { Client } from '@microsoft/microsoft-graph-client';
-import { ConfidentialClientApplication } from '@azure/msal-node';
-import type { EmailProvider, EmailMessage, OAuthTokens } from './types';
-
-export class OutlookProvider implements EmailProvider {
-  name = 'outlook' as const;
-
-  private msalClient = new ConfidentialClientApplication({
-    auth: {
-      clientId: process.env.MICROSOFT_CLIENT_ID!,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,
-      authority: `https://login.microsoftonline.com/${process.env.MICROSOFT_TENANT_ID}`,
-    },
+  // Extract invoice data with AI
+  const extraction = await extractInvoiceFromEmail({
+    subject: email.subject,
+    bodyText: email.text,
+    bodyHtml: email.html,
+    attachments: email.attachments?.map((a, i) => ({
+      filename: a.filename,
+      contentType: a.content_type,
+      content: Buffer.from(a.content, 'base64'),
+      url: attachmentUrls[i],
+    })),
   });
 
-  getAuthUrl(state: string): string {
-    const params = new URLSearchParams({
-      client_id: process.env.MICROSOFT_CLIENT_ID!,
-      response_type: 'code',
-      redirect_uri: process.env.MICROSOFT_REDIRECT_URI!,
-      scope: 'Mail.Read User.Read offline_access',
-      state,
-      prompt: 'consent',
-    });
+  // Update record with extraction results
+  await supabase
+    .from('parsed_emails')
+    .update({
+      extracted_vendor: extraction.vendor,
+      extracted_amount: extraction.amount,
+      extracted_currency: extraction.currency,
+      extracted_due_date: extraction.dueDate,
+      extracted_invoice_number: extraction.invoiceNumber,
+      extracted_category: extraction.category,
+      extraction_confidence: extraction.confidence.overall,
+      field_confidences: extraction.confidence,
+      raw_extraction: extraction.rawResponse,
+      attachments: email.attachments?.map((a, i) => ({
+        filename: a.filename,
+        content_type: a.content_type,
+        url: attachmentUrls[i],
+      })),
+      status: extraction.success ? 'pending' : 'failed',
+      error_message: extraction.error,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', parsedEmail.id);
 
-    return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?${params}`;
-  }
+  // TODO: Send push notification or email to user about new import
+}
 
-  async exchangeCodeForTokens(code: string): Promise<OAuthTokens> {
-    const result = await this.msalClient.acquireTokenByCode({
-      code,
-      redirectUri: process.env.MICROSOFT_REDIRECT_URI!,
-      scopes: ['Mail.Read', 'User.Read', 'offline_access'],
-    });
+function extractEmail(from: string): string {
+  // "John Doe <john@example.com>" -> "john@example.com"
+  const match = from.match(/<([^>]+)>/);
+  return match ? match[1].toLowerCase() : from.toLowerCase();
+}
 
-    return {
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken || '', // Store securely
-      expiresAt: result.expiresOn!,
-      scopes: result.scopes,
-    };
-  }
+function extractOriginalSender(content: string): string | null {
+  // Try to find "From:" in forwarded email content
+  // Common patterns: "From: vendor@company.com" or "---------- Forwarded message ----------"
+  const patterns = [
+    /From:\s*([^\n<]+<)?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
+    /Original Message.*From:\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/is,
+  ];
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
-    const result = await this.msalClient.acquireTokenByRefreshToken({
-      refreshToken,
-      scopes: ['Mail.Read', 'User.Read', 'offline_access'],
-    });
-
-    return {
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken || refreshToken,
-      expiresAt: result.expiresOn!,
-      scopes: result.scopes,
-    };
-  }
-
-  async listMessages(options: ListMessagesOptions): Promise<EmailMessage[]> {
-    const client = Client.init({
-      authProvider: (done) => done(null, this.accessToken),
-    });
-
-    // Build filter for invoice-like emails with attachments
-    let filter = 'hasAttachments eq true';
-    if (options.after) {
-      filter += ` and receivedDateTime ge ${options.after.toISOString()}`;
+  for (const pattern of patterns) {
+    const match = content.match(pattern);
+    if (match) {
+      return match[2] || match[1];
     }
-
-    const response = await client
-      .api('/me/messages')
-      .filter(filter)
-      .search('invoice OR bill OR receipt OR statement OR "payment due"')
-      .top(options.maxResults || 50)
-      .select('id,subject,from,receivedDateTime,bodyPreview,hasAttachments')
-      .get();
-
-    return response.value.map((msg: any) => ({
-      id: msg.id,
-      subject: msg.subject || '',
-      from: msg.from?.emailAddress?.address || '',
-      date: new Date(msg.receivedDateTime),
-      snippet: msg.bodyPreview || '',
-      hasAttachments: msg.hasAttachments,
-    }));
   }
 
-  async getAttachment(messageId: string, attachmentId: string): Promise<EmailAttachment> {
-    const client = Client.init({
-      authProvider: (done) => done(null, this.accessToken),
-    });
-
-    const attachment = await client
-      .api(`/me/messages/${messageId}/attachments/${attachmentId}`)
-      .get();
-
-    return {
-      id: attachmentId,
-      messageId,
-      filename: attachment.name,
-      mimeType: attachment.contentType,
-      size: attachment.size,
-      data: Buffer.from(attachment.contentBytes, 'base64'),
-    };
-  }
-
-  private accessToken: string = '';
-
-  setCredentials(tokens: OAuthTokens): void {
-    this.accessToken = tokens.accessToken;
-  }
+  return null;
 }
 ```
 
-### Provider Factory (`lib/email-import/providers/index.ts`)
+### User Matcher (`lib/email-parser/services/user-matcher.ts`)
 
 ```typescript
-import { GmailProvider } from './gmail-provider';
-import { OutlookProvider } from './outlook-provider';
-import type { EmailProvider } from './types';
+import { createClient } from '@/lib/supabase/admin';
 
-export function getEmailProvider(provider: 'gmail' | 'outlook'): EmailProvider {
-  switch (provider) {
-    case 'gmail':
-      return new GmailProvider();
-    case 'outlook':
-      return new OutlookProvider();
-    default:
-      throw new Error(`Unknown email provider: ${provider}`);
-  }
+interface MatchedUser {
+  id: string;
+  email: string;
 }
 
-export * from './types';
-export { GmailProvider } from './gmail-provider';
-export { OutlookProvider } from './outlook-provider';
+export async function matchUserByEmail(email: string): Promise<MatchedUser | null> {
+  const supabase = createClient();
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // First, check verified sender emails
+  const { data: verified } = await supabase
+    .from('user_verified_emails')
+    .select('user_id')
+    .eq('email', normalizedEmail)
+    .single();
+
+  if (verified) {
+    const { data: user } = await supabase
+      .from('auth.users')
+      .select('id, email')
+      .eq('id', verified.user_id)
+      .single();
+
+    return user;
+  }
+
+  // Fall back to auth email
+  const { data: user } = await supabase
+    .from('auth.users')
+    .select('id, email')
+    .eq('email', normalizedEmail)
+    .single();
+
+  return user;
+}
 ```
 
 ---
 
 ## AI Invoice Extraction
 
-### Extraction Types (`lib/email-import/extraction/extraction-types.ts`)
+### Extraction Types (`lib/email-parser/extraction/types.ts`)
 
 ```typescript
 export interface ExtractedInvoice {
@@ -664,20 +501,17 @@ export interface ExtractedInvoice {
   invoiceNumber: string | null;
   invoiceDate: string | null;
   description: string | null;
-  suggestedCategory: string | null;
-  lineItems: LineItem[];
-}
-
-export interface LineItem {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
+  category: string | null;
 }
 
 export interface ExtractionResult {
   success: boolean;
-  data: ExtractedInvoice | null;
+  vendor: string | null;
+  amount: number | null;
+  currency: string;
+  dueDate: string | null;
+  invoiceNumber: string | null;
+  category: string | null;
   confidence: {
     overall: number;
     vendor: number;
@@ -688,104 +522,139 @@ export interface ExtractionResult {
   error?: string;
 }
 
-export interface ExtractorOptions {
-  maxRetries?: number;
-  language?: string;
+export interface EmailContent {
+  subject: string;
+  bodyText?: string;
+  bodyHtml?: string;
+  attachments?: Array<{
+    filename: string;
+    contentType: string;
+    content: Buffer;
+    url?: string;
+  }>;
 }
 ```
 
-### OpenAI Extractor (`lib/email-import/extraction/openai-extractor.ts`)
+### OpenAI Extractor (`lib/email-parser/extraction/openai-extractor.ts`)
 
 ```typescript
 import OpenAI from 'openai';
-import type { ExtractionResult, ExtractedInvoice } from './extraction-types';
+import type { ExtractionResult, EmailContent } from './types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const EXTRACTION_PROMPT = `You are an expert invoice parser. Analyze the provided invoice image or PDF and extract the following information in JSON format:
+const EXTRACTION_PROMPT = `You are an expert invoice and bill parser. Analyze the provided email content and/or attached invoice image to extract billing information.
 
+Return a JSON object with these fields:
 {
-  "vendor": "Company or person name who issued the invoice",
+  "vendor": "Company or person name who issued the bill/invoice",
   "amount": 123.45,
   "currency": "USD",
   "dueDate": "2024-01-15",
   "invoiceNumber": "INV-12345",
-  "invoiceDate": "2024-01-01",
-  "description": "Brief description of what this invoice is for",
-  "suggestedCategory": "One of: utilities, software, contractor, office, marketing, insurance, rent, supplies, travel, other",
-  "lineItems": [
-    {
-      "description": "Item description",
-      "quantity": 1,
-      "unitPrice": 100.00,
-      "total": 100.00
-    }
-  ]
+  "category": "One of: utilities, software, contractor, office, marketing, insurance, rent, supplies, travel, subscriptions, other"
 }
 
 Rules:
 - For amount, extract the TOTAL amount due (not subtotals)
-- For currency, use ISO 4217 codes (USD, EUR, GBP, etc.)
+- For currency, use ISO 4217 codes (USD, EUR, GBP, CAD, AUD, etc.)
 - For dates, use ISO format (YYYY-MM-DD)
 - If a field cannot be determined, use null
 - Be precise with numbers - don't round
+- For category, pick the most appropriate option
 
 Return ONLY valid JSON, no additional text.`;
 
-export async function extractInvoiceWithOpenAI(
-  fileBuffer: Buffer,
-  mimeType: string
+export async function extractInvoiceFromEmail(
+  email: EmailContent
 ): Promise<ExtractionResult> {
   try {
-    const base64 = fileBuffer.toString('base64');
-    const dataUrl = `data:${mimeType};base64,${base64}`;
+    const messages: OpenAI.ChatCompletionMessageParam[] = [];
+
+    // Build content array
+    const content: OpenAI.ChatCompletionContentPart[] = [
+      { type: 'text', text: EXTRACTION_PROMPT },
+      { type: 'text', text: `\n\nEmail Subject: ${email.subject}` },
+    ];
+
+    // Add email body
+    if (email.bodyText) {
+      content.push({
+        type: 'text',
+        text: `\n\nEmail Body:\n${email.bodyText.slice(0, 5000)}`, // Limit size
+      });
+    }
+
+    // Add image attachments for vision analysis
+    const imageAttachments = email.attachments?.filter(a =>
+      a.contentType.startsWith('image/') || a.contentType === 'application/pdf'
+    ) || [];
+
+    for (const attachment of imageAttachments.slice(0, 3)) { // Max 3 attachments
+      if (attachment.contentType.startsWith('image/')) {
+        const base64 = attachment.content.toString('base64');
+        const dataUrl = `data:${attachment.contentType};base64,${base64}`;
+        content.push({
+          type: 'image_url',
+          image_url: { url: dataUrl },
+        });
+      }
+      // Note: For PDFs, you'd need to convert to images first or use a PDF parser
+    }
+
+    messages.push({ role: 'user', content });
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o', // GPT-4 with vision
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: EXTRACTION_PROMPT },
-            { type: 'image_url', image_url: { url: dataUrl } },
-          ],
-        },
-      ],
+      model: 'gpt-4o',
+      messages,
       max_tokens: 1000,
-      temperature: 0.1, // Low temperature for consistent extraction
+      temperature: 0.1,
     });
 
-    const content = response.choices[0]?.message?.content || '';
+    const responseText = response.choices[0]?.message?.content || '';
 
     // Parse JSON from response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return {
         success: false,
-        data: null,
+        vendor: null,
+        amount: null,
+        currency: 'USD',
+        dueDate: null,
+        invoiceNumber: null,
+        category: null,
         confidence: { overall: 0, vendor: 0, amount: 0, dueDate: 0 },
-        rawResponse: content,
+        rawResponse: responseText,
         error: 'No JSON found in response',
       };
     }
 
-    const extracted: ExtractedInvoice = JSON.parse(jsonMatch[0]);
-
-    // Calculate confidence scores based on field completeness
+    const extracted = JSON.parse(jsonMatch[0]);
     const confidence = calculateConfidence(extracted);
 
     return {
       success: true,
-      data: extracted,
+      vendor: extracted.vendor,
+      amount: extracted.amount,
+      currency: extracted.currency || 'USD',
+      dueDate: extracted.dueDate,
+      invoiceNumber: extracted.invoiceNumber,
+      category: extracted.category,
       confidence,
       rawResponse: response,
     };
   } catch (error) {
     return {
       success: false,
-      data: null,
+      vendor: null,
+      amount: null,
+      currency: 'USD',
+      dueDate: null,
+      invoiceNumber: null,
+      category: null,
       confidence: { overall: 0, vendor: 0, amount: 0, dueDate: 0 },
       rawResponse: null,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -793,12 +662,11 @@ export async function extractInvoiceWithOpenAI(
   }
 }
 
-function calculateConfidence(data: ExtractedInvoice): ExtractionResult['confidence'] {
+function calculateConfidence(data: any): ExtractionResult['confidence'] {
   const vendorConf = data.vendor ? 0.9 : 0;
   const amountConf = data.amount !== null ? 0.95 : 0;
   const dueDateConf = data.dueDate ? 0.85 : 0;
 
-  // Overall confidence is weighted average
   const overall = (vendorConf * 0.3 + amountConf * 0.5 + dueDateConf * 0.2);
 
   return {
@@ -812,228 +680,9 @@ function calculateConfidence(data: ExtractedInvoice): ExtractionResult['confiden
 
 ---
 
-## Email Scanning Service
-
-### Main Scanner (`lib/email-import/services/email-scanner.ts`)
-
-```typescript
-import { createClient } from '@/lib/supabase/server';
-import { getEmailProvider } from '../providers';
-import { extractInvoiceWithOpenAI } from '../extraction/openai-extractor';
-import type { EmailConnection, PendingBillImport } from '../types';
-
-interface ScanResult {
-  scanned: number;
-  imported: number;
-  errors: string[];
-}
-
-export async function scanEmailsForInvoices(
-  connectionId: string
-): Promise<ScanResult> {
-  const supabase = await createClient();
-  const result: ScanResult = { scanned: 0, imported: 0, errors: [] };
-
-  // Get connection details
-  const { data: connection } = await supabase
-    .from('email_connections')
-    .select('*')
-    .eq('id', connectionId)
-    .single();
-
-  if (!connection) {
-    throw new Error('Email connection not found');
-  }
-
-  // Initialize provider with credentials
-  const provider = getEmailProvider(connection.provider);
-
-  // Refresh token if needed
-  const tokens = await ensureValidToken(connection, provider);
-  provider.setCredentials(tokens);
-
-  // Fetch messages since last sync
-  const messages = await provider.listMessages({
-    after: connection.last_sync_at
-      ? new Date(connection.last_sync_at)
-      : new Date(connection.sync_from_date),
-    maxResults: 50,
-  });
-
-  result.scanned = messages.length;
-
-  // Process each message
-  for (const message of messages) {
-    try {
-      // Check for duplicate
-      const { data: existing } = await supabase
-        .from('pending_bill_imports')
-        .select('id')
-        .eq('email_id', message.id)
-        .eq('user_id', connection.user_id)
-        .single();
-
-      if (existing) {
-        continue; // Skip duplicate
-      }
-
-      // Get attachments (PDFs and images)
-      const attachments = await getInvoiceAttachments(provider, message.id);
-
-      for (const attachment of attachments) {
-        // Extract invoice data with AI
-        const extraction = await extractInvoiceWithOpenAI(
-          attachment.data!,
-          attachment.mimeType
-        );
-
-        if (extraction.success && extraction.data) {
-          // Store in Supabase Storage
-          const storagePath = `imports/${connection.user_id}/${message.id}/${attachment.filename}`;
-          await supabase.storage
-            .from('invoice-attachments')
-            .upload(storagePath, attachment.data!, {
-              contentType: attachment.mimeType,
-            });
-
-          const { data: urlData } = supabase.storage
-            .from('invoice-attachments')
-            .getPublicUrl(storagePath);
-
-          // Insert pending import
-          await supabase.from('pending_bill_imports').insert({
-            user_id: connection.user_id,
-            email_connection_id: connectionId,
-            email_id: message.id,
-            email_subject: message.subject,
-            email_from: message.from,
-            email_date: message.date.toISOString(),
-            attachment_name: attachment.filename,
-            attachment_type: attachment.mimeType,
-            attachment_url: urlData.publicUrl,
-            extracted_vendor: extraction.data.vendor,
-            extracted_amount: extraction.data.amount,
-            extracted_currency: extraction.data.currency,
-            extracted_due_date: extraction.data.dueDate,
-            extracted_invoice_number: extraction.data.invoiceNumber,
-            extracted_category: extraction.data.suggestedCategory,
-            extraction_confidence: extraction.confidence.overall,
-            field_confidences: extraction.confidence,
-            raw_extraction: extraction.rawResponse,
-            status: 'pending',
-          });
-
-          result.imported++;
-        }
-      }
-    } catch (error) {
-      result.errors.push(`Error processing ${message.id}: ${error}`);
-    }
-  }
-
-  // Update last sync timestamp
-  await supabase
-    .from('email_connections')
-    .update({ last_sync_at: new Date().toISOString() })
-    .eq('id', connectionId);
-
-  return result;
-}
-
-async function getInvoiceAttachments(provider: any, messageId: string) {
-  // Implementation to get PDF/image attachments
-  // Filter by MIME types: application/pdf, image/png, image/jpeg
-}
-
-async function ensureValidToken(connection: EmailConnection, provider: any) {
-  if (new Date(connection.token_expires_at) > new Date()) {
-    return {
-      accessToken: connection.access_token,
-      refreshToken: connection.refresh_token,
-      expiresAt: new Date(connection.token_expires_at),
-      scopes: connection.scopes,
-    };
-  }
-
-  // Refresh the token
-  const newTokens = await provider.refreshAccessToken(connection.refresh_token);
-
-  // Update in database
-  const supabase = await createClient();
-  await supabase
-    .from('email_connections')
-    .update({
-      access_token: newTokens.accessToken,
-      refresh_token: newTokens.refreshToken,
-      token_expires_at: newTokens.expiresAt.toISOString(),
-    })
-    .eq('id', connection.id);
-
-  return newTokens;
-}
-```
-
----
-
 ## Server Actions
 
-### Email Connections (`lib/actions/email-connections.ts`)
-
-```typescript
-'use server';
-
-import { createClient } from '@/lib/supabase/server';
-import { requireAuth } from '@/lib/auth/session';
-import { revalidatePath } from 'next/cache';
-
-export async function getEmailConnections() {
-  const user = await requireAuth();
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from('email_connections')
-    .select('id, provider, email_address, is_active, last_sync_at, created_at')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data;
-}
-
-export async function disconnectEmail(connectionId: string) {
-  const user = await requireAuth();
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from('email_connections')
-    .delete()
-    .eq('id', connectionId)
-    .eq('user_id', user.id);
-
-  if (error) throw error;
-
-  revalidatePath('/dashboard/import-bills');
-  return { success: true };
-}
-
-export async function toggleEmailConnection(connectionId: string, isActive: boolean) {
-  const user = await requireAuth();
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from('email_connections')
-    .update({ is_active: isActive })
-    .eq('id', connectionId)
-    .eq('user_id', user.id);
-
-  if (error) throw error;
-
-  revalidatePath('/dashboard/import-bills');
-  return { success: true };
-}
-```
-
-### Pending Imports (`lib/actions/pending-imports.ts`)
+### Parsed Emails Actions (`lib/actions/parsed-emails.ts`)
 
 ```typescript
 'use server';
@@ -1048,21 +697,34 @@ export async function getPendingImports() {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('pending_bill_imports')
-    .select(`
-      *,
-      email_connections (provider, email_address)
-    `)
+    .from('parsed_emails')
+    .select('*')
     .eq('user_id', user.id)
     .eq('status', 'pending')
-    .order('created_at', { ascending: false });
+    .order('received_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getImportHistory(limit = 50) {
+  const user = await requireAuth();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('parsed_emails')
+    .select('*')
+    .eq('user_id', user.id)
+    .in('status', ['confirmed', 'rejected'])
+    .order('updated_at', { ascending: false })
+    .limit(limit);
 
   if (error) throw error;
   return data;
 }
 
 export async function confirmImport(
-  importId: string,
+  parsedEmailId: string,
   overrides?: {
     name?: string;
     amount?: number;
@@ -1074,39 +736,39 @@ export async function confirmImport(
   const user = await requireAuth();
   const supabase = await createClient();
 
-  // Get the pending import
-  const { data: pendingImport, error: fetchError } = await supabase
-    .from('pending_bill_imports')
+  // Get the parsed email
+  const { data: parsedEmail, error: fetchError } = await supabase
+    .from('parsed_emails')
     .select('*')
-    .eq('id', importId)
+    .eq('id', parsedEmailId)
     .eq('user_id', user.id)
     .single();
 
-  if (fetchError || !pendingImport) {
+  if (fetchError || !parsedEmail) {
     throw new Error('Import not found');
   }
 
   // Create the bill
   const billData = {
-    name: overrides?.name || pendingImport.extracted_vendor || 'Unknown Vendor',
-    amount: overrides?.amount || pendingImport.extracted_amount || 0,
-    due_date: overrides?.due_date || pendingImport.extracted_due_date,
-    category: overrides?.category || pendingImport.extracted_category || 'other',
+    name: overrides?.name || parsedEmail.extracted_vendor || 'Unknown Vendor',
+    amount: overrides?.amount ?? parsedEmail.extracted_amount ?? 0,
+    due_date: overrides?.due_date || parsedEmail.extracted_due_date,
+    category: overrides?.category || parsedEmail.extracted_category || 'other',
     frequency: overrides?.frequency || 'one-time',
-    notes: `Imported from email: ${pendingImport.email_subject}`,
+    notes: `Imported from email: ${parsedEmail.subject}`,
   };
 
   const bill = await createBill(billData);
 
-  // Update pending import status
+  // Update parsed email status
   await supabase
-    .from('pending_bill_imports')
+    .from('parsed_emails')
     .update({
       status: 'confirmed',
       confirmed_bill_id: bill.id,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', importId);
+    .eq('id', parsedEmailId);
 
   revalidatePath('/dashboard/import-bills');
   revalidatePath('/dashboard/bills');
@@ -1114,18 +776,18 @@ export async function confirmImport(
   return { success: true, billId: bill.id };
 }
 
-export async function rejectImport(importId: string, reason?: string) {
+export async function rejectImport(parsedEmailId: string, reason?: string) {
   const user = await requireAuth();
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from('pending_bill_imports')
+    .from('parsed_emails')
     .update({
       status: 'rejected',
       rejection_reason: reason,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', importId)
+    .eq('id', parsedEmailId)
     .eq('user_id', user.id);
 
   if (error) throw error;
@@ -1134,139 +796,98 @@ export async function rejectImport(importId: string, reason?: string) {
   return { success: true };
 }
 
-export async function bulkConfirmImports(importIds: string[]) {
-  const results = await Promise.allSettled(
-    importIds.map(id => confirmImport(id))
-  );
+export async function getPendingCount() {
+  const user = await requireAuth();
+  const supabase = await createClient();
 
-  const successful = results.filter(r => r.status === 'fulfilled').length;
-  const failed = results.filter(r => r.status === 'rejected').length;
+  const { count, error } = await supabase
+    .from('parsed_emails')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('status', 'pending');
 
-  return { successful, failed };
+  if (error) return 0;
+  return count || 0;
 }
 ```
 
----
-
-## API Routes
-
-### OAuth Callbacks
-
-**Gmail (`app/api/auth/callback/google/route.ts`):**
+### Verified Emails Actions (`lib/actions/verify-email.ts`)
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import { createClient } from '@/lib/supabase/server';
-import { GmailProvider } from '@/lib/email-import/providers/gmail-provider';
-import { getCurrentUser } from '@/lib/auth/session';
+import { requireAuth } from '@/lib/auth/session';
+import { revalidatePath } from 'next/cache';
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const code = searchParams.get('code');
-  const state = searchParams.get('state');
-  const error = searchParams.get('error');
+export async function getVerifiedEmails() {
+  const user = await requireAuth();
+  const supabase = await createClient();
 
-  if (error) {
-    return NextResponse.redirect(
-      new URL('/dashboard/import-bills/connect?error=access_denied', request.url)
-    );
-  }
+  const { data, error } = await supabase
+    .from('user_verified_emails')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
 
-  if (!code || !state) {
-    return NextResponse.redirect(
-      new URL('/dashboard/import-bills/connect?error=missing_params', request.url)
-    );
-  }
+  if (error) throw error;
+  return data;
+}
 
-  try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+export async function addVerifiedEmail(email: string) {
+  const user = await requireAuth();
+  const supabase = await createClient();
+
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Check if already verified by another user
+  const { data: existing } = await supabase
+    .from('user_verified_emails')
+    .select('user_id')
+    .eq('email', normalizedEmail)
+    .single();
+
+  if (existing) {
+    if (existing.user_id === user.id) {
+      throw new Error('Email already verified');
     }
+    throw new Error('Email is associated with another account');
+  }
 
-    // Validate state (should match stored CSRF token)
-    // ... state validation logic ...
-
-    const provider = new GmailProvider();
-    const tokens = await provider.exchangeCodeForTokens(code);
-
-    // Get user's email address
-    provider.setCredentials(tokens);
-    const emailAddress = await provider.getUserEmail();
-
-    // Store connection
-    const supabase = await createClient();
-    await supabase.from('email_connections').upsert({
+  const { error } = await supabase
+    .from('user_verified_emails')
+    .insert({
       user_id: user.id,
-      provider: 'gmail',
-      email_address: emailAddress,
-      access_token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-      token_expires_at: tokens.expiresAt.toISOString(),
-      scopes: tokens.scopes,
-      is_active: true,
-    }, {
-      onConflict: 'user_id,provider,email_address',
+      email: normalizedEmail,
     });
 
-    return NextResponse.redirect(
-      new URL('/dashboard/import-bills/connect?success=true', request.url)
-    );
-  } catch (error) {
-    console.error('Gmail OAuth error:', error);
-    return NextResponse.redirect(
-      new URL('/dashboard/import-bills/connect?error=oauth_failed', request.url)
-    );
-  }
+  if (error) throw error;
+
+  // Claim any pending emails from this address
+  await supabase
+    .from('parsed_emails')
+    .update({ user_id: user.id, status: 'pending' })
+    .eq('forwarded_by', normalizedEmail)
+    .eq('status', 'no_user');
+
+  revalidatePath('/dashboard/import-bills');
+  return { success: true };
 }
-```
 
-**Outlook (`app/api/auth/callback/microsoft/route.ts`):**
+export async function removeVerifiedEmail(emailId: string) {
+  const user = await requireAuth();
+  const supabase = await createClient();
 
-```typescript
-// Similar structure to Gmail, using OutlookProvider
-```
+  const { error } = await supabase
+    .from('user_verified_emails')
+    .delete()
+    .eq('id', emailId)
+    .eq('user_id', user.id);
 
-### Scan Trigger (`app/api/email-import/scan/route.ts`)
+  if (error) throw error;
 
-```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
-import { scanEmailsForInvoices } from '@/lib/email-import/services/email-scanner';
-import { canUseEmailImport } from '@/lib/stripe/feature-gate';
-
-export async function POST(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
-    // Check subscription
-    const gateResult = await canUseEmailImport(user.id);
-    if (!gateResult.allowed) {
-      return NextResponse.json(
-        { error: 'Email import requires Pro subscription' },
-        { status: 403 }
-      );
-    }
-
-    const { connectionId } = await request.json();
-
-    if (!connectionId) {
-      return NextResponse.json(
-        { error: 'Connection ID required' },
-        { status: 400 }
-      );
-    }
-
-    const result = await scanEmailsForInvoices(connectionId);
-
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error('Email scan error:', error);
-    return NextResponse.json(
-      { error: 'Failed to scan emails' },
-      { status: 500 }
-    );
-  }
+  revalidatePath('/dashboard/import-bills');
+  return { success: true };
 }
 ```
 
@@ -1274,24 +895,90 @@ export async function POST(request: NextRequest) {
 
 ## UI Components
 
-### Review Queue Page (`app/dashboard/import-bills/page.tsx`)
+### How It Works Card (`components/import-bills/how-it-works-card.tsx`)
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Copy, Check, Mail } from 'lucide-react';
+
+const PARSER_EMAIL = 'bills@cashflowforecaster.io';
+
+export function HowItWorksCard() {
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = async () => {
+    await navigator.clipboard.writeText(PARSER_EMAIL);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="h-5 w-5" />
+          Import Bills via Email
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Forward any bill or invoice email to our parser and we'll extract the details automatically.
+        </p>
+
+        <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+          <code className="flex-1 text-sm font-mono">{PARSER_EMAIL}</code>
+          <Button variant="ghost" size="sm" onClick={copyEmail}>
+            {copied ? (
+              <Check className="h-4 w-4 text-green-600" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p className="font-medium">How it works:</p>
+          <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+            <li>Forward a bill email to the address above</li>
+            <li>We extract vendor, amount, and due date</li>
+            <li>Review and confirm the details here</li>
+            <li>Bill is added to your calendar</li>
+          </ol>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Privacy: We only see emails you explicitly forward. We never access your inbox.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Import Bills Page (`app/dashboard/import-bills/page.tsx`)
 
 ```typescript
 import { Suspense } from 'react';
 import { requireAuth } from '@/lib/auth/session';
-import { canUseEmailImport } from '@/lib/stripe/feature-gate';
-import { getPendingImports } from '@/lib/actions/pending-imports';
+import { canUseEmailParser } from '@/lib/stripe/feature-gate';
+import { getPendingImports } from '@/lib/actions/parsed-emails';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
+import { HowItWorksCard } from '@/components/import-bills/how-it-works-card';
 import { ImportBillsContent } from '@/components/import-bills/import-bills-content';
-import { ImportBillsSkeleton } from '@/components/import-bills/import-bills-skeleton';
 
 export default async function ImportBillsPage() {
   const user = await requireAuth();
-  const gateResult = await canUseEmailImport(user.id);
+  const gateResult = await canUseEmailParser(user.id);
 
   if (!gateResult.allowed) {
-    return <UpgradePrompt feature="email_import" />;
+    return <UpgradePrompt feature="email_parser" />;
   }
+
+  const pendingImports = await getPendingImports();
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -1299,182 +986,20 @@ export default async function ImportBillsPage() {
         <div>
           <h1 className="text-2xl font-semibold">Import Bills</h1>
           <p className="text-muted-foreground">
-            Review and confirm bills extracted from your emails
+            Review bills extracted from forwarded emails
           </p>
         </div>
       </div>
 
-      <Suspense fallback={<ImportBillsSkeleton />}>
-        <ImportBillsContent />
-      </Suspense>
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-2">
+          <ImportBillsContent imports={pendingImports} />
+        </div>
+        <div>
+          <HowItWorksCard />
+        </div>
+      </div>
     </div>
-  );
-}
-```
-
-### Pending Import Card (`components/import-bills/pending-import-card.tsx`)
-
-```typescript
-'use client';
-
-import { useState } from 'react';
-import { formatCurrency, formatDate } from '@/lib/utils';
-import { confirmImport, rejectImport } from '@/lib/actions/pending-imports';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ConfirmImportDialog } from './confirm-import-dialog';
-import {
-  CheckCircle,
-  XCircle,
-  Edit,
-  Mail,
-  AlertTriangle,
-  FileText
-} from 'lucide-react';
-
-interface PendingImportCardProps {
-  import: {
-    id: string;
-    email_subject: string;
-    email_from: string;
-    email_date: string;
-    extracted_vendor: string | null;
-    extracted_amount: number | null;
-    extracted_due_date: string | null;
-    extracted_category: string | null;
-    extraction_confidence: number;
-    attachment_url: string | null;
-    email_connections: {
-      provider: string;
-      email_address: string;
-    };
-  };
-}
-
-export function PendingImportCard({ import: item }: PendingImportCardProps) {
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-
-  const confidenceColor = item.extraction_confidence >= 0.8
-    ? 'text-green-600'
-    : item.extraction_confidence >= 0.5
-      ? 'text-yellow-600'
-      : 'text-red-600';
-
-  async function handleQuickConfirm() {
-    setIsConfirming(true);
-    try {
-      await confirmImport(item.id);
-    } finally {
-      setIsConfirming(false);
-    }
-  }
-
-  async function handleReject() {
-    await rejectImport(item.id);
-  }
-
-  return (
-    <>
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              {/* Vendor & Amount */}
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-medium truncate">
-                  {item.extracted_vendor || 'Unknown Vendor'}
-                </h3>
-                {item.extraction_confidence < 0.7 && (
-                  <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                )}
-              </div>
-
-              <p className="text-2xl font-semibold">
-                {item.extracted_amount
-                  ? formatCurrency(item.extracted_amount)
-                  : 'Amount unclear'}
-              </p>
-
-              {/* Due Date */}
-              {item.extracted_due_date && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Due: {formatDate(item.extracted_due_date)}
-                </p>
-              )}
-
-              {/* Email Info */}
-              <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span className="truncate">{item.email_subject}</span>
-              </div>
-
-              {/* Category Badge */}
-              {item.extracted_category && (
-                <Badge variant="secondary" className="mt-2">
-                  {item.extracted_category}
-                </Badge>
-              )}
-
-              {/* Confidence Score */}
-              <p className={`text-xs mt-2 ${confidenceColor}`}>
-                {Math.round(item.extraction_confidence * 100)}% confidence
-              </p>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col gap-2">
-              <Button
-                size="sm"
-                onClick={handleQuickConfirm}
-                disabled={isConfirming}
-              >
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Confirm
-              </Button>
-
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setShowEditDialog(true)}
-              >
-                <Edit className="h-4 w-4 mr-1" />
-                Edit
-              </Button>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleReject}
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                Reject
-              </Button>
-
-              {item.attachment_url && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  asChild
-                >
-                  <a href={item.attachment_url} target="_blank" rel="noopener">
-                    <FileText className="h-4 w-4 mr-1" />
-                    View
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <ConfirmImportDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        importData={item}
-      />
-    </>
   );
 }
 ```
@@ -1488,43 +1013,40 @@ export function PendingImportCard({ import: item }: PendingImportCardProps) {
 ```typescript
 limits: {
   // existing limits...
-  emailImportEnabled: boolean;
-  maxEmailConnections: number;
+  emailParserEnabled: boolean;
 }
 
 // Free tier
-emailImportEnabled: false,
-maxEmailConnections: 0,
+emailParserEnabled: false,
 
 // Pro tier
-emailImportEnabled: true,
-maxEmailConnections: 3,
+emailParserEnabled: true,
 ```
 
-### Add `lib/stripe/feature-gate.ts`
+### Add to `lib/stripe/feature-gate.ts`
 
 ```typescript
-export async function canUseEmailImport(userId: string): Promise<FeatureGateResult> {
+export async function canUseEmailParser(userId: string): Promise<FeatureGateResult> {
   const tier = await getUserTier(userId);
   const limits = PRICING_TIERS[tier].limits;
 
-  if (!limits.emailImportEnabled) {
+  if (!limits.emailParserEnabled) {
     return { allowed: false, reason: 'feature_disabled', tier };
-  }
-
-  // Check connection count
-  const supabase = await createClient();
-  const { count } = await supabase
-    .from('email_connections')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId);
-
-  if ((count || 0) >= limits.maxEmailConnections) {
-    return { allowed: false, reason: 'limit_reached', tier, limit: limits.maxEmailConnections };
   }
 
   return { allowed: true, tier };
 }
+```
+
+### Update `components/subscription/upgrade-prompt.tsx`
+
+Add copy for email_parser feature:
+
+```typescript
+email_parser: {
+  title: "Email Bill Import is a Pro feature",
+  description: "Forward bills to our email parser for automatic extraction. Review and confirm with one click.",
+},
 ```
 
 ---
@@ -1534,131 +1056,111 @@ export async function canUseEmailImport(userId: string): Promise<FeatureGateResu
 ```json
 {
   "dependencies": {
-    "googleapis": "^140.0.0",
-    "@microsoft/microsoft-graph-client": "^3.0.7",
-    "@azure/msal-node": "^2.6.0",
     "openai": "^4.28.0"
   }
 }
 ```
 
+**Note:** No new email-related dependencies needed - Resend handles inbound via webhooks.
+
 **Environment Variables to Add:**
 
 ```env
-# Gmail OAuth
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=https://cashflowforecaster.io/api/auth/callback/google
-
-# Outlook OAuth
-MICROSOFT_CLIENT_ID=
-MICROSOFT_CLIENT_SECRET=
-MICROSOFT_TENANT_ID=common
-MICROSOFT_REDIRECT_URI=https://cashflowforecaster.io/api/auth/callback/microsoft
+# Resend webhook secret (for verifying inbound emails)
+RESEND_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxx
 
 # OpenAI for invoice extraction
-OPENAI_API_KEY=
+OPENAI_API_KEY=sk-xxxxxxxxxxxxx
+
+# Parser email address (for display in UI)
+BILL_PARSER_EMAIL=bills@cashflowforecaster.io
 ```
 
 ---
 
 ## Implementation Sequence
 
-### Phase 1: Database (3 migrations)
-1. Create `email_connections` table with RLS
-2. Create `pending_bill_imports` table with RLS
-3. Create `email_scan_logs` table with RLS
+### Phase 1: Database (2 migrations)
+1. Create `parsed_emails` table with RLS
+2. Create `user_verified_emails` table with RLS
 
-### Phase 2: Provider Layer (5 files)
-4. Create `lib/email-import/providers/types.ts`
-5. Create `lib/email-import/providers/gmail-provider.ts`
-6. Create `lib/email-import/providers/outlook-provider.ts`
-7. Create `lib/email-import/providers/index.ts`
-8. Create `lib/email-import/services/token-manager.ts`
+### Phase 2: Resend Configuration (manual)
+3. Add MX record for inbound emails
+4. Configure webhook in Resend dashboard
 
-### Phase 3: AI Extraction (3 files)
-9. Create `lib/email-import/extraction/extraction-types.ts`
-10. Create `lib/email-import/extraction/openai-extractor.ts`
-11. Create `lib/email-import/services/email-scanner.ts`
+### Phase 3: Inbound Processing (4 files)
+5. Create `lib/email-parser/extraction/types.ts`
+6. Create `lib/email-parser/extraction/openai-extractor.ts`
+7. Create `lib/email-parser/services/user-matcher.ts`
+8. Create `lib/email-parser/services/process-inbound.ts`
 
-### Phase 4: OAuth Routes (2 files)
-12. Create `app/api/auth/callback/google/route.ts`
-13. Create `app/api/auth/callback/microsoft/route.ts`
+### Phase 4: Webhook Endpoint (1 file)
+9. Create `app/api/email/inbound/route.ts`
 
-### Phase 5: Server Actions (3 files)
-14. Create `lib/actions/email-connections.ts`
-15. Create `lib/actions/pending-imports.ts`
-16. Create `lib/actions/scan-emails.ts`
+### Phase 5: Server Actions (2 files)
+10. Create `lib/actions/parsed-emails.ts`
+11. Create `lib/actions/verify-email.ts`
 
-### Phase 6: API Routes (2 files)
-17. Create `app/api/email-import/scan/route.ts`
-18. Create `app/api/email-import/status/route.ts`
+### Phase 6: Feature Gating (2 files)
+12. Update `lib/stripe/config.ts`
+13. Update `lib/stripe/feature-gate.ts`
 
-### Phase 7: Feature Gating (2 files)
-19. Update `lib/stripe/config.ts`
-20. Update `lib/stripe/feature-gate.ts`
+### Phase 7: UI Pages (3 files)
+14. Create `app/dashboard/import-bills/page.tsx`
+15. Create `app/dashboard/import-bills/history/page.tsx`
+16. Create `app/dashboard/import-bills/loading.tsx`
 
-### Phase 8: UI Pages (4 files)
-21. Create `app/dashboard/import-bills/page.tsx`
-22. Create `app/dashboard/import-bills/connect/page.tsx`
-23. Create `app/dashboard/import-bills/history/page.tsx`
-24. Create `app/dashboard/import-bills/loading.tsx`
+### Phase 8: UI Components (5 files)
+17. Create `components/import-bills/import-bills-content.tsx`
+18. Create `components/import-bills/how-it-works-card.tsx`
+19. Create `components/import-bills/parsed-email-card.tsx`
+20. Create `components/import-bills/confirm-import-dialog.tsx`
+21. Create `components/import-bills/add-sender-email.tsx`
 
-### Phase 9: UI Components (7 files)
-25. Create `components/import-bills/import-bills-content.tsx`
-26. Create `components/import-bills/pending-import-card.tsx`
-27. Create `components/import-bills/pending-import-table.tsx`
-28. Create `components/import-bills/confirm-import-dialog.tsx`
-29. Create `components/import-bills/email-connection-card.tsx`
-30. Create `components/import-bills/connect-email-button.tsx`
-31. Create `components/import-bills/scan-progress.tsx`
+### Phase 9: Navigation (2 files)
+22. Update `components/dashboard/nav.tsx`
+23. Update `components/subscription/upgrade-prompt.tsx`
 
-### Phase 10: Navigation (2 files)
-32. Update `components/dashboard/nav.tsx`
-33. Update `components/subscription/upgrade-prompt.tsx`
-
-**Total: ~33 files to create/modify**
+**Total: ~23 files to create/modify** (down from 33 with OAuth approach)
 
 ---
 
 ## Security Considerations
 
-1. **Token Encryption**: OAuth tokens should be encrypted at rest in the database
-2. **Token Refresh**: Automatic refresh before expiration to prevent access loss
-3. **Scope Limitation**: Request minimum necessary OAuth scopes (read-only)
-4. **User Consent**: Clear explanation of what data will be accessed
-5. **Data Retention**: Allow users to delete connections and imported data
-6. **Rate Limiting**: Limit scan frequency to prevent API abuse
-7. **Attachment Storage**: Store in Supabase Storage with RLS policies
+1. **Webhook Verification**: Always verify Resend webhook signatures
+2. **User Matching**: Only process emails from verified sender addresses
+3. **Attachment Storage**: Store in Supabase Storage with RLS policies
+4. **Rate Limiting**: Limit processing to prevent abuse
+5. **Content Sanitization**: Sanitize email content before storing
+6. **No Inbox Access**: System never has access to user's email inbox
 
 ---
 
 ## Verification Checklist
 
-- [ ] Gmail OAuth flow completes successfully
-- [ ] Outlook OAuth flow completes successfully
-- [ ] Token refresh works automatically
-- [ ] Email scanning finds invoice attachments
+- [ ] MX record configured for bills@cashflowforecaster.io
+- [ ] Resend webhook receives forwarded emails
+- [ ] User matching works by sender email
 - [ ] AI extraction returns structured data
 - [ ] Pending imports appear in review queue
 - [ ] Quick confirm creates bill correctly
 - [ ] Edit dialog allows field modifications
 - [ ] Reject removes from queue
-- [ ] Duplicate detection prevents re-imports
+- [ ] Duplicate detection (by message_id) works
 - [ ] Free users see upgrade prompt
-- [ ] Pro users can connect up to 3 email accounts
+- [ ] Pro users can use email parser
 - [ ] Navigation shows Import Bills link
-- [ ] Mobile UI works correctly
+- [ ] How-it-works card displays correctly
 
 ---
 
 ## Future Enhancements (Not in MVP)
 
-1. **Gmail Push Notifications**: Real-time invoice detection via Gmail webhooks
-2. **Vendor Recognition**: Learn from confirmed imports to auto-categorize
-3. **Recurring Detection**: Identify recurring bills from history
-4. **Multi-currency**: Full support for international invoices
-5. **Custom Rules**: User-defined filters (e.g., "ignore emails from noreply@")
-6. **Bulk Operations**: Select multiple and confirm/reject at once
-7. **OCR Fallback**: Use Tesseract.js for simpler documents
-8. **Email Parsing**: Extract invoice data from email body (not just attachments)
+1. **Vendor Recognition**: Learn from confirmed imports to auto-categorize
+2. **Recurring Detection**: Identify recurring bills from same vendor
+3. **PDF Parsing**: Convert PDF attachments to images for better extraction
+4. **Email Templates**: Detect common invoice email formats (PayPal, Stripe, etc.)
+5. **Bulk Confirm**: Select multiple and confirm at once
+6. **Mobile App**: Forward-to-email works great with mobile mail apps
+7. **Slack/Discord Integration**: Forward bills via chat apps
+8. **Auto-confirm**: Optionally auto-confirm high-confidence extractions from known vendors
