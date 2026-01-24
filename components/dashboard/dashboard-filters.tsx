@@ -15,7 +15,7 @@ import { Wallet, PiggyBank, Building2, Users } from 'lucide-react';
 export type AccountType = 'checking' | 'savings';
 
 export interface DashboardFilters {
-  forecastHorizon: '7' | '14' | '30' | '60';
+  forecastHorizon: '7' | '14' | '30' | '60' | '90' | '365';
   selectedAccountIds: string[];
   accountTypes: AccountType[];
 }
@@ -42,6 +42,8 @@ const forecastHorizonOptions: FilterDropdownSingleOption[] = [
   { value: '14', label: '14 Days' },
   { value: '30', label: '30 Days' },
   { value: '60', label: '60 Days' },
+  { value: '90', label: '90 Days' },
+  { value: '365', label: '12 Months' },
 ];
 
 const accountTypeOptions: FilterDropdownOption[] = [

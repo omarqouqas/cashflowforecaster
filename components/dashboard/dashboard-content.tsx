@@ -252,6 +252,23 @@ export function DashboardContent({
 
   const horizonDays = parseInt(filters.forecastHorizon, 10);
 
+  // Format horizon period for display (e.g., 365 -> "12 months", 90 -> "90 days")
+  const formatHorizonPeriod = (days: number): string => {
+    if (days === 365) return '12 months';
+    if (days === 90) return '3 months';
+    return `${days} days`;
+  };
+
+  // Format horizon for titles (e.g., 365 -> "12-Month", 90 -> "90-Day")
+  const formatHorizonTitle = (days: number): string => {
+    if (days === 365) return '12-Month';
+    if (days === 90) return '3-Month';
+    return `${days}-Day`;
+  };
+
+  const horizonPeriod = formatHorizonPeriod(horizonDays);
+  const horizonTitle = formatHorizonTitle(horizonDays);
+
   return (
     <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 sm:p-6">
       {/* Success Message */}
@@ -375,7 +392,7 @@ export function DashboardContent({
                 <p className="text-sm font-medium text-amber-300">
                   Heads up — {forecastMetrics.lowBalanceCount} low-balance day
                   {forecastMetrics.lowBalanceCount === 1 ? '' : 's'} in the next{' '}
-                  {horizonDays} days
+                  {horizonPeriod}
                 </p>
                 <Link
                   href="/dashboard/calendar"
@@ -408,7 +425,7 @@ export function DashboardContent({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-teal-300">
-                  ✓ You&apos;re in the green for the next {horizonDays} days
+                  ✓ You&apos;re in the green for the next {horizonPeriod}
                 </p>
                 <Link
                   href="/dashboard/calendar"
@@ -620,7 +637,7 @@ export function DashboardContent({
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-zinc-100">
-                      {horizonDays}-Day Forecast
+                      {horizonTitle} Forecast
                     </h3>
                     <p className="text-xs text-zinc-400 mt-0.5">
                       Your cash flow outlook
@@ -658,14 +675,14 @@ export function DashboardContent({
                   <p className="text-xl sm:text-2xl font-bold text-emerald-400">
                     {formatCurrency(forecastMetrics.totalIncome, currency)}
                   </p>
-                  <p className="text-xs text-zinc-400 mt-1">{horizonDays} days</p>
+                  <p className="text-xs text-zinc-400 mt-1">{horizonPeriod}</p>
                 </div>
                 <div>
                   <p className="text-xs text-zinc-400 mb-1">Total Bills</p>
                   <p className="text-xl sm:text-2xl font-bold text-rose-400">
                     {formatCurrency(forecastMetrics.totalBills, currency)}
                   </p>
-                  <p className="text-xs text-zinc-400 mt-1">{horizonDays} days</p>
+                  <p className="text-xs text-zinc-400 mt-1">{horizonPeriod}</p>
                 </div>
               </div>
 
