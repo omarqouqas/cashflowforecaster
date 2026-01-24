@@ -453,7 +453,7 @@ export function DashboardContent({
               </div>
               <div>
                 <p
-                  className={`text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight ${dailyBudgetColorClass}`}
+                  className={`text-xl sm:text-2xl md:text-3xl font-semibold tabular-nums tracking-tight ${dailyBudgetColorClass}`}
                 >
                   {dailyBudgetData
                     ? dailyBudgetData.dailyBudget < 0
@@ -505,8 +505,8 @@ export function DashboardContent({
                   <Wallet className="w-4 h-4 text-zinc-400" />
                 </div>
               </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl md:text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">
                   {formatCurrency(totalBalance, currency)}
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
@@ -540,10 +540,10 @@ export function DashboardContent({
                   <TrendingUp className="w-4 h-4 text-emerald-400" />
                 </div>
               </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-emerald-400">
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl md:text-3xl font-semibold tabular-nums tracking-tight text-emerald-400">
                   {formatCurrency(monthlyIncome, currency)}
-                  <span className="text-base font-normal text-emerald-400/70">/mo</span>
+                  <span className="text-xs sm:text-sm md:text-base font-normal text-emerald-400/70">/mo</span>
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                   {incomeCount > 0
@@ -576,10 +576,10 @@ export function DashboardContent({
                   <FileText className="w-4 h-4 text-rose-400" />
                 </div>
               </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight text-rose-400">
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl md:text-3xl font-semibold tabular-nums tracking-tight text-rose-400">
                   {formatCurrency(monthlyBills, currency)}
-                  <span className="text-base font-normal text-rose-400/70">/mo</span>
+                  <span className="text-xs sm:text-sm md:text-base font-normal text-rose-400/70">/mo</span>
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                   {activeBillsCount > 0
@@ -631,11 +631,11 @@ export function DashboardContent({
                 )}
               </div>
 
-              <div className="grid grid-cols-3 gap-4 py-4 border-t border-b border-zinc-700/50">
-                <div>
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 py-4 border-t border-b border-zinc-700/50">
+                <div className="min-w-0">
                   <p className="text-xs text-zinc-400 mb-1">Lowest Balance</p>
                   <p
-                    className={`text-xl sm:text-2xl font-bold ${getBalanceColor(
+                    className={`text-base sm:text-xl md:text-2xl font-bold truncate ${getBalanceColor(
                       forecastMetrics.lowestBalance,
                       safetyBuffer
                     )}`}
@@ -646,16 +646,16 @@ export function DashboardContent({
                     on {format(forecastMetrics.lowestBalanceDay, 'MMM d')}
                   </p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-zinc-400 mb-1">Total Income</p>
-                  <p className="text-xl sm:text-2xl font-bold text-emerald-400">
+                  <p className="text-base sm:text-xl md:text-2xl font-bold text-emerald-400 truncate">
                     {formatCurrency(forecastMetrics.totalIncome, currency)}
                   </p>
                   <p className="text-xs text-zinc-400 mt-1">{horizonPeriod}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-zinc-400 mb-1">Total Bills</p>
-                  <p className="text-xl sm:text-2xl font-bold text-rose-400">
+                  <p className="text-base sm:text-xl md:text-2xl font-bold text-rose-400 truncate">
                     {formatCurrency(forecastMetrics.totalBills, currency)}
                   </p>
                   <p className="text-xs text-zinc-400 mt-1">{horizonPeriod}</p>
