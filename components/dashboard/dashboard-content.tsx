@@ -278,10 +278,6 @@ export function DashboardContent({
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-4 text-zinc-100">
-        Welcome to Cash Flow Forecaster!
-      </h2>
-
       {/* Filters Panel */}
       <div className="mb-6">
         <DashboardFilterBar
