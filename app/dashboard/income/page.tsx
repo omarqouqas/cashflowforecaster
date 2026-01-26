@@ -54,6 +54,8 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           return total + (income.amount * 52) / 12;
         case 'biweekly':
           return total + (income.amount * 26) / 12;
+        case 'semi-monthly':
+          return total + income.amount * 2;
         case 'monthly':
           return total + income.amount;
         case 'irregular':
@@ -243,6 +245,27 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
                 case 'biweekly':
                   while (currentDate < today) {
                     currentDate.setDate(currentDate.getDate() + 14)
+                  }
+                  break
+                case 'semi-monthly':
+                  // Semi-monthly: twice per month (e.g., 1st & 15th)
+                  const semiMonthlyDay = storedDate.getDate()
+                  while (currentDate < today) {
+                    if (semiMonthlyDay <= 15) {
+                      if (currentDate.getDate() <= 15) {
+                        currentDate.setDate(semiMonthlyDay + 15)
+                      } else {
+                        currentDate.setMonth(currentDate.getMonth() + 1)
+                        currentDate.setDate(semiMonthlyDay)
+                      }
+                    } else {
+                      if (currentDate.getDate() >= 16) {
+                        currentDate.setMonth(currentDate.getMonth() + 1)
+                        currentDate.setDate(semiMonthlyDay - 15)
+                      } else {
+                        currentDate.setDate(semiMonthlyDay)
+                      }
+                    }
                   }
                   break
                 case 'monthly':

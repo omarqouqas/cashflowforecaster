@@ -22,7 +22,7 @@ import {
   Clock,
 } from 'lucide-react';
 
-export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'irregular';
+export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'irregular';
 export type SourceType = 'regular' | 'invoice';
 export type SortOption = 'next_date' | 'name' | 'amount' | 'created_at';
 
@@ -37,7 +37,7 @@ export interface IncomeFilters {
   sortBy: SortOption;
 }
 
-const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'monthly', 'irregular'];
+const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'irregular'];
 const allSourceTypes: SourceType[] = ['regular', 'invoice'];
 
 export const defaultIncomeFilters: IncomeFilters = {
@@ -66,6 +66,7 @@ const frequencyOptions: FilterDropdownOption[] = [
   { value: 'one-time', label: 'One-time' },
   { value: 'weekly', label: 'Weekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'semi-monthly', label: 'Semi-monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'irregular', label: 'Irregular' },
 ];

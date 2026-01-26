@@ -20,7 +20,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 
-export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually';
+export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually';
 export type CategoryType = 'rent' | 'utilities' | 'subscriptions' | 'insurance' | 'other';
 export type SortOption = 'due_date' | 'name' | 'amount' | 'created_at';
 
@@ -35,7 +35,7 @@ export interface BillsFilters {
   sortBy: SortOption;
 }
 
-const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'monthly', 'quarterly', 'annually'];
+const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually'];
 const allCategories: CategoryType[] = ['rent', 'utilities', 'subscriptions', 'insurance', 'other'];
 
 export const defaultBillsFilters: BillsFilters = {
@@ -67,6 +67,7 @@ const frequencyOptions: FilterDropdownOption[] = [
   { value: 'one-time', label: 'One-time' },
   { value: 'weekly', label: 'Weekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'semi-monthly', label: 'Semi-monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'quarterly', label: 'Quarterly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'annually', label: 'Annually', icon: <RefreshCw className="w-3.5 h-3.5" /> },

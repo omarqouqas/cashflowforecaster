@@ -103,6 +103,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           return total + (income.amount * 52 / 12);
         case 'biweekly':
           return total + (income.amount * 26 / 12);
+        case 'semi-monthly':
+          return total + (income.amount * 2);
         case 'monthly':
           return total + income.amount;
         case 'one-time':
@@ -127,6 +129,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       switch (bill.frequency) {
         case 'weekly': return total + (bill.amount * 52) / 12;
         case 'biweekly': return total + (bill.amount * 26) / 12;
+        case 'semi-monthly': return total + bill.amount * 2;
         case 'monthly': return total + bill.amount;
         case 'quarterly': return total + bill.amount / 3;
         case 'annually': return total + bill.amount / 12;
@@ -158,6 +161,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           switch (income.frequency) {
             case 'weekly': return (income.amount * 52) / 12;
             case 'biweekly': return (income.amount * 26) / 12;
+            case 'semi-monthly': return income.amount * 2;
             case 'monthly': return income.amount;
             default: return 0;
           }

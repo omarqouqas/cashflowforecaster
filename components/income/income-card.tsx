@@ -41,6 +41,30 @@ function getActualNextDate(nextDate: string, frequency: string | null | undefine
       }
       break
 
+    case 'semi-monthly':
+      // Semi-monthly: twice per month (e.g., 1st & 15th)
+      const semiMonthlyDay = storedDate.getDate()
+      while (currentDate < today) {
+        if (semiMonthlyDay <= 15) {
+          // If original is 1st-15th, next is either 15th+ or 1st of next month
+          if (currentDate.getDate() <= 15) {
+            currentDate.setDate(semiMonthlyDay + 15)
+          } else {
+            currentDate.setMonth(currentDate.getMonth() + 1)
+            currentDate.setDate(semiMonthlyDay)
+          }
+        } else {
+          // If original is 16th+, next is either 1st-15th of next month or same day next month
+          if (currentDate.getDate() >= 16) {
+            currentDate.setMonth(currentDate.getMonth() + 1)
+            currentDate.setDate(semiMonthlyDay - 15)
+          } else {
+            currentDate.setDate(semiMonthlyDay)
+          }
+        }
+      }
+      break
+
     case 'monthly':
       const targetDay = storedDate.getDate()
       while (currentDate < today) {
@@ -82,7 +106,7 @@ function getIncomeTypeIcon(frequency: string | null | undefined, isInvoiceLinked
 
   const freq = (frequency ?? 'monthly').toLowerCase()
 
-  if (freq === 'monthly' || freq === 'biweekly' || freq === 'weekly') {
+  if (freq === 'monthly' || freq === 'semi-monthly' || freq === 'biweekly' || freq === 'weekly') {
     return {
       icon: Briefcase,
       className: 'bg-emerald-500/10 border border-emerald-500/30',
@@ -119,6 +143,13 @@ function getFrequencyBadge(frequency: string | null | undefined) {
     return {
       label: 'Biweekly',
       className: 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+    }
+  }
+
+  if (freq === 'semi-monthly') {
+    return {
+      label: 'Semi-monthly',
+      className: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
     }
   }
 

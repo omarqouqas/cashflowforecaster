@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 24, 2026 (Day 46)
+**Last Updated:** January 25, 2026 (Day 47)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 46
+- **Days in Development:** 47
 - **Commits:** 155+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes
 
 **Current Focus:**
 
@@ -29,7 +29,46 @@
 
 ---
 
-## Recent Development (Days 40-46)
+## Recent Development (Days 40-47)
+
+### Day 47: Semi-Monthly Frequency Bug Fixes (January 25, 2026)
+
+**Critical Bug Fix** - Semi-monthly income/bills were showing $0 in monthly calculations and not appearing in calendar day modals.
+
+**Root Cause:** The `semi-monthly` frequency was missing from multiple calculation functions and filter type definitions throughout the codebase. Income/bills with semi-monthly frequency fell through to `default` cases returning $0.
+
+**Monthly Calculation Fixes** - Added `case 'semi-monthly': return amount * 2` to all calculation functions:
+
+- `app/dashboard/page.tsx` - `calculateMonthlyIncome`, `calculateMonthlyBills`, `calculateQuarterlyIncome`
+- `app/dashboard/income/page.tsx` - `calculateMonthlyIncome`
+- `app/dashboard/bills/page.tsx` - `calculateMonthlyTotal`
+- `app/dashboard/settings/page.tsx` - already had semi-monthly support
+
+**Next Date Calculation Fixes** - Added semi-monthly case to `getActualNextDate` functions:
+
+- `app/dashboard/income/page.tsx` - inline `getActualNextDate`
+- `app/dashboard/bills/page.tsx` - `getActualDueDate`
+- `components/income/income-card.tsx` - `getActualNextDate`
+- `components/income/income-content.tsx` - `getActualNextDate`
+- `components/bills/bill-card.tsx` - `getActualNextDueDate`
+- `components/bills/bills-content.tsx` - `getActualNextDueDate`
+
+**Filter & Type Definition Fixes** - Added `'semi-monthly'` to `FrequencyType` and `allFrequencies`:
+
+- `components/income/income-filters.tsx` - Income page frequency filter
+- `components/bills/bills-filters.tsx` - Bills page frequency filter
+- `components/calendar/calendar-filters.tsx` - Calendar frequency filter (this was causing transactions to not show in day modal)
+
+**Display Fixes** - Added semi-monthly badges and icons:
+
+- `components/income/income-card.tsx` - `getIncomeTypeIcon`, `getFrequencyBadge` (indigo color)
+- `components/bills/bill-card.tsx` - `getFrequencyBadge` (indigo color)
+
+**Impact:** Users with semi-monthly income (e.g., $1,551 twice/month) now correctly see $3,102/mo in calculations, and transactions appear in calendar day modals when clicked.
+
+**Files:** `app/dashboard/page.tsx`, `app/dashboard/income/page.tsx`, `app/dashboard/bills/page.tsx`, `components/income/income-card.tsx`, `components/income/income-content.tsx`, `components/income/income-filters.tsx`, `components/bills/bill-card.tsx`, `components/bills/bills-content.tsx`, `components/bills/bills-filters.tsx`, `components/calendar/calendar-filters.tsx`
+
+---
 
 ### Day 46: Dashboard & Calendar Mobile UX Polish (January 24, 2026)
 

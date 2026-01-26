@@ -54,6 +54,27 @@ function getActualNextDate(nextDate: string, frequency: string | null | undefine
         currentDate.setDate(currentDate.getDate() + 14);
       }
       break;
+    case 'semi-monthly':
+      // Semi-monthly: twice per month (e.g., 1st & 15th)
+      const semiMonthlyDay = storedDate.getDate();
+      while (currentDate < today) {
+        if (semiMonthlyDay <= 15) {
+          if (currentDate.getDate() <= 15) {
+            currentDate.setDate(semiMonthlyDay + 15);
+          } else {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            currentDate.setDate(semiMonthlyDay);
+          }
+        } else {
+          if (currentDate.getDate() >= 16) {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            currentDate.setDate(semiMonthlyDay - 15);
+          } else {
+            currentDate.setDate(semiMonthlyDay);
+          }
+        }
+      }
+      break;
     case 'monthly':
       while (currentDate < today) {
         currentDate.setMonth(currentDate.getMonth() + 1);

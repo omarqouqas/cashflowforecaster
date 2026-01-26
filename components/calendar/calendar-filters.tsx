@@ -13,7 +13,7 @@ import { AddFilterMenu, type AddFilterOption } from '@/components/filters/add-fi
 import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/active-filter-pills';
 import { TrendingUp, Receipt, CircleDot, RefreshCw, DollarSign, SlidersHorizontal, ChevronDown } from 'lucide-react';
 
-export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually' | 'irregular';
+export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually' | 'irregular';
 
 export interface CalendarFilters {
   transactionTypes: ('income' | 'bill')[];
@@ -24,7 +24,7 @@ export interface CalendarFilters {
   search: string;
 }
 
-const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'monthly', 'quarterly', 'annually', 'irregular'];
+const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually', 'irregular'];
 const allBalanceStatuses = ['green', 'yellow', 'orange', 'red'] as const;
 
 export const defaultCalendarFilters: CalendarFilters = {
@@ -53,6 +53,7 @@ const frequencyOptions: FilterDropdownOption[] = [
   { value: 'one-time', label: 'One-time' },
   { value: 'weekly', label: 'Weekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'semi-monthly', label: 'Semi-monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'quarterly', label: 'Quarterly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'annually', label: 'Annually', icon: <RefreshCw className="w-3.5 h-3.5" /> },

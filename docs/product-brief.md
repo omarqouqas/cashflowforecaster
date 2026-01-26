@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.0
-**Last Updated:** January 24, 2026
-**Status:** Live - Dashboard & Calendar Mobile UX Polish
+**Version:** 6.1
+**Last Updated:** January 25, 2026
+**Status:** Live - Semi-Monthly Frequency Bug Fixes
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -839,6 +839,23 @@ User Request
 
 ## Changelog
 
+### Version 6.1 (January 25, 2026)
+- Semi-Monthly Frequency Bug Fixes:
+  - Fixed semi-monthly income calculating as $0/mo on dashboard and income pages
+  - Fixed semi-monthly transactions not appearing in calendar day modals
+  - Added semi-monthly to all FrequencyType definitions:
+    - `calendar-filters.tsx` - Critical fix for calendar modal filtering
+    - `income-filters.tsx` - Income page frequency filter dropdown
+    - `bills-filters.tsx` - Bills page frequency filter dropdown
+  - Added semi-monthly case to all date calculation functions:
+    - `getActualNextDate()` in income-card.tsx, income-content.tsx
+    - `getActualNextDueDate()` in bill-card.tsx, bills-content.tsx
+    - `getActualDueDate()` in dashboard/bills/page.tsx
+  - Added semi-monthly to badge/icon display functions:
+    - `getFrequencyBadge()` - indigo badge color for semi-monthly
+    - `getIncomeTypeIcon()` - displays "2×/mo" indicator
+  - Monthly calculation fix: `amount * 2` for semi-monthly frequency
+
 ### Version 6.0 (January 24, 2026)
 - Dashboard Forecast Improvements:
   - Fixed hardcoded "60 days" label - now dynamically shows period based on filter
@@ -1151,7 +1168,7 @@ User Request
 
 ---
 
-**Document Version:** 6.0
-**Last Updated:** January 24, 2026
-**Status:** Live - Dashboard & Calendar Mobile UX Polish 🎉
+**Document Version:** 6.1
+**Last Updated:** January 25, 2026
+**Status:** Live - Semi-Monthly Frequency Bug Fixes 🎉
 **Next Review:** February 2026
