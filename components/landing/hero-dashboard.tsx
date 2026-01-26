@@ -147,7 +147,7 @@ export default function HeroDashboard() {
         {[
           { label: 'Starting', value: formatCurrency(stats.starting), sub: 'Today', warn: false, isExpense: false },
           { label: 'Lowest', value: formatCurrency(stats.lowest), sub: stats.lowestDate, warn: true, isExpense: false },
-          { label: 'Income', value: formatCurrency(stats.income, true), sub: 'Next 60 days', warn: false, isExpense: false },
+          { label: 'Income', value: formatCurrency(stats.income, true), sub: 'Next 90 days', warn: false, isExpense: false },
           {
             label: 'Bills',
             value: formatCurrency(stats.bills, true),

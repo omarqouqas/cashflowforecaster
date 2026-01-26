@@ -92,7 +92,7 @@ export function CalculatorResult({ result, lastInput }: Props) {
 
           <div className="flex items-center gap-3">
             <GetStartedCTA
-              label="Unlock the full 60‑day forecast"
+              label="Unlock the full 90‑day forecast"
               className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950"
               onClick={() => {
                 try {

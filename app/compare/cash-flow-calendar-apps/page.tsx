@@ -62,7 +62,7 @@ const comparisonRows = [
   { feature: '"Safe to Spend" indicator', cff: '✅ Prominently displayed daily', typical: '❌ Not available' },
   { feature: 'Low balance alerts', cff: '✅ Proactive email warnings', typical: '❌ No' },
   { feature: 'Free tier', cff: '✅ Yes (10 bills, 10 income)', typical: '❌ Trial only (14 days)' },
-  { feature: 'Forecast length', cff: '60 days (Free) / 365 days (Pro)', typical: '~30 days' },
+  { feature: 'Forecast length', cff: '90 days (Free) / 365 days (Pro)', typical: '~30 days' },
   { feature: 'Invoicing built-in', cff: '✅ Runway Collect', typical: '❌ No' },
   { feature: 'One-click invoice payments', cff: '✅ Clients pay via Stripe', typical: '❌ No' },
   { feature: 'Custom invoice branding', cff: '✅ Logo + business name', typical: '❌ No' },
@@ -286,7 +286,7 @@ export default function CashFlowCalendarAppsComparePage() {
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
                 See the exact days you&apos;ll run low, map invoices and bills on a calendar, and stop guessing if rent is safe.
-                Start with 60 days free, or go Pro for a full 365-day forecast.
+                Start with 90 days free, or go Pro for a full 365-day forecast.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950 px-8" />

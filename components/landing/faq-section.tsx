@@ -19,7 +19,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "How does Cash Flow Forecaster predict my balance?",
-    answer: "Cash Flow Forecaster uses a simple but powerful algorithm. You enter your current account balance, recurring income (with frequencies like weekly, bi-weekly, or monthly), and recurring bills with their due dates. The app then projects your balance day-by-day—up to 60 days on Free, or a full 365 days on Pro—showing you exactly when money comes in and goes out. It's like having a financial crystal ball that answers 'Will I have enough on the 15th?' with precision."
+    answer: "Cash Flow Forecaster uses a simple but powerful algorithm. You enter your current account balance, recurring income (with frequencies like weekly, bi-weekly, or monthly), and recurring bills with their due dates. The app then projects your balance day-by-day—up to 90 days on Free, or a full 365 days on Pro—showing you exactly when money comes in and goes out. It's like having a financial crystal ball that answers 'Will I have enough on the 15th?' with precision."
   },
   {
     question: "What's included in the weekly email digest?",
@@ -35,7 +35,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between Free and Pro?",
-    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, and a 60-day forecast. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), and adds Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
+    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, and a 90-day forecast. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), and adds Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
   },
   {
     question: "Can I connect my bank account?",
@@ -55,7 +55,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Can I try it before I pay?",
-    answer: "Yes! Our Free tier is fully functional—not a limited trial. You get 10 bills, 10 income sources, 60-day forecasting, and the 'Can I Afford It?' scenario tester. If you want unlimited entries, a longer forecast, or invoicing (Runway Collect), you can upgrade anytime. There's no credit card required to sign up."
+    answer: "Yes! Our Free tier is fully functional—not a limited trial. You get 10 bills, 10 income sources, 90-day forecasting, and the 'Can I Afford It?' scenario tester. If you want unlimited entries, a longer forecast, or invoicing (Runway Collect), you can upgrade anytime. There's no credit card required to sign up."
   },
   {
     question: "How do I budget with irregular income?",

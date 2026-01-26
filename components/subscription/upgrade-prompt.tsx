@@ -34,7 +34,7 @@ const FEATURE_COPY: Record<UpgradePromptProps['feature'], { title: string; descr
   },
   forecast: {
     title: "Extended forecasting is a Pro feature",
-    description: "Free accounts get 60-day forecasts. Upgrade to Pro for a full year (365 days).",
+    description: "Free accounts get 90-day forecasts. Upgrade to Pro for a full year (365 days).",
   },
   general: {
     title: "Upgrade to unlock more features",

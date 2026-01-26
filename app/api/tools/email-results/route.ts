@@ -468,7 +468,7 @@ export async function POST(request: Request) {
           <div style="margin:18px 0;">
             <a href="${signupUrl}"
                style="display:inline-block; background:#14b8a6; color:#09090b; text-decoration:none; font-weight:700; padding:12px 16px; border-radius:10px;">
-              Get the full 60‑day forecast
+              Get the full 90‑day forecast
             </a>
             <div style="margin-top:10px;">
               <a href="${toolUrl}" style="color:#5eead4; text-decoration:none; font-size:13px;">Re-run this tool</a>

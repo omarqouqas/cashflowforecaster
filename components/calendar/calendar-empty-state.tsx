@@ -7,7 +7,7 @@ export function CalendarEmptyState() {
       <Calendar className="w-12 h-12 text-zinc-300" />
       <h2 className="text-lg font-medium text-zinc-100 mt-4">No data yet</h2>
       <p className="text-sm text-zinc-400 text-center mt-2 max-w-xs">
-        Add your accounts, income, and bills to see your 60-day cash flow projection.
+        Add your accounts, income, and bills to see your cash flow projection.
       </p>
       <div className="mt-6">
         <Link

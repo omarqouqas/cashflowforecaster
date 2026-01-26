@@ -69,7 +69,7 @@ export function LowBalanceWarning({
 
           {dangerDays.length > 1 && (
             <p className={`text-sm mt-2 ${isOverdraft ? 'text-rose-200' : 'text-amber-200'}`}>
-              {dangerDays.length} low-balance days in the next 60 days
+              {dangerDays.length} low-balance days in your forecast
             </p>
           )}
 

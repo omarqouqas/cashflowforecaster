@@ -176,7 +176,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
               <Wallet className="w-10 h-10 mx-auto mb-3 text-zinc-500" />
               <p className="text-zinc-200 font-medium">No accounts yet</p>
               <p className="text-sm text-zinc-400 mt-1 mb-6">
-                Add your checking account to start tracking your 60-day cash flow.
+                Add your checking account to start tracking your cash flow.
               </p>
               <Link href="/dashboard/accounts/new">
                 <Button variant="primary">Add Account</Button>

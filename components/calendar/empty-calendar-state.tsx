@@ -26,7 +26,7 @@ export function EmptyCalendarState({ type, message }: EmptyCalendarStateProps) {
         </h3>
         <p className="text-zinc-400 mb-8 max-w-md mx-auto">
           {message ||
-            'Add your first bank account to start tracking your cash flow forecast. Your 60-day projection will appear here once you have accounts set up.'}
+            'Add your first bank account to start tracking your cash flow forecast. Your projection will appear here once you have accounts set up.'}
         </p>
         <Link href="/dashboard/accounts/new">
           <Button variant="primary" size="lg">
@@ -48,7 +48,7 @@ export function EmptyCalendarState({ type, message }: EmptyCalendarStateProps) {
       </h3>
       <p className="text-zinc-400 mb-8 max-w-md mx-auto">
         {message ||
-          'Add income sources and bills to see your detailed 60-day cash flow forecast. Your calendar will show projected balances based on your recurring transactions.'}
+          'Add income sources and bills to see your detailed cash flow forecast. Your calendar will show projected balances based on your recurring transactions.'}
       </p>
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <Link href="/dashboard/income/new">

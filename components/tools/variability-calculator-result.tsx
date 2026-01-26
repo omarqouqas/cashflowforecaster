@@ -180,7 +180,7 @@ export function VariabilityCalculatorResult({ result, lastInput }: Props) {
               Your income varies by <span className="tabular-nums">{result.variabilityScore}%</span> month-to-month.
             </p>
             <p className="mt-1 text-sm text-zinc-300">
-              That’s why knowing your cash flow <span className="text-white font-semibold">60 days ahead</span> matters.
+              That's why knowing your cash flow <span className="text-white font-semibold">90 days ahead</span> matters.
             </p>
             <p className="mt-1 text-sm text-zinc-400">See exactly when you’ll have money—and when you won’t.</p>
             <div className="mt-4 flex flex-wrap gap-3">

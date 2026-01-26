@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { parseCsv, type CsvParseResult } from '@/lib/import/parse-csv';
 
@@ -13,6 +13,7 @@ export function CsvUpload({ onLoaded }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const handleFile = async (file: File | null) => {
     setError(null);
@@ -109,6 +110,44 @@ export function CsvUpload({ onLoaded }: Props) {
           <p className="text-sm text-rose-400">{error}</p>
         </div>
       )}
+
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={() => setShowHelp(!showHelp)}
+          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
+        >
+          <HelpCircle className="w-4 h-4" />
+          <span>What format should my CSV be in?</span>
+          {showHelp ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+
+        {showHelp && (
+          <div className="mt-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg text-sm">
+            <p className="text-zinc-300 mb-3">
+              Export a CSV file from your bank&apos;s website. Most US banks support CSV export from the transaction history page.
+            </p>
+
+            <p className="text-zinc-400 font-medium mb-2">Your CSV should include columns for:</p>
+            <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
+              <li><span className="text-zinc-300">Date</span> - when the transaction occurred</li>
+              <li><span className="text-zinc-300">Description</span> - merchant name or memo</li>
+              <li><span className="text-zinc-300">Amount</span> - transaction amount (can be single column or separate debit/credit)</li>
+            </ul>
+
+            <p className="text-zinc-400 font-medium mb-2">Supported formats:</p>
+            <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
+              <li>Date formats: MM/DD/YYYY, YYYY-MM-DD, MM/DD/YY</li>
+              <li>Amount formats: $1,234.56, -100.00, (100.00) for negatives</li>
+              <li>Delimiters: comma, tab, or semicolon separated</li>
+            </ul>
+
+            <p className="text-zinc-500 text-xs">
+              After uploading, you&apos;ll be able to map columns manually if auto-detection doesn&apos;t work.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

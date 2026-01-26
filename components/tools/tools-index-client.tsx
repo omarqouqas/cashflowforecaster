@@ -88,7 +88,7 @@ export function ToolsIndexClient() {
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <div>
-            <p className="text-lg font-semibold text-white">Want the full 60-day forecast?</p>
+            <p className="text-lg font-semibold text-white">Want the full 90-day forecast?</p>
             <p className="mt-1 text-sm text-zinc-400">
               Cash Flow Forecaster gives you a calendar projection across multiple accounts, recurring items, and scenarios.
             </p>

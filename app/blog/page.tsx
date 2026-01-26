@@ -180,7 +180,7 @@ export default function BlogIndexPage() {
               Ready to take control of your cash flow?
             </h2>
             <p className="mt-3 text-zinc-400">
-              Start forecasting your finances for free. See your bank balance up to 60 days ahead.
+              Start forecasting your finances for free. See your bank balance up to 90 days ahead.
             </p>
             <div className="mt-6">
               <Link

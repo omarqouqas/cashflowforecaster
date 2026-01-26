@@ -102,7 +102,7 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
     name: 'Free',
     description: 'Perfect for getting started',
     features: [
-      '60-day cash flow forecast',
+      '90-day cash flow forecast',
       'Up to 10 bills & income sources',
       'Manual entry only',
       'Basic color coding',
@@ -111,7 +111,7 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
     limits: {
       maxBills: 10,
       maxIncome: 10,
-      forecastDays: 60,
+      forecastDays: 90,
       invoicesEnabled: false,
       bankSyncEnabled: false,
       smsAlertsEnabled: false,

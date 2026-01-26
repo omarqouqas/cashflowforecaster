@@ -39,7 +39,7 @@ const TIERS: TierConfig[] = [
     priceMonthly: 0,
     description: 'For getting clarity fast',
     features: [
-      { text: '60-day cash flow forecast' },
+      { text: '90-day cash flow forecast' },
       { text: 'Weekly Email Digest' },
       { text: 'Bill Collision Alerts' },
       { text: 'Low Balance Alerts' },

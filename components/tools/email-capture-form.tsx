@@ -72,7 +72,7 @@ export function EmailCaptureForm({ payload, events }: Props) {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <p className="text-sm font-semibold text-white">Email me these results</p>
-          <p className="mt-1 text-xs text-zinc-500">We’ll send a copy + a link to get your full 60-day forecast.</p>
+          <p className="mt-1 text-xs text-zinc-500">We'll send a copy + a link to get your full 90-day forecast.</p>
         </div>
       </div>
 

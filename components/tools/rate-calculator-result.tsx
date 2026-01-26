@@ -169,7 +169,7 @@ export function RateCalculatorResult({ result, lastInput }: Props) {
           <div>
             <p className="text-sm font-semibold text-white">Now track if you’re actually hitting these numbers</p>
             <p className="mt-1 text-sm text-zinc-500">
-              Cash Flow Forecaster helps you forecast revenue, expenses, and cash balance across the next 60 days.
+              Cash Flow Forecaster helps you forecast revenue, expenses, and cash balance across the next 90 days.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">

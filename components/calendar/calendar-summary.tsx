@@ -133,7 +133,7 @@ export function CalendarSummary({ calendarData }: CalendarSummaryProps) {
         <p className="text-2xl font-bold text-zinc-100">
           {formatCurrency(totalIncome)}
         </p>
-        <p className="text-xs text-zinc-500 mt-2">Over 60 days</p>
+        <p className="text-xs text-zinc-500 mt-2">Over forecast period</p>
       </div>
 
       {/* Expected Bills Card */}
@@ -147,7 +147,7 @@ export function CalendarSummary({ calendarData }: CalendarSummaryProps) {
         <p className="text-2xl font-bold text-zinc-100">
           {formatCurrency(totalBills)}
         </p>
-        <p className="text-xs text-zinc-500 mt-2">Over 60 days</p>
+        <p className="text-xs text-zinc-500 mt-2">Over forecast period</p>
       </div>
     </div>
   );

@@ -121,7 +121,7 @@ export const productSchema = {
       name: 'Free Plan',
       price: '0',
       priceCurrency: 'USD',
-      description: '60-day forecast, 10 bills, 10 income sources',
+      description: '90-day forecast, 10 bills, 10 income sources',
       availability: 'https://schema.org/InStock',
     },
     {
