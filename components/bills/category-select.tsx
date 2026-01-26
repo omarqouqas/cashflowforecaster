@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { createCategory } from '@/lib/actions/manage-categories';
-import { type UserCategory, CATEGORY_COLORS, CATEGORY_ICONS } from '@/lib/categories/constants';
+import { type UserCategory, CATEGORY_COLORS, CATEGORY_ICONS, DEFAULT_CATEGORIES } from '@/lib/categories/constants';
 import { showError, showSuccess } from '@/lib/toast';
 import Link from 'next/link';
 
@@ -94,7 +94,20 @@ export function CategorySelect({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selectedCategory = categories.find(c => c.name === value);
+  // Use default categories as fallback when no categories exist
+  const displayCategories = categories.length > 0
+    ? categories
+    : DEFAULT_CATEGORIES.map((cat, i) => ({
+        id: `default-${i}`,
+        user_id: '',
+        name: cat.name,
+        color: cat.color,
+        icon: cat.icon,
+        sort_order: cat.sort_order,
+        created_at: '',
+      }));
+
+  const selectedCategory = displayCategories.find(c => c.name === value);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -190,7 +203,7 @@ export function CategorySelect({
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg max-h-80 overflow-auto">
           {/* Category options */}
-          {categories.map((cat) => {
+          {displayCategories.map((cat) => {
             const Icon = getIconComponent(cat.icon);
             const colors = COLOR_CLASSES[cat.color] ?? COLOR_CLASSES.zinc;
             const isSelected = cat.name === value;
