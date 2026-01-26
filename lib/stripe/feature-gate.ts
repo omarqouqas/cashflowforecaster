@@ -156,6 +156,77 @@ export async function getForecastDaysLimit(userId: string): Promise<number> {
 }
 
 /**
+ * Check if user can use advanced export formats (Excel, PDF, JSON)
+ * CSV is always available, Pro required for other formats
+ */
+export async function canUseAdvancedExports(userId: string): Promise<FeatureGateResult> {
+  const tier = await getUserTier(userId);
+
+  // Free tier only gets CSV
+  if (tier === 'free') {
+    return {
+      allowed: false,
+      reason: 'feature_disabled',
+      tier,
+    };
+  }
+
+  return { allowed: true, tier };
+}
+
+/**
+ * Check if user can access a specific report type
+ */
+export async function canAccessReport(
+  userId: string,
+  reportType: 'monthly_summary' | 'category_spending' | 'cash_forecast' | 'all_data' | 'custom'
+): Promise<FeatureGateResult> {
+  const tier = await getUserTier(userId);
+
+  // Free tier reports
+  const freeReports = ['monthly_summary', 'category_spending'];
+
+  if (tier === 'free' && !freeReports.includes(reportType)) {
+    return {
+      allowed: false,
+      reason: 'feature_disabled',
+      tier,
+    };
+  }
+
+  return { allowed: true, tier };
+}
+
+/**
+ * Get export limits for user's tier
+ */
+export async function getExportLimits(userId: string): Promise<{
+  tier: SubscriptionTier;
+  allowedFormats: ('csv' | 'excel' | 'pdf' | 'json')[];
+  allowedReports: string[];
+  historyLimit: number;
+}> {
+  const tier = await getUserTier(userId);
+
+  if (tier === 'free') {
+    return {
+      tier,
+      allowedFormats: ['csv'],
+      allowedReports: ['monthly_summary', 'category_spending'],
+      historyLimit: 5,
+    };
+  }
+
+  // Pro/Premium get everything
+  return {
+    tier,
+    allowedFormats: ['csv', 'excel', 'pdf', 'json'],
+    allowedReports: ['monthly_summary', 'category_spending', 'cash_forecast', 'all_data', 'custom'],
+    historyLimit: Infinity,
+  };
+}
+
+/**
  * Get all usage stats for a user (useful for displaying in UI)
  */
 export async function getUserUsageStats(userId: string): Promise<{

@@ -21,15 +21,22 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 ### 2. Credit Cards
 **Feedback:** "I don't see anywhere for credit cards to be setup"
 
+**Clarification (Jan 2026):** "They can be a blind spot for cash - I think it would help to include CC transactions and balances and be able to forecast payments"
+
 **Current State:**
 - Credit cards can be added as account type
 - No special functionality (APR, limits, minimum payments, payoff planning)
 
-**Action:** Need clarification from Jeremy on use case. Asked follow-up question.
+**Action:** Build credit card tracking feature focused on cash flow visibility
 
-**Status:** ⏳ Awaiting clarification
+**Status:** 📋 Planned
 
-**Potential Features:**
+**Required Features (per Jeremy):**
+- Track CC transactions (spending that impacts cash later)
+- Track CC balances
+- Forecast CC payments (when cash actually leaves)
+
+**Nice-to-Have:**
 - Credit limit tracking
 - APR/interest rate calculations
 - Minimum payment reminders
@@ -41,17 +48,22 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 ### 3. Spend Categories
 **Feedback:** "Would it make sense to have spend categories?"
 
+**Clarification (Jan 2026):** "All good here - just need to be able to report on them and also add custom ones"
+
 **Current State:**
 - Bills have 5 categories: rent, utilities, subscriptions, insurance, other
 - Income has no categories
 - Imported transactions have no categories
 
-**Action:** Asked Jeremy for clarification on needs (more granular vs custom categories)
+**Action:** Add custom category support and category reporting
 
-**Status:** ⏳ Awaiting clarification
+**Status:** 📋 Planned
 
-**Potential Improvements:**
+**Required Features (per Jeremy):**
 - Custom user-defined categories
+- Category reporting (covered in Reports feature)
+
+**Nice-to-Have:**
 - More granular default categories
 - Category assignment for income sources
 - Auto-categorization for imported transactions
@@ -61,57 +73,78 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 ### 4. Bank Import Format
 **Feedback:** "I didn't try the bank import so I am not clear on the format"
 
+**Clarification (Jan 2026):** "I didnt try this so not sure of functionality"
+
 **Current State:**
-- Accepts CSV exports from most US banks
+- Accepts CSV exports from most banks
 - Auto-detects common column names (date, description, amount)
 - Manual column mapping available
-- No in-app documentation explaining this
+- Help section added to Import page
 
-**Action:** Add help section to Import page explaining the format
+**Action:** Help section implemented. May need additional feedback once Jeremy tries the feature.
 
-**Status:** ✅ Implemented
+**Status:** ✅ Implemented (awaiting usage feedback)
 
 ---
 
 ### 5. Standard Reports
 **Feedback:** "It would be useful to have some standard reports"
 
+**Clarification (Jan 2026):** "I would look for data extraction into Excel (csv) but you could have a report that shows spend by category, cash projection etc"
+
 **Current State:**
-- Dashboard has calendar view, balance trends, safe-to-spend
-- No dedicated reporting/export functionality
+- New `/dashboard/reports` page with:
+  - Quick Reports (Monthly Summary, Category Spending, Cash Forecast, All Data)
+  - Custom Export Builder with data selection, date range, and format options
+  - Export History with 30-day retention and re-download capability
+  - CSV export for free users, Excel/PDF/JSON for Pro
 
-**Action:** Plan and build Reports feature (see roadmap below)
+**Action:** Reports feature implemented!
 
-**Status:** 📋 Planned
+**Status:** ✅ Implemented
+
+**Delivered Features:**
+- CSV/Excel export (data extraction) - CSV free, Excel Pro
+- Spend by category report - Monthly Summary and Category Spending reports
+- Cash projection report - Cash Forecast report (Pro)
 
 ---
 
 ## Reports Feature Roadmap
 
-### Phase 1: Core Reports (MVP)
-- [ ] **Monthly Cash Flow Summary**
-  - Income vs expenses by month
-  - Net cash flow calculation
-  - Month-over-month comparison
-
-- [ ] **Category Breakdown**
-  - Pie/bar chart of spending by bill category
-  - Percentage breakdown
-  - Top spending categories
-
-- [ ] **Forecast Summary**
-  - Key dates (low balance days, large bills)
-  - Projected end-of-period balance
-  - Safe-to-spend summary
-
-### Phase 2: Export & Sharing
-- [ ] **PDF Export**
-  - Printable monthly summary
-  - Clean formatting for sharing/records
-
-- [ ] **CSV Export**
+### Phase 1: Core Reports (MVP) - ✅ COMPLETE
+- [x] **CSV/Excel Export** ⭐ (Jeremy's top ask)
   - Raw data export for spreadsheet users
-  - Transaction history export
+  - Bills, income, accounts, invoices export
+  - CSV (free) + Excel (Pro) formats
+
+- [x] **Spend by Category Report** ⭐ (Jeremy's request)
+  - Category Spending quick report
+  - Percentage breakdown in export
+
+- [x] **Cash Projection Report** ⭐ (Jeremy's request)
+  - Cash Forecast quick report (Pro)
+  - Daily projected balances export
+
+- [x] **Custom Export Builder**
+  - Data selection (bills, income, accounts, invoices)
+  - Date range presets
+  - Format selection
+  - Export summary/preview
+
+- [x] **Export History**
+  - 30-day retention
+  - Re-download capability
+  - Status badges
+
+### Phase 2: Additional Reports
+- [x] **Monthly Cash Flow Summary**
+  - Monthly Summary quick report
+  - Income vs expenses breakdown
+
+- [ ] **PDF Export**
+  - Coming soon (marked in UI)
+  - Printable formatted report
 
 ### Phase 3: Advanced Reports
 - [ ] **Tax Summary Report**
@@ -128,18 +161,19 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
   - Save and compare what-if scenarios
   - Side-by-side projections
 
-### UI/UX Considerations
-- New `/dashboard/reports` route
-- Tab-based navigation between report types
-- Date range selector (this month, last month, quarter, year)
-- Print-friendly styling
-- Mobile-responsive charts
+### UI/UX Delivered
+- ✅ New `/dashboard/reports` route
+- ✅ Quick Reports section with 4 report cards
+- ✅ Custom Export Builder modal
+- ✅ Date range presets (This Month, Last Month, Last 30 Days, This Quarter, This Year)
+- ✅ Export History with status tracking
+- ✅ Tier gating (CSV free, Excel/JSON Pro)
 
-### Technical Considerations
-- Use existing chart library (recharts)
-- Server-side PDF generation (react-pdf or html-to-pdf)
-- Consider caching for heavy calculations
-- Pro tier: full report access; Free tier: limited reports or watermarked exports
+### Technical Implementation
+- ✅ `xlsx` package for Excel generation
+- ✅ Data URL encoding for immediate downloads
+- ✅ Database table with RLS for export history
+- ✅ Feature gates in `lib/stripe/feature-gate.ts`
 
 ---
 
@@ -147,6 +181,11 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 
 1. ✅ **90-day forecast for free users** - Config change (done)
 2. ✅ **Import help section** - UX improvement (done)
-3. 📋 **Reports tab** - Major feature (planned above)
-4. ⏳ **Credit card improvements** - Awaiting requirements
-5. ⏳ **Enhanced categories** - Awaiting requirements
+3. ✅ **Reports tab** - Major feature (done)
+   - CSV export (Jeremy's top priority)
+   - Spend by category report
+   - Cash projection report
+   - Custom Export Builder with filters
+   - Export History with re-download
+4. 📋 **Custom categories** - Allow users to create custom spend categories
+5. 📋 **Credit card cash flow** - Track CC transactions/balances, forecast payments

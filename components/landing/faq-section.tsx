@@ -35,7 +35,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between Free and Pro?",
-    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, and a 90-day forecast. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), and adds Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
+    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, 90-day forecast, and CSV export. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), adds Excel and JSON export formats, and includes Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
   },
   {
     question: "Can I connect my bank account?",
@@ -60,6 +60,14 @@ const faqs: FAQItem[] = [
   {
     question: "How do I budget with irregular income?",
     answer: "Budgeting with irregular income requires a different approach than traditional monthly budgets. First, calculate your baseline expenses—the minimum you need each month for rent, utilities, insurance, and essentials. Second, build a buffer fund of 2-3 months of expenses to smooth out income fluctuations. Third, use a cash flow calendar (not a monthly budget) to see your projected balance day-by-day. Finally, pay yourself a consistent 'salary' from your business income rather than spending whatever comes in. Cash Flow Forecaster automates the cash flow calendar part, showing you exactly when you'll run low and what's safe to spend."
+  },
+  {
+    question: "Can I export my data?",
+    answer: "Yes! Cash Flow Forecaster includes a full Reports & Export feature. Free users can export their data to CSV format, which opens in Excel, Google Sheets, or Numbers. Pro users unlock Excel and JSON export formats, plus access to all report types including Cash Forecast and complete data backups. You can export quick reports like Monthly Summary or Category Spending with one click, or use the Custom Export Builder to select exactly what data you want, choose a date range, and pick your preferred format. Your export history is saved for 30 days so you can re-download previous exports."
+  },
+  {
+    question: "What reports can I generate?",
+    answer: "The Reports page offers four quick reports: Monthly Summary (income vs expenses with net cash flow), Category Spending (breakdown by bill category with percentages), Cash Forecast (daily projected balances—Pro only), and All Data (complete backup of your accounts, bills, income, and invoices—Pro only). You can also use the Custom Export Builder to create tailored exports by selecting specific data types, date ranges, and formats. All reports can be exported to CSV (free) or Excel/JSON (Pro)."
   },
   {
     question: "What is cash flow forecasting?",

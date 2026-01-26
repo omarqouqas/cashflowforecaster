@@ -16,6 +16,7 @@ import {
   HelpCircle,
   LogOut,
   Home,
+  FileBarChart,
 } from 'lucide-react';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { createPortalSession } from '@/lib/actions/stripe';
@@ -72,6 +73,7 @@ export function DashboardNav({ userEmail, userName, userTier }: DashboardNavProp
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
     { href: '/dashboard/import', label: 'Import', icon: Upload },
     { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
+    { href: '/dashboard/reports', label: 'Reports', icon: FileBarChart },
   ];
 
   const isLinkActive = (href: string) => {

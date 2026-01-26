@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.2
+**Version:** 6.3
 **Last Updated:** January 26, 2026
-**Status:** Live - Free Tier Extended to 90 Days
+**Status:** Live - Reports & Export Feature Added
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -368,6 +368,28 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - Calculates goal from actual monthly bill expenses
 - PostHog event: `emergency_fund_settings_updated`
 
+**16. Reports & Export ✅**
+- **Reports Page** (`/dashboard/reports`) with quick reports and custom export builder
+- **Quick Reports** - 4 one-click report cards:
+  - Monthly Summary (free): Income vs expenses, net flow
+  - Category Spending (free): Breakdown by bill category
+  - Cash Forecast (Pro): Daily projected balances
+  - All Data (Pro): Complete data backup
+- **Custom Export Builder** - Modal with:
+  - Data selection (bills, income, accounts, invoices)
+  - Date range presets (This Month, Last Month, Last 30 Days, This Quarter, This Year)
+  - Format selection with tier gating
+- **Export Formats:**
+  - CSV (free): Opens in Excel, Google Sheets, Numbers
+  - Excel (Pro): Multi-sheet workbooks with auto-sized columns
+  - JSON (Pro): Structured data for developers
+  - PDF (coming soon)
+- **Export History** - Recent exports with status, format badges, re-download
+- **Tier Limits:**
+  - Free: CSV only, 5 exports in history
+  - Pro: All formats, unlimited history
+- Database table: `exports` with 30-day retention and RLS
+
 ### Premium Features (Post-MVP / Planned)
 
 **14. Email Parser** (Planned)
@@ -412,6 +434,9 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 | Runway Collect Invoicing | ❌ | ✅ |
 | PDF Invoices | ❌ | ✅ |
 | Payment Reminders | ❌ | ✅ |
+| CSV Export | ✅ | ✅ |
+| Excel/JSON Export | ❌ | ✅ |
+| Export History | 5 items | Unlimited |
 | Support | 48hr email | 24hr priority |
 
 **Yearly Pricing:**
@@ -441,7 +466,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - **Deployment:** Vercel
 - **Version Control:** Git + GitHub
 
-### Database Schema (13 tables)
+### Database Schema (14 tables)
 
 1. **accounts** - User bank accounts
 2. **income** - Income sources
@@ -456,6 +481,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 11. **users** - Extended user profiles
 12. **subscriptions** - Stripe subscription data
 13. **feedback** - User feedback submissions (bug reports, suggestions, questions)
+14. **exports** - Export history (report type, format, config, file URL, status)
 
 ### Feature Gating Architecture
 
@@ -799,9 +825,9 @@ User Request
 ### Phase 2 Features (Months 2-4)
 
 - [x] Bill collision warnings (calendar banner + day detail + email digest)
+- [x] Export to CSV/Excel/JSON (Reports & Export feature)
 - [ ] Sentry error monitoring
 - [ ] Multi-currency support
-- [ ] Export to CSV/PDF
 - [ ] Email notifications (beyond digest)
 
 ### Phase 3 Features (Months 5-8)
@@ -838,6 +864,19 @@ User Request
 ---
 
 ## Changelog
+
+### Version 6.3 (January 26, 2026)
+- **Reports & Export Feature:**
+  - New Reports page at `/dashboard/reports`
+  - Quick Reports: Monthly Summary, Category Spending (free), Cash Forecast, All Data (Pro)
+  - Custom Export Builder modal with data selection, date range presets, format choice
+  - Export formats: CSV (free), Excel (Pro), JSON (Pro), PDF (coming soon)
+  - Export History section with status badges and re-download capability
+  - Database table `exports` with RLS and 30-day retention
+  - Feature gating: Free tier gets CSV + 5 history items, Pro gets all formats + unlimited history
+  - Navigation: Added "Reports" link with FileBarChart icon
+  - New files: `app/dashboard/reports/`, `components/reports/`, `lib/export/`, `app/api/exports/`
+  - Dependencies: Added `xlsx` package for Excel generation
 
 ### Version 6.2 (January 26, 2026)
 - Free Tier Forecast Extended to 90 Days:
@@ -1176,7 +1215,7 @@ User Request
 
 ---
 
-**Document Version:** 6.2
+**Document Version:** 6.3
 **Last Updated:** January 26, 2026
-**Status:** Live - Free Tier Extended to 90 Days 🎉
+**Status:** Live - Reports & Export Feature Added 🎉
 **Next Review:** February 2026

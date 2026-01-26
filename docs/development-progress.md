@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + **Reports & Export Feature**
 
 **Current Focus:**
 
@@ -31,21 +31,62 @@
 
 ## Recent Development (Days 40-48)
 
-### Day 48: Free Tier Forecast Extended to 90 Days (January 26, 2026)
+### Day 48: Reports & Export Feature + Free Tier Extended to 90 Days (January 26, 2026)
 
-**User Feedback Implementation** - Based on beta tester feedback (Jeremy), extended free tier forecast from 60 to 90 days.
+**Reports & Export Feature** - Major feature implementation allowing users to export their financial data.
 
-**Changes:**
+**New Reports Page (`/dashboard/reports`):**
+- Quick Reports: 4 one-click report cards (Monthly Summary, Category Spending, Cash Forecast, All Data)
+- Custom Export Builder: Modal with data selection, date range presets, format choice, and export summary
+- Export History: Recent exports with status, format badges, re-download capability
+- Tier-gated features (Free: CSV + limited reports, Pro: Excel/JSON + all reports)
+
+**Export Formats:**
+- CSV: Free tier, opens in Excel/Sheets/Numbers
+- Excel: Pro tier, multi-sheet workbooks with auto-sized columns
+- JSON: Pro tier, structured data for developers
+- PDF: Coming soon (shows friendly message)
+
+**Technical Implementation:**
+- Database: `exports` table with RLS, 30-day retention, status tracking
+- Types: `lib/export/types.ts` with ExportFormat, ReportType, DataInclude, etc.
+- Generators: `lib/export/generators/csv-generator.ts`, `excel-generator.ts`
+- API: `/api/exports/generate` route handling all export generation
+- Feature gates: `lib/stripe/feature-gate.ts` extended with export permissions
+- Navigation: Added "Reports" link with FileBarChart icon
+
+**New Files:**
+- `app/dashboard/reports/page.tsx` - Server component
+- `app/dashboard/reports/loading.tsx` - Loading skeleton
+- `components/reports/reports-page-content.tsx` - Client component
+- `components/reports/quick-reports-section.tsx` - Report cards
+- `components/reports/export-builder-modal.tsx` - Custom export builder
+- `components/reports/export-history-section.tsx` - History table
+- `lib/export/types.ts` - TypeScript types and constants
+- `lib/export/generators/csv-generator.ts` - CSV generation
+- `lib/export/generators/excel-generator.ts` - Excel generation (xlsx)
+- `supabase/migrations/20260126000001_add_exports_table.sql` - Database migration
+- `app/api/exports/generate/route.ts` - Export API endpoint
+
+**Free Tier Extended to 90 Days** - Based on beta tester feedback (Jeremy):
 - Updated `lib/stripe/config.ts` - Free tier `forecastDays: 60` → `90`
 - Updated all user-facing copy across 26 files (landing page, FAQs, pricing, tools, OG images, etc.)
 - Dashboard default filter now 90 days for free users (was 60)
 - Calendar summary/warnings now use dynamic "forecast period" instead of hardcoded "60 days"
 - Added collapsible help section to CSV Import explaining expected format
 
-**Documentation:**
-- Created `docs/user-feedback-jeremy.md` with Reports feature roadmap for future development
+**Bug Fixes:**
+- Fixed Stripe API version mismatch (updated to '2025-12-15.clover')
+- Fixed TypeScript errors with Map iteration using Array.from()
+- Fixed undefined array access with explicit checks
+- PDF export shows "coming soon" message instead of silently falling to CSV
+- Export history shows "Expired" for completed exports without file_url
 
-**Files:** `lib/stripe/config.ts`, `components/landing/*`, `components/pricing/*`, `components/calendar/*`, `components/tools/*`, `components/dashboard/dashboard-filters.tsx`, `app/blog/page.tsx`, `app/compare/*`, multiple OG images
+**Dependencies:**
+- Added `xlsx` package for Excel export generation
+
+**Documentation:**
+- Created `docs/user-feedback-jeremy.md` with Reports feature roadmap
 
 ---
 
@@ -418,6 +459,9 @@
 | Forecast Days | 90 | 365 |
 | Invoicing | No | Yes |
 | Stripe Payment Links | No | Yes |
+| CSV Export | Yes | Yes |
+| Excel/JSON Export | No | Yes |
+| Export History | 5 items | Unlimited |
 
 ---
 
@@ -432,6 +476,7 @@
 **Alerts:** `low_balance_alert_sent`, `welcome_email_sent`
 **Tax:** `tax_tracking_toggled`, `tax_settings_updated`
 **Emergency Fund:** `emergency_fund_settings_updated`
+**Exports:** `export_generated`, `report_downloaded`
 
 ---
 
@@ -461,6 +506,7 @@
 | Invoice branding | Logo upload, business name on PDFs |
 | Currency input formatting | Comma formatting as you type |
 | Form UX consistency | Unified styling, mobile touch targets |
+| Reports & Export | CSV/Excel/JSON export, quick reports, custom builder |
 
 ### Upcoming
 
@@ -496,6 +542,7 @@
 - Dashboard mobile layout with responsive text and no overflow
 - Calendar mobile UX with always-visible stats (no "Tap for more")
 - Mobile navigation with user avatar menu and Dashboard as Home
+- Reports & Export with quick reports, custom builder, and export history
 
 ## What's Next
 

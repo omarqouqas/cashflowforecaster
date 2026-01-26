@@ -104,6 +104,7 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
     features: [
       '90-day cash flow forecast',
       'Up to 10 bills & income sources',
+      'CSV export',
       'Manual entry only',
       'Basic color coding',
       'Email support (48hr response)',
@@ -130,6 +131,7 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
       'Runway Collect invoicing',
       'Unlimited bills & income',
       '365-day forecast (12 months ahead)',
+      'Excel & JSON export',
       'Scenario testing',
       'Payment reminders',
       'Priority support (24hr)',

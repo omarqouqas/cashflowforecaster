@@ -70,6 +70,7 @@ const comparisonRows = [
   { feature: 'Payment reminders', cff: '✅ 3 escalating templates', typical: '❌ No' },
   { feature: 'Emergency fund tracker', cff: '✅ Track savings + runway', typical: '❌ No' },
   { feature: 'Tax savings tracker', cff: '✅ Quarterly estimates', typical: '❌ No' },
+  { feature: 'Data export', cff: '✅ CSV, Excel, JSON', typical: '⚠️ CSV only' },
   { feature: 'Weekly email digest', cff: '✅ Yes', typical: '❌ No' },
   { feature: 'Freelancer-focused', cff: '✅ Built for irregular income', typical: '⚠️ Generic' },
   { feature: 'Bank connection required', cff: '❌ Optional', typical: '⚠️ Often required' },
