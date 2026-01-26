@@ -57,9 +57,9 @@ export default async function DashboardLayout({
       <IdentifyUser />
       <EmailVerificationBanner user={user} />
 
-      <header className="bg-zinc-900 border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <header className="bg-zinc-900 border-b border-zinc-800 overflow-visible">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
+          <div className="flex justify-between items-center h-16 overflow-visible">
             <Link href="/dashboard" className="flex-shrink-0">
               <h1 className="text-xl font-bold text-zinc-100 hover:text-teal-400 transition-colors cursor-pointer whitespace-nowrap">
                 Cash Flow Forecaster
