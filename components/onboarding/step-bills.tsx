@@ -3,11 +3,12 @@
 import { useMemo, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { showError, showSuccess } from '@/lib/toast'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 export type StepBillRow = {
   id: string
   name: string
-  amount: string
+  amount: number | undefined
   frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually' | 'one-time'
   due_date: string
   category: 'rent' | 'utilities' | 'subscriptions' | 'insurance' | 'other'
@@ -55,11 +56,10 @@ function nextDueDateForDay(dayOfMonth: number) {
 }
 
 function isValidBill(b: StepBillRow) {
-  const amount = Number(b.amount)
   return (
     b.name.trim().length > 0 &&
-    Number.isFinite(amount) &&
-    amount > 0 &&
+    b.amount !== undefined &&
+    b.amount > 0 &&
     b.due_date.trim().length > 0 &&
     Boolean(b.frequency) &&
     Boolean(b.category)
@@ -81,7 +81,7 @@ export function StepBills({
     return defaultBills.map((b, idx) => ({
       id: `${Date.now()}-${idx}`,
       name: b.name ?? '',
-      amount: b.amount ?? '',
+      amount: typeof b.amount === 'number' ? b.amount : undefined,
       frequency: (b.frequency as any) ?? 'monthly',
       due_date: b.due_date ?? '',
       category: (b.category as any) ?? 'other',
@@ -111,7 +111,7 @@ export function StepBills({
       {
         id: `${Date.now()}-${s.key}`,
         name: s.name,
-        amount: String(s.amount),
+        amount: s.amount,
         frequency: s.frequency,
         due_date: nextDueDateForDay(s.suggestedDayOfMonth),
         category: s.category,
@@ -125,7 +125,7 @@ export function StepBills({
       {
         id: `${Date.now()}-${Math.random()}`,
         name: '',
-        amount: '',
+        amount: undefined,
         frequency: 'monthly',
         due_date: nextDueDateForDay(1),
         category: 'other',
@@ -147,7 +147,7 @@ export function StepBills({
       await onContinue(
         bills.map((b) => ({
           name: b.name.trim(),
-          amount: Number(b.amount),
+          amount: b.amount ?? 0,
           frequency: b.frequency,
           due_date: b.due_date,
           category: b.category,
@@ -265,14 +265,11 @@ export function StepBills({
                         <label className="block text-sm font-medium text-zinc-200">Amount</label>
                         <div className="mt-1 relative">
                           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
-                          <input
+                          <CurrencyInput
                             value={b.amount}
-                            onChange={(e) =>
-                              setBills((prev) => prev.map((x) => (x.id === b.id ? { ...x, amount: e.target.value } : x)))
+                            onChange={(val) =>
+                              setBills((prev) => prev.map((x) => (x.id === b.id ? { ...x, amount: val } : x)))
                             }
-                            type="number"
-                            step="0.01"
-                            inputMode="decimal"
                             placeholder="0.00"
                             className="w-full rounded-lg bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                           />

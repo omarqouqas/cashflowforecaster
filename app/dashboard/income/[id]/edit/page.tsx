@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useParams, useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
@@ -49,6 +50,7 @@ export default function EditIncomePage() {
     handleSubmit,
     formState: { errors },
     reset,
+    control,
   } = useForm<IncomeFormData>({
     resolver: zodResolver(incomeSchema),
   });
@@ -234,16 +236,21 @@ export default function EditIncomePage() {
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                className={[
-                  'pl-8',
-                  errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
-                ].join(' ')}
-                {...register('amount')}
+              <Controller
+                name="amount"
+                control={control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    id="amount"
+                    placeholder="0.00"
+                    className={[
+                      'pl-8',
+                      errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
+                    ].join(' ')}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </div>
             {errors.amount?.message && (

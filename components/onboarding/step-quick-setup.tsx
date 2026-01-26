@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { showError, showSuccess } from '@/lib/toast'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 type Frequency = 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'one-time'
 
@@ -24,38 +25,26 @@ export function StepQuickSetup({
   onSkip: () => void
 }) {
   // Account state
-  const [balance, setBalance] = useState('')
+  const [balance, setBalance] = useState<number | undefined>(undefined)
 
   // Income state
   const [showIncome, setShowIncome] = useState(false)
   const [incomeName, setIncomeName] = useState('Salary')
-  const [incomeAmount, setIncomeAmount] = useState('')
+  const [incomeAmount, setIncomeAmount] = useState<number | undefined>(undefined)
   const [frequency, setFrequency] = useState<Frequency>('biweekly')
   const [nextDate, setNextDate] = useState('')
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const parsedBalance = useMemo(() => {
-    if (balance.trim() === '') return null
-    const n = Number(balance)
-    return Number.isFinite(n) ? n : null
-  }, [balance])
-
-  const parsedIncomeAmount = useMemo(() => {
-    if (incomeAmount.trim() === '') return null
-    const n = Number(incomeAmount)
-    return Number.isFinite(n) && n > 0 ? n : null
-  }, [incomeAmount])
-
   // Balance is required, income is optional
-  const canContinue = parsedBalance !== null
+  const canContinue = balance !== undefined
   const incomeComplete = showIncome
-    ? incomeName.trim().length > 0 && parsedIncomeAmount !== null && nextDate.trim().length > 0
+    ? incomeName.trim().length > 0 && incomeAmount !== undefined && incomeAmount > 0 && nextDate.trim().length > 0
     : true
 
   async function handleContinue() {
-    if (!canContinue || parsedBalance === null) return
+    if (!canContinue || balance === undefined) return
     if (showIncome && !incomeComplete) return
 
     setIsSubmitting(true)
@@ -63,13 +52,13 @@ export function StepQuickSetup({
 
     try {
       const values: QuickSetupValues = {
-        balance: parsedBalance,
+        balance,
       }
 
-      if (showIncome && parsedIncomeAmount !== null && nextDate) {
+      if (showIncome && incomeAmount !== undefined && nextDate) {
         values.income = {
           name: incomeName.trim(),
-          amount: parsedIncomeAmount,
+          amount: incomeAmount,
           frequency,
           next_date: nextDate,
         }
@@ -109,15 +98,11 @@ export function StepQuickSetup({
           </label>
           <div className="mt-1 relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
-            <input
+            <CurrencyInput
               value={balance}
-              onChange={(e) => setBalance(e.target.value)}
-              inputMode="decimal"
-              type="number"
-              step="0.01"
+              onChange={setBalance}
               placeholder="0.00"
               className="w-full rounded-lg bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              required
               autoFocus
             />
           </div>
@@ -162,12 +147,9 @@ export function StepQuickSetup({
                 </label>
                 <div className="mt-1 relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
-                  <input
+                  <CurrencyInput
                     value={incomeAmount}
-                    onChange={(e) => setIncomeAmount(e.target.value)}
-                    type="number"
-                    step="0.01"
-                    inputMode="decimal"
+                    onChange={setIncomeAmount}
                     placeholder="0.00"
                     className="w-full rounded-lg bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
