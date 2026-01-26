@@ -15,11 +15,12 @@ import { Input } from '@/components/ui/input';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Settings } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
 import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { trackBillAdded } from '@/lib/posthog/events';
+import { seedDefaultCategories, type UserCategory } from '@/lib/actions/manage-categories';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -33,9 +34,7 @@ const billSchema = z.object({
   frequency: z.enum(['weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually', 'one-time'], {
     message: 'Please select a frequency',
   }),
-  category: z.enum(['rent', 'utilities', 'subscriptions', 'insurance', 'other'], {
-    message: 'Please select a category',
-  }),
+  category: z.string().min(1, 'Please select a category'),
   is_active: z.boolean().default(true),
 });
 
@@ -46,6 +45,8 @@ export default function NewBillPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [categories, setCategories] = useState<UserCategory[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Feature gating
   const { canAddBill, usage, limits, isLoading: subscriptionLoading } = useSubscriptionWithUsage();
@@ -61,6 +62,43 @@ export default function NewBillPage() {
       is_active: true,
     },
   });
+
+  // Fetch user categories
+  useEffect(() => {
+    async function loadCategories() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        setCategoriesLoading(false);
+        return;
+      }
+
+      // First try to fetch existing categories
+      let { data: cats, error: fetchError } = await supabase
+        .from('user_categories')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('sort_order', { ascending: true });
+
+      // If no categories exist, seed defaults
+      if (!fetchError && (!cats || cats.length === 0)) {
+        await seedDefaultCategories();
+        // Refetch after seeding
+        const { data: seededCats } = await supabase
+          .from('user_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('sort_order', { ascending: true });
+        cats = seededCats;
+      }
+
+      setCategories((cats || []) as UserCategory[]);
+      setCategoriesLoading(false);
+    }
+
+    loadCategories();
+  }, []);
 
   // Redirect if at limit (show modal instead)
   useEffect(() => {
@@ -131,8 +169,8 @@ export default function NewBillPage() {
     }
   };
 
-  // Show loading state while checking subscription
-  if (subscriptionLoading) {
+  // Show loading state while checking subscription or loading categories
+  if (subscriptionLoading || categoriesLoading) {
     return (
       <div className="max-w-lg mx-auto">
         <Link
@@ -296,9 +334,18 @@ export default function NewBillPage() {
 
           {/* Category */}
           <div>
-            <Label htmlFor="category" className="text-zinc-300 mb-1.5 block font-medium">
-              Category<span className="text-rose-400 ml-0.5">*</span>
-            </Label>
+            <div className="flex items-center justify-between mb-1.5">
+              <Label htmlFor="category" className="text-zinc-300 font-medium">
+                Category<span className="text-rose-400 ml-0.5">*</span>
+              </Label>
+              <Link
+                href="/dashboard/settings#bill-categories"
+                className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-teal-400 transition-colors"
+              >
+                <Settings className="w-3 h-3" />
+                Manage
+              </Link>
+            </div>
             <div className="relative">
               <select
                 id="category"
@@ -313,11 +360,11 @@ export default function NewBillPage() {
                 ].join(' ')}
               >
                 <option value="" className="text-zinc-500">Select category...</option>
-                <option value="rent">Rent/Mortgage</option>
-                <option value="utilities">Utilities</option>
-                <option value="subscriptions">Subscriptions</option>
-                <option value="insurance">Insurance</option>
-                <option value="other">Other</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
               <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>

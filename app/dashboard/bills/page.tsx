@@ -150,17 +150,29 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  // Fetch bills and usage stats in parallel
-  const [billsResult, usageStats] = await Promise.all([
+  // Fetch bills, categories, and usage stats in parallel
+  const [billsResult, categoriesResult, usageStats] = await Promise.all([
     supabase
       .from('bills')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }),
+    supabase
+      .from('user_categories')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('sort_order', { ascending: true }),
     getUserUsageStats(user.id),
   ]);
 
   const { data: bills, error } = billsResult;
+  const categories = (categoriesResult.data || []) as Array<{
+    id: string;
+    name: string;
+    color: string;
+    icon: string;
+    sort_order: number;
+  }>;
 
   if (error) {
     console.error('Error fetching bills:', error);
@@ -373,7 +385,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
             </div>
           ) : (
             /* Bills List with Filters */
-            <BillsContent bills={billsList} />
+            <BillsContent bills={billsList} categories={categories} />
           )}
         </>
       )}

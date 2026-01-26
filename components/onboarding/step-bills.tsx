@@ -1,9 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { showError, showSuccess } from '@/lib/toast'
 import { CurrencyInput } from '@/components/ui/currency-input'
+import { createClient } from '@/lib/supabase/client'
+import { seedDefaultCategories, DEFAULT_CATEGORIES, type UserCategory } from '@/lib/actions/manage-categories'
 
 export type StepBillRow = {
   id: string
@@ -11,7 +13,7 @@ export type StepBillRow = {
   amount: number | undefined
   frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annually' | 'one-time'
   due_date: string
-  category: 'rent' | 'utilities' | 'subscriptions' | 'insurance' | 'other'
+  category: string
 }
 
 type Suggestion = {
@@ -19,16 +21,16 @@ type Suggestion = {
   name: string
   amount: number
   frequency: StepBillRow['frequency']
-  category: StepBillRow['category']
+  category: string
   suggestedDayOfMonth: number
 }
 
 const SUGGESTIONS: Suggestion[] = [
-  { key: 'rent', name: 'Rent/Mortgage', amount: 1500, frequency: 'monthly', category: 'rent', suggestedDayOfMonth: 1 },
-  { key: 'utilities', name: 'Utilities', amount: 150, frequency: 'monthly', category: 'utilities', suggestedDayOfMonth: 15 },
-  { key: 'phone', name: 'Phone', amount: 80, frequency: 'monthly', category: 'utilities', suggestedDayOfMonth: 20 },
-  { key: 'subs', name: 'Subscriptions', amount: 50, frequency: 'monthly', category: 'subscriptions', suggestedDayOfMonth: 5 },
-  { key: 'car', name: 'Car Payment', amount: 400, frequency: 'monthly', category: 'other', suggestedDayOfMonth: 10 },
+  { key: 'rent', name: 'Rent/Mortgage', amount: 1500, frequency: 'monthly', category: 'Rent/Mortgage', suggestedDayOfMonth: 1 },
+  { key: 'utilities', name: 'Utilities', amount: 150, frequency: 'monthly', category: 'Utilities', suggestedDayOfMonth: 15 },
+  { key: 'phone', name: 'Phone', amount: 80, frequency: 'monthly', category: 'Utilities', suggestedDayOfMonth: 20 },
+  { key: 'subs', name: 'Subscriptions', amount: 50, frequency: 'monthly', category: 'Subscriptions', suggestedDayOfMonth: 5 },
+  { key: 'car', name: 'Car Payment', amount: 400, frequency: 'monthly', category: 'Other', suggestedDayOfMonth: 10 },
 ]
 
 function clamp(n: number, min: number, max: number) {
@@ -84,12 +86,45 @@ export function StepBills({
       amount: typeof b.amount === 'number' ? b.amount : undefined,
       frequency: (b.frequency as any) ?? 'monthly',
       due_date: b.due_date ?? '',
-      category: (b.category as any) ?? 'other',
+      category: b.category ?? 'Other',
     }))
   })
 
+  const [categories, setCategories] = useState<UserCategory[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Fetch or seed categories for this user
+  useEffect(() => {
+    async function loadCategories() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) return
+
+      // First try to fetch existing categories
+      let { data: cats } = await supabase
+        .from('user_categories')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('sort_order', { ascending: true })
+
+      // If no categories exist, seed defaults
+      if (!cats || cats.length === 0) {
+        await seedDefaultCategories()
+        const { data: seededCats } = await supabase
+          .from('user_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('sort_order', { ascending: true })
+        cats = seededCats
+      }
+
+      setCategories((cats || []) as UserCategory[])
+    }
+
+    loadCategories()
+  }, [])
 
   const canContinue = bills.length > 0
   const allValid = useMemo(() => bills.length > 0 && bills.every(isValidBill), [bills])
@@ -128,7 +163,7 @@ export function StepBills({
         amount: undefined,
         frequency: 'monthly',
         due_date: nextDueDateForDay(1),
-        category: 'other',
+        category: categories.length > 0 ? (categories[categories.length - 1]?.name ?? 'Other') : 'Other',
       },
     ])
   }
@@ -314,16 +349,25 @@ export function StepBills({
                           value={b.category}
                           onChange={(e) =>
                             setBills((prev) =>
-                              prev.map((x) => (x.id === b.id ? { ...x, category: e.target.value as StepBillRow['category'] } : x))
+                              prev.map((x) => (x.id === b.id ? { ...x, category: e.target.value } : x))
                             )
                           }
                           className="mt-1 w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                         >
-                          <option value="rent">Rent/Mortgage</option>
-                          <option value="utilities">Utilities</option>
-                          <option value="subscriptions">Subscriptions</option>
-                          <option value="insurance">Insurance</option>
-                          <option value="other">Other</option>
+                          {categories.length > 0 ? (
+                            categories.map((cat) => (
+                              <option key={cat.id} value={cat.name}>
+                                {cat.name}
+                              </option>
+                            ))
+                          ) : (
+                            // Fallback to defaults if categories not loaded yet
+                            DEFAULT_CATEGORIES.map((cat) => (
+                              <option key={cat.name} value={cat.name}>
+                                {cat.name}
+                              </option>
+                            ))
+                          )}
                         </select>
                       </div>
                     </div>

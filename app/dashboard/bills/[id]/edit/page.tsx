@@ -10,9 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import Link from 'next/link';
-import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Settings } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
+import { seedDefaultCategories, type UserCategory } from '@/lib/actions/manage-categories';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -26,9 +27,7 @@ const billSchema = z.object({
   frequency: z.enum(['weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually', 'one-time'], {
     message: 'Please select a frequency',
   }),
-  category: z.enum(['rent', 'utilities', 'subscriptions', 'insurance', 'other'], {
-    message: 'Please select a category',
-  }),
+  category: z.string().min(1, 'Please select a category'),
   is_active: z.boolean().default(true),
 });
 
@@ -41,6 +40,7 @@ export default function EditBillPage() {
   const billId = params.id as string;
 
   const [bill, setBill] = useState<Bill | null>(null);
+  const [categories, setCategories] = useState<UserCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,12 +70,35 @@ export default function EditBillPage() {
         return;
       }
 
-      // Fetch bill
-      const { data: billData, error: billError } = await supabase
-        .from('bills')
-        .select('*')
-        .eq('id', billId)
-        .single();
+      // Fetch bill and categories in parallel
+      const [billResult, categoriesResult] = await Promise.all([
+        supabase
+          .from('bills')
+          .select('*')
+          .eq('id', billId)
+          .single(),
+        supabase
+          .from('user_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('sort_order', { ascending: true }),
+      ]);
+
+      const { data: billData, error: billError } = billResult;
+      let { data: cats } = categoriesResult;
+
+      // If no categories exist, seed defaults
+      if (!cats || cats.length === 0) {
+        await seedDefaultCategories();
+        const { data: seededCats } = await supabase
+          .from('user_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('sort_order', { ascending: true });
+        cats = seededCats;
+      }
+
+      setCategories((cats || []) as UserCategory[]);
 
       if (billError || !billData) {
         console.error('Error fetching bill:', billError);
@@ -106,7 +129,7 @@ export default function EditBillPage() {
         amount: bill.amount,
         due_date: formattedDate,
         frequency: bill.frequency as BillFormData['frequency'],
-        category: bill.category as BillFormData['category'],
+        category: bill.category,
         is_active: bill.is_active ?? true,
       });
 
@@ -359,9 +382,18 @@ export default function EditBillPage() {
 
           {/* Category */}
           <div>
-            <Label htmlFor="category" className="text-zinc-300 mb-1.5 block">
-              Category<span className="text-rose-400 ml-0.5">*</span>
-            </Label>
+            <div className="flex items-center justify-between mb-1.5">
+              <Label htmlFor="category" className="text-zinc-300">
+                Category<span className="text-rose-400 ml-0.5">*</span>
+              </Label>
+              <Link
+                href="/dashboard/settings#bill-categories"
+                className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-teal-400 transition-colors"
+              >
+                <Settings className="w-3 h-3" />
+                Manage
+              </Link>
+            </div>
             <div className="relative">
               <select
                 id="category"
@@ -375,11 +407,11 @@ export default function EditBillPage() {
                 ].join(' ')}
               >
                 <option value="">Select category...</option>
-                <option value="rent">Rent/Mortgage</option>
-                <option value="utilities">Utilities</option>
-                <option value="subscriptions">Subscriptions</option>
-                <option value="insurance">Insurance</option>
-                <option value="other">Other</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
               <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>

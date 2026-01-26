@@ -14,6 +14,7 @@ import {
   Calendar,
   Lock,
   Banknote,
+  Tag,
 } from 'lucide-react';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
@@ -28,6 +29,7 @@ import { ChangePasswordButton } from '@/components/settings/change-password-butt
 import { StripeConnectForm } from '@/components/settings/stripe-connect-form';
 import { getConnectAccount } from '@/lib/stripe/connect';
 import { InvoiceBrandingForm } from '@/components/settings/invoice-branding-form';
+import { CategoryManagementForm } from '@/components/settings/category-management-form';
 import { FileImage } from 'lucide-react';
 
 export const metadata = {
@@ -39,8 +41,8 @@ export default async function SettingsPage() {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  // Fetch current user settings, accounts, and bills in parallel
-  const [settingsResult, accountsResult, billsResult] = await Promise.all([
+  // Fetch current user settings, accounts, bills, and categories in parallel
+  const [settingsResult, accountsResult, billsResult, categoriesResult] = await Promise.all([
     supabase
       .from('user_settings')
       .select(
@@ -58,11 +60,17 @@ export default async function SettingsPage() {
       .select('amount, frequency, is_active')
       .eq('user_id', user.id)
       .eq('is_active', true),
+    supabase
+      .from('user_categories')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('sort_order', { ascending: true }),
   ]);
 
   const settingsData = settingsResult.data as any;
   const accounts = (accountsResult.data || []) as any[];
   const bills = (billsResult.data || []) as any[];
+  const categories = (categoriesResult.data || []) as any[];
 
   const safetyBuffer = settingsData?.safety_buffer ?? 500;
   const timezone = settingsData?.timezone ?? null;
@@ -195,6 +203,12 @@ export default async function SettingsPage() {
             {/* Safety Buffer */}
             <SafetyBufferForm initialValue={safetyBuffer} />
           </div>
+        </section>
+
+        {/* ===== CATEGORIES SECTION ===== */}
+        <section>
+          <SectionHeader icon={Tag} title="Bill Categories" />
+          <CategoryManagementForm initialCategories={categories} />
         </section>
 
         {/* ===== NOTIFICATIONS SECTION ===== */}

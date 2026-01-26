@@ -105,62 +105,59 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
 }
 
 function getCategoryIcon(category: string | null | undefined) {
-  const cat = (category ?? 'other').toLowerCase()
+  const cat = (category ?? 'Other').toLowerCase()
 
-  if (cat === 'rent' || cat === 'utilities') {
+  // Support both old lowercase values and new category names
+  if (cat === 'rent' || cat === 'rent/mortgage' || cat === 'utilities') {
     return {
       icon: Home,
-      className: 'bg-blue-500/10 border border-blue-500/30',
-      iconColor: 'text-blue-400'
+      className: 'bg-rose-500/10 border border-rose-500/30',
+      iconColor: 'text-rose-400'
     }
   }
 
   if (cat === 'subscriptions') {
     return {
       icon: Tv,
-      className: 'bg-purple-500/10 border border-purple-500/30',
-      iconColor: 'text-purple-400'
+      className: 'bg-violet-500/10 border border-violet-500/30',
+      iconColor: 'text-violet-400'
     }
   }
 
   if (cat === 'insurance') {
     return {
       icon: Shield,
-      className: 'bg-emerald-500/10 border border-emerald-500/30',
-      iconColor: 'text-emerald-400'
+      className: 'bg-blue-500/10 border border-blue-500/30',
+      iconColor: 'text-blue-400'
     }
   }
 
-  // Other category
+  // Default for "Other" and custom categories
   return {
     icon: CreditCard,
-    className: 'bg-rose-500/10 border border-rose-500/30',
-    iconColor: 'text-rose-400'
+    className: 'bg-zinc-500/10 border border-zinc-500/30',
+    iconColor: 'text-zinc-400'
   }
 }
 
 function getCategoryBadge(category: string | null | undefined) {
-  const cat = (category ?? 'other').toLowerCase()
+  const cat = (category ?? 'Other').toLowerCase()
+  // Use the category name directly as the label (it's already human-readable)
+  const displayName = category || 'Other'
 
-  const labels: Record<string, string> = {
-    rent: 'Rent/Mortgage',
-    utilities: 'Utilities',
-    subscriptions: 'Subscriptions',
-    insurance: 'Insurance',
-    other: 'Other'
-  }
-
-  const colors: Record<string, string> = {
-    rent: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
-    utilities: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30',
-    subscriptions: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
-    insurance: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
-    other: 'bg-zinc-700 text-zinc-300 border border-zinc-600'
+  // Map old lowercase values and new names to colors
+  const colorMap: Record<string, string> = {
+    'rent': 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
+    'rent/mortgage': 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
+    'utilities': 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+    'subscriptions': 'bg-violet-500/20 text-violet-300 border border-violet-500/30',
+    'insurance': 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
+    'other': 'bg-zinc-700 text-zinc-300 border border-zinc-600'
   }
 
   return {
-    label: labels[cat] || 'Other',
-    className: colors[cat] || colors.other
+    label: displayName,
+    className: colorMap[cat] || 'bg-zinc-700 text-zinc-300 border border-zinc-600'
   }
 }
 

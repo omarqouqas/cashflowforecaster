@@ -8,9 +8,9 @@ import {
   defaultBillsFilters,
   type BillsFilters,
   type FrequencyType,
-  type CategoryType,
   type SortOption,
 } from './bills-filters';
+import type { FilterDropdownOption } from '@/components/filters/filter-dropdown';
 
 interface Bill {
   id: string;
@@ -25,8 +25,17 @@ interface Bill {
   updated_at: string;
 }
 
+interface UserCategory {
+  id: string;
+  name: string;
+  color: string;
+  icon: string;
+  sort_order: number;
+}
+
 interface BillsContentProps {
   bills: Bill[];
+  categories?: UserCategory[];
 }
 
 // Helper function to calculate next due date for recurring bills
@@ -107,7 +116,7 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
 /**
  * Filter bills based on the current filter settings
  */
-function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
+function filterBills(bills: Bill[], filters: BillsFilters, allCategoryNames: string[]): Bill[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -126,9 +135,11 @@ function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
     const billFreq = (bill.frequency ?? 'monthly').toLowerCase() as FrequencyType;
     if (!filters.frequencies.includes(billFreq)) return false;
 
-    // Filter by category
-    const billCategory = (bill.category ?? 'other').toLowerCase() as CategoryType;
-    if (!filters.categories.includes(billCategory)) return false;
+    // Filter by category (compare with category name directly)
+    // If all categories are selected, don't filter by category
+    const billCategory = bill.category ?? 'Other';
+    const allCategoriesSelected = filters.categories.length === allCategoryNames.length;
+    if (!allCategoriesSelected && !filters.categories.includes(billCategory)) return false;
 
     // Filter by amount range
     if (filters.amountMin !== null && bill.amount < filters.amountMin) return false;
@@ -178,13 +189,37 @@ function sortBills(bills: Bill[], sortBy: SortOption): Bill[] {
 /**
  * BillsContent - Client component for Bills page with filtering
  */
-export function BillsContent({ bills }: BillsContentProps) {
+export function BillsContent({ bills, categories = [] }: BillsContentProps) {
+  // Build category options for the filter dropdown
+  const categoryOptions: FilterDropdownOption[] = useMemo(() => {
+    if (categories.length === 0) {
+      // Fallback to default categories
+      return [
+        { value: 'Rent/Mortgage', label: 'Rent/Mortgage' },
+        { value: 'Utilities', label: 'Utilities' },
+        { value: 'Subscriptions', label: 'Subscriptions' },
+        { value: 'Insurance', label: 'Insurance' },
+        { value: 'Other', label: 'Other' },
+      ];
+    }
+    return categories.map((cat) => ({
+      value: cat.name,
+      label: cat.name,
+    }));
+  }, [categories]);
+
+  // Get all category names for filter initialization
+  const allCategoryNames = useMemo(
+    () => categoryOptions.map((opt) => opt.value),
+    [categoryOptions]
+  );
+
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useBillsFilters();
 
   // Apply filters and sorting to bills
   const filteredBills = useMemo(
-    () => sortBills(filterBills(bills, filters), filters.sortBy),
-    [bills, filters]
+    () => sortBills(filterBills(bills, filters, allCategoryNames), filters.sortBy),
+    [bills, filters, allCategoryNames]
   );
 
   // Show empty state when all bills are filtered out
@@ -202,6 +237,7 @@ export function BillsContent({ bills }: BillsContentProps) {
             totalCount={bills.length}
             visibleFilters={visibleFilters}
             onVisibleFiltersChange={setVisibleFilters}
+            categoryOptions={categoryOptions}
           />
         </div>
       )}

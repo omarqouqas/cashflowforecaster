@@ -51,20 +51,28 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 **Clarification (Jan 2026):** "All good here - just need to be able to report on them and also add custom ones"
 
 **Current State:**
-- Bills have 5 categories: rent, utilities, subscriptions, insurance, other
-- Income has no categories
-- Imported transactions have no categories
+- Custom bill categories with user-defined names, colors, and icons
+- Category management in Settings page
+- Dynamic category dropdowns in bill forms
+- Category filters on bills page
+- Category reporting in exports
 
-**Action:** Add custom category support and category reporting
+**Action:** Custom category support implemented!
 
-**Status:** 📋 Planned
+**Status:** ✅ Implemented
 
-**Required Features (per Jeremy):**
-- Custom user-defined categories
-- Category reporting (covered in Reports feature)
+**Delivered Features (per Jeremy):**
+- Custom user-defined categories with colors and icons
+- Category reporting via Category Spending export
 
-**Nice-to-Have:**
-- More granular default categories
+**Technical Implementation:**
+- New `user_categories` table with RLS
+- Default categories seeded on first use (Rent/Mortgage, Utilities, Subscriptions, Insurance, Other)
+- Category management UI in Settings
+- Dynamic category dropdowns in bill forms (new, edit, onboarding)
+- Category filters updated to use user's custom categories
+
+**Nice-to-Have (Future):**
 - Category assignment for income sources
 - Auto-categorization for imported transactions
 
@@ -187,5 +195,5 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
    - Cash projection report
    - Custom Export Builder with filters
    - Export History with re-download
-4. 📋 **Custom categories** - Allow users to create custom spend categories
+4. ✅ **Custom categories** - Custom bill categories with colors and icons (done)
 5. 📋 **Credit card cash flow** - Track CC transactions/balances, forecast payments

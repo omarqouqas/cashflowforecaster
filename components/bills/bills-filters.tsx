@@ -21,13 +21,12 @@ import {
 } from 'lucide-react';
 
 export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually';
-export type CategoryType = 'rent' | 'utilities' | 'subscriptions' | 'insurance' | 'other';
 export type SortOption = 'due_date' | 'name' | 'amount' | 'created_at';
 
 export interface BillsFilters {
   status: ('active' | 'inactive')[];
   frequencies: FrequencyType[];
-  categories: CategoryType[];
+  categories: string[]; // Now stores category names (strings)
   amountMin: number | null;
   amountMax: number | null;
   dueSoonDays: number | null; // null = no filter, 7/14/21/30 = days
@@ -36,12 +35,13 @@ export interface BillsFilters {
 }
 
 const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually'];
-const allCategories: CategoryType[] = ['rent', 'utilities', 'subscriptions', 'insurance', 'other'];
+// Default categories for fallback (used when no user categories are loaded)
+const defaultCategories = ['Rent/Mortgage', 'Utilities', 'Subscriptions', 'Insurance', 'Other'];
 
 export const defaultBillsFilters: BillsFilters = {
   status: ['active', 'inactive'],
   frequencies: allFrequencies,
-  categories: allCategories,
+  categories: defaultCategories,
   amountMin: null,
   amountMax: null,
   dueSoonDays: null,
@@ -49,18 +49,27 @@ export const defaultBillsFilters: BillsFilters = {
   sortBy: 'due_date',
 };
 
+// Helper to create default filters with dynamic categories
+export function createDefaultFilters(categoryNames: string[]): BillsFilters {
+  return {
+    ...defaultBillsFilters,
+    categories: categoryNames.length > 0 ? categoryNames : defaultCategories,
+  };
+}
+
 // Filter dropdown options
 const statusOptions: FilterDropdownOption[] = [
   { value: 'active', label: 'Active', icon: <CheckCircle className="w-3.5 h-3.5" /> },
   { value: 'inactive', label: 'Inactive', icon: <XCircle className="w-3.5 h-3.5" /> },
 ];
 
-const categoryOptions: FilterDropdownOption[] = [
-  { value: 'rent', label: 'Rent/Mortgage' },
-  { value: 'utilities', label: 'Utilities' },
-  { value: 'subscriptions', label: 'Subscriptions' },
-  { value: 'insurance', label: 'Insurance' },
-  { value: 'other', label: 'Other' },
+// Default category options (used when no user categories are provided)
+const defaultCategoryOptions: FilterDropdownOption[] = [
+  { value: 'Rent/Mortgage', label: 'Rent/Mortgage' },
+  { value: 'Utilities', label: 'Utilities' },
+  { value: 'Subscriptions', label: 'Subscriptions' },
+  { value: 'Insurance', label: 'Insurance' },
+  { value: 'Other', label: 'Other' },
 ];
 
 const frequencyOptions: FilterDropdownOption[] = [
@@ -104,6 +113,7 @@ interface BillsFilterBarProps {
   totalCount: number;
   visibleFilters: string[];
   onVisibleFiltersChange: (filters: string[]) => void;
+  categoryOptions?: FilterDropdownOption[]; // Dynamic category options from user's categories
 }
 
 /**
@@ -116,7 +126,10 @@ export function BillsFilterBar({
   totalCount,
   visibleFilters,
   onVisibleFiltersChange,
+  categoryOptions = defaultCategoryOptions,
 }: BillsFilterBarProps) {
+  // Get all category values from the options
+  const allCategoryValues = categoryOptions.map(opt => opt.value);
   // Build active filter pills
   const activeFilterPills = React.useMemo((): ActiveFilter[] => {
     const pills: ActiveFilter[] = [];
@@ -132,7 +145,7 @@ export function BillsFilterBar({
     }
 
     // Category filter (only if not "all selected")
-    if (filters.categories.length > 0 && filters.categories.length < allCategories.length) {
+    if (filters.categories.length > 0 && filters.categories.length < allCategoryValues.length) {
       filters.categories.forEach((cat) => {
         const option = categoryOptions.find((o) => o.value === cat);
         if (option) {
@@ -196,12 +209,12 @@ export function BillsFilterBar({
         break;
       }
       case 'category': {
-        const catValue = categoryOptions.find((o) => o.label === value)?.value as CategoryType;
+        const catValue = categoryOptions.find((o) => o.label === value)?.value;
         if (catValue) {
           const newCategories = filters.categories.filter((c) => c !== catValue);
           onChange({
             ...filters,
-            categories: newCategories.length > 0 ? newCategories : allCategories,
+            categories: newCategories.length > 0 ? newCategories : allCategoryValues,
           });
         }
         break;
@@ -270,7 +283,7 @@ export function BillsFilterBar({
           options={categoryOptions}
           value={filters.categories}
           onChange={(value) =>
-            onChange({ ...filters, categories: value as CategoryType[] })
+            onChange({ ...filters, categories: value as string[] })
           }
           searchable
           searchPlaceholder="Search categories..."
@@ -386,7 +399,7 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         ? (freqs.split(',') as FrequencyType[])
         : defaultBillsFilters.frequencies,
       categories: cats
-        ? (cats.split(',') as CategoryType[])
+        ? cats.split(',')
         : defaultBillsFilters.categories,
       amountMin: minAmount ? parseFloat(minAmount) : null,
       amountMax: maxAmount ? parseFloat(maxAmount) : null,
@@ -438,9 +451,10 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         params.set('freq', newFilters.frequencies.join(','));
       }
 
-      // Categories
-      const isDefaultCats = newFilters.categories.length === allCategories.length;
-      if (isDefaultCats) {
+      // Categories - store in URL if not all default categories are selected
+      const isAllDefaultCats = defaultCategories.every(cat => newFilters.categories.includes(cat)) &&
+        newFilters.categories.length === defaultCategories.length;
+      if (isAllDefaultCats) {
         params.delete('cat');
       } else {
         params.set('cat', newFilters.categories.join(','));
@@ -523,7 +537,7 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
     return (
       filters.status.length !== 2 ||
       filters.frequencies.length !== allFrequencies.length ||
-      filters.categories.length !== allCategories.length ||
+      filters.categories.length !== defaultCategories.length ||
       filters.amountMin !== null ||
       filters.amountMax !== null ||
       filters.dueSoonDays !== null ||
