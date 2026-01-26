@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 25, 2026 (Day 47)
+**Last Updated:** January 26, 2026 (Day 48)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,7 +10,7 @@
 
 ## Quick Stats
 
-- **Days in Development:** 47
+- **Days in Development:** 48
 - **Commits:** 155+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
@@ -29,7 +29,25 @@
 
 ---
 
-## Recent Development (Days 40-47)
+## Recent Development (Days 40-48)
+
+### Day 48: Free Tier Forecast Extended to 90 Days (January 26, 2026)
+
+**User Feedback Implementation** - Based on beta tester feedback (Jeremy), extended free tier forecast from 60 to 90 days.
+
+**Changes:**
+- Updated `lib/stripe/config.ts` - Free tier `forecastDays: 60` → `90`
+- Updated all user-facing copy across 26 files (landing page, FAQs, pricing, tools, OG images, etc.)
+- Dashboard default filter now 90 days for free users (was 60)
+- Calendar summary/warnings now use dynamic "forecast period" instead of hardcoded "60 days"
+- Added collapsible help section to CSV Import explaining expected format
+
+**Documentation:**
+- Created `docs/user-feedback-jeremy.md` with Reports feature roadmap for future development
+
+**Files:** `lib/stripe/config.ts`, `components/landing/*`, `components/pricing/*`, `components/calendar/*`, `components/tools/*`, `components/dashboard/dashboard-filters.tsx`, `app/blog/page.tsx`, `app/compare/*`, multiple OG images
+
+---
 
 ### Day 47: Semi-Monthly Frequency Bug Fixes (January 25, 2026)
 
@@ -397,7 +415,7 @@
 |---------|------|-----|
 | Bills | 10 | Unlimited |
 | Income Sources | 10 | Unlimited |
-| Forecast Days | 60 | 365 |
+| Forecast Days | 90 | 365 |
 | Invoicing | No | Yes |
 | Stripe Payment Links | No | Yes |
 
@@ -423,7 +441,7 @@
 
 | Feature | Notes |
 |---------|-------|
-| 60/365-day cash flow calendar | Core feature, tier-based |
+| 90/365-day cash flow calendar | Core feature, tier-based |
 | Accounts/Income/Bills CRUD | All frequencies supported |
 | Runway Collect invoicing | PDF, email, reminders, Stripe payments |
 | Onboarding wizard | 2-step guided setup |

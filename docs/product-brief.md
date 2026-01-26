@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.1
-**Last Updated:** January 25, 2026
-**Status:** Live - Semi-Monthly Frequency Bug Fixes
+**Version:** 6.2
+**Last Updated:** January 26, 2026
+**Status:** Live - Free Tier Extended to 90 Days
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -20,7 +20,7 @@
 
 **Hook:** "Your personal cash flow calendar for the next 365 days — with every invoice, bill, and payday mapped out."
 
-Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance up to 365 days into the future (60 days free, 365 days Pro). Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
+Cash Flow Forecaster is a Progressive Web App that helps freelancers, gig workers, and anyone with irregular income see their bank balance up to 365 days into the future (90 days free, 365 days Pro). Unlike traditional budgeting apps that focus on past spending, Cash Flow Forecaster uses a daily liquidity calendar to answer the critical question: "Can I afford this expense before my next paycheck arrives?"
 
 ### Problem Statement
 
@@ -34,12 +34,12 @@ Millions of freelancers and gig workers struggle with cash flow uncertainty. The
 
 ### Solution
 
-Cash Flow Forecaster projects bank balance 60 days into the future using a daily calendar interface. Users input:
+Cash Flow Forecaster projects bank balance 90 days into the future using a daily calendar interface. Users input:
 - Current account balances
 - Income sources (with frequency: weekly, bi-weekly, monthly)
 - Recurring bills (with due dates)
 
-The app calculates and displays a 60-day calendar showing projected daily balances, color-coded to highlight low-balance days. Users can test "Can I afford it?" scenarios before making purchases.
+The app calculates and displays a 90-day calendar showing projected daily balances, color-coded to highlight low-balance days. Users can test "Can I afford it?" scenarios before making purchases.
 
 **Dashboard Guidance Features:**
 - **Daily Budget / Daily Shortfall:** Per-day spending budget until next income
@@ -114,7 +114,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 ### Three Pillars of Cash Flow Clarity
 
 **Pillar 1: Know Your Number Today**
-- 60-day forward balance projection (365 days for Pro)
+- 90-day forward balance projection (365 days for Pro)
 - Daily "safe to spend" visibility
 - Color-coded low-balance warnings (amber/rose)
 - Overdraft prevention before it happens
@@ -178,7 +178,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - Dashboard with live summaries
 
 ### Phase 4: Calendar Feature ✅ COMPLETE (Days 9-15)
-- 60-day cash flow projection algorithm
+- 90-day cash flow projection algorithm
 - Calendar UI with day detail modals
 - Color-coded balance warnings (amber/rose)
 - Today indicator with auto-scroll
@@ -234,7 +234,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 
 **1. Daily Liquidity Calendar ✅**
 - Tier-based forward projection:
-  - Free: 60 days
+  - Free: 90 days
   - Pro: 365 days (12 months ahead)
 - **Interactive balance trend chart** with hover tooltips and click-to-jump navigation
 - **Inline transaction display** on day cards (top 2 transactions visible)
@@ -288,7 +288,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 - **Collapsible filter panels** with active filter count badges
 - **Page-specific filters:**
   - **Calendar:** Transaction type, balance status, frequency, amount range, search
-  - **Dashboard:** Forecast horizon (7/14/30/60 days), account selection, account type
+  - **Dashboard:** Forecast horizon (7/14/30/60/90 days), account selection, account type
   - **Bills:** Status, frequency, category, amount range, due soon toggle, search
   - **Income:** Status, frequency, source type, amount range, search
   - **Invoices:** Status, overdue toggle, due date range, amount range, search
@@ -402,7 +402,7 @@ The app calculates and displays a 60-day calendar showing projected daily balanc
 |---------|-----------|----------------|
 | Bills | 10 | Unlimited |
 | Income Sources | 10 | Unlimited |
-| Forecast Days | 60 | 365 |
+| Forecast Days | 90 | 365 |
 | Calendar View | ✅ | ✅ |
 | "Can I Afford It?" | ✅ | ✅ |
 | Weekly Email Digest | ✅ | ✅ |
@@ -703,7 +703,7 @@ User Request
 | Aspect | Cash Flow Forecaster | YNAB | Monarch Money | Mint |
 |--------|---------------------|------|---------------|------|
 | **Focus** | Future balance prediction | Past spending tracking | Wealth optimization | Expense categorization |
-| **UI** | Calendar (60-day view) | Category budgets | Dashboard/graphs | Transaction feed |
+| **UI** | Calendar (90-day view) | Category budgets | Dashboard/graphs | Transaction feed |
 | **Target User** | $45-90k freelancers | $80k+ households | $100k+ households | General consumers |
 | **Price** | $7.99/mo | $14.99/mo | $14.99/mo | Free (ads) |
 | **Unique Value** | Runway Collect invoicing | Envelope budgeting | AI insights | Bank sync |
@@ -838,6 +838,14 @@ User Request
 ---
 
 ## Changelog
+
+### Version 6.2 (January 26, 2026)
+- Free Tier Forecast Extended to 90 Days:
+  - Updated `lib/stripe/config.ts` from 60 to 90 days
+  - Updated all user-facing copy across landing, pricing, FAQs, tools, OG images
+  - Dashboard default filter now 90 days for free users
+  - Added collapsible help section to CSV Import
+  - Created Reports feature roadmap in `docs/user-feedback-jeremy.md`
 
 ### Version 6.1 (January 25, 2026)
 - Semi-Monthly Frequency Bug Fixes:
@@ -1135,7 +1143,7 @@ User Request
 
 ### Version 4.3 (January 4, 2026)
 - Pricing simplification: sunset Premium tier, fold 365-day forecast into Pro
-- Forecast generation now tier-based (Free: 60 days, Pro: 365 days)
+- Forecast generation now tier-based (Free: 90 days, Pro: 365 days)
 - Landing page CTA polish
 
 ### Version 4.2 (January 1, 2026)
@@ -1168,7 +1176,7 @@ User Request
 
 ---
 
-**Document Version:** 6.1
-**Last Updated:** January 25, 2026
-**Status:** Live - Semi-Monthly Frequency Bug Fixes 🎉
+**Document Version:** 6.2
+**Last Updated:** January 26, 2026
+**Status:** Live - Free Tier Extended to 90 Days 🎉
 **Next Review:** February 2026
