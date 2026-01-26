@@ -5,7 +5,8 @@ import { Plus, Trash2 } from 'lucide-react'
 import { showError, showSuccess } from '@/lib/toast'
 import { CurrencyInput } from '@/components/ui/currency-input'
 import { createClient } from '@/lib/supabase/client'
-import { seedDefaultCategories, DEFAULT_CATEGORIES, type UserCategory } from '@/lib/actions/manage-categories'
+import { seedDefaultCategories } from '@/lib/actions/manage-categories'
+import { DEFAULT_CATEGORIES, type UserCategory } from '@/lib/categories/constants'
 
 export type StepBillRow = {
   id: string

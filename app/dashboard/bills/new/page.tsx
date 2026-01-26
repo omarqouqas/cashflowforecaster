@@ -15,12 +15,14 @@ import { Input } from '@/components/ui/input';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { ArrowLeft, ChevronDown, Settings } from 'lucide-react';
+import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
 import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { trackBillAdded } from '@/lib/posthog/events';
-import { seedDefaultCategories, type UserCategory } from '@/lib/actions/manage-categories';
+import { seedDefaultCategories } from '@/lib/actions/manage-categories';
+import { type UserCategory } from '@/lib/categories/constants';
+import { CategorySelect } from '@/components/bills/category-select';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -334,40 +336,23 @@ export default function NewBillPage() {
 
           {/* Category */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <Label htmlFor="category" className="text-zinc-300 font-medium">
-                Category<span className="text-rose-400 ml-0.5">*</span>
-              </Label>
-              <Link
-                href="/dashboard/settings#bill-categories"
-                className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-teal-400 transition-colors"
-              >
-                <Settings className="w-3 h-3" />
-                Manage
-              </Link>
-            </div>
-            <div className="relative">
-              <select
-                id="category"
-                {...register('category')}
-                className={[
-                  'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px]',
-                  'text-zinc-100',
-                  '[&>option]:bg-zinc-800 [&>option]:text-zinc-100',
-                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
-                  'appearance-none pr-10 cursor-pointer',
-                  errors.category ? 'border-rose-400 focus:ring-rose-400' : '',
-                ].join(' ')}
-              >
-                <option value="" className="text-zinc-500">Select category...</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+            <Label htmlFor="category" className="text-zinc-300 font-medium mb-1.5 block">
+              Category<span className="text-rose-400 ml-0.5">*</span>
+            </Label>
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <CategorySelect
+                  id="category"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  categories={categories}
+                  onCategoryCreated={(cat) => setCategories(prev => [...prev, cat])}
+                  error={!!errors.category}
+                />
+              )}
+            />
             {errors.category?.message && (
               <p className="text-sm text-rose-400 mt-1.5">{errors.category.message}</p>
             )}

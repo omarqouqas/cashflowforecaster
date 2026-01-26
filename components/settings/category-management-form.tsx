@@ -16,10 +16,12 @@ import {
   updateCategory,
   deleteCategory,
   seedDefaultCategories,
+} from '@/lib/actions/manage-categories';
+import {
   type UserCategory,
   CATEGORY_COLORS,
   CATEGORY_ICONS,
-} from '@/lib/actions/manage-categories';
+} from '@/lib/categories/constants';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 
