@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { canUseAdvancedExports, canAccessReport } from '@/lib/stripe/feature-gate';
+import { getForecastDaysLimit } from '@/lib/stripe/subscription';
+import generateCalendar from '@/lib/calendar/generate';
 import {
   generateCSV,
   generateMultiSectionCSV,
@@ -134,7 +136,7 @@ export async function POST(request: Request) {
     }
 
     // Fetch all needed data in parallel
-    const [billsResult, incomeResult, accountsResult, invoicesResult] =
+    const [billsResult, incomeResult, accountsResult, invoicesResult, settingsResult] =
       await Promise.all([
         config.includes.includes('bills') || ['monthly_summary', 'category_spending', 'cash_forecast', 'all_data'].includes(config.reportType)
           ? supabase.from('bills').select('*').eq('user_id', user.id).order('name')
@@ -148,6 +150,9 @@ export async function POST(request: Request) {
         config.includes.includes('invoices') || config.reportType === 'all_data'
           ? supabase.from('invoices').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
           : Promise.resolve({ data: [], error: null }),
+        config.reportType === 'cash_forecast'
+          ? supabase.from('user_settings').select('safety_buffer, timezone').eq('user_id', user.id).single()
+          : Promise.resolve({ data: null, error: null }),
       ]);
 
     const bills = (billsResult.data ?? []) as BillRecord[];
@@ -282,31 +287,40 @@ export async function POST(request: Request) {
       }
 
       case 'cash_forecast': {
-        // For now, export a simplified forecast
-        // In a full implementation, this would use the calendar generation logic
-        const forecastData: Record<string, unknown>[] = [];
-        const startBalance = accounts
-          .filter((a) => a.is_spendable !== false)
-          .reduce((sum, a) => sum + (a.current_balance ?? 0), 0);
+        // Use actual calendar generation for real forecast data
+        const settings = settingsResult.data as { safety_buffer?: number; timezone?: string } | null;
+        const safetyBuffer = settings?.safety_buffer ?? 500;
+        const timezone = settings?.timezone ?? undefined;
 
-        // Simple 30-day forecast
-        let runningBalance = startBalance;
-        const today = new Date();
+        // Get user's forecast days limit
+        const forecastDays = await getForecastDaysLimit(user.id);
 
-        for (let i = 0; i < 30; i++) {
-          const date = new Date(today);
-          date.setDate(date.getDate() + i);
-          const dateStr = date.toISOString().split('T')[0];
+        // Generate real calendar data
+        const calendarData = generateCalendar(
+          accounts as any,
+          income as any,
+          bills as any,
+          safetyBuffer,
+          timezone,
+          forecastDays
+        );
 
-          // This is a simplified version - real implementation would calculate actual transactions per day
-          forecastData.push({
-            date: dateStr,
-            balance: runningBalance.toFixed(2),
-            income: '0.00',
-            expenses: '0.00',
-            transactions: '',
-          });
-        }
+        const forecastData: Record<string, unknown>[] = calendarData.days.map((day) => {
+          const incomeTotal = day.income.reduce((sum, i) => sum + i.amount, 0);
+          const expensesTotal = day.bills.reduce((sum, b) => sum + b.amount, 0);
+          const transactionNames = [
+            ...day.income.map((i) => `+${i.name}`),
+            ...day.bills.map((b) => `-${b.name}`),
+          ].join(', ');
+
+          return {
+            date: day.date.toISOString().split('T')[0],
+            balance: day.balance.toFixed(2),
+            income: incomeTotal.toFixed(2),
+            expenses: expensesTotal.toFixed(2),
+            transactions: transactionNames,
+          };
+        });
 
         csvContent = generateCSV(forecastData, FORECAST_COLUMNS);
         rowCount = forecastData.length;
