@@ -95,9 +95,9 @@ export function DashboardFilterBar({
     userAccountTypes.includes(opt.value as AccountType)
   );
 
-  // Pro users (365 days) default to 90 days, Free users default to their max (60)
+  // Pro users (365 days) and Free users (90 days) both default to 90 days
   const defaultHorizon =
-    maxForecastDays >= 365 ? '90' : maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
+    maxForecastDays >= 90 ? '90' : maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
 
   // Normalize accountTypes to only include types that exist in user's accounts
   // This handles the case where default state has types the user doesn't have
@@ -262,15 +262,15 @@ export function DashboardFilterBar({
  */
 export function useDashboardFilters(
   initialFilters?: Partial<DashboardFilters>,
-  maxForecastDays: number = 60
+  maxForecastDays: number = 90
 ) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Pro users (365 days) default to 90 days, Free users default to their max (60)
+  // Pro users (365 days) and Free users (90 days) both default to 90 days
   const defaultHorizon =
-    maxForecastDays >= 365 ? '90' : maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
+    maxForecastDays >= 90 ? '90' : maxForecastDays >= 60 ? '60' : maxForecastDays >= 30 ? '30' : '14';
 
   // Parse visible filters from URL
   const visibleFiltersFromUrl = React.useMemo((): string[] => {
