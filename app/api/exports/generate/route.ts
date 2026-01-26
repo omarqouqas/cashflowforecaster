@@ -336,12 +336,28 @@ export async function POST(request: Request) {
         const lowestDayBalance = Math.min(...calendarData.days.map((d) => d.balance));
         const lowestDayBalanceDate = calendarData.days.find((d) => d.balance === lowestDayBalance)?.date;
 
+        // Calculate totals the same way as calendar UI
+        const totalIncome = calendarData.days.reduce(
+          (sum, day) => sum + day.income.reduce((s, t) => s + t.amount, 0),
+          0
+        );
+        const totalBills = calendarData.days.reduce(
+          (sum, day) => sum + day.bills.reduce((s, t) => s + t.amount, 0),
+          0
+        );
+        const endingBalance = calendarData.days[calendarData.days.length - 1]?.balance ?? calendarData.startingBalance;
+        const netChange = endingBalance - calendarData.startingBalance;
+
         // Store for use in Excel/JSON section
         (config as any)._forecastData = forecastExportData;
         (config as any)._forecastSummary = {
           startingBalance: calendarData.startingBalance,
           lowestBalance: lowestDayBalance,
           lowestBalanceDate: lowestDayBalanceDate?.toISOString().split('T')[0] ?? calendarData.lowestBalanceDay.toISOString().split('T')[0],
+          totalIncome,
+          totalBills,
+          endingBalance,
+          netChange,
           safeToSpend: calendarData.safeToSpend,
           forecastDays,
         };
@@ -522,8 +538,12 @@ export async function POST(request: Request) {
             name: 'Summary',
             data: [
               { Metric: 'Starting Balance', Value: summary.startingBalance.toFixed(2) },
+              { Metric: 'Ending Balance', Value: summary.endingBalance.toFixed(2) },
+              { Metric: 'Net Change', Value: summary.netChange.toFixed(2) },
               { Metric: 'Lowest Balance', Value: summary.lowestBalance.toFixed(2) },
               { Metric: 'Lowest Balance Date', Value: summary.lowestBalanceDate },
+              { Metric: 'Total Income', Value: summary.totalIncome.toFixed(2) },
+              { Metric: 'Total Bills', Value: summary.totalBills.toFixed(2) },
               { Metric: 'Safe to Spend', Value: summary.safeToSpend.toFixed(2) },
               { Metric: 'Forecast Days', Value: summary.forecastDays },
             ],
