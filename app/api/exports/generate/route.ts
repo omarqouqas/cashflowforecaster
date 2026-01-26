@@ -332,12 +332,16 @@ export async function POST(request: Request) {
           };
         });
 
+        // Calculate lowest balance the same way as calendar UI (minimum of all day balances)
+        const lowestDayBalance = Math.min(...calendarData.days.map((d) => d.balance));
+        const lowestDayBalanceDate = calendarData.days.find((d) => d.balance === lowestDayBalance)?.date;
+
         // Store for use in Excel/JSON section
         (config as any)._forecastData = forecastExportData;
         (config as any)._forecastSummary = {
           startingBalance: calendarData.startingBalance,
-          lowestBalance: calendarData.lowestBalance,
-          lowestBalanceDate: calendarData.lowestBalanceDay.toISOString().split('T')[0],
+          lowestBalance: lowestDayBalance,
+          lowestBalanceDate: lowestDayBalanceDate?.toISOString().split('T')[0] ?? calendarData.lowestBalanceDay.toISOString().split('T')[0],
           safeToSpend: calendarData.safeToSpend,
           forecastDays,
         };
