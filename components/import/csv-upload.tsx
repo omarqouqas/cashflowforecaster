@@ -125,7 +125,7 @@ export function CsvUpload({ onLoaded }: Props) {
         {showHelp && (
           <div className="mt-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg text-sm">
             <p className="text-zinc-300 mb-3">
-              Export a CSV file from your bank&apos;s website. Most US banks support CSV export from the transaction history page.
+              Export a CSV file from your bank&apos;s website. Most banks support CSV export from the transaction history page.
             </p>
 
             <p className="text-zinc-400 font-medium mb-2">Your CSV should include columns for:</p>
