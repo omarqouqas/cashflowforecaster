@@ -287,6 +287,14 @@ export async function POST(request: Request) {
       }
 
       case 'cash_forecast': {
+        // Check if user has accounts
+        if (accounts.length === 0) {
+          return NextResponse.json(
+            { error: 'Please add at least one account before generating a cash forecast' },
+            { status: 400 }
+          );
+        }
+
         // Use actual calendar generation for real forecast data
         const settings = settingsResult.data as { safety_buffer?: number; timezone?: string } | null;
         const safetyBuffer = settings?.safety_buffer ?? 500;
@@ -305,13 +313,15 @@ export async function POST(request: Request) {
           forecastDays
         );
 
-        const forecastData: Record<string, unknown>[] = calendarData.days.map((day) => {
+        // Store forecast data for Excel/JSON export
+        const forecastExportData = calendarData.days.map((day) => {
           const incomeTotal = day.income.reduce((sum, i) => sum + i.amount, 0);
           const expensesTotal = day.bills.reduce((sum, b) => sum + b.amount, 0);
+          // Use semicolon separator to avoid CSV comma issues
           const transactionNames = [
             ...day.income.map((i) => `+${i.name}`),
             ...day.bills.map((b) => `-${b.name}`),
-          ].join(', ');
+          ].join('; ');
 
           return {
             date: day.date.toISOString().split('T')[0],
@@ -322,8 +332,18 @@ export async function POST(request: Request) {
           };
         });
 
-        csvContent = generateCSV(forecastData, FORECAST_COLUMNS);
-        rowCount = forecastData.length;
+        // Store for use in Excel/JSON section
+        (config as any)._forecastData = forecastExportData;
+        (config as any)._forecastSummary = {
+          startingBalance: calendarData.startingBalance,
+          lowestBalance: calendarData.lowestBalance,
+          lowestBalanceDate: calendarData.lowestBalanceDay.toISOString().split('T')[0],
+          safeToSpend: calendarData.safeToSpend,
+          forecastDays,
+        };
+
+        csvContent = generateCSV(forecastExportData, FORECAST_COLUMNS);
+        rowCount = forecastExportData.length;
         break;
       }
 
@@ -475,8 +495,37 @@ export async function POST(request: Request) {
       // Build sheets for Excel
       const sheets = [];
 
-      // Reuse the section data we built for CSV
-      if (config.reportType === 'all_data' || config.reportType === 'custom') {
+      // Handle cash_forecast specially with proper data
+      if (config.reportType === 'cash_forecast' && (config as any)._forecastData) {
+        const forecastData = (config as any)._forecastData as Record<string, unknown>[];
+        const summary = (config as any)._forecastSummary;
+
+        // Add forecast sheet
+        sheets.push({
+          name: 'Daily Forecast',
+          data: forecastData.map((d) => ({
+            Date: d.date,
+            Balance: d.balance,
+            Income: d.income,
+            Expenses: d.expenses,
+            Transactions: d.transactions,
+          })),
+        });
+
+        // Add summary sheet
+        if (summary) {
+          sheets.push({
+            name: 'Summary',
+            data: [
+              { Metric: 'Starting Balance', Value: summary.startingBalance.toFixed(2) },
+              { Metric: 'Lowest Balance', Value: summary.lowestBalance.toFixed(2) },
+              { Metric: 'Lowest Balance Date', Value: summary.lowestBalanceDate },
+              { Metric: 'Safe to Spend', Value: summary.safeToSpend.toFixed(2) },
+              { Metric: 'Forecast Days', Value: summary.forecastDays },
+            ],
+          });
+        }
+      } else if (config.reportType === 'all_data' || config.reportType === 'custom') {
         if (accounts.length > 0) {
           sheets.push({
             name: 'Accounts',
@@ -555,17 +604,33 @@ export async function POST(request: Request) {
       extension = '.xlsx';
     } else if (config.format === 'json') {
       // JSON export
-      const jsonData = {
-        exportedAt: new Date().toISOString(),
-        reportType: config.reportType,
-        dateRange: config.dateRange,
-        data: {
-          accounts: config.includes.includes('accounts') ? accounts : undefined,
-          bills: config.includes.includes('bills') ? bills : undefined,
-          income: config.includes.includes('income') ? income : undefined,
-          invoices: config.includes.includes('invoices') ? invoices : undefined,
-        },
-      };
+      let jsonData: Record<string, unknown>;
+
+      if (config.reportType === 'cash_forecast' && (config as any)._forecastData) {
+        // Include full forecast data for cash_forecast reports
+        const forecastData = (config as any)._forecastData;
+        const summary = (config as any)._forecastSummary;
+
+        jsonData = {
+          exportedAt: new Date().toISOString(),
+          reportType: config.reportType,
+          dateRange: config.dateRange,
+          summary: summary,
+          forecast: forecastData,
+        };
+      } else {
+        jsonData = {
+          exportedAt: new Date().toISOString(),
+          reportType: config.reportType,
+          dateRange: config.dateRange,
+          data: {
+            accounts: config.includes.includes('accounts') ? accounts : undefined,
+            bills: config.includes.includes('bills') ? bills : undefined,
+            income: config.includes.includes('income') ? income : undefined,
+            invoices: config.includes.includes('invoices') ? invoices : undefined,
+          },
+        };
+      }
       fileContent = JSON.stringify(jsonData, null, 2);
       mimeType = 'application/json';
       extension = '.json';
