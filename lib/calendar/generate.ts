@@ -11,6 +11,7 @@
 import { CalendarData, CalendarDay } from './types';
 import { calculateIncomeOccurrences } from './calculate-income';
 import { calculateBillOccurrences } from './calculate-bills';
+import { calculateAllCCPayments } from './calculate-cc-payments';
 import { addDays, isSameDay, getStatusColor, getTodayAtNoon } from './utils';
 import { detectBillCollisions } from './detect-collisions';
 import { Tables } from '@/types/supabase';
@@ -123,9 +124,18 @@ export default function generateCalendar(
     if (CALENDAR_VERBOSE) console.log('Total income occurrences:', allIncomeOccurrences.length);
 
     // Step 4: Calculate all bill occurrences for the entire forecast period
-    const allBillOccurrences = bills
+    const regularBillOccurrences = bills
       .filter(bill => bill.is_active !== false)
       .flatMap(bill => calculateBillOccurrences(bill as any, today, endDate));
+    if (CALENDAR_VERBOSE) console.log('Regular bill occurrences:', regularBillOccurrences.length);
+
+    // Step 4b: Calculate credit card payment occurrences
+    // Credit card payments are generated based on payment_due_day for each CC account
+    const ccPaymentOccurrences = calculateAllCCPayments(accounts as any, today, endDate);
+    if (CALENDAR_VERBOSE) console.log('CC payment occurrences:', ccPaymentOccurrences.length);
+
+    // Combine regular bills and CC payments
+    const allBillOccurrences = [...regularBillOccurrences, ...ccPaymentOccurrences];
     if (CALENDAR_VERBOSE) console.log('Total bill occurrences:', allBillOccurrences.length);
 
     // Step 5: Project daily balances using reduce to build array incrementally

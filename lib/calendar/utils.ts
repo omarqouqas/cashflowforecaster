@@ -63,7 +63,7 @@ export function isSameDay(date1: Date, date2: Date): boolean {
 /**
  * Adds a specified number of days to a date.
  * Returns a new date without mutating the original.
- * 
+ *
  * @param date - The starting date
  * @param days - Number of days to add (can be negative to subtract)
  * @returns New Date object with the specified days added
@@ -71,6 +71,31 @@ export function isSameDay(date1: Date, date2: Date): boolean {
 export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
+  return result;
+}
+
+/**
+ * Adds a specified number of months to a date.
+ * Returns a new date without mutating the original.
+ * Handles month-end edge cases (e.g., Jan 31 + 1 month = Feb 28).
+ *
+ * @param date - The starting date
+ * @param months - Number of months to add (can be negative to subtract)
+ * @returns New Date object with the specified months added
+ */
+export function addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  const targetMonth = result.getMonth() + months;
+  const targetDay = result.getDate();
+
+  // Set to the first of the target month to avoid overflow
+  result.setDate(1);
+  result.setMonth(targetMonth);
+
+  // Now set the day, but cap it at the last day of the month
+  const lastDayOfMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate();
+  result.setDate(Math.min(targetDay, lastDayOfMonth));
+
   return result;
 }
 
