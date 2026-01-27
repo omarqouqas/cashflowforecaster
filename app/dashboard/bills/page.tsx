@@ -166,7 +166,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   ]);
 
   const { data: bills, error } = billsResult;
-  const categories = (categoriesResult.data || []) as Array<{
+  const userCategories = (categoriesResult.data || []) as Array<{
     id: string;
     name: string;
     color: string;
@@ -181,6 +181,41 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const success = searchParams?.success;
 
   const billsList = (bills || []) as any[];
+
+  // Build a comprehensive category list that includes:
+  // 1. Default categories (always available)
+  // 2. User's custom categories from user_categories table
+  // 3. Any unique categories from existing bills (to avoid filtering out data)
+  const defaultCategoryList = [
+    { id: 'default-1', name: 'Rent/Mortgage', color: 'rose', icon: 'home', sort_order: 1 },
+    { id: 'default-2', name: 'Utilities', color: 'amber', icon: 'zap', sort_order: 2 },
+    { id: 'default-3', name: 'Subscriptions', color: 'violet', icon: 'repeat', sort_order: 3 },
+    { id: 'default-4', name: 'Insurance', color: 'blue', icon: 'shield', sort_order: 4 },
+    { id: 'default-5', name: 'Other', color: 'zinc', icon: 'tag', sort_order: 5 },
+  ];
+
+  // Get unique category names from bills that aren't in defaults or user categories
+  const existingCategoryNames = new Set([
+    ...defaultCategoryList.map(c => c.name.toLowerCase()),
+    ...userCategories.map(c => c.name.toLowerCase()),
+  ]);
+
+  const billCategories = billsList
+    .map(b => b.category)
+    .filter((cat): cat is string => cat != null && !existingCategoryNames.has(cat.toLowerCase()))
+    .filter((cat, i, arr) => arr.indexOf(cat) === i) // unique
+    .map((name, i) => ({
+      id: `bill-cat-${i}`,
+      name,
+      color: 'zinc',
+      icon: 'tag',
+      sort_order: 100 + i,
+    }));
+
+  // Merge: user categories first, then defaults (if no user cats), then bill categories
+  const categories = userCategories.length > 0
+    ? [...userCategories, ...billCategories]
+    : [...defaultCategoryList, ...billCategories];
   const monthlyTotal = calculateMonthlyTotal(billsList);
   const activeBills = getActiveBills(billsList);
 
