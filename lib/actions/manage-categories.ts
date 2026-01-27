@@ -174,17 +174,22 @@ export async function updateCategory(
       return { success: false, error: 'Failed to update category' };
     }
 
-    // If name changed, update all bills with the old category name
+    // If name changed, update all bills with the old category name (case-insensitive)
     if (updateData.name && updateData.name !== oldCategory.name) {
       const { error: billsError } = await supabase
         .from('bills')
         .update({ category: updateData.name })
         .eq('user_id', user.id)
-        .eq('category', oldCategory.name);
+        .ilike('category', oldCategory.name);
 
       if (billsError) {
         console.error('Failed to update bills with new category name:', billsError);
-        // Don't fail the whole operation, but log it
+        // Return warning but don't fail - category was renamed successfully
+        // Bills will be updated on next interaction
+        return {
+          success: true,
+          error: 'Category renamed but some bills may still show the old name. Please refresh the page.'
+        };
       }
     }
 
@@ -234,12 +239,12 @@ export async function deleteCategory(categoryId: string): Promise<{
       return { success: false, error: 'Category not found' };
     }
 
-    // Check if any bills are using this category
+    // Check if any bills are using this category (case-insensitive)
     const { count: billsCount } = await supabase
       .from('bills')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
-      .eq('category', category.name);
+      .ilike('category', category.name);
 
     if (billsCount && billsCount > 0) {
       return {
@@ -341,19 +346,29 @@ export async function seedDefaultCategories(): Promise<{
       return { success: true };
     }
 
-    // Insert default categories
-    const categoriesToInsert = DEFAULT_CATEGORIES.map(cat => ({
-      user_id: user.id,
-      ...cat,
-    }));
+    // Insert default categories one by one to handle race conditions
+    // Using upsert with ON CONFLICT DO NOTHING equivalent
+    for (const cat of DEFAULT_CATEGORIES) {
+      const { error } = await supabase
+        .from('user_categories')
+        .upsert(
+          {
+            user_id: user.id,
+            name: cat.name,
+            color: cat.color,
+            icon: cat.icon,
+            sort_order: cat.sort_order,
+          },
+          {
+            onConflict: 'user_id,name',
+            ignoreDuplicates: true,
+          }
+        );
 
-    const { error } = await supabase
-      .from('user_categories')
-      .insert(categoriesToInsert);
-
-    if (error) {
-      console.error('Failed to seed default categories:', error);
-      return { success: false, error: 'Failed to create default categories' };
+      if (error && error.code !== '23505') {
+        // Log non-duplicate errors but continue
+        console.error('Failed to seed category:', cat.name, error);
+      }
     }
 
     return { success: true };

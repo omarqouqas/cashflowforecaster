@@ -19,9 +19,26 @@ import {
   Clock,
   DollarSign,
 } from 'lucide-react';
+import { DEFAULT_CATEGORIES } from '@/lib/categories/constants';
 
 export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually';
 export type SortOption = 'due_date' | 'name' | 'amount' | 'created_at';
+
+// Convert category name to URL-safe slug
+export function categoryToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[\/\\]/g, '-')  // Replace slashes with dashes
+    .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric except dashes
+    .replace(/-+/g, '-')  // Collapse multiple dashes
+    .replace(/^-|-$/g, ''); // Trim dashes from ends
+}
+
+// Convert slug back to category name (requires category options for lookup)
+export function slugToCategory(slug: string, categoryOptions: { value: string }[]): string | null {
+  const option = categoryOptions.find(opt => categoryToSlug(opt.value) === slug);
+  return option?.value ?? null;
+}
 
 export interface BillsFilters {
   status: ('active' | 'inactive')[];
@@ -54,13 +71,10 @@ const statusOptions: FilterDropdownOption[] = [
 ];
 
 // Default category options (used when no user categories are provided)
-const defaultCategoryOptions: FilterDropdownOption[] = [
-  { value: 'Rent/Mortgage', label: 'Rent/Mortgage' },
-  { value: 'Utilities', label: 'Utilities' },
-  { value: 'Subscriptions', label: 'Subscriptions' },
-  { value: 'Insurance', label: 'Insurance' },
-  { value: 'Other', label: 'Other' },
-];
+const defaultCategoryOptions: FilterDropdownOption[] = DEFAULT_CATEGORIES.map((cat) => ({
+  value: cat.name,
+  label: cat.name,
+}));
 
 const frequencyOptions: FilterDropdownOption[] = [
   { value: 'one-time', label: 'One-time' },
@@ -104,6 +118,7 @@ interface BillsFilterBarProps {
   visibleFilters: string[];
   onVisibleFiltersChange: (filters: string[]) => void;
   categoryOptions?: FilterDropdownOption[]; // Dynamic category options from user's categories
+  excludedCategories?: string[]; // Categories that are being hidden/excluded
 }
 
 /**
@@ -117,6 +132,7 @@ export function BillsFilterBar({
   visibleFilters,
   onVisibleFiltersChange,
   categoryOptions = defaultCategoryOptions,
+  excludedCategories = [],
 }: BillsFilterBarProps) {
   // Build active filter pills
   const activeFilterPills = React.useMemo((): ActiveFilter[] => {
@@ -132,13 +148,16 @@ export function BillsFilterBar({
       });
     }
 
-    // Category filter (show pills when specific categories are selected)
-    // Empty array = show all (no filter), so only show pills when categories are explicitly selected
-    if (filters.categories.length > 0) {
-      filters.categories.forEach((cat) => {
-        const option = categoryOptions.find((o) => o.value === cat);
+    // Category filter - show pills for EXCLUDED categories only (case-insensitive lookup)
+    if (excludedCategories.length > 0) {
+      excludedCategories.forEach((cat) => {
+        const catLower = cat.toLowerCase();
+        const option = categoryOptions.find((o) => o.value.toLowerCase() === catLower);
         if (option) {
-          pills.push({ key: 'category', label: 'Category', value: option.label });
+          pills.push({ key: 'category', label: 'Hiding', value: option.label });
+        } else {
+          // Category might not be in options (e.g., bill has category not in user's list)
+          pills.push({ key: 'category', label: 'Hiding', value: cat });
         }
       });
     }
@@ -180,7 +199,7 @@ export function BillsFilterBar({
     }
 
     return pills;
-  }, [filters]);
+  }, [filters, excludedCategories, categoryOptions]);
 
   // Handle removing a filter pill
   const handleRemoveFilter = (key: string, value: string) => {
@@ -198,13 +217,17 @@ export function BillsFilterBar({
         break;
       }
       case 'category': {
-        const catValue = categoryOptions.find((o) => o.label === value)?.value;
-        if (catValue) {
-          const newCategories = filters.categories.filter((c) => c !== catValue);
-          // Empty array = show all (no filter)
+        // Removing a "Hiding" pill means re-including that category
+        // Add it back to the selected categories (filters.categories = selected)
+        const valueLower = value.toLowerCase();
+        const catValue = categoryOptions.find((o) => o.label.toLowerCase() === valueLower)?.value || value;
+        // Check if already in filters (case-insensitive)
+        const catValueLower = catValue.toLowerCase();
+        const alreadyIncluded = filters.categories.some(c => c.toLowerCase() === catValueLower);
+        if (catValue && !alreadyIncluded) {
           onChange({
             ...filters,
-            categories: newCategories,
+            categories: [...filters.categories, catValue],
           });
         }
         break;
@@ -354,7 +377,10 @@ export function BillsFilterBar({
 /**
  * Hook to manage bills filter state with URL persistence
  */
-export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
+export function useBillsFilters(
+  initialFilters?: Partial<BillsFilters>,
+  categoryOptions?: FilterDropdownOption[]
+) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -374,12 +400,24 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
   const filtersFromUrl = React.useMemo((): BillsFilters => {
     const status = searchParams.get('status');
     const freqs = searchParams.get('freq');
-    const cats = searchParams.get('cat');
+    const excludedSlugs = searchParams.get('ex'); // 'ex' = excluded category slugs
     const minAmount = searchParams.get('min');
     const maxAmount = searchParams.get('max');
     const dueSoon = searchParams.get('due');
     const search = searchParams.get('q');
     const sort = searchParams.get('sort');
+
+    // Convert slugs back to category names
+    let excludedCategories: string[] = [];
+    if (excludedSlugs && categoryOptions) {
+      excludedCategories = excludedSlugs
+        .split(',')
+        .map(slug => slugToCategory(slug, categoryOptions))
+        .filter((cat): cat is string => cat !== null);
+    } else if (excludedSlugs) {
+      // Fallback: use slugs as-is if no categoryOptions yet
+      excludedCategories = excludedSlugs.split(',');
+    }
 
     return {
       status: status
@@ -388,16 +426,14 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
       frequencies: freqs
         ? (freqs.split(',') as FrequencyType[])
         : defaultBillsFilters.frequencies,
-      categories: cats
-        ? cats.split(',')
-        : defaultBillsFilters.categories,
+      categories: excludedCategories,
       amountMin: minAmount ? parseFloat(minAmount) : null,
       amountMax: maxAmount ? parseFloat(maxAmount) : null,
       dueSoonDays: dueSoon ? parseInt(dueSoon, 10) : null,
       search: search || '',
       sortBy: (sort as SortOption) || defaultBillsFilters.sortBy,
     };
-  }, [searchParams]);
+  }, [searchParams, categoryOptions]);
 
   const [filters, setFiltersState] = React.useState<BillsFilters>({
     ...defaultBillsFilters,
@@ -441,11 +477,14 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         params.set('freq', newFilters.frequencies.join(','));
       }
 
-      // Categories - empty array = show all (default), so only store in URL when filtering
+      // Categories - now stores EXCLUDED categories as slugs
+      // Empty = nothing excluded (default), so only store in URL when excluding
       if (newFilters.categories.length === 0) {
-        params.delete('cat');
+        params.delete('ex');
       } else {
-        params.set('cat', newFilters.categories.join(','));
+        // Convert category names to slugs for cleaner URLs
+        const slugs = newFilters.categories.map(cat => categoryToSlug(cat));
+        params.set('ex', slugs.join(','));
       }
 
       // Amount range

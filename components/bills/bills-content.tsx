@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useMemo } from 'react';
 import { BillCard } from './bill-card';
 import {
@@ -11,19 +12,10 @@ import {
   type SortOption,
 } from './bills-filters';
 import type { FilterDropdownOption } from '@/components/filters/filter-dropdown';
+import { DEFAULT_CATEGORIES } from '@/lib/categories/constants';
+import { Tables } from '@/types/supabase';
 
-interface Bill {
-  id: string;
-  name: string;
-  amount: number;
-  frequency: string | null;
-  category: string | null;
-  due_date: string | null;
-  is_active: boolean | null;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
+type Bill = Tables<'bills'>;
 
 interface UserCategory {
   id: string;
@@ -136,11 +128,16 @@ function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
     if (!filters.frequencies.includes(billFreq)) return false;
 
     // Filter by category
-    // Empty categories array = show all (no category filter)
-    // Otherwise, check if bill's category is in the selected list
+    // categories array now stores EXCLUDED categories
+    // Empty = nothing excluded = show all
+    // Has values = those categories are excluded (hidden)
     if (filters.categories.length > 0) {
-      const billCategory = bill.category ?? 'Other';
-      if (!filters.categories.includes(billCategory)) return false;
+      const billCategory = (bill.category ?? 'Other').toLowerCase();
+      // Case-insensitive comparison for excluded categories
+      const isExcluded = filters.categories.some(
+        excludedCat => excludedCat.toLowerCase() === billCategory
+      );
+      if (isExcluded) return false;
     }
 
     // Filter by amount range
@@ -195,14 +192,11 @@ export function BillsContent({ bills, categories = [] }: BillsContentProps) {
   // Build category options for the filter dropdown
   const categoryOptions: FilterDropdownOption[] = useMemo(() => {
     if (categories.length === 0) {
-      // Fallback to default categories
-      return [
-        { value: 'Rent/Mortgage', label: 'Rent/Mortgage' },
-        { value: 'Utilities', label: 'Utilities' },
-        { value: 'Subscriptions', label: 'Subscriptions' },
-        { value: 'Insurance', label: 'Insurance' },
-        { value: 'Other', label: 'Other' },
-      ];
+      // Fallback to default categories from constants
+      return DEFAULT_CATEGORIES.map((cat) => ({
+        value: cat.name,
+        label: cat.name,
+      }));
     }
     return categories.map((cat) => ({
       value: cat.name,
@@ -210,7 +204,37 @@ export function BillsContent({ bills, categories = [] }: BillsContentProps) {
     }));
   }, [categories]);
 
-  const { filters, setFilters, visibleFilters, setVisibleFilters } = useBillsFilters();
+  // Pass categoryOptions to hook for slug conversion in URL
+  const { filters, setFilters: setFiltersRaw, visibleFilters, setVisibleFilters } = useBillsFilters(undefined, categoryOptions);
+
+  // All category values for comparison
+  const allCategoryValues = useMemo(() => categoryOptions.map(opt => opt.value), [categoryOptions]);
+
+  // Convert between "selected categories" (for display) and "excluded categories" (for storage/URL)
+  // Storage: empty = nothing excluded = show all; has values = those are excluded
+  // Display: shows which categories are checked (selected)
+
+  // Get excluded categories from filters (what's stored)
+  const excludedCategories = filters.categories; // Now stores EXCLUDED categories
+
+  // For display: convert excluded to selected (all minus excluded)
+  const displayFilters = useMemo((): BillsFilters => ({
+    ...filters,
+    categories: allCategoryValues.filter(cat => !excludedCategories.includes(cat)),
+  }), [filters, allCategoryValues, excludedCategories]);
+
+  // Wrap setFilters to convert from selected (display) to excluded (storage)
+  const setFilters = React.useCallback((newFilters: BillsFilters) => {
+    const selectedCategories = newFilters.categories;
+    // Calculate which categories are EXCLUDED (not in selected list)
+    const newExcluded = allCategoryValues.filter(cat => !selectedCategories.includes(cat));
+
+    setFiltersRaw({
+      ...newFilters,
+      // Store excluded categories (empty = all selected = show all)
+      categories: newExcluded,
+    });
+  }, [allCategoryValues, setFiltersRaw]);
 
   // Apply filters and sorting to bills
   const filteredBills = useMemo(
@@ -227,13 +251,14 @@ export function BillsContent({ bills, categories = [] }: BillsContentProps) {
       {bills.length > 0 && (
         <div className="mb-6">
           <BillsFilterBar
-            filters={filters}
+            filters={displayFilters}
             onChange={setFilters}
             resultCount={filteredBills.length}
             totalCount={bills.length}
             visibleFilters={visibleFilters}
             onVisibleFiltersChange={setVisibleFilters}
             categoryOptions={categoryOptions}
+            excludedCategories={excludedCategories}
           />
         </div>
       )}
@@ -271,7 +296,7 @@ export function BillsContent({ bills, categories = [] }: BillsContentProps) {
       ) : (
         <div className="space-y-3">
           {filteredBills.map((bill) => (
-            <BillCard key={bill.id} bill={bill as any} />
+            <BillCard key={bill.id} bill={bill} categories={categories} />
           ))}
         </div>
       )}

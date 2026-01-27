@@ -92,16 +92,21 @@ export function StepBills({
   })
 
   const [categories, setCategories] = useState<UserCategory[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Fetch or seed categories for this user
   useEffect(() => {
     async function loadCategories() {
+      setCategoriesLoading(true)
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
 
-      if (!user) return
+      if (!user) {
+        setCategoriesLoading(false)
+        return
+      }
 
       // First try to fetch existing categories
       let { data: cats } = await supabase
@@ -110,30 +115,44 @@ export function StepBills({
         .eq('user_id', user.id)
         .order('sort_order', { ascending: true })
 
-      // If no categories exist, seed defaults
+      // If no categories exist, seed defaults and retry fetch
       if (!cats || cats.length === 0) {
         await seedDefaultCategories()
-        const { data: seededCats } = await supabase
-          .from('user_categories')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('sort_order', { ascending: true })
-        cats = seededCats
+
+        // Retry fetch with a small delay to ensure DB commit
+        let retries = 3
+        while (retries > 0 && (!cats || cats.length === 0)) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          const { data: seededCats } = await supabase
+            .from('user_categories')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('sort_order', { ascending: true })
+          cats = seededCats
+          retries--
+        }
+      }
+
+      // If still no categories after retries, show error
+      if (!cats || cats.length === 0) {
+        setError('Failed to load categories. Please refresh the page.')
       }
 
       setCategories((cats || []) as UserCategory[])
+      setCategoriesLoading(false)
     }
 
     loadCategories()
   }, [])
 
-  const canContinue = bills.length > 0
+  const canContinue = bills.length > 0 && !categoriesLoading
   const allValid = useMemo(() => bills.length > 0 && bills.every(isValidBill), [bills])
 
   const addedSuggestionKeys = useMemo(() => {
     const set = new Set<string>()
     for (const s of SUGGESTIONS) {
-      const match = bills.some((b) => b.name === s.name)
+      // Case-insensitive comparison for matching suggestions
+      const match = bills.some((b) => b.name.toLowerCase() === s.name.toLowerCase())
       if (match) set.add(s.key)
     }
     return set
@@ -156,6 +175,12 @@ export function StepBills({
   }
 
   function addCustom() {
+    // Default to 'Other' category, or first user category if available
+    const defaultCategory = categories.find(c => c.name.toLowerCase() === 'other')?.name
+      ?? categories[0]?.name
+      ?? DEFAULT_CATEGORIES.find(c => c.name === 'Other')?.name
+      ?? 'Other'
+
     setBills((prev) => [
       ...prev,
       {
@@ -164,7 +189,7 @@ export function StepBills({
         amount: undefined,
         frequency: 'monthly',
         due_date: nextDueDateForDay(1),
-        category: categories.length > 0 ? (categories[categories.length - 1]?.name ?? 'Other') : 'Other',
+        category: defaultCategory,
       },
     ])
   }

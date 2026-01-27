@@ -10,9 +10,8 @@ import {
   Tv, Laptop, Wrench, Scissors, Shirt
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { createCategory } from '@/lib/actions/manage-categories';
 import { type UserCategory, CATEGORY_COLORS, CATEGORY_ICONS, DEFAULT_CATEGORIES } from '@/lib/categories/constants';
-import { showError, showSuccess } from '@/lib/toast';
+import { showError } from '@/lib/toast';
 import Link from 'next/link';
 
 // Map icon names to components
@@ -68,31 +67,42 @@ const COLOR_CLASSES: Record<string, { bg: string; text: string; ring: string }> 
   zinc: { bg: 'bg-zinc-500/20', text: 'text-zinc-400', ring: 'ring-zinc-500' },
 };
 
+// Pending category that hasn't been saved to DB yet
+export interface PendingCategory {
+  name: string;
+  color: string;
+  icon: string;
+}
+
 interface CategorySelectProps {
   value: string;
   onChange: (value: string) => void;
   categories: UserCategory[];
-  onCategoryCreated?: (category: UserCategory) => void;
+  /** Called when user creates a new category inline - category is pending until form submission */
+  onPendingCategoryChange?: (pending: PendingCategory | null) => void;
+  /** The current pending category (if any) */
+  pendingCategory?: PendingCategory | null;
   error?: boolean;
   id?: string;
+  disabled?: boolean;
 }
 
 export function CategorySelect({
   value,
   onChange,
   categories,
-  onCategoryCreated,
+  onPendingCategoryChange,
+  pendingCategory,
   error,
   id,
+  disabled,
 }: CategorySelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryColor, setNewCategoryColor] = useState<string>('zinc');
   const [newCategoryIcon, setNewCategoryIcon] = useState<string>('tag');
-  const [isCreating, setIsCreating] = useState(false);
-  // Track recently created categories locally to ensure they display immediately
-  const [localCategories, setLocalCategories] = useState<UserCategory[]>([]);
+  const [isSelecting, setIsSelecting] = useState(false); // Prevent double-clicks
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -107,23 +117,44 @@ export function CategorySelect({
     created_at: '',
   }));
 
-  // Combine categories from props and locally created ones
-  const allCategories = [...categories, ...localCategories.filter(
-    lc => !categories.some(c => c.id === lc.id)
-  )];
-
   // Get user categories that aren't already in defaults (by name, case-insensitive)
   const defaultNames = new Set(DEFAULT_CATEGORIES.map(c => c.name.toLowerCase()));
-  const additionalUserCategories = allCategories.filter(
+  const additionalUserCategories = categories.filter(
     c => !defaultNames.has(c.name.toLowerCase())
   );
 
   // Merge: defaults first, then additional user categories
-  const displayCategories = [...defaultCategoryObjects, ...additionalUserCategories];
+  let displayCategories = [...defaultCategoryObjects, ...additionalUserCategories];
 
-  // Look for selected category in display list OR in the combined array
-  const selectedCategory = displayCategories.find(c => c.name === value)
-    || allCategories.find(c => c.name === value);
+  // Look for selected category in display list OR in categories OR pending (case-insensitive)
+  const valueLower = value?.toLowerCase();
+  let selectedCategory = displayCategories.find(c => c.name.toLowerCase() === valueLower)
+    || categories.find(c => c.name.toLowerCase() === valueLower)
+    || (pendingCategory && pendingCategory.name.toLowerCase() === valueLower ? {
+        id: 'pending',
+        user_id: '',
+        name: pendingCategory.name,
+        color: pendingCategory.color,
+        icon: pendingCategory.icon,
+        sort_order: 999,
+        created_at: '',
+      } : null);
+
+  // If the current value doesn't exist in any category list (orphaned category),
+  // add it to the display list so the user can see and change it
+  if (value && !selectedCategory) {
+    const orphanedCategory = {
+      id: 'orphaned',
+      user_id: '',
+      name: value,
+      color: 'zinc',
+      icon: 'tag',
+      sort_order: 1000,
+      created_at: '',
+    };
+    displayCategories = [...displayCategories, orphanedCategory];
+    selectedCategory = orphanedCategory;
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -144,38 +175,51 @@ export function CategorySelect({
     }
   }, [showAddForm]);
 
-  async function handleCreateCategory() {
-    if (!newCategoryName.trim()) {
+  function handleSelectPendingCategory(e?: React.MouseEvent) {
+    // Prevent any event bubbling that could interfere with parent form
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    // Prevent double-clicks
+    if (isSelecting) return;
+    setIsSelecting(true);
+
+    const trimmedName = newCategoryName.trim();
+    if (!trimmedName) {
       showError('Please enter a category name');
+      setIsSelecting(false);
       return;
     }
 
-    setIsCreating(true);
-    const result = await createCategory({
-      name: newCategoryName.trim(),
-      color: newCategoryColor,
-      icon: newCategoryIcon,
-    });
+    // Check if category already exists (case-insensitive)
+    const existingCategory = displayCategories.find(
+      c => c.name.toLowerCase() === trimmedName.toLowerCase()
+    );
 
-    if (result.success && result.category) {
-      showSuccess('Category created');
-      // Add to local state immediately so it displays right away
-      setLocalCategories(prev => [...prev, result.category!]);
-      // Update form value
-      onChange(result.category.name);
-      // Notify parent (may be async)
-      onCategoryCreated?.(result.category);
-      // Reset form
-      setNewCategoryName('');
-      setNewCategoryColor('zinc');
-      setNewCategoryIcon('tag');
-      setShowAddForm(false);
-      setIsOpen(false);
+    if (existingCategory) {
+      // Just select the existing category
+      onChange(existingCategory.name);
+      onPendingCategoryChange?.(null);
     } else {
-      showError(result.error || 'Failed to create category');
+      // Set as pending category (will be created when form is submitted)
+      const pending: PendingCategory = {
+        name: trimmedName,
+        color: newCategoryColor,
+        icon: newCategoryIcon,
+      };
+      onPendingCategoryChange?.(pending);
+      onChange(trimmedName);
     }
-    setIsCreating(false);
+
+    // Reset form and close dropdown
+    setNewCategoryName('');
+    setNewCategoryColor('zinc');
+    setNewCategoryIcon('tag');
+    setShowAddForm(false);
+    setIsOpen(false);
+    setIsSelecting(false);
   }
+
 
   function getIconComponent(iconName: string) {
     const Icon = ICON_MAP[iconName] || Tag;
@@ -188,12 +232,22 @@ export function CategorySelect({
       <button
         type="button"
         id={id}
-        onClick={() => setIsOpen(!isOpen)}
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-disabled={disabled}
+        aria-label={selectedCategory ? `Category: ${selectedCategory.name}` : 'Select category'}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!disabled) setIsOpen(!isOpen);
+        }}
         className={cn(
           'w-full bg-zinc-800 border rounded-md px-3 py-2 text-left min-h-[44px]',
           'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
           'flex items-center justify-between gap-2',
-          error ? 'border-rose-500' : 'border-zinc-700'
+          error ? 'border-rose-500' : 'border-zinc-700',
+          disabled && 'opacity-50 cursor-not-allowed'
         )}
       >
         {selectedCategory ? (
@@ -222,18 +276,30 @@ export function CategorySelect({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg max-h-80 overflow-auto">
+        <div
+          role="listbox"
+          aria-label="Category options"
+          className="absolute z-50 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg max-h-80 overflow-auto"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Category options */}
           {displayCategories.map((cat) => {
             const Icon = getIconComponent(cat.icon);
             const colors = COLOR_CLASSES[cat.color] ?? COLOR_CLASSES.zinc;
-            const isSelected = cat.name === value;
+            const isSelected = cat.name.toLowerCase() === valueLower;
             return (
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => {
+                role="option"
+                aria-selected={isSelected}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   onChange(cat.name);
+                  // Clear any pending category when selecting an existing one
+                  onPendingCategoryChange?.(null);
                   setIsOpen(false);
                 }}
                 className={cn(
@@ -257,7 +323,11 @@ export function CategorySelect({
           {!showAddForm ? (
             <button
               type="button"
-              onClick={() => setShowAddForm(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowAddForm(true);
+              }}
               className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-zinc-700/50 text-teal-400"
             >
               <Plus className="w-4 h-4" />
@@ -279,9 +349,12 @@ export function CategorySelect({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
-                      handleCreateCategory();
+                      e.stopPropagation();
+                      handleSelectPendingCategory();
                     }
                     if (e.key === 'Escape') {
+                      e.preventDefault();
+                      e.stopPropagation();
                       setShowAddForm(false);
                     }
                   }}
@@ -298,7 +371,11 @@ export function CategorySelect({
                       <button
                         key={color}
                         type="button"
-                        onClick={() => setNewCategoryColor(color)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setNewCategoryColor(color);
+                        }}
                         className={cn(
                           'w-6 h-6 rounded-full transition-all',
                           colors?.bg,
@@ -321,7 +398,11 @@ export function CategorySelect({
                       <button
                         key={iconName}
                         type="button"
-                        onClick={() => setNewCategoryIcon(iconName)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setNewCategoryIcon(iconName);
+                        }}
                         className={cn(
                           'p-1.5 rounded transition-all',
                           newCategoryIcon === iconName
@@ -343,18 +424,22 @@ export function CategorySelect({
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddForm(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowAddForm(false);
+                  }}
                   className="flex-1 px-2 py-1.5 text-sm text-zinc-400 hover:text-zinc-200 rounded border border-zinc-600 hover:border-zinc-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  onClick={handleCreateCategory}
-                  disabled={isCreating || !newCategoryName.trim()}
+                  onClick={(e) => handleSelectPendingCategory(e)}
+                  disabled={!newCategoryName.trim() || isSelecting}
                   className="flex-1 px-2 py-1.5 text-sm bg-teal-600 hover:bg-teal-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isCreating ? 'Creating...' : 'Create'}
+                  {isSelecting ? 'Selecting...' : 'Select'}
                 </button>
               </div>
             </div>

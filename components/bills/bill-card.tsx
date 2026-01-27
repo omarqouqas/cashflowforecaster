@@ -2,7 +2,7 @@
 
 import { Tables } from '@/types/supabase'
 import { Button } from '@/components/ui/button'
-import { Edit, CreditCard, Home, Tv, Shield } from 'lucide-react'
+import { Edit, CreditCard, Home, Tv, Shield, Zap, Repeat, Tag } from 'lucide-react'
 import { DeleteBillButton } from './delete-bill-button'
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format'
 import { ActiveToggleButton } from '@/components/ui/active-toggle-button'
@@ -10,8 +10,17 @@ import Link from 'next/link'
 
 type Bill = Tables<'bills'>
 
+interface UserCategory {
+  id: string;
+  name: string;
+  color: string;
+  icon: string;
+  sort_order: number;
+}
+
 interface BillCardProps {
   bill: Bill
+  categories?: UserCategory[]
 }
 
 function getActualNextDueDate(dueDate: string, frequency: string | null | undefined): Date {
@@ -104,35 +113,76 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
   return currentDate
 }
 
-function getCategoryIcon(category: string | null | undefined) {
+// Color classes for category display
+type ColorClasses = { bg: string; text: string; border: string }
+
+const COLOR_CLASSES: Record<string, ColorClasses> = {
+  rose: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/30' },
+  amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30' },
+  yellow: { bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/30' },
+  lime: { bg: 'bg-lime-500/10', text: 'text-lime-400', border: 'border-lime-500/30' },
+  emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+  teal: { bg: 'bg-teal-500/10', text: 'text-teal-400', border: 'border-teal-500/30' },
+  cyan: { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/30' },
+  indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/30' },
+  violet: { bg: 'bg-violet-500/10', text: 'text-violet-400', border: 'border-violet-500/30' },
+  purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/30' },
+  pink: { bg: 'bg-pink-500/10', text: 'text-pink-400', border: 'border-pink-500/30' },
+  zinc: { bg: 'bg-zinc-500/10', text: 'text-zinc-400', border: 'border-zinc-500/30' },
+}
+
+const DEFAULT_COLORS: ColorClasses = { bg: 'bg-zinc-500/10', text: 'text-zinc-400', border: 'border-zinc-500/30' }
+
+// Icon mapping
+const ICON_MAP: Record<string, typeof Home> = {
+  home: Home,
+  zap: Zap,
+  repeat: Repeat,
+  shield: Shield,
+  tag: Tag,
+  tv: Tv,
+  'credit-card': CreditCard,
+}
+
+// Default icon/color mapping for built-in categories (fallback)
+const DEFAULT_CATEGORY_STYLES: Record<string, { icon: typeof Home; color: string }> = {
+  'rent/mortgage': { icon: Home, color: 'rose' },
+  'rent': { icon: Home, color: 'rose' },
+  'utilities': { icon: Zap, color: 'amber' },
+  'subscriptions': { icon: Repeat, color: 'violet' },
+  'insurance': { icon: Shield, color: 'blue' },
+  'other': { icon: Tag, color: 'zinc' },
+}
+
+function getCategoryIcon(category: string | null | undefined, categories?: UserCategory[]) {
   const cat = (category ?? 'Other').toLowerCase()
 
-  // Support both old lowercase values and new category names
-  if (cat === 'rent' || cat === 'rent/mortgage' || cat === 'utilities') {
+  // First, try to find the category in user's categories (case-insensitive)
+  const userCat = categories?.find(c => c.name.toLowerCase() === cat)
+
+  if (userCat) {
+    const colors = COLOR_CLASSES[userCat.color] || DEFAULT_COLORS
+    const Icon = ICON_MAP[userCat.icon] ?? CreditCard
     return {
-      icon: Home,
-      className: 'bg-rose-500/10 border border-rose-500/30',
-      iconColor: 'text-rose-400'
+      icon: Icon,
+      className: `${colors.bg} border ${colors.border}`,
+      iconColor: colors.text
     }
   }
 
-  if (cat === 'subscriptions') {
+  // Fallback to default styles for built-in categories
+  const defaultStyle = DEFAULT_CATEGORY_STYLES[cat]
+  if (defaultStyle) {
+    const colors = COLOR_CLASSES[defaultStyle.color] || DEFAULT_COLORS
     return {
-      icon: Tv,
-      className: 'bg-violet-500/10 border border-violet-500/30',
-      iconColor: 'text-violet-400'
+      icon: defaultStyle.icon,
+      className: `${colors.bg} border ${colors.border}`,
+      iconColor: colors.text
     }
   }
 
-  if (cat === 'insurance') {
-    return {
-      icon: Shield,
-      className: 'bg-blue-500/10 border border-blue-500/30',
-      iconColor: 'text-blue-400'
-    }
-  }
-
-  // Default for "Other" and custom categories
+  // Default for unknown categories
   return {
     icon: CreditCard,
     className: 'bg-zinc-500/10 border border-zinc-500/30',
@@ -140,24 +190,36 @@ function getCategoryIcon(category: string | null | undefined) {
   }
 }
 
-function getCategoryBadge(category: string | null | undefined) {
+function getCategoryBadge(category: string | null | undefined, categories?: UserCategory[]) {
   const cat = (category ?? 'Other').toLowerCase()
   // Use the category name directly as the label (it's already human-readable)
   const displayName = category || 'Other'
 
-  // Map old lowercase values and new names to colors
-  const colorMap: Record<string, string> = {
-    'rent': 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
-    'rent/mortgage': 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
-    'utilities': 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
-    'subscriptions': 'bg-violet-500/20 text-violet-300 border border-violet-500/30',
-    'insurance': 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
-    'other': 'bg-zinc-700 text-zinc-300 border border-zinc-600'
+  // First, try to find the category in user's categories (case-insensitive)
+  const userCat = categories?.find(c => c.name.toLowerCase() === cat)
+
+  if (userCat) {
+    const colors = COLOR_CLASSES[userCat.color] || DEFAULT_COLORS
+    return {
+      label: userCat.name, // Use the properly-cased name from user's categories
+      className: `${colors.bg.replace('/10', '/20')} ${colors.text.replace('-400', '-300')} border ${colors.border}`
+    }
   }
 
+  // Fallback to default styles for built-in categories
+  const defaultStyle = DEFAULT_CATEGORY_STYLES[cat]
+  if (defaultStyle) {
+    const colors = COLOR_CLASSES[defaultStyle.color] || DEFAULT_COLORS
+    return {
+      label: displayName,
+      className: `${colors.bg.replace('/10', '/20')} ${colors.text.replace('-400', '-300')} border ${colors.border}`
+    }
+  }
+
+  // Default for unknown categories
   return {
     label: displayName,
-    className: colorMap[cat] || 'bg-zinc-700 text-zinc-300 border border-zinc-600'
+    className: 'bg-zinc-700 text-zinc-300 border border-zinc-600'
   }
 }
 
@@ -219,10 +281,10 @@ function getFrequencyBadge(frequency: string | null | undefined) {
   }
 }
 
-export function BillCard({ bill }: BillCardProps) {
+export function BillCard({ bill, categories }: BillCardProps) {
   const isActive = bill.is_active ?? true
-  const categoryIcon = getCategoryIcon(bill.category)
-  const categoryBadge = getCategoryBadge(bill.category)
+  const categoryIcon = getCategoryIcon(bill.category, categories)
+  const categoryBadge = getCategoryBadge(bill.category, categories)
   const frequencyBadge = getFrequencyBadge(bill.frequency)
   const CategoryIcon = categoryIcon.icon
 

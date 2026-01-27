@@ -53,24 +53,37 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 **Current State:**
 - Custom bill categories with user-defined names, colors, and icons
 - Category management in Settings page
-- Dynamic category dropdowns in bill forms
-- Category filters on bills page
+- Dynamic category dropdowns in bill forms with inline creation
+- Category filters on bills page with URL persistence
 - Category reporting in exports
+- Case-insensitive category matching throughout
 
-**Action:** Custom category support implemented!
+**Action:** Custom category support implemented with comprehensive bug fixes!
 
-**Status:** ✅ Implemented
+**Status:** ✅ Implemented (Day 48-49)
 
 **Delivered Features (per Jeremy):**
 - Custom user-defined categories with colors and icons
 - Category reporting via Category Spending export
+- Inline category creation in bill forms (no need to go to Settings)
 
 **Technical Implementation:**
 - New `user_categories` table with RLS
 - Default categories seeded on first use (Rent/Mortgage, Utilities, Subscriptions, Insurance, Other)
-- Category management UI in Settings
+- Category management UI in Settings (`category-management-form.tsx`)
 - Dynamic category dropdowns in bill forms (new, edit, onboarding)
 - Category filters updated to use user's custom categories
+- Pending category pattern (defer DB creation until form submission)
+- URL slug conversion for clean filter URLs (`?ex=rentmortgage`)
+
+**Bug Fixes Applied (24 total):**
+- Case-insensitive category matching in filter logic
+- Case-insensitive category matching when renaming/deleting categories
+- Orphaned category display in dropdowns (bills with deleted categories)
+- Race condition prevention in category creation
+- ARIA accessibility labels for category dropdown
+- TypeScript type safety improvements
+- Proper disabled states during form submission
 
 **Nice-to-Have (Future):**
 - Category assignment for income sources

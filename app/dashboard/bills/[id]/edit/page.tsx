@@ -13,9 +13,9 @@ import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
-import { seedDefaultCategories } from '@/lib/actions/manage-categories';
+import { seedDefaultCategories, createCategory } from '@/lib/actions/manage-categories';
 import { type UserCategory } from '@/lib/categories/constants';
-import { CategorySelect } from '@/components/bills/category-select';
+import { CategorySelect, type PendingCategory } from '@/components/bills/category-select';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -43,6 +43,7 @@ export default function EditBillPage() {
 
   const [bill, setBill] = useState<Bill | null>(null);
   const [categories, setCategories] = useState<UserCategory[]>([]);
+  const [pendingCategory, setPendingCategory] = useState<PendingCategory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -181,6 +182,29 @@ export default function EditBillPage() {
       setError(message);
       setIsSubmitting(false);
       return;
+    }
+
+    // If there's a pending category, create it first
+    if (pendingCategory && pendingCategory.name === data.category) {
+      const categoryResult = await createCategory({
+        name: pendingCategory.name,
+        color: pendingCategory.color,
+        icon: pendingCategory.icon,
+      });
+
+      if (!categoryResult.success) {
+        showError(categoryResult.error || 'Failed to create category');
+        setError(categoryResult.error || 'Failed to create category');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Add to categories list
+      if (categoryResult.category) {
+        setCategories(prev => [...prev, categoryResult.category!]);
+      }
+      // Clear pending category
+      setPendingCategory(null);
     }
 
     // Update bill
@@ -396,8 +420,10 @@ export default function EditBillPage() {
                   value={field.value || ''}
                   onChange={field.onChange}
                   categories={categories}
-                  onCategoryCreated={(cat) => setCategories(prev => [...prev, cat])}
+                  pendingCategory={pendingCategory}
+                  onPendingCategoryChange={setPendingCategory}
                   error={!!errors.category}
+                  disabled={isSubmitting}
                 />
               )}
             />

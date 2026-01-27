@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.3
+**Version:** 6.4
 **Last Updated:** January 26, 2026
-**Status:** Live - Reports & Export Feature Added
+**Status:** Live - Custom Bill Categories Added
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -268,7 +268,9 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 **5. Bill Management ✅**
 - Recurring bills (rent, utilities, subscriptions)
 - Due date tracking
-- Category organization
+- **Custom bill categories** with user-defined names, colors, and icons
+- Category management in Settings page
+- Inline category creation in bill forms (no need to go to Settings)
 - All frequencies supported (weekly through yearly)
 - **Gated:** 10 limit for Free tier
 
@@ -466,7 +468,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - **Deployment:** Vercel
 - **Version Control:** Git + GitHub
 
-### Database Schema (14 tables)
+### Database Schema (15 tables)
 
 1. **accounts** - User bank accounts
 2. **income** - Income sources
@@ -482,6 +484,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 12. **subscriptions** - Stripe subscription data
 13. **feedback** - User feedback submissions (bug reports, suggestions, questions)
 14. **exports** - Export history (report type, format, config, file URL, status)
+15. **user_categories** - Custom bill categories (name, color, icon, sort_order)
 
 ### Feature Gating Architecture
 
@@ -865,6 +868,33 @@ User Request
 
 ## Changelog
 
+### Version 6.4 (January 26, 2026)
+- **Custom Bill Categories Feature:**
+  - New `user_categories` database table with RLS policies
+  - Category management UI in Settings page (add, edit, delete)
+  - 13 color options and 24 icon options for categories
+  - Dynamic category dropdowns in bill forms (new, edit, onboarding)
+  - Inline category creation without leaving the form
+  - Pending category pattern (defer DB creation until form submission)
+  - Default categories seeded on first use (Rent/Mortgage, Utilities, Subscriptions, Insurance, Other)
+  - Category filters updated to use user's custom categories
+  - URL slug conversion for clean filter URLs (`?ex=rentmortgage`)
+  - Orphaned category support (bills with deleted categories still display)
+- **Bug Fixes (24 total):**
+  - Case-insensitive category matching in filter logic
+  - Case-insensitive category matching when renaming/deleting categories
+  - Race condition prevention with upsert and `onConflict` handling
+  - Double seeding prevention in category creation
+  - ARIA accessibility labels for category dropdown
+  - TypeScript type safety improvements throughout
+  - Proper disabled states during form submission
+  - Retry logic for category seeding in onboarding
+- **New Files:**
+  - `lib/categories/constants.ts` - Default categories and color/icon definitions
+  - `lib/actions/manage-categories.ts` - Server actions for category CRUD
+  - `components/settings/category-management-form.tsx` - Settings UI
+  - `components/bills/category-select.tsx` - Dynamic category dropdown component
+
 ### Version 6.3 (January 26, 2026)
 - **Reports & Export Feature:**
   - New Reports page at `/dashboard/reports`
@@ -1215,7 +1245,7 @@ User Request
 
 ---
 
-**Document Version:** 6.3
+**Document Version:** 6.4
 **Last Updated:** January 26, 2026
-**Status:** Live - Reports & Export Feature Added 🎉
+**Status:** Live - Custom Bill Categories Added 🎉
 **Next Review:** February 2026

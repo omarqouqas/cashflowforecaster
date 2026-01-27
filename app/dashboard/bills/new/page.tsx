@@ -20,9 +20,9 @@ import { showError, showSuccess } from '@/lib/toast';
 import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { trackBillAdded } from '@/lib/posthog/events';
-import { seedDefaultCategories } from '@/lib/actions/manage-categories';
+import { seedDefaultCategories, createCategory } from '@/lib/actions/manage-categories';
 import { type UserCategory } from '@/lib/categories/constants';
-import { CategorySelect } from '@/components/bills/category-select';
+import { CategorySelect, type PendingCategory } from '@/components/bills/category-select';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -49,6 +49,7 @@ export default function NewBillPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [categories, setCategories] = useState<UserCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [pendingCategory, setPendingCategory] = useState<PendingCategory | null>(null);
 
   // Feature gating
   const { canAddBill, usage, limits, isLoading: subscriptionLoading } = useSubscriptionWithUsage();
@@ -143,6 +144,29 @@ export default function NewBillPage() {
       setShowUpgradeModal(true);
       setIsLoading(false);
       return;
+    }
+
+    // If there's a pending category, create it first
+    if (pendingCategory && pendingCategory.name === data.category) {
+      const categoryResult = await createCategory({
+        name: pendingCategory.name,
+        color: pendingCategory.color,
+        icon: pendingCategory.icon,
+      });
+
+      if (!categoryResult.success) {
+        showError(categoryResult.error || 'Failed to create category');
+        setError(categoryResult.error || 'Failed to create category');
+        setIsLoading(false);
+        return;
+      }
+
+      // Add to categories list
+      if (categoryResult.category) {
+        setCategories(prev => [...prev, categoryResult.category!]);
+      }
+      // Clear pending category
+      setPendingCategory(null);
     }
 
     // Insert bill
@@ -348,8 +372,10 @@ export default function NewBillPage() {
                   value={field.value || ''}
                   onChange={field.onChange}
                   categories={categories}
-                  onCategoryCreated={(cat) => setCategories(prev => [...prev, cat])}
+                  pendingCategory={pendingCategory}
+                  onPendingCategoryChange={setPendingCategory}
                   error={!!errors.category}
+                  disabled={isLoading}
                 />
               )}
             />

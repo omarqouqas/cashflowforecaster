@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 26, 2026 (Day 48)
+**Last Updated:** January 26, 2026 (Day 49)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 48
+- **Days in Development:** 49
 - **Commits:** 155+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + **Reports & Export Feature**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + **Custom Bill Categories**
 
 **Current Focus:**
 
@@ -29,7 +29,64 @@
 
 ---
 
-## Recent Development (Days 40-48)
+## Recent Development (Days 40-49)
+
+### Day 49: Custom Bill Categories (January 26, 2026)
+
+**Custom Categories Feature** - Users can now create, edit, and delete custom bill categories instead of being limited to 5 hardcoded options.
+
+**New Database Table:**
+- `user_categories` with RLS policies for secure access
+- Fields: id, user_id, name, color, icon, sort_order, created_at
+- Default categories seeded on first use (Rent/Mortgage, Utilities, Subscriptions, Insurance, Other)
+
+**Category Management UI:**
+- New section in Settings page for managing categories
+- Add, edit, delete categories with custom colors and icons
+- 13 color options (rose, amber, emerald, teal, cyan, blue, violet, etc.)
+- 24 icon options (home, zap, repeat, shield, tag, car, heart, etc.)
+
+**Dynamic Category Dropdowns:**
+- Bill forms now use user's custom categories
+- Inline category creation in bill forms (no need to go to Settings)
+- Pending category pattern (defer DB creation until form submission)
+- Orphaned category support (bills with deleted categories still display)
+
+**Filter Updates:**
+- Category filters on bills page use user's custom categories
+- URL slug conversion for clean filter URLs (`?ex=rentmortgage`)
+- Case-insensitive category matching throughout
+
+**Bug Fixes (24 total):**
+- Case-insensitive category matching in filter logic
+- Case-insensitive category matching when renaming/deleting categories
+- Orphaned category display in dropdowns (bills with deleted categories)
+- Race condition prevention in category creation with upsert
+- Double seeding prevention with `onConflict` handling
+- ARIA accessibility labels for category dropdown (aria-haspopup, aria-expanded, role)
+- TypeScript type safety improvements (Tables<'bills'> instead of any)
+- Proper disabled states during form submission
+- Retry logic for category seeding in onboarding
+- Case-insensitive suggestion matching in onboarding
+
+**New Files:**
+- `lib/categories/constants.ts` - Default categories and color/icon definitions
+- `lib/actions/manage-categories.ts` - Server actions for category CRUD
+- `components/settings/category-management-form.tsx` - Settings UI
+- `components/bills/category-select.tsx` - Dynamic category dropdown component
+- `supabase/migrations/[timestamp]_add_custom_categories.sql` - Database migration
+
+**Modified Files:**
+- `app/dashboard/settings/page.tsx` - Added categories section
+- `app/dashboard/bills/new/page.tsx` - Dynamic categories
+- `app/dashboard/bills/[id]/edit/page.tsx` - Dynamic categories
+- `app/dashboard/bills/page.tsx` - TypeScript type fixes
+- `components/bills/bills-content.tsx` - Category filtering with constants
+- `components/bills/bills-filters.tsx` - Dynamic category options
+- `components/bills/bill-card.tsx` - Custom color/icon rendering
+- `components/onboarding/step-bills.tsx` - Category seeding and selection
+
+---
 
 ### Day 48: Reports & Export Feature + Free Tier Extended to 90 Days (January 26, 2026)
 
@@ -507,6 +564,7 @@
 | Currency input formatting | Comma formatting as you type |
 | Form UX consistency | Unified styling, mobile touch targets |
 | Reports & Export | CSV/Excel/JSON export, quick reports, custom builder |
+| Custom Bill Categories | User-defined categories with colors, icons, inline creation |
 
 ### Upcoming
 
@@ -543,6 +601,7 @@
 - Calendar mobile UX with always-visible stats (no "Tap for more")
 - Mobile navigation with user avatar menu and Dashboard as Home
 - Reports & Export with quick reports, custom builder, and export history
+- Custom bill categories with colors, icons, and inline creation
 
 ## What's Next
 

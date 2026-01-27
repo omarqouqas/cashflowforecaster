@@ -14,6 +14,9 @@ import { BillsContent } from '@/components/bills/bills-content';
 import { getUserUsageStats } from '@/lib/stripe/feature-gate';
 import { GatedAddButton } from '@/components/subscription/gated-add-button';
 import { InfoTooltip } from '@/components/ui/tooltip';
+import { Tables } from '@/types/supabase';
+
+type Bill = Tables<'bills'>;
 
 interface BillsPageProps {
   searchParams: { success?: string };
@@ -95,7 +98,7 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
 }
 
 // Helper function to calculate monthly bill total
-function calculateMonthlyTotal(billsList: any[]) {
+function calculateMonthlyTotal(billsList: Bill[]) {
   return billsList.reduce(function(total, bill) {
     if (!bill.is_active) return total;
 
@@ -121,12 +124,12 @@ function calculateMonthlyTotal(billsList: any[]) {
 }
 
 // Helper function to get active bills
-function getActiveBills(billsList: any[]) {
+function getActiveBills(billsList: Bill[]) {
   return billsList.filter(function(b) { return b.is_active; });
 }
 
 // Helper function to get next due bill
-function getNextDueBill(activeBills: any[]) {
+function getNextDueBill(activeBills: Bill[]) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -180,7 +183,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
   const success = searchParams?.success;
 
-  const billsList = (bills || []) as any[];
+  const billsList = (bills || []) as Bill[];
 
   // Build a comprehensive category list that includes:
   // 1. Default categories (always available)
@@ -212,10 +215,15 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       sort_order: 100 + i,
     }));
 
-  // Merge: user categories first, then defaults (if no user cats), then bill categories
-  const categories = userCategories.length > 0
-    ? [...userCategories, ...billCategories]
-    : [...defaultCategoryList, ...billCategories];
+  // Merge all categories for the filter dropdown:
+  // 1. User categories first (these are the user's customized categories)
+  // 2. Default categories that aren't duplicated by user categories
+  // 3. Any unique categories from bills that don't exist in either
+  const userCategoryNames = new Set(userCategories.map(c => c.name.toLowerCase()));
+  const defaultsNotInUserCats = defaultCategoryList.filter(
+    d => !userCategoryNames.has(d.name.toLowerCase())
+  );
+  const categories = [...userCategories, ...defaultsNotInUserCats, ...billCategories];
   const monthlyTotal = calculateMonthlyTotal(billsList);
   const activeBills = getActiveBills(billsList);
 
