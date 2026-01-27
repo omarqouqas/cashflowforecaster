@@ -14,6 +14,18 @@ import { ArrowLeft, ChevronDown, CreditCard, Info } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
 import { trackAccountCreated } from '@/lib/posthog/events';
 
+/**
+ * Get ordinal suffix for a day number (1st, 2nd, 3rd, 4th, etc.)
+ */
+function getOrdinalSuffix(day: number): string {
+  if (day >= 11 && day <= 13) return 'th';
+  const lastDigit = day % 10;
+  if (lastDigit === 1) return 'st';
+  if (lastDigit === 2) return 'nd';
+  if (lastDigit === 3) return 'rd';
+  return 'th';
+}
+
 const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required').max(50, 'Name too long'),
   account_type: z.enum(['checking', 'savings', 'credit_card'], {
@@ -247,7 +259,7 @@ export default function NewAccountPage() {
                       <option value="">Select day...</option>
                       {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
                         <option key={day} value={day}>
-                          {day}{day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'} of month
+                          {day}{getOrdinalSuffix(day)} of month
                         </option>
                       ))}
                     </select>
@@ -268,7 +280,7 @@ export default function NewAccountPage() {
                       <option value="">Select day...</option>
                       {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
                         <option key={day} value={day}>
-                          {day}{day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'} of month
+                          {day}{getOrdinalSuffix(day)} of month
                         </option>
                       ))}
                     </select>
@@ -348,18 +360,20 @@ export default function NewAccountPage() {
             </div>
           </div>
 
-          {/* Is Spendable Checkbox */}
-          <div className="flex items-center gap-3 p-3 rounded-md bg-zinc-900/50 border border-zinc-700/50">
-            <input
-              type="checkbox"
-              id="is_spendable"
-              {...register('is_spendable')}
-              className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
-            />
-            <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
-              Use this account for expenses
-            </Label>
-          </div>
+          {/* Is Spendable Checkbox - hidden for credit cards since they're never "spendable" */}
+          {!isCreditCard && (
+            <div className="flex items-center gap-3 p-3 rounded-md bg-zinc-900/50 border border-zinc-700/50">
+              <input
+                type="checkbox"
+                id="is_spendable"
+                {...register('is_spendable')}
+                className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
+              />
+              <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
+                Use this account for expenses
+              </Label>
+            </div>
+          )}
 
           {error && <p className="text-sm text-rose-400">{error}</p>}
 

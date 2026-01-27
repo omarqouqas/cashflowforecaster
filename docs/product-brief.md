@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.4
-**Last Updated:** January 26, 2026
-**Status:** Live - Custom Bill Categories Added
+**Version:** 6.5
+**Last Updated:** January 27, 2026
+**Status:** Live - Credit Card Cash Flow Forecasting Added
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -347,6 +347,17 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - Session recording
 - NPS surveys (triggered 7 days after signup)
 
+**17. Credit Card Cash Flow Forecasting ✅**
+- **Credit card account type** with specialized fields (credit limit, APR, statement/payment dates)
+- **Credit utilization tracking** with color-coded badges (green <30%, amber 30-70%, rose >70%)
+- **Calendar integration** showing CC payment due dates as recurring "bills"
+- **Payment Scenario Simulator** modal:
+  - Compare minimum payment, statement balance, and custom amounts
+  - See payoff timeline and total interest for each option
+  - Cash flow impact preview
+  - Interest savings vs minimum payment
+- CC-specific display in account cards (balance shown as debt, utilization percentage)
+
 **13. Weekly Email Digest ✅**
 - Weekly summary of next 7 days (income, bills, net change)
 - Alerts: low balance, overdraft risk, bill collisions
@@ -468,9 +479,9 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - **Deployment:** Vercel
 - **Version Control:** Git + GitHub
 
-### Database Schema (15 tables)
+### Database Schema (15 tables + extended fields)
 
-1. **accounts** - User bank accounts
+1. **accounts** - User bank accounts (extended with CC fields: credit_limit, apr, minimum_payment_percent, statement_close_day, payment_due_day)
 2. **income** - Income sources
 3. **bills** - Recurring expenses
 4. **user_settings** - User preferences (timezone, safety buffer, digest settings, emergency fund)
@@ -868,6 +879,40 @@ User Request
 
 ## Changelog
 
+### Version 6.5 (January 27, 2026)
+- **Credit Card Cash Flow Forecasting Feature:**
+  - Database migration adding CC-specific columns to accounts table:
+    - `credit_limit` - Credit limit for utilization tracking
+    - `apr` - Annual percentage rate for interest calculations
+    - `minimum_payment_percent` - Minimum payment percentage (default 2%)
+    - `statement_close_day` - Day of month statement closes (1-28)
+    - `payment_due_day` - Day of month payment is due (1-28)
+  - **Account forms updated** (new + edit) with conditional CC fields
+  - **Utilization tracking** with color-coded badges:
+    - Emerald (<30%): Excellent utilization
+    - Amber (30-50%): Moderate, may impact credit score
+    - Orange (50-70%): High utilization warning
+    - Rose (>70%): Very high, likely impacting credit score
+  - **Calendar integration** - CC payment due dates appear as recurring bill-like events
+  - **Payment Scenario Simulator** modal:
+    - Three payment options: minimum, statement balance, custom amount
+    - Payoff timeline and total interest calculations
+    - Cash outflow preview showing remaining balance
+    - Interest savings comparison vs minimum payment
+  - **Account card enhancements:**
+    - CC balance displayed as debt (amber/rose color)
+    - Utilization badge with percentage and status message
+    - Credit limit display
+    - Simulator button for cards with balance
+- **New files:**
+  - `lib/types/credit-card.ts` - TypeScript types and calculation utilities
+  - `lib/calendar/calculate-cc-payments.ts` - CC payment occurrence generator
+  - `components/accounts/payment-simulator.tsx` - Payment scenario modal
+- **Bug Fixes:**
+  - Fixed invoice PDF route missing user_id filter (RLS bypass risk)
+  - Fixed user menu dropdown cut off on calendar page (z-index stacking)
+  - Added 'credit_card' to trackAccountCreated PostHog event type
+
 ### Version 6.4 (January 26, 2026)
 - **Custom Bill Categories Feature:**
   - New `user_categories` database table with RLS policies
@@ -1245,7 +1290,7 @@ User Request
 
 ---
 
-**Document Version:** 6.4
-**Last Updated:** January 26, 2026
-**Status:** Live - Custom Bill Categories Added 🎉
+**Document Version:** 6.5
+**Last Updated:** January 27, 2026
+**Status:** Live - Credit Card Cash Flow Forecasting Added 🎉
 **Next Review:** February 2026

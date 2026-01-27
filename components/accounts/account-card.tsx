@@ -118,14 +118,14 @@ export function AccountCard({ account }: { account: Account }) {
             <p
               className={[
                 'text-xl font-bold tabular-nums',
-                // For credit cards, any balance is debt (show in amber/rose)
+                // For credit cards, any balance is debt (show in amber), zero is good (emerald)
                 // For other accounts, positive is good, negative is bad
                 isCreditCard
                   ? balance > 0 ? 'text-amber-400' : 'text-emerald-400'
                   : isPositive ? 'text-emerald-400' : 'text-rose-400',
               ].join(' ')}
             >
-              {isCreditCard && balance > 0 ? '-' : ''}{formatCurrency(Math.abs(balance), currency)}
+              {formatCurrency(Math.abs(balance), currency)}
             </p>
           </div>
 
@@ -184,7 +184,7 @@ export function AccountCard({ account }: { account: Account }) {
               </Button>
             </Link>
             {/* Payment Simulator button for credit cards */}
-            {isCreditCard && balance > 0 && (
+            {isCreditCard && (
               <Button
                 variant="outline"
                 size="sm"

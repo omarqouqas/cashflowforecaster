@@ -6,7 +6,6 @@
  */
 
 import { Transaction } from './types'
-import { addMonths } from './utils'
 
 /**
  * Account with credit card fields
@@ -55,9 +54,11 @@ function getNextPaymentDate(paymentDueDay: number, startDate: Date): Date {
 /**
  * Calculate credit card payment occurrences for the forecast period.
  *
- * For each credit card with a payment_due_day:
- * - Generate monthly payment due dates
- * - Amount is the current balance (simplified - in reality would be statement balance)
+ * Strategy: Only show the NEXT payment due date with current balance.
+ * We don't project future months because:
+ * - We don't know what the user will charge
+ * - We don't know if they'll pay full balance or minimum
+ * - Projecting the same balance monthly would overstate cash outflow
  *
  * @param account - Credit card account record
  * @param startDate - Start of forecast period
@@ -74,30 +75,27 @@ export function calculateCCPaymentOccurrences(
     return []
   }
 
-  const occurrences: Transaction[] = []
   const paymentDueDay = account.payment_due_day!
   const balance = account.current_balance
 
-  // Get the first payment date
-  let paymentDate = getNextPaymentDate(paymentDueDay, startDate)
+  // Get the next payment date
+  const paymentDate = getNextPaymentDate(paymentDueDay, startDate)
 
-  // Generate monthly payment occurrences
-  while (paymentDate <= endDate) {
-    occurrences.push({
-      id: `cc-payment-${account.id}-${paymentDate.toISOString().slice(0, 7)}`,
-      name: `💳 ${account.name} Payment`,
-      amount: balance, // Full balance as payment amount (simplified)
-      type: 'bill',
-      frequency: 'monthly',
-      date: new Date(paymentDate),
-      status: 'pending',
-    })
-
-    // Move to next month
-    paymentDate = addMonths(paymentDate, 1)
+  // Only include if within forecast period
+  if (paymentDate > endDate) {
+    return []
   }
 
-  return occurrences
+  // Return single payment occurrence for the next due date
+  return [{
+    id: `cc-payment-${account.id}-${paymentDate.toISOString().slice(0, 7)}`,
+    name: `💳 ${account.name} Payment`,
+    amount: balance,
+    type: 'bill',
+    frequency: 'once', // Changed from 'monthly' - this is a one-time forecast
+    date: new Date(paymentDate),
+    status: 'pending',
+  }]
 }
 
 /**

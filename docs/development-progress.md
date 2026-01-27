@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 26, 2026 (Day 49)
+**Last Updated:** January 27, 2026 (Day 50)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 49
-- **Commits:** 155+
+- **Days in Development:** 50
+- **Commits:** 165+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + **Custom Bill Categories**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + **Credit Card Cash Flow Forecasting**
 
 **Current Focus:**
 
@@ -29,7 +29,72 @@
 
 ---
 
-## Recent Development (Days 40-49)
+## Recent Development (Days 40-50)
+
+### Day 50: Credit Card Cash Flow Forecasting (January 27, 2026)
+
+**Major Differentiating Feature** - Credit card accounts now integrate with cash flow forecasting, providing features competitors (Monarch, YNAB, Copilot) don't offer.
+
+**Database Migration:**
+- Added 5 new columns to `accounts` table: `credit_limit`, `apr`, `minimum_payment_percent`, `statement_close_day`, `payment_due_day`
+- Indexed credit card accounts for efficient queries
+
+**Account Form Updates:**
+- Added "Credit Card" option to account type dropdown (new + edit pages)
+- Conditional credit card fields shown when CC type selected:
+  - Credit limit (for utilization tracking)
+  - APR (for interest calculations)
+  - Statement close day (1-28)
+  - Payment due day (1-28)
+- Context-sensitive labels and help text for CC balance
+
+**Credit Utilization Tracking:**
+- Utilization badge on credit card account cards
+- Color-coded warnings: green (<30%), amber (30-50%), orange (50-75%), rose (>75%)
+- Shows "X% used of $Y limit" on account cards
+- Tooltip with utilization message
+
+**Calendar Integration:**
+- Credit card payments now appear in cash flow calendar
+- Auto-generates monthly payment events on payment due day
+- Shows with 💳 emoji prefix for visibility
+- Payment amount equals current balance (simplified model)
+
+**Payment Scenario Simulator:**
+- New modal accessible via calculator button on CC account cards
+- Three payment options:
+  - Minimum payment (shows months to payoff + total interest)
+  - Statement balance (no interest)
+  - Custom amount (shows payoff timeline + interest)
+- Cash flow impact summary (outflow, remaining balance)
+- Interest savings comparison vs minimum payment
+- Monthly interest projection if carrying balance
+
+**New Files:**
+- `supabase/migrations/20260127000001_add_credit_card_fields.sql` - Database migration
+- `lib/types/credit-card.ts` - TypeScript types and utility functions
+- `lib/calendar/calculate-cc-payments.ts` - CC payment occurrence generator
+- `components/accounts/payment-simulator.tsx` - Payment scenario modal
+
+**Modified Files:**
+- `app/dashboard/accounts/new/page.tsx` - CC fields in create form
+- `app/dashboard/accounts/[id]/edit/page.tsx` - CC fields in edit form
+- `components/accounts/account-card.tsx` - Utilization badge + simulator button
+- `lib/calendar/generate.ts` - Include CC payments in forecast
+- `lib/calendar/utils.ts` - Added `addMonths` utility
+- `lib/posthog/events.ts` - Added `credit_card` to tracking type
+
+**Competitive Advantage:**
+| Feature | Monarch | YNAB | Copilot | Us |
+|---------|---------|------|---------|-----|
+| Track CC balance | ✅ | ✅ | ✅ | ✅ |
+| Due date reminders | ✅ | ❌ | ❌ | ✅ |
+| Spending → future cash impact | ❌ | ❌ | ❌ | ✅ |
+| Payment scenario simulator | ❌ | ❌ | ❌ | ✅ |
+| Interest cost calculator | ❌ | ❌ | ❌ | ✅ |
+| Utilization warnings | ❌ | ❌ | ❌ | ✅ |
+
+---
 
 ### Day 49: Custom Bill Categories (January 26, 2026)
 

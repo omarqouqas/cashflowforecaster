@@ -52,11 +52,16 @@ export function calculateMinimumPayment(
   balance: number,
   minimumPaymentPercent: number = 2
 ): number {
+  const absBalance = Math.abs(balance)
+  if (absBalance <= 0) return 0
+
   // Minimum payment is typically the greater of:
   // - A fixed amount (e.g., $25)
   // - A percentage of the balance
-  const percentPayment = Math.abs(balance) * (minimumPaymentPercent / 100)
-  return Math.max(25, percentPayment)
+  // But never more than the total balance owed
+  const percentPayment = absBalance * (minimumPaymentPercent / 100)
+  const minPayment = Math.max(25, percentPayment)
+  return Math.min(absBalance, minPayment)
 }
 
 /**
@@ -136,7 +141,7 @@ export function calculateMonthlyInterest(
  * @param balance Current balance
  * @param apr Annual Percentage Rate
  * @param monthlyPayment Fixed monthly payment amount
- * @returns Array of monthly balances and total interest paid
+ * @returns Object with months to payoff, total interest, schedule, and whether payoff is possible
  */
 export function calculatePayoffSchedule(
   balance: number,
@@ -146,12 +151,26 @@ export function calculatePayoffSchedule(
   months: number
   totalInterest: number
   schedule: Array<{ month: number; payment: number; interest: number; principal: number; balance: number }>
+  canPayOff: boolean
 } {
   const schedule: Array<{ month: number; payment: number; interest: number; principal: number; balance: number }> = []
   let currentBalance = Math.abs(balance)
   let totalInterest = 0
   let month = 0
   const monthlyRate = apr / 100 / 12
+
+  // Check if payment covers at least the first month's interest
+  // If not, the balance will grow and payoff is impossible
+  const firstMonthInterest = currentBalance * monthlyRate
+  if (monthlyPayment <= firstMonthInterest && apr > 0) {
+    // Payment doesn't cover interest - will never pay off
+    return {
+      months: Infinity,
+      totalInterest: Infinity,
+      schedule: [],
+      canPayOff: false
+    }
+  }
 
   // Safety limit to prevent infinite loops
   const maxMonths = 360 // 30 years
@@ -177,7 +196,8 @@ export function calculatePayoffSchedule(
   return {
     months: month,
     totalInterest,
-    schedule
+    schedule,
+    canPayOff: true
   }
 }
 
