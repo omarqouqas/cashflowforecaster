@@ -116,7 +116,7 @@ function getActualNextDueDate(dueDate: string, frequency: string | null | undefi
 /**
  * Filter bills based on the current filter settings
  */
-function filterBills(bills: Bill[], filters: BillsFilters, allCategoryNames: string[]): Bill[] {
+function filterBills(bills: Bill[], filters: BillsFilters): Bill[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -135,11 +135,13 @@ function filterBills(bills: Bill[], filters: BillsFilters, allCategoryNames: str
     const billFreq = (bill.frequency ?? 'monthly').toLowerCase() as FrequencyType;
     if (!filters.frequencies.includes(billFreq)) return false;
 
-    // Filter by category (compare with category name directly)
-    // If all categories are selected, don't filter by category
-    const billCategory = bill.category ?? 'Other';
-    const allCategoriesSelected = filters.categories.length === allCategoryNames.length;
-    if (!allCategoriesSelected && !filters.categories.includes(billCategory)) return false;
+    // Filter by category
+    // Empty categories array = show all (no category filter)
+    // Otherwise, check if bill's category is in the selected list
+    if (filters.categories.length > 0) {
+      const billCategory = bill.category ?? 'Other';
+      if (!filters.categories.includes(billCategory)) return false;
+    }
 
     // Filter by amount range
     if (filters.amountMin !== null && bill.amount < filters.amountMin) return false;
@@ -208,18 +210,12 @@ export function BillsContent({ bills, categories = [] }: BillsContentProps) {
     }));
   }, [categories]);
 
-  // Get all category names for filter initialization
-  const allCategoryNames = useMemo(
-    () => categoryOptions.map((opt) => opt.value),
-    [categoryOptions]
-  );
-
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useBillsFilters();
 
   // Apply filters and sorting to bills
   const filteredBills = useMemo(
-    () => sortBills(filterBills(bills, filters, allCategoryNames), filters.sortBy),
-    [bills, filters, allCategoryNames]
+    () => sortBills(filterBills(bills, filters), filters.sortBy),
+    [bills, filters]
   );
 
   // Show empty state when all bills are filtered out

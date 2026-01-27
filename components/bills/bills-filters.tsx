@@ -35,27 +35,17 @@ export interface BillsFilters {
 }
 
 const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually'];
-// Default categories for fallback (used when no user categories are loaded)
-const defaultCategories = ['Rent/Mortgage', 'Utilities', 'Subscriptions', 'Insurance', 'Other'];
 
 export const defaultBillsFilters: BillsFilters = {
   status: ['active', 'inactive'],
   frequencies: allFrequencies,
-  categories: defaultCategories,
+  categories: [], // Empty = show all categories (no filter)
   amountMin: null,
   amountMax: null,
   dueSoonDays: null,
   search: '',
   sortBy: 'due_date',
 };
-
-// Helper to create default filters with dynamic categories
-export function createDefaultFilters(categoryNames: string[]): BillsFilters {
-  return {
-    ...defaultBillsFilters,
-    categories: categoryNames.length > 0 ? categoryNames : defaultCategories,
-  };
-}
 
 // Filter dropdown options
 const statusOptions: FilterDropdownOption[] = [
@@ -128,8 +118,6 @@ export function BillsFilterBar({
   onVisibleFiltersChange,
   categoryOptions = defaultCategoryOptions,
 }: BillsFilterBarProps) {
-  // Get all category values from the options
-  const allCategoryValues = categoryOptions.map(opt => opt.value);
   // Build active filter pills
   const activeFilterPills = React.useMemo((): ActiveFilter[] => {
     const pills: ActiveFilter[] = [];
@@ -144,8 +132,9 @@ export function BillsFilterBar({
       });
     }
 
-    // Category filter (only if not "all selected")
-    if (filters.categories.length > 0 && filters.categories.length < allCategoryValues.length) {
+    // Category filter (show pills when specific categories are selected)
+    // Empty array = show all (no filter), so only show pills when categories are explicitly selected
+    if (filters.categories.length > 0) {
       filters.categories.forEach((cat) => {
         const option = categoryOptions.find((o) => o.value === cat);
         if (option) {
@@ -212,9 +201,10 @@ export function BillsFilterBar({
         const catValue = categoryOptions.find((o) => o.label === value)?.value;
         if (catValue) {
           const newCategories = filters.categories.filter((c) => c !== catValue);
+          // Empty array = show all (no filter)
           onChange({
             ...filters,
-            categories: newCategories.length > 0 ? newCategories : allCategoryValues,
+            categories: newCategories,
           });
         }
         break;
@@ -451,10 +441,8 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
         params.set('freq', newFilters.frequencies.join(','));
       }
 
-      // Categories - store in URL if not all default categories are selected
-      const isAllDefaultCats = defaultCategories.every(cat => newFilters.categories.includes(cat)) &&
-        newFilters.categories.length === defaultCategories.length;
-      if (isAllDefaultCats) {
+      // Categories - empty array = show all (default), so only store in URL when filtering
+      if (newFilters.categories.length === 0) {
         params.delete('cat');
       } else {
         params.set('cat', newFilters.categories.join(','));
@@ -537,7 +525,7 @@ export function useBillsFilters(initialFilters?: Partial<BillsFilters>) {
     return (
       filters.status.length !== 2 ||
       filters.frequencies.length !== allFrequencies.length ||
-      filters.categories.length !== defaultCategories.length ||
+      filters.categories.length > 0 || // Empty = show all, so > 0 means filtering
       filters.amountMin !== null ||
       filters.amountMax !== null ||
       filters.dueSoonDays !== null ||
