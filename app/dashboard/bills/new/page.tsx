@@ -378,6 +378,11 @@ export default function NewBillPage() {
           </div>
 
           {error && <p className="text-sm text-rose-400">{error}</p>}
+          {Object.keys(errors).length > 0 && (
+            <p className="text-sm text-rose-400">
+              Please fix the errors above before submitting.
+            </p>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-700/50">
             <button

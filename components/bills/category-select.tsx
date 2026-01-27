@@ -91,6 +91,8 @@ export function CategorySelect({
   const [newCategoryColor, setNewCategoryColor] = useState<string>('zinc');
   const [newCategoryIcon, setNewCategoryIcon] = useState<string>('tag');
   const [isCreating, setIsCreating] = useState(false);
+  // Track recently created categories locally to ensure they display immediately
+  const [localCategories, setLocalCategories] = useState<UserCategory[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -105,19 +107,23 @@ export function CategorySelect({
     created_at: '',
   }));
 
+  // Combine categories from props and locally created ones
+  const allCategories = [...categories, ...localCategories.filter(
+    lc => !categories.some(c => c.id === lc.id)
+  )];
+
   // Get user categories that aren't already in defaults (by name, case-insensitive)
   const defaultNames = new Set(DEFAULT_CATEGORIES.map(c => c.name.toLowerCase()));
-  const additionalUserCategories = categories.filter(
+  const additionalUserCategories = allCategories.filter(
     c => !defaultNames.has(c.name.toLowerCase())
   );
 
   // Merge: defaults first, then additional user categories
   const displayCategories = [...defaultCategoryObjects, ...additionalUserCategories];
 
-  // Look for selected category in display list OR in the full categories array
-  // (handles newly created categories that might not be in displayCategories yet)
+  // Look for selected category in display list OR in the combined array
   const selectedCategory = displayCategories.find(c => c.name === value)
-    || categories.find(c => c.name === value);
+    || allCategories.find(c => c.name === value);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -153,8 +159,13 @@ export function CategorySelect({
 
     if (result.success && result.category) {
       showSuccess('Category created');
+      // Add to local state immediately so it displays right away
+      setLocalCategories(prev => [...prev, result.category!]);
+      // Update form value
       onChange(result.category.name);
+      // Notify parent (may be async)
       onCategoryCreated?.(result.category);
+      // Reset form
       setNewCategoryName('');
       setNewCategoryColor('zinc');
       setNewCategoryIcon('tag');
