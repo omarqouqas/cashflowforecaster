@@ -1,0 +1,317 @@
+'use client'
+
+import { useState, useMemo } from 'react'
+import { CreditCard, TrendingDown, Calculator, Zap, Target, CheckCircle2 } from 'lucide-react'
+import { format } from 'date-fns'
+import { formatCurrency } from '@/lib/utils/format'
+import { CurrencyInput } from '@/components/ui/currency-input'
+import {
+  compareStrategies,
+  getTotalMinimumPayment,
+  getTotalDebt,
+  type CreditCardDebt,
+  type PayoffResult,
+} from '@/lib/debt-payoff/calculate-payoff'
+
+interface CreditCardInput {
+  id: string
+  name: string
+  balance: number
+  apr: number
+  minimumPaymentPercent?: number
+  creditLimit?: number | null
+}
+
+interface DebtPayoffPlannerProps {
+  cards: CreditCardInput[]
+}
+
+export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
+  const [extraPayment, setExtraPayment] = useState<number | undefined>(100)
+  const [selectedStrategy, setSelectedStrategy] = useState<'snowball' | 'avalanche'>('avalanche')
+
+  // Transform cards to the calculation format
+  const creditCards: CreditCardDebt[] = useMemo(() =>
+    cards.map(card => ({
+      id: card.id,
+      name: card.name,
+      balance: card.balance,
+      apr: card.apr,
+      minimumPaymentPercent: card.minimumPaymentPercent,
+    })),
+    [cards]
+  )
+
+  // Calculate totals
+  const totalDebt = useMemo(() => getTotalDebt(creditCards), [creditCards])
+  const totalMinimum = useMemo(() => getTotalMinimumPayment(creditCards), [creditCards])
+
+  // Compare strategies
+  const comparison = useMemo(() => {
+    if (creditCards.length === 0) return null
+    return compareStrategies(creditCards, extraPayment ?? 0)
+  }, [creditCards, extraPayment])
+
+  // Get selected strategy result
+  const selectedResult: PayoffResult | null = useMemo(() => {
+    if (!comparison) return null
+    return selectedStrategy === 'snowball' ? comparison.snowball : comparison.avalanche
+  }, [comparison, selectedStrategy])
+
+  // Empty state - no credit card debt
+  if (cards.length === 0) {
+    return (
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-8 text-center">
+        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+        </div>
+        <h2 className="text-xl font-semibold text-zinc-100 mb-2">No Credit Card Debt</h2>
+        <p className="text-zinc-400 max-w-md mx-auto">
+          Congratulations! You don&apos;t have any credit card debt to pay off. Keep up the great work!
+        </p>
+      </div>
+    )
+  }
+
+  // Single card - simplified view
+  if (cards.length === 1) {
+    const card = cards[0]!
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-zinc-100">Debt Payoff Planner</h1>
+
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-100">{card.name}</h2>
+              <p className="text-sm text-zinc-400">Your only credit card with a balance</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p className="text-xs text-zinc-500">Balance</p>
+              <p className="text-xl font-bold text-amber-400">{formatCurrency(card.balance, 'USD')}</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500">APR</p>
+              <p className="text-xl font-bold text-zinc-100">{card.apr}%</p>
+            </div>
+          </div>
+
+          <p className="text-sm text-zinc-400">
+            With only one card, both Snowball and Avalanche strategies are identical.
+            Use the Payment Simulator on your account card to explore payment options.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-zinc-100">Debt Payoff Planner</h1>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <CreditCard className="w-4 h-4 text-amber-400" />
+            <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">Total Debt</p>
+          </div>
+          <p className="text-2xl font-bold text-amber-300 tabular-nums">
+            {formatCurrency(totalDebt, 'USD')}
+          </p>
+          <p className="text-xs text-amber-400/70 mt-1">{cards.length} credit cards</p>
+        </div>
+
+        <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingDown className="w-4 h-4 text-zinc-400" />
+            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Minimum Payments</p>
+          </div>
+          <p className="text-2xl font-bold text-zinc-100 tabular-nums">
+            {formatCurrency(totalMinimum, 'USD')}/mo
+          </p>
+          <p className="text-xs text-zinc-500 mt-1">Combined minimum due</p>
+        </div>
+      </div>
+
+      {/* Extra Payment Input */}
+      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Calculator className="w-4 h-4 text-teal-400" />
+          <h3 className="text-sm font-medium text-zinc-300">Extra Monthly Payment</h3>
+        </div>
+        <p className="text-sm text-zinc-400 mb-3">
+          How much extra can you pay each month above the minimum payments?
+        </p>
+        <div className="relative max-w-xs">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">$</span>
+          <CurrencyInput
+            value={extraPayment}
+            onChange={setExtraPayment}
+            placeholder="100.00"
+            className="pl-8 bg-zinc-800 border-zinc-700 text-zinc-100"
+          />
+        </div>
+        <p className="text-xs text-zinc-500 mt-2">
+          Total monthly payment: {formatCurrency(totalMinimum + (extraPayment ?? 0), 'USD')}
+        </p>
+      </div>
+
+      {/* Strategy Comparison */}
+      {comparison && (
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-zinc-300">Choose Your Strategy</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Snowball Strategy */}
+            <button
+              onClick={() => setSelectedStrategy('snowball')}
+              className={`text-left border rounded-lg p-4 transition-all ${
+                selectedStrategy === 'snowball'
+                  ? 'border-teal-500 bg-teal-500/10'
+                  : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  selectedStrategy === 'snowball' ? 'bg-teal-500/20' : 'bg-zinc-800'
+                }`}>
+                  <Target className={`w-4 h-4 ${selectedStrategy === 'snowball' ? 'text-teal-400' : 'text-zinc-400'}`} />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-zinc-100">Snowball</h4>
+                  <p className="text-xs text-zinc-500">Smallest balance first</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Debt-free by</span>
+                  <span className="text-zinc-100 font-medium">
+                    {format(comparison.snowball.debtFreeDate, 'MMM yyyy')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Total interest</span>
+                  <span className="text-rose-400 font-medium">
+                    {formatCurrency(comparison.snowball.totalInterest, 'USD')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Total paid</span>
+                  <span className="text-zinc-100">
+                    {formatCurrency(comparison.snowball.totalPaid, 'USD')}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-zinc-500 mt-3">
+                Quick wins to stay motivated
+              </p>
+            </button>
+
+            {/* Avalanche Strategy */}
+            <button
+              onClick={() => setSelectedStrategy('avalanche')}
+              className={`text-left border rounded-lg p-4 transition-all ${
+                selectedStrategy === 'avalanche'
+                  ? 'border-teal-500 bg-teal-500/10'
+                  : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  selectedStrategy === 'avalanche' ? 'bg-teal-500/20' : 'bg-zinc-800'
+                }`}>
+                  <Zap className={`w-4 h-4 ${selectedStrategy === 'avalanche' ? 'text-teal-400' : 'text-zinc-400'}`} />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-zinc-100">Avalanche</h4>
+                  <p className="text-xs text-zinc-500">Highest APR first</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Debt-free by</span>
+                  <span className="text-zinc-100 font-medium">
+                    {format(comparison.avalanche.debtFreeDate, 'MMM yyyy')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Total interest</span>
+                  <span className="text-rose-400 font-medium">
+                    {formatCurrency(comparison.avalanche.totalInterest, 'USD')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Total paid</span>
+                  <span className="text-zinc-100">
+                    {formatCurrency(comparison.avalanche.totalPaid, 'USD')}
+                  </span>
+                </div>
+              </div>
+
+              {comparison.interestSaved > 0 && (
+                <p className="text-xs text-emerald-400 mt-3">
+                  Saves {formatCurrency(comparison.interestSaved, 'USD')} in interest
+                </p>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payoff Order */}
+      {selectedResult && (
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
+          <h3 className="text-sm font-medium text-zinc-300 mb-4">
+            Payoff Order ({selectedStrategy === 'snowball' ? 'Snowball' : 'Avalanche'})
+          </h3>
+
+          <div className="space-y-3">
+            {selectedResult.cardSummaries.map((card, index) => (
+              <div
+                key={card.cardId}
+                className="flex items-center gap-4 p-3 bg-zinc-800/50 rounded-lg"
+              >
+                <div className="w-8 h-8 bg-amber-500/10 rounded-full flex items-center justify-center text-amber-400 font-bold text-sm">
+                  {index + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-zinc-100 truncate">{card.cardName}</p>
+                  <p className="text-xs text-zinc-500">
+                    {formatCurrency(card.initialBalance, 'USD')} at {card.apr}% APR
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-zinc-100">
+                    {format(card.paidOffDate, 'MMM yyyy')}
+                  </p>
+                  <p className="text-xs text-rose-400">
+                    +{formatCurrency(card.totalInterestPaid, 'USD')} interest
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-zinc-700">
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-400">Total time to debt-free</span>
+              <span className="text-lg font-bold text-emerald-400">
+                {selectedResult.totalMonths} months
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

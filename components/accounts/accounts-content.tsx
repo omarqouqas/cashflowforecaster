@@ -34,7 +34,14 @@ function filterAccounts(accounts: Account[], filters: AccountsFilters): Account[
   return accounts.filter((account) => {
     // Filter by account type
     const rawAccountType = (account.account_type ?? 'checking').toLowerCase();
-    const normalizedType: AccountType = rawAccountType === 'savings' ? 'savings' : 'checking';
+    let normalizedType: AccountType;
+    if (rawAccountType === 'savings') {
+      normalizedType = 'savings';
+    } else if (rawAccountType === 'credit_card') {
+      normalizedType = 'credit_card';
+    } else {
+      normalizedType = 'checking';
+    }
     if (!filters.accountTypes.includes(normalizedType)) return false;
 
     // Filter by spendable status

@@ -12,11 +12,12 @@ import { ActiveFilterPills, type ActiveFilter } from '@/components/filters/activ
 import {
   Wallet,
   PiggyBank,
+  CreditCard,
   CheckCircle,
   XCircle,
 } from 'lucide-react';
 
-export type AccountType = 'checking' | 'savings';
+export type AccountType = 'checking' | 'savings' | 'credit_card';
 export type SpendableStatus = 'spendable' | 'non-spendable';
 
 export interface AccountsFilters {
@@ -25,7 +26,7 @@ export interface AccountsFilters {
   search: string;
 }
 
-const allAccountTypes: AccountType[] = ['checking', 'savings'];
+const allAccountTypes: AccountType[] = ['checking', 'savings', 'credit_card'];
 const allSpendableStatuses: SpendableStatus[] = ['spendable', 'non-spendable'];
 
 export const defaultAccountsFilters: AccountsFilters = {
@@ -38,6 +39,7 @@ export const defaultAccountsFilters: AccountsFilters = {
 const accountTypeOptions: FilterDropdownOption[] = [
   { value: 'checking', label: 'Checking', icon: <Wallet className="w-3.5 h-3.5" /> },
   { value: 'savings', label: 'Savings', icon: <PiggyBank className="w-3.5 h-3.5" /> },
+  { value: 'credit_card', label: 'Credit Card', icon: <CreditCard className="w-3.5 h-3.5" /> },
 ];
 
 const spendableOptions: FilterDropdownOption[] = [

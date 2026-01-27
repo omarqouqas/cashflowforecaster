@@ -84,6 +84,25 @@
 - `lib/calendar/utils.ts` - Added `addMonths` utility
 - `lib/posthog/events.ts` - Added `credit_card` to tracking type
 
+**Debt Payoff Planner:**
+- New page at `/dashboard/debt-payoff` for users with 2+ credit cards with balance
+- Compares Snowball (smallest balance first) vs Avalanche (highest APR first) strategies
+- Extra monthly payment input to see accelerated payoff
+- Side-by-side comparison showing debt-free date, total interest, and total paid
+- Payoff order visualization showing each card's payoff date and interest
+- Shows interest savings when Avalanche beats Snowball
+- Empty state for users with no CC debt (celebration message)
+- Single card state for users with only one CC (simplified view)
+- Navigation button on Accounts page when 2+ CC have balance
+
+**New Files (Debt Payoff Planner):**
+- `lib/debt-payoff/calculate-payoff.ts` - Snowball/Avalanche calculation algorithms
+- `app/dashboard/debt-payoff/page.tsx` - Server component fetching CC accounts
+- `components/debt-payoff/debt-payoff-planner.tsx` - Client component with strategy comparison
+
+**Modified Files (Debt Payoff Planner):**
+- `app/dashboard/accounts/page.tsx` - Added "Plan Your Debt Payoff" navigation card
+
 **Competitive Advantage:**
 | Feature | Monarch | YNAB | Copilot | Us |
 |---------|---------|------|---------|-----|
@@ -93,6 +112,7 @@
 | Payment scenario simulator | ❌ | ❌ | ❌ | ✅ |
 | Interest cost calculator | ❌ | ❌ | ❌ | ✅ |
 | Utilization warnings | ❌ | ❌ | ❌ | ✅ |
+| Debt payoff planner | ❌ | ❌ | ❌ | ✅ |
 
 ---
 

@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Wallet, ArrowLeft, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
+import { Wallet, ArrowLeft, TrendingUp, CheckCircle, AlertCircle, CreditCard } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
 import { AccountsContent } from '@/components/accounts/accounts-content';
 import { InfoTooltip } from '@/components/ui/tooltip';
@@ -45,6 +45,11 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
   });
 
   const spendableCount = accountList.filter(a => a.is_spendable ?? true).length;
+
+  // Count credit cards with debt for debt payoff planner
+  const creditCardsWithDebt = accountList.filter(
+    a => a.account_type === 'credit_card' && a.current_balance > 0
+  );
 
   return (
     <>
@@ -165,6 +170,32 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
               </div>
             )}
           </div>
+
+          {/* Debt Payoff Planner Link */}
+          {creditCardsWithDebt.length >= 2 && (
+            <div className="mt-4 pt-4 border-t border-zinc-800">
+              <Link href="/dashboard/debt-payoff">
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 hover:bg-amber-500/15 transition-colors cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
+                        <CreditCard className="w-5 h-5 text-amber-400" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-amber-300">Plan Your Debt Payoff</p>
+                        <p className="text-xs text-amber-400/70">
+                          Compare Snowball vs Avalanche strategies for {creditCardsWithDebt.length} cards
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="secondary" size="sm">
+                      Get Started
+                    </Button>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          )}
         </div>
       )}
 

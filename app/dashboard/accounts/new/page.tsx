@@ -40,8 +40,8 @@ const accountSchema = z.object({
   // Credit card specific fields
   credit_limit: z.coerce.number().positive('Credit limit must be positive').optional().nullable(),
   apr: z.coerce.number().min(0, 'APR cannot be negative').max(100, 'APR cannot exceed 100%').optional().nullable(),
-  statement_close_day: z.coerce.number().int().min(1).max(28).optional().nullable(),
-  payment_due_day: z.coerce.number().int().min(1).max(28).optional().nullable(),
+  statement_close_day: z.coerce.number().int().min(1).max(31).optional().nullable(),
+  payment_due_day: z.coerce.number().int().min(1).max(31).optional().nullable(),
 });
 
 type AccountFormData = z.infer<typeof accountSchema>;
@@ -257,7 +257,7 @@ export default function NewAccountPage() {
                       className="w-full bg-zinc-900 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px] text-zinc-100 [&>option]:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent appearance-none pr-10 cursor-pointer"
                     >
                       <option value="">Select day...</option>
-                      {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                         <option key={day} value={day}>
                           {day}{getOrdinalSuffix(day)} of month
                         </option>
@@ -278,7 +278,7 @@ export default function NewAccountPage() {
                       className="w-full bg-zinc-900 border border-zinc-700 rounded-md px-3 py-2 min-h-[44px] text-zinc-100 [&>option]:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent appearance-none pr-10 cursor-pointer"
                     >
                       <option value="">Select day...</option>
-                      {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                         <option key={day} value={day}>
                           {day}{getOrdinalSuffix(day)} of month
                         </option>

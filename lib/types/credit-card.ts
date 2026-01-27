@@ -202,7 +202,16 @@ export function calculatePayoffSchedule(
 }
 
 /**
+ * Get the last day of a month
+ */
+function getLastDayOfMonth(year: number, month: number): number {
+  // Day 0 of next month = last day of current month
+  return new Date(year, month + 1, 0).getDate()
+}
+
+/**
  * Get next statement close date based on statement_close_day
+ * Handles months with fewer days (e.g., day 31 in February becomes 28/29)
  */
 export function getNextStatementCloseDate(statementCloseDay: number): Date {
   const today = new Date()
@@ -210,21 +219,27 @@ export function getNextStatementCloseDate(statementCloseDay: number): Date {
   const currentYear = today.getFullYear()
   const currentDay = today.getDate()
 
-  let closeDate: Date
+  // Cap statement day at last day of current month
+  const lastDayThisMonth = getLastDayOfMonth(currentYear, currentMonth)
+  const effectiveDayThisMonth = Math.min(statementCloseDay, lastDayThisMonth)
 
-  if (currentDay <= statementCloseDay) {
+  if (currentDay <= effectiveDayThisMonth) {
     // Statement closes this month
-    closeDate = new Date(currentYear, currentMonth, statementCloseDay)
+    return new Date(currentYear, currentMonth, effectiveDayThisMonth)
   } else {
     // Statement closes next month
-    closeDate = new Date(currentYear, currentMonth + 1, statementCloseDay)
+    const nextMonth = currentMonth + 1
+    const nextYear = nextMonth > 11 ? currentYear + 1 : currentYear
+    const actualNextMonth = nextMonth % 12
+    const lastDayNextMonth = getLastDayOfMonth(nextYear, actualNextMonth)
+    const effectiveDayNextMonth = Math.min(statementCloseDay, lastDayNextMonth)
+    return new Date(nextYear, actualNextMonth, effectiveDayNextMonth)
   }
-
-  return closeDate
 }
 
 /**
  * Get next payment due date based on payment_due_day
+ * Handles months with fewer days (e.g., day 31 in February becomes 28/29)
  */
 export function getNextPaymentDueDate(paymentDueDay: number): Date {
   const today = new Date()
@@ -232,15 +247,20 @@ export function getNextPaymentDueDate(paymentDueDay: number): Date {
   const currentYear = today.getFullYear()
   const currentDay = today.getDate()
 
-  let dueDate: Date
+  // Cap payment day at last day of current month
+  const lastDayThisMonth = getLastDayOfMonth(currentYear, currentMonth)
+  const effectiveDayThisMonth = Math.min(paymentDueDay, lastDayThisMonth)
 
-  if (currentDay <= paymentDueDay) {
+  if (currentDay <= effectiveDayThisMonth) {
     // Payment due this month
-    dueDate = new Date(currentYear, currentMonth, paymentDueDay)
+    return new Date(currentYear, currentMonth, effectiveDayThisMonth)
   } else {
     // Payment due next month
-    dueDate = new Date(currentYear, currentMonth + 1, paymentDueDay)
+    const nextMonth = currentMonth + 1
+    const nextYear = nextMonth > 11 ? currentYear + 1 : currentYear
+    const actualNextMonth = nextMonth % 12
+    const lastDayNextMonth = getLastDayOfMonth(nextYear, actualNextMonth)
+    const effectiveDayNextMonth = Math.min(paymentDueDay, lastDayNextMonth)
+    return new Date(nextYear, actualNextMonth, effectiveDayNextMonth)
   }
-
-  return dueDate
 }
