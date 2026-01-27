@@ -118,7 +118,7 @@ export const trackOnboardingSkipped = (atStep: number) => {
  * Track when user adds a bank account
  */
 export const trackAccountCreated = (
-  accountType: 'checking' | 'savings' | 'credit' | 'other'
+  accountType: 'checking' | 'savings' | 'credit' | 'credit_card' | 'other'
 ) => {
   posthog.capture('account_created', {
     account_type: accountType,
