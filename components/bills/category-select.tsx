@@ -94,20 +94,30 @@ export function CategorySelect({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Use default categories as fallback when no categories exist
-  const displayCategories = categories.length > 0
-    ? categories
-    : DEFAULT_CATEGORIES.map((cat, i) => ({
-        id: `default-${i}`,
-        user_id: '',
-        name: cat.name,
-        color: cat.color,
-        icon: cat.icon,
-        sort_order: cat.sort_order,
-        created_at: '',
-      }));
+  // Always show default categories first, then any additional user-created categories
+  const defaultCategoryObjects = DEFAULT_CATEGORIES.map((cat, i) => ({
+    id: `default-${i}`,
+    user_id: '',
+    name: cat.name,
+    color: cat.color,
+    icon: cat.icon,
+    sort_order: cat.sort_order,
+    created_at: '',
+  }));
 
-  const selectedCategory = displayCategories.find(c => c.name === value);
+  // Get user categories that aren't already in defaults (by name, case-insensitive)
+  const defaultNames = new Set(DEFAULT_CATEGORIES.map(c => c.name.toLowerCase()));
+  const additionalUserCategories = categories.filter(
+    c => !defaultNames.has(c.name.toLowerCase())
+  );
+
+  // Merge: defaults first, then additional user categories
+  const displayCategories = [...defaultCategoryObjects, ...additionalUserCategories];
+
+  // Look for selected category in display list OR in the full categories array
+  // (handles newly created categories that might not be in displayCategories yet)
+  const selectedCategory = displayCategories.find(c => c.name === value)
+    || categories.find(c => c.name === value);
 
   // Close dropdown when clicking outside
   useEffect(() => {
