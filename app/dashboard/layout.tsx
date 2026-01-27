@@ -57,7 +57,7 @@ export default async function DashboardLayout({
       <IdentifyUser />
       <EmailVerificationBanner user={user} />
 
-      <header className="bg-zinc-900 border-b border-zinc-800 overflow-visible">
+      <header className="bg-zinc-900 border-b border-zinc-800 overflow-visible relative z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
           <div className="flex justify-between items-center h-16 overflow-visible">
             <Link href="/dashboard" className="flex-shrink-0">
