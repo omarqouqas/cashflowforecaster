@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + **Credit Card Cash Flow Forecasting**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + **Credit Card Cash Flow Forecasting + Debt Payoff Planner**
 
 **Current Focus:**
 
@@ -44,8 +44,8 @@
 - Conditional credit card fields shown when CC type selected:
   - Credit limit (for utilization tracking)
   - APR (for interest calculations)
-  - Statement close day (1-28)
-  - Payment due day (1-28)
+  - Statement close day (1-31)
+  - Payment due day (1-31)
 - Context-sensitive labels and help text for CC balance
 
 **Credit Utilization Tracking:**
@@ -102,6 +102,13 @@
 
 **Modified Files (Debt Payoff Planner):**
 - `app/dashboard/accounts/page.tsx` - Added "Plan Your Debt Payoff" navigation card
+
+**Bug Fixes:**
+- Statement/Payment day dropdowns now allow 1-31 (was 1-28)
+- Calendar CC payment validation updated for days 29-31
+- Fixed date rollover for months with fewer days (e.g., day 31 in Feb → 28/29)
+- Added "Credit Card" to account type filter dropdown on Accounts page
+- Fixed filter logic to properly match `credit_card` account type
 
 **Competitive Advantage:**
 | Feature | Monarch | YNAB | Copilot | Us |

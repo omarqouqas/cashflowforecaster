@@ -348,7 +348,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - NPS surveys (triggered 7 days after signup)
 
 **17. Credit Card Cash Flow Forecasting ✅**
-- **Credit card account type** with specialized fields (credit limit, APR, statement/payment dates)
+- **Credit card account type** with specialized fields (credit limit, APR, statement/payment dates 1-31)
 - **Credit utilization tracking** with color-coded badges (green <30%, amber 30-70%, rose >70%)
 - **Calendar integration** showing CC payment due dates as recurring "bills"
 - **Payment Scenario Simulator** modal:
@@ -357,6 +357,13 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
   - Cash flow impact preview
   - Interest savings vs minimum payment
 - CC-specific display in account cards (balance shown as debt, utilization percentage)
+- **Debt Payoff Planner** (`/dashboard/debt-payoff`):
+  - Compare Snowball (smallest balance first) vs Avalanche (highest APR first) strategies
+  - Extra monthly payment input to see accelerated payoff
+  - Side-by-side comparison showing debt-free date, total interest, total paid
+  - Payoff order visualization with per-card payoff dates and interest
+  - Navigation from Accounts page when 2+ credit cards have balances
+- **Credit Card filter** in Accounts page filter dropdown
 
 **13. Weekly Email Digest ✅**
 - Weekly summary of next 7 days (income, bills, net change)
@@ -885,8 +892,8 @@ User Request
     - `credit_limit` - Credit limit for utilization tracking
     - `apr` - Annual percentage rate for interest calculations
     - `minimum_payment_percent` - Minimum payment percentage (default 2%)
-    - `statement_close_day` - Day of month statement closes (1-28)
-    - `payment_due_day` - Day of month payment is due (1-28)
+    - `statement_close_day` - Day of month statement closes (1-31)
+    - `payment_due_day` - Day of month payment is due (1-31)
   - **Account forms updated** (new + edit) with conditional CC fields
   - **Utilization tracking** with color-coded badges:
     - Emerald (<30%): Excellent utilization
@@ -904,14 +911,28 @@ User Request
     - Utilization badge with percentage and status message
     - Credit limit display
     - Simulator button for cards with balance
+  - **Debt Payoff Planner** (`/dashboard/debt-payoff`):
+    - Compare Snowball vs Avalanche strategies for multiple credit cards
+    - Extra monthly payment input to see accelerated payoff
+    - Side-by-side comparison: debt-free date, total interest, total paid
+    - Payoff order visualization with per-card payoff dates
+    - Navigation from Accounts page when 2+ CC have balances
+    - Empty state for no CC debt, simplified view for single card
+  - **Credit Card filter** added to Accounts page filter dropdown
 - **New files:**
   - `lib/types/credit-card.ts` - TypeScript types and calculation utilities
   - `lib/calendar/calculate-cc-payments.ts` - CC payment occurrence generator
   - `components/accounts/payment-simulator.tsx` - Payment scenario modal
+  - `lib/debt-payoff/calculate-payoff.ts` - Snowball/Avalanche algorithms
+  - `app/dashboard/debt-payoff/page.tsx` - Debt payoff planner page
+  - `components/debt-payoff/debt-payoff-planner.tsx` - Planner UI component
 - **Bug Fixes:**
   - Fixed invoice PDF route missing user_id filter (RLS bypass risk)
   - Fixed user menu dropdown cut off on calendar page (z-index stacking)
   - Added 'credit_card' to trackAccountCreated PostHog event type
+  - Statement/Payment day dropdowns now allow 1-31 (was limited to 1-28)
+  - Fixed date rollover for months with fewer days (e.g., day 31 in Feb → 28/29)
+  - Fixed filter logic to properly match `credit_card` account type
 
 ### Version 6.4 (January 26, 2026)
 - **Custom Bill Categories Feature:**
