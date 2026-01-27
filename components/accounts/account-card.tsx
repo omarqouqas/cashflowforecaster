@@ -1,13 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import type { Tables } from '@/types/supabase'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp } from 'lucide-react'
+import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp, Calculator } from 'lucide-react'
 import { formatCurrency, formatRelativeTime } from '@/lib/utils/format'
 import { DeleteAccountButton } from '@/components/accounts/delete-account-button'
 import { SpendableToggleButton } from '@/components/accounts/spendable-toggle-button'
 import { InfoTooltip } from '@/components/ui/tooltip'
+import { PaymentSimulator } from '@/components/accounts/payment-simulator'
 import { differenceInDays } from 'date-fns'
 import { calculateUtilization, getUtilizationStatus } from '@/lib/types/credit-card'
 
@@ -63,6 +65,8 @@ function accountTypeBadge(type: string | null | undefined) {
 }
 
 export function AccountCard({ account }: { account: Account }) {
+  const [showSimulator, setShowSimulator] = useState(false)
+
   const badge = accountTypeBadge(account.account_type)
   const currency = account.currency || 'USD'
   const balance = account.current_balance ?? 0
@@ -179,18 +183,50 @@ export function AccountCard({ account }: { account: Account }) {
                 Edit
               </Button>
             </Link>
-            <div className="flex items-center gap-1">
-              <SpendableToggleButton
-                id={account.id}
-                isSpendable={isSpendable}
-                accountName={account.name}
-              />
-              <InfoTooltip content="Spendable accounts are included in your cash flow forecast. Turn off for savings accounts or funds you don't regularly spend." />
-            </div>
+            {/* Payment Simulator button for credit cards */}
+            {isCreditCard && balance > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSimulator(true)}
+                className="border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-amber-500/50 text-zinc-100 hover:text-amber-400 transition-all"
+                aria-label="Simulate payment"
+              >
+                <Calculator className="w-4 h-4" />
+              </Button>
+            )}
+            {!isCreditCard && (
+              <div className="flex items-center gap-1">
+                <SpendableToggleButton
+                  id={account.id}
+                  isSpendable={isSpendable}
+                  accountName={account.name}
+                />
+                <InfoTooltip content="Spendable accounts are included in your cash flow forecast. Turn off for savings accounts or funds you don't regularly spend." />
+              </div>
+            )}
             <DeleteAccountButton accountId={account.id} accountName={account.name} />
           </div>
         </div>
       </div>
+
+      {/* Payment Simulator Modal */}
+      {isCreditCard && (
+        <PaymentSimulator
+          account={{
+            id: account.id,
+            name: account.name,
+            current_balance: balance,
+            currency,
+            credit_limit: creditLimit,
+            apr: (account as any).apr ?? null,
+            minimum_payment_percent: (account as any).minimum_payment_percent ?? null,
+            payment_due_day: (account as any).payment_due_day ?? null,
+          }}
+          isOpen={showSimulator}
+          onClose={() => setShowSimulator(false)}
+        />
+      )}
     </div>
   )
 }
