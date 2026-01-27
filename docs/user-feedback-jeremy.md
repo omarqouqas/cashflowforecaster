@@ -27,21 +27,198 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
 - Credit cards can be added as account type
 - No special functionality (APR, limits, minimum payments, payoff planning)
 
-**Action:** Build credit card tracking feature focused on cash flow visibility
+**Action:** Build **differentiated** credit card cash flow forecasting (not just tracking like competitors)
 
-**Status:** 📋 Planned
+**Status:** 🚧 In Progress
 
-**Required Features (per Jeremy):**
-- Track CC transactions (spending that impacts cash later)
-- Track CC balances
-- Forecast CC payments (when cash actually leaves)
+---
 
-**Nice-to-Have:**
-- Credit limit tracking
-- APR/interest rate calculations
-- Minimum payment reminders
-- Debt payoff scenarios (snowball/avalanche)
-- Credit utilization warnings
+## Credit Card Cash Flow Forecasting - Feature Specification
+
+### Core Value Proposition
+> "See exactly how your credit card spending today affects your bank balance tomorrow"
+
+### Competitive Analysis
+| Feature | Monarch | YNAB | Copilot | **Us** |
+|---------|---------|------|---------|--------|
+| Track CC balance | ✅ | ✅ | ✅ | ✅ |
+| Due date reminders | ✅ | ❌ | ❌ | ✅ |
+| **Spending → future cash outflow** | ❌ | ❌ | ❌ | ✅ |
+| **Payment scenario simulator** | ❌ | ❌ | ❌ | ✅ |
+| **Interest cost calculator** | ❌ | ❌ | ❌ | ✅ |
+| **Utilization warnings** | ❌ | ❌ | ❌ | ✅ |
+| **Debt payoff planner** | ❌ | ❌ | ❌ | ✅ |
+
+### Feature 1: CC Spending → Future Cash Outflow
+**What it does:** When you add a credit card transaction, the app shows when that money actually leaves your bank account (on payment due date).
+
+**User experience:**
+- Add $500 CC purchase on Jan 15
+- Calendar shows $500 cash outflow on Feb 5 (payment due date)
+- Running balance forecast adjusts accordingly
+
+**Implementation:**
+- CC transactions tracked separately from direct expenses
+- Auto-generate projected payment entry on due date
+- Aggregate all CC spending between statement cycles
+
+### Feature 2: Payment Scenario Simulator
+**What it does:** "What if I pay minimum vs full balance vs custom amount?"
+
+**User experience:**
+```
+Your CC Balance: $2,450
+Minimum Due: $49 (2%)
+Statement Balance: $2,450
+
+Payment Options                Cash Impact
+─────────────────────────────────────────
+○ Minimum ($49)               -$49 on Feb 5
+  → Remaining: $2,401 + $45 interest
+  → Paid off: 14 months
+
+○ Statement Balance ($2,450)  -$2,450 on Feb 5
+  → No interest charged
+  → ⚠️ Balance drops to $1,200
+
+● Custom Amount: $800         -$800 on Feb 5
+  → Remaining: $1,650 + $30 interest
+  → Paid off: 3 months
+
+[Preview Cash Flow] [Set Payment Amount]
+```
+
+### Feature 3: Interest Cost Calculator
+**What it does:** Shows the real cost of carrying a balance over time.
+
+**User experience:**
+```
+Balance: $2,450 at 24.99% APR
+
+If you pay only minimum:
+├── Total interest paid: $847
+├── Time to pay off: 14 months
+└── Total cost: $3,297
+
+If you pay $200/month:
+├── Total interest paid: $198
+├── Time to pay off: 14 months
+└── Total cost: $2,648
+
+You save $649 by paying $200/month instead of minimum
+```
+
+### Feature 4: Credit Utilization Alerts
+**What it does:** Warns when utilization exceeds thresholds that hurt credit scores.
+
+**User experience:**
+```
+⚠️ Chase Sapphire at 67% utilization ($6,700 / $10,000)
+
+Credit score impact: Utilization over 30% can lower your score
+
+To get under 30%: Pay down $3,700
+To get under 10%: Pay down $5,700
+```
+
+**Implementation:**
+- Credit limit field on CC accounts
+- Utilization badges (green <30%, yellow 30-50%, red >50%)
+- "Pay down to X%" calculator
+
+### Feature 5: Debt Payoff Planner
+**What it does:** Snowball vs Avalanche payoff strategies with cash flow projections.
+
+**User experience:**
+```
+Your Credit Cards:
+├── Chase: $2,450 at 24.99% APR (min $49)
+├── Amex: $1,200 at 18.99% APR (min $24)
+└── Discover: $800 at 21.99% APR (min $16)
+
+Total Debt: $4,450 | Monthly Minimum: $89
+Extra monthly payment available: $200
+
+Avalanche (Highest APR First)
+Pay off order: Chase → Discover → Amex
+Total interest: $412 | Debt free: November 2026
+
+Snowball (Lowest Balance First)
+Pay off order: Discover → Amex → Chase
+Total interest: $487 | Debt free: December 2026
+
+Avalanche saves you $75 and 1 month
+```
+
+### Database Schema Changes
+
+```sql
+-- Extend accounts table for credit cards
+ALTER TABLE accounts ADD COLUMN credit_limit DECIMAL(12,2);
+ALTER TABLE accounts ADD COLUMN apr DECIMAL(5,2);
+ALTER TABLE accounts ADD COLUMN minimum_payment_percent DECIMAL(4,2) DEFAULT 2.0;
+ALTER TABLE accounts ADD COLUMN statement_close_day INTEGER; -- 1-28
+ALTER TABLE accounts ADD COLUMN payment_due_day INTEGER; -- 1-28
+
+-- Track CC transactions separately for forecasting
+CREATE TABLE credit_card_transactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users NOT NULL,
+  account_id UUID REFERENCES accounts NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  description TEXT,
+  transaction_date DATE NOT NULL,
+  statement_date DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Track payoff plans
+CREATE TABLE payoff_plans (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users NOT NULL,
+  strategy TEXT CHECK (strategy IN ('avalanche', 'snowball', 'custom')),
+  extra_monthly_payment DECIMAL(12,2),
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### UI Components Needed
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| CC Account Form | `/accounts/new` | Add credit limit, APR, statement dates |
+| Payment Simulator | CC Account detail | "What if I pay X?" scenarios |
+| Utilization Badge | Account cards | Visual warning on high utilization |
+| Interest Calculator | CC Account detail | Cost of carrying balance |
+| Payoff Planner | New page or Settings | Multi-card debt strategy |
+| CC Forecast Events | Calendar | Show when CC payments hit cash |
+
+### Calendar Integration
+
+```
+Feb 1  ─────────────────────────────────
+       Statement closes: Chase ($2,450)
+
+Feb 5  ─────────────────────────────────
+       💳 Chase Payment Due: $2,450
+           Paying: $800 (custom)
+           → Balance after: $1,650
+           → Interest this month: ~$34
+
+Feb 15 ─────────────────────────────────
+       Statement closes: Amex ($1,200)
+```
+
+### Implementation Order
+
+1. [ ] **Database + CC account fields** - Foundation
+2. [ ] **CC account form updates** - UI for new fields
+3. [ ] **Statement/payment date forecasting** - Core differentiator
+4. [ ] **Payment scenario simulator** - High value, moderate effort
+5. [ ] **Utilization warnings** - Low effort, high visibility
+6. [ ] **Interest calculator** - Medium effort
+7. [ ] **Debt payoff planner** - Larger feature, Phase 2
 
 ---
 
@@ -209,4 +386,9 @@ Jeremy tested the app and provided valuable feedback on missing/desired features
    - Custom Export Builder with filters
    - Export History with re-download
 4. ✅ **Custom categories** - Custom bill categories with colors and icons (done)
-5. 📋 **Credit card cash flow** - Track CC transactions/balances, forecast payments
+5. 🚧 **Credit card cash flow forecasting** - Differentiated feature (in progress)
+   - CC spending → future cash outflow
+   - Payment scenario simulator
+   - Interest cost calculator
+   - Utilization warnings
+   - Debt payoff planner (snowball/avalanche)

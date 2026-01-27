@@ -3,14 +3,20 @@
 import type { Tables } from '@/types/supabase'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle } from 'lucide-react'
+import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp } from 'lucide-react'
 import { formatCurrency, formatRelativeTime } from '@/lib/utils/format'
 import { DeleteAccountButton } from '@/components/accounts/delete-account-button'
 import { SpendableToggleButton } from '@/components/accounts/spendable-toggle-button'
 import { InfoTooltip } from '@/components/ui/tooltip'
 import { differenceInDays } from 'date-fns'
+import { calculateUtilization, getUtilizationStatus } from '@/lib/types/credit-card'
 
-type Account = Tables<'accounts'>
+type Account = Tables<'accounts'> & {
+  credit_limit?: number | null
+  apr?: number | null
+  statement_close_day?: number | null
+  payment_due_day?: number | null
+}
 
 function titleCase(s: string) {
   return s
@@ -62,12 +68,20 @@ export function AccountCard({ account }: { account: Account }) {
   const balance = account.current_balance ?? 0
   const isPositive = balance >= 0
   const isSpendable = account.is_spendable ?? true
+  const isCreditCard = account.account_type === 'credit_card'
 
   // Calculate staleness
   const daysSinceUpdate = account.updated_at
     ? differenceInDays(new Date(), new Date(account.updated_at))
     : null
   const isStale = daysSinceUpdate !== null && daysSinceUpdate > 7
+
+  // Credit card utilization
+  const creditLimit = (account as any).credit_limit as number | null | undefined
+  const utilization = isCreditCard && creditLimit && creditLimit > 0
+    ? calculateUtilization(balance, creditLimit)
+    : null
+  const utilizationStatus = utilization !== null ? getUtilizationStatus(utilization) : null
 
   const AccountIcon = badge.icon
 
@@ -100,10 +114,14 @@ export function AccountCard({ account }: { account: Account }) {
             <p
               className={[
                 'text-xl font-bold tabular-nums',
-                isPositive ? 'text-emerald-400' : 'text-rose-400',
+                // For credit cards, any balance is debt (show in amber/rose)
+                // For other accounts, positive is good, negative is bad
+                isCreditCard
+                  ? balance > 0 ? 'text-amber-400' : 'text-emerald-400'
+                  : isPositive ? 'text-emerald-400' : 'text-rose-400',
               ].join(' ')}
             >
-              {formatCurrency(balance, currency)}
+              {isCreditCard && balance > 0 ? '-' : ''}{formatCurrency(Math.abs(balance), currency)}
             </p>
           </div>
 
@@ -117,7 +135,31 @@ export function AccountCard({ account }: { account: Account }) {
               {badge.label}
             </span>
 
-            {isSpendable && (
+            {/* Credit Card Utilization Badge */}
+            {isCreditCard && utilization !== null && utilizationStatus && (
+              <span
+                className={[
+                  'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium',
+                  utilizationStatus.color === 'emerald' && 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300',
+                  utilizationStatus.color === 'amber' && 'bg-amber-500/10 border border-amber-500/30 text-amber-300',
+                  utilizationStatus.color === 'orange' && 'bg-orange-500/10 border border-orange-500/30 text-orange-300',
+                  utilizationStatus.color === 'rose' && 'bg-rose-500/10 border border-rose-500/30 text-rose-300',
+                ].filter(Boolean).join(' ')}
+                title={utilizationStatus.message}
+              >
+                <TrendingUp className="w-3 h-3" />
+                {utilization.toFixed(0)}% used
+              </span>
+            )}
+
+            {/* Credit Limit Display */}
+            {isCreditCard && creditLimit && creditLimit > 0 && (
+              <span className="text-xs text-zinc-500">
+                of {formatCurrency(creditLimit, currency)} limit
+              </span>
+            )}
+
+            {isSpendable && !isCreditCard && (
               <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-full px-2.5 py-1 text-xs font-medium">
                 ✓ Spendable
               </span>

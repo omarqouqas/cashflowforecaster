@@ -2,7 +2,7 @@
 -- Allows users to create, edit, and delete custom bill categories
 
 -- Create user_categories table
-CREATE TABLE user_categories (
+CREATE TABLE IF NOT EXISTS user_categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
@@ -16,35 +16,39 @@ CREATE TABLE user_categories (
 -- Enable RLS
 ALTER TABLE user_categories ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
+-- RLS Policies (drop and recreate to be idempotent)
+DROP POLICY IF EXISTS "Users can view own categories" ON user_categories;
 CREATE POLICY "Users can view own categories"
   ON user_categories FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own categories" ON user_categories;
 CREATE POLICY "Users can insert own categories"
   ON user_categories FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own categories" ON user_categories;
 CREATE POLICY "Users can update own categories"
   ON user_categories FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own categories" ON user_categories;
 CREATE POLICY "Users can delete own categories"
   ON user_categories FOR DELETE
   USING (auth.uid() = user_id);
 
 -- Index for performance
-CREATE INDEX idx_user_categories_user_id ON user_categories(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_categories_user_id ON user_categories(user_id);
 
 -- Seed default categories for existing users who have bills
--- Use DISTINCT to only create one set per user
+-- Skip seeding if categories already exist (migration is idempotent)
 INSERT INTO user_categories (user_id, name, color, icon, sort_order)
-SELECT DISTINCT ON (user_id, name)
-  user_id,
-  category_name,
-  category_color,
-  category_icon,
-  category_order
+SELECT
+  seeded.user_id,
+  seeded.category_name,
+  seeded.category_color,
+  seeded.category_icon,
+  seeded.category_order
 FROM (
   SELECT
     b.user_id,
@@ -59,12 +63,12 @@ ON CONFLICT (user_id, name) DO NOTHING;
 
 -- Also seed for users who have accounts but no bills yet
 INSERT INTO user_categories (user_id, name, color, icon, sort_order)
-SELECT DISTINCT ON (user_id, name)
-  user_id,
-  category_name,
-  category_color,
-  category_icon,
-  category_order
+SELECT
+  seeded.user_id,
+  seeded.category_name,
+  seeded.category_color,
+  seeded.category_icon,
+  seeded.category_order
 FROM (
   SELECT
     a.user_id,
