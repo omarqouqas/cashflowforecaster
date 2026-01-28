@@ -323,10 +323,10 @@ function LegendItem({ color, label, description }: LegendItemProps) {
   };
 
   const textColors = {
-    green: 'text-emerald-700',
-    yellow: 'text-amber-700',
-    orange: 'text-orange-700',
-    red: 'text-rose-700',
+    green: 'text-emerald-400',
+    yellow: 'text-amber-400',
+    orange: 'text-orange-400',
+    red: 'text-rose-400',
   };
 
   return (
