@@ -3,7 +3,7 @@
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -48,8 +48,16 @@ type AccountFormData = z.infer<typeof accountSchema>;
 
 export default function NewAccountPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get pre-selected type from URL (e.g., ?type=credit_card)
+  const preselectedType = searchParams.get('type');
+  const defaultAccountType = preselectedType === 'credit_card' ? 'credit_card'
+    : preselectedType === 'savings' ? 'savings'
+    : preselectedType === 'checking' ? 'checking'
+    : undefined;
 
   const {
     register,
@@ -59,8 +67,9 @@ export default function NewAccountPage() {
   } = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
+      account_type: defaultAccountType,
       currency: 'USD',
-      is_spendable: true,
+      is_spendable: defaultAccountType === 'credit_card' ? false : true,
       credit_limit: null,
       apr: null,
       statement_close_day: null,

@@ -107,9 +107,24 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
             </div>
             <div>
               <p className="text-xs text-zinc-500">APR</p>
-              <p className="text-xl font-bold text-zinc-100">{card.apr}%</p>
+              <p className="text-xl font-bold text-zinc-100">
+                {card.apr != null ? `${card.apr}%` : <span className="text-zinc-500">Not set</span>}
+              </p>
             </div>
           </div>
+
+          {/* Warning if APR is missing */}
+          {(card.apr === 0 || card.apr == null) && (
+            <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-4">
+              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-300">
+                {card.apr === 0
+                  ? "This card has 0% APR. If this isn't a promotional rate, update it in account settings for accurate calculations."
+                  : "APR not set. Update your account settings for accurate interest calculations."
+                }
+              </p>
+            </div>
+          )}
 
           <p className="text-sm text-zinc-400">
             For single-card debt, use the <span className="text-teal-400">Payment Simulator</span> on your account card to explore payment options.
