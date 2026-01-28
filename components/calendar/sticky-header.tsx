@@ -111,13 +111,15 @@ export function StickyCalendarHeader({
               </span>
               <InfoTooltip
                 content={
-                  <div className="space-y-2">
-                    <p className="font-medium text-white">How is this calculated?</p>
-                    <p className="text-zinc-300">
+                  <div className="space-y-3">
+                    <h4 className="text-base font-semibold text-white pb-2 border-b border-zinc-700">
+                      How is this calculated?
+                    </h4>
+                    <p className="text-zinc-300 text-sm">
                       This is how much you can spend today without your balance ever dropping below your
                       safety buffer in the next 14 days.
                     </p>
-                    <div className="pt-2 border-t border-zinc-700 text-xs space-y-1">
+                    <div className="pt-2 border-t border-zinc-700 text-xs space-y-1.5">
                       <div className="flex justify-between">
                         <span className="text-zinc-400">Lowest balance (14 days):</span>
                         <span className="text-zinc-200 tabular-nums">
@@ -128,7 +130,7 @@ export function StickyCalendarHeader({
                         <span className="text-zinc-400">Safety buffer:</span>
                         <span className="text-zinc-200 tabular-nums">− {formatCurrency(safetyBuffer, currency)}</span>
                       </div>
-                      <div className="flex justify-between pt-1 border-t border-zinc-700">
+                      <div className="flex justify-between pt-1.5 border-t border-zinc-700">
                         <span className="text-zinc-300 font-medium">Safe to spend:</span>
                         <span className="text-white font-medium tabular-nums">
                           {formatCurrency(safeToSpend, currency)}
@@ -195,9 +197,11 @@ export function StickyCalendarHeader({
               </p>
               <InfoTooltip
                 content={
-                  <div className="space-y-2">
-                    <p className="font-medium text-white">How is this calculated?</p>
-                    <p className="text-zinc-300">
+                  <div className="space-y-3">
+                    <h4 className="text-base font-semibold text-white pb-2 border-b border-zinc-700">
+                      How is this calculated?
+                    </h4>
+                    <p className="text-zinc-300 text-sm">
                       This is how much you can spend today without your balance ever dropping below your
                       safety buffer in the next 14 days.
                     </p>
