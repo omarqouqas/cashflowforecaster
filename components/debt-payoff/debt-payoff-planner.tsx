@@ -27,9 +27,10 @@ interface CreditCardInput {
 interface DebtPayoffPlannerProps {
   cards: CreditCardInput[]
   currency?: string
+  totalCreditCardCount?: number
 }
 
-export function DebtPayoffPlanner({ cards, currency = 'USD' }: DebtPayoffPlannerProps) {
+export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCount = 0 }: DebtPayoffPlannerProps) {
   const [extraPayment, setExtraPayment] = useState<number | undefined>(100)
   const [selectedStrategy, setSelectedStrategy] = useState<'snowball' | 'avalanche'>('snowball')
 
@@ -67,17 +68,96 @@ export function DebtPayoffPlanner({ cards, currency = 'USD' }: DebtPayoffPlanner
     return selectedStrategy === 'snowball' ? comparison.snowball : comparison.avalanche
   }, [comparison, selectedStrategy])
 
-  // Empty state - no credit card debt
+  // Empty state - differentiate between "no cards added" vs "all cards paid off"
   if (cards.length === 0) {
-    return (
-      <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-8 text-center">
-        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+    // Scenario A: User has credit cards, but all have $0 balance (truly debt-free)
+    if (totalCreditCardCount > 0) {
+      return (
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-8 text-center">
+          <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-zinc-100 mb-2">You&apos;re Debt Free!</h2>
+          <p className="text-zinc-400 max-w-md mx-auto">
+            All your credit cards have a $0 balance. Keep up the great work!
+          </p>
+          <Link
+            href="/dashboard/accounts"
+            className="inline-flex items-center gap-2 mt-6 text-sm text-teal-400 hover:text-teal-300 transition-colors"
+          >
+            View your accounts
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
-        <h2 className="text-xl font-semibold text-zinc-100 mb-2">No Credit Card Debt</h2>
-        <p className="text-zinc-400 max-w-md mx-auto">
-          Congratulations! You don&apos;t have any credit card debt to pay off. Keep up the great work!
-        </p>
+      )
+    }
+
+    // Scenario B: User has NO credit cards added at all - show feature preview
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-zinc-100">Debt Payoff Planner</h1>
+
+        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <TrendingDown className="w-6 h-6 text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-zinc-100 mb-2">
+                Plan Your Path to Debt Freedom
+              </h2>
+              <p className="text-zinc-400 text-sm mb-4">
+                Add your credit cards to unlock powerful debt payoff strategies.
+                Compare Snowball vs Avalanche methods and see exactly when you&apos;ll be debt-free.
+              </p>
+            </div>
+          </div>
+
+          {/* Feature preview */}
+          <div className="mt-6 grid sm:grid-cols-3 gap-4">
+            <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">
+              <div className="w-8 h-8 bg-teal-500/10 rounded-full flex items-center justify-center mb-3">
+                <Calculator className="w-4 h-4 text-teal-400" />
+              </div>
+              <h3 className="text-sm font-medium text-zinc-200 mb-1">Compare Strategies</h3>
+              <p className="text-xs text-zinc-500">
+                See which method saves you more money and time
+              </p>
+            </div>
+            <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">
+              <div className="w-8 h-8 bg-emerald-500/10 rounded-full flex items-center justify-center mb-3">
+                <BarChart3 className="w-4 h-4 text-emerald-400" />
+              </div>
+              <h3 className="text-sm font-medium text-zinc-200 mb-1">Visual Timeline</h3>
+              <p className="text-xs text-zinc-500">
+                Watch your debt decrease month by month
+              </p>
+            </div>
+            <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">
+              <div className="w-8 h-8 bg-amber-500/10 rounded-full flex items-center justify-center mb-3">
+                <Target className="w-4 h-4 text-amber-400" />
+              </div>
+              <h3 className="text-sm font-medium text-zinc-200 mb-1">Payoff Milestones</h3>
+              <p className="text-xs text-zinc-500">
+                Know exactly when each card will be paid off
+              </p>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-6 pt-6 border-t border-zinc-700/50">
+            <Link
+              href="/dashboard/accounts/new?type=credit_card"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Your First Credit Card
+            </Link>
+            <p className="text-xs text-zinc-500 mt-3">
+              Add at least 2 credit cards to compare payoff strategies
+            </p>
+          </div>
+        </div>
       </div>
     )
   }

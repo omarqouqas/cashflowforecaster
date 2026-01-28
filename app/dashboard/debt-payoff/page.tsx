@@ -17,6 +17,14 @@ export default async function DebtPayoffPage() {
     .gt('current_balance', 0)
     .order('current_balance', { ascending: true })
 
+  // Also get total count of all credit cards (regardless of balance)
+  // to distinguish "no cards added" from "all cards paid off"
+  const { count: totalCreditCards } = await supabase
+    .from('accounts')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('account_type', 'credit_card')
+
   if (error) {
     console.error('Error fetching credit cards:', error)
   }
@@ -45,7 +53,11 @@ export default async function DebtPayoffPage() {
         Back to Accounts
       </Link>
 
-      <DebtPayoffPlanner cards={creditCards} currency={currency} />
+      <DebtPayoffPlanner
+        cards={creditCards}
+        currency={currency}
+        totalCreditCardCount={totalCreditCards ?? 0}
+      />
     </div>
   )
 }
