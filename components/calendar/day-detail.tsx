@@ -9,6 +9,7 @@ interface DayDetailProps {
   day: CalendarDay
   previousBalance: number
   onClose: () => void
+  currency?: string
 }
 
 function formatFullDate(date: Date) {
@@ -36,7 +37,7 @@ function balanceColor(status: CalendarDay['status'], balance: number) {
   }
 }
 
-export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
+export function DayDetail({ day, previousBalance, onClose, currency = 'USD' }: DayDetailProps) {
   const hasTransactions = day.income.length > 0 || day.bills.length > 0
   const balanceStatus = getBalanceStatus(day.balance)
   const showWarning = balanceStatus === 'low' || balanceStatus === 'negative'
@@ -86,7 +87,7 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <Layers className="w-4 h-4 text-amber-400 mt-0.5" aria-hidden="true" />
             <p className="text-sm text-amber-200">
-              ⚠️ Multiple bills due today - {day.bills.length} bills totaling {formatCurrency(collisionTotal)}
+              ⚠️ Multiple bills due today - {day.bills.length} bills totaling {formatCurrency(collisionTotal, currency)}
             </p>
           </div>
         </div>
@@ -94,9 +95,9 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
 
       {/* Balance Summary */}
       <div className="mt-3">
-        <p className="text-sm text-zinc-400">Starting balance: {formatCurrency(previousBalance)}</p>
+        <p className="text-sm text-zinc-400">Starting balance: {formatCurrency(previousBalance, currency)}</p>
         <p className={`text-lg font-semibold tabular-nums ${balanceColor(day.status, day.balance)}`}>
-          Ending balance: {formatCurrency(day.balance)}
+          Ending balance: {formatCurrency(day.balance, currency)}
         </p>
       </div>
 
@@ -128,7 +129,7 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
                 )}
               </div>
               <span className="text-sm font-medium tabular-nums text-emerald-400">
-                +{formatCurrency(t.amount)}
+                +{formatCurrency(t.amount, currency)}
               </span>
             </div>
           ))}
@@ -143,7 +144,7 @@ export function DayDetail({ day, previousBalance, onClose }: DayDetailProps) {
                 <span className="text-sm text-zinc-300 ml-2 truncate">{t.name}</span>
               </div>
               <span className="text-sm font-medium tabular-nums text-rose-400">
-                -{formatCurrency(Math.abs(t.amount))}
+                -{formatCurrency(Math.abs(t.amount), currency)}
               </span>
             </div>
           ))}

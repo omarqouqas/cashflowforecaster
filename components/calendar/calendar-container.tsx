@@ -236,6 +236,7 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
           startingBalance={calendarData.startingBalance}
           safetyBuffer={calendarData.safetyBuffer}
           onDayClick={handleChartDayClick}
+          currency={calendarData.currency}
         />
       </div>
 
@@ -287,12 +288,13 @@ export function CalendarContainer({ calendarData }: CalendarContainerProps) {
                 rowWrappersRef.current[index] = node
               }}
             >
-              <TimelineRow day={day} isToday={index === todayIndex} onClick={() => handleDayClick(index)} />
+              <TimelineRow day={day} isToday={index === todayIndex} onClick={() => handleDayClick(index)} currency={calendarData.currency} />
               {selectedDayIndex === index && (
                 <DayDetail
                   day={day}
                   previousBalance={index > 0 ? (days[index - 1]?.balance ?? startingBalance) : startingBalance}
                   onClose={() => setSelectedDayIndex(null)}
+                  currency={calendarData.currency}
                 />
               )}
             </div>

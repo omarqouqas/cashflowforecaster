@@ -138,6 +138,7 @@ export function CalendarView({
         startingBalance={calendarData.startingBalance}
         safetyBuffer={buffer}
         onDayClick={handleChartDayClick}
+        currency={currency}
       />
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 sm:p-4 mt-4">
@@ -224,22 +225,22 @@ export function CalendarView({
             <LegendItem
               color="green"
               label="Safe"
-              description={`${formatCurrency(thresholds.safe)}+`}
+              description={`${formatCurrency(thresholds.safe, currency)}+`}
             />
             <LegendItem
               color="yellow"
               label="Caution"
-              description={`${formatCurrency(thresholds.caution)}+`}
+              description={`${formatCurrency(thresholds.caution, currency)}+`}
             />
             <LegendItem
               color="orange"
               label="Low"
-              description={`${formatCurrency(thresholds.low)}+`}
+              description={`${formatCurrency(thresholds.low, currency)}+`}
             />
             <LegendItem
               color="red"
               label="Danger"
-              description={`Below ${formatCurrency(thresholds.low)}`}
+              description={`Below ${formatCurrency(thresholds.low, currency)}`}
             />
           </div>
         </details>
@@ -281,6 +282,7 @@ export function CalendarView({
                       isLowestDay={isLowestDay(day)}
                       onClick={() => setSelectedDay(day)}
                       previousDayBalance={previousDayBalance}
+                      currency={currency}
                     />
                   </div>
                 );
@@ -295,6 +297,7 @@ export function CalendarView({
         <DayDetailModal
           day={selectedDay}
           onClose={() => setSelectedDay(null)}
+          currency={currency}
         />
       )}
     </>

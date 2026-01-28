@@ -21,6 +21,7 @@ interface BalanceTrendChartInteractiveProps {
   startingBalance: number;
   safetyBuffer: number;
   onDayClick?: (dayIndex: number) => void;
+  currency?: string;
 }
 
 /**
@@ -37,6 +38,7 @@ export function BalanceTrendChartInteractive({
   startingBalance,
   safetyBuffer,
   onDayClick,
+  currency = 'USD',
 }: BalanceTrendChartInteractiveProps) {
   // Prepare chart data
   const chartData = useMemo(() => {
@@ -130,7 +132,7 @@ export function BalanceTrendChartInteractive({
               : 'text-rose-400'
           }`}
         >
-          {formatCurrency(balance)}
+          {formatCurrency(balance, currency)}
         </p>
         {(data.income > 0 || data.bills > 0) && (
           <div className="space-y-1 pt-2 border-t border-zinc-800">
@@ -138,7 +140,7 @@ export function BalanceTrendChartInteractive({
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-zinc-400">Income</span>
                 <span className="text-sm font-semibold text-emerald-400">
-                  +{formatCurrency(data.income)}
+                  +{formatCurrency(data.income, currency)}
                 </span>
               </div>
             )}
@@ -146,7 +148,7 @@ export function BalanceTrendChartInteractive({
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-zinc-400">Bills</span>
                 <span className="text-sm font-semibold text-rose-400">
-                  -{formatCurrency(data.bills)}
+                  -{formatCurrency(data.bills, currency)}
                 </span>
               </div>
             )}
@@ -181,7 +183,7 @@ export function BalanceTrendChartInteractive({
               <TrendingUp className="w-5 h-5 text-emerald-400" />
               <div className="text-right">
                 <p className="text-base font-bold text-emerald-400">
-                  +{formatCurrency(Math.abs(balanceChange))}
+                  +{formatCurrency(Math.abs(balanceChange), currency)}
                 </p>
                 <p className="text-xs text-zinc-500">Net change</p>
               </div>
@@ -191,7 +193,7 @@ export function BalanceTrendChartInteractive({
               <TrendingDown className="w-5 h-5 text-rose-400" />
               <div className="text-right">
                 <p className="text-base font-bold text-rose-400">
-                  -{formatCurrency(Math.abs(balanceChange))}
+                  -{formatCurrency(Math.abs(balanceChange), currency)}
                 </p>
                 <p className="text-xs text-zinc-500">Net change</p>
               </div>
@@ -215,7 +217,7 @@ export function BalanceTrendChartInteractive({
             margin={{ top: 20, right: 30, left: 10, bottom: 0 }}
             onClick={handleClick}
             className={onDayClick ? 'cursor-pointer' : ''}
-            aria-label={`${days.length}-day balance forecast from ${formatCurrency(startingBalance)} to ${formatCurrency(endBalance)}`}
+            aria-label={`${days.length}-day balance forecast from ${formatCurrency(startingBalance, currency)} to ${formatCurrency(endBalance, currency)}`}
             role="img"
           >
             <defs>

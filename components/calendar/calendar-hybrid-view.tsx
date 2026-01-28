@@ -221,6 +221,7 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
               totalIncome={filteredCalendarData.totalIncome}
               totalBills={filteredCalendarData.totalBills}
               endingBalance={filteredCalendarData.endingBalance}
+              currency={filteredCalendarData.currency}
               forecastDays={filteredCalendarData.forecastDays}
             />
           </div>

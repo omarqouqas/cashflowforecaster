@@ -9,12 +9,14 @@ import { AlertTriangle, Layers } from 'lucide-react'
 export interface CalendarTimelineProps {
   days: CalendarDay[]
   onDayClick: (day: CalendarDay) => void
+  currency?: string
 }
 
 export interface TimelineRowProps {
   day: CalendarDay
   isToday?: boolean
   onClick: () => void
+  currency?: string
 }
 
 function statusBarClass(status: CalendarDay['status']) {
@@ -49,7 +51,7 @@ function incomeDotClass(status?: string | null) {
   return 'w-2 h-2 rounded-full bg-emerald-500'
 }
 
-export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowProps) {
+export function TimelineRow({ day, isToday: isTodayProp, onClick, currency = 'USD' }: TimelineRowProps) {
   const today = isTodayProp ?? isToday(day.date)
 
   const incomeTotal = day.income.reduce((sum, t) => sum + t.amount, 0)
@@ -125,12 +127,12 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
           <>
             {hasIncome && (
               <span className="text-xs text-zinc-300 tabular-nums">
-                +{formatCurrency(incomeTotal)}
+                +{formatCurrency(incomeTotal, currency)}
               </span>
             )}
             {hasBills && (
               <span className="text-xs text-zinc-300 tabular-nums">
-                -{formatCurrency(billsTotal)}
+                -{formatCurrency(billsTotal, currency)}
               </span>
             )}
 
@@ -176,7 +178,7 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
                 aria-hidden="true"
               />
             )}
-            <span>{formatCurrency(day.balance)}</span>
+            <span>{formatCurrency(day.balance, currency)}</span>
           </div>
           {isNegative && (
             <p className="text-xs text-rose-300 mt-0.5">Overdraft risk</p>
@@ -187,11 +189,11 @@ export function TimelineRow({ day, isToday: isTodayProp, onClick }: TimelineRowP
   )
 }
 
-export function CalendarTimeline({ days, onDayClick }: CalendarTimelineProps) {
+export function CalendarTimeline({ days, onDayClick, currency = 'USD' }: CalendarTimelineProps) {
   return (
     <div className="space-y-2">
       {days.map((day) => (
-        <TimelineRow key={day.date.getTime()} day={day} onClick={() => onDayClick(day)} />
+        <TimelineRow key={day.date.getTime()} day={day} onClick={() => onDayClick(day)} currency={currency} />
       ))}
     </div>
   )

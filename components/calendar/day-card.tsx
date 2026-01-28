@@ -11,6 +11,7 @@ interface DayCardProps {
   isLowestDay: boolean;
   onClick: () => void;
   previousDayBalance?: number;
+  currency?: string;
 }
 
 /**
@@ -26,7 +27,7 @@ interface DayCardProps {
  * - Special styling for today and lowest balance day
  * - Tooltip shows full transaction names on hover
  */
-export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCardProps) {
+export function DayCard({ day, isLowestDay, onClick, previousDayBalance, currency = 'USD' }: DayCardProps) {
   // Calculate balance delta
   const delta = previousDayBalance !== undefined ? day.balance - previousDayBalance : 0;
   const showDelta = previousDayBalance !== undefined && delta !== 0;
@@ -159,14 +160,14 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCa
       {/* Balance with Delta */}
       <div className="mb-2">
         <div className={cn('text-lg font-semibold tabular-nums tracking-tight', colors.balanceText)}>
-          {formatCurrency(day.balance)}
+          {formatCurrency(day.balance, currency)}
         </div>
         {showDelta && (
           <div className={cn(
             'text-xs font-medium tabular-nums flex items-center gap-0.5',
             delta > 0 ? 'text-emerald-400' : 'text-rose-400'
           )}>
-            {delta > 0 ? '▲' : '▼'} {formatCurrency(Math.abs(delta))}
+            {delta > 0 ? '▲' : '▼'} {formatCurrency(Math.abs(delta), currency)}
           </div>
         )}
       </div>
@@ -180,7 +181,7 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCa
               <div className="flex items-center gap-1.5 group/tx" title={day.income[0].name}>
                 <TrendingUp className="w-3 h-3 text-emerald-400 flex-shrink-0" />
                 <p className="text-xs font-bold text-emerald-400 tabular-nums">
-                  +{formatCurrency(day.income[0].amount)}
+                  +{formatCurrency(day.income[0].amount, currency)}
                 </p>
                 <p className="text-xs text-zinc-400 truncate flex-1">
                   {truncateName(day.income[0].name)}
@@ -193,7 +194,7 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance }: DayCa
               <div className="flex items-center gap-1.5 group/tx" title={day.bills[0].name}>
                 <TrendingDown className="w-3 h-3 text-rose-400 flex-shrink-0" />
                 <p className="text-xs font-bold text-rose-400 tabular-nums">
-                  -{formatCurrency(day.bills[0].amount)}
+                  -{formatCurrency(day.bills[0].amount, currency)}
                 </p>
                 <p className="text-xs text-zinc-400 truncate flex-1">
                   {truncateName(day.bills[0].name)}

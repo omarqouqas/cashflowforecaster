@@ -13,6 +13,7 @@ import { trackDayDetailOpened } from '@/lib/posthog/events';
 interface DayDetailModalProps {
   day: CalendarDay;
   onClose: () => void;
+  currency?: string;
 }
 
 /**
@@ -30,7 +31,7 @@ interface DayDetailModalProps {
  * - Keyboard handling (Escape key)
  * - Prevents body scroll while open
  */
-export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
+export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModalProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const trackedRef = useRef(false);
 
@@ -198,7 +199,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <Layers className="w-4 h-4 text-amber-400 mt-0.5" aria-hidden="true" />
                 <p className="text-sm text-amber-200">
-                  ⚠️ Multiple bills due today - {day.bills.length} bills totaling {formatCurrency(totalBills)}
+                  ⚠️ Multiple bills due today - {day.bills.length} bills totaling {formatCurrency(totalBills, currency)}
                 </p>
               </div>
             </div>
@@ -208,7 +209,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
           <div className="rounded-lg p-4 mb-6 border border-zinc-800 bg-zinc-800">
             <p className="text-sm text-zinc-400 mb-1">Projected Balance</p>
             <p className={cn('text-2xl font-semibold tabular-nums tracking-tight', colors.text)}>
-              {formatCurrency(day.balance)}
+              {formatCurrency(day.balance, currency)}
             </p>
           </div>
 
@@ -232,7 +233,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
                 )}
               >
                 {netChange > 0 ? '+' : ''}
-                {formatCurrency(netChange)}
+                {formatCurrency(netChange, currency)}
               </p>
             </div>
           )}
@@ -266,7 +267,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
                       </p>
                     </div>
                     <p className="text-lg font-semibold text-emerald-400 ml-4 tabular-nums">
-                      +{formatCurrency(transaction.amount)}
+                      +{formatCurrency(transaction.amount, currency)}
                     </p>
                   </div>
                 ))}
@@ -295,7 +296,7 @@ export function DayDetailModal({ day, onClose }: DayDetailModalProps) {
                       </p>
                     </div>
                     <p className="text-lg font-semibold text-rose-400 ml-4 tabular-nums">
-                      -{formatCurrency(transaction.amount)}
+                      -{formatCurrency(transaction.amount, currency)}
                     </p>
                   </div>
                 ))}
