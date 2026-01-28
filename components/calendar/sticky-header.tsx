@@ -39,6 +39,24 @@ function formatShortDate(date: Date) {
   })
 }
 
+/**
+ * Get the currency symbol for a given currency code
+ */
+function getCurrencySymbol(currency: string): string {
+  try {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+    // Format 0 and extract the symbol (removes the "0")
+    return formatter.format(0).replace(/[\d\s]/g, '').trim()
+  } catch {
+    return '$'
+  }
+}
+
 export function StickyCalendarHeader({
   startingBalance,
   lowestBalance,
@@ -56,11 +74,12 @@ export function StickyCalendarHeader({
   const lowestBalanceColor = lowestBalance < 0 ? 'text-rose-400' : 'text-amber-400'
   const safeToSpendIsZero = safeToSpend <= 0
 
-  // Split safe to spend into dollars and cents for styling
+  // Split safe to spend into whole and decimal parts for styling
   const safeToSpendStr = safeToSpend.toFixed(2)
-  const [rawDollars, cents] = safeToSpendStr.split('.')
-  // Format dollars with commas for thousands
-  const dollars = Number(rawDollars).toLocaleString('en-US')
+  const [rawWhole, decimal] = safeToSpendStr.split('.')
+  // Format whole part with commas for thousands
+  const wholePart = Number(rawWhole).toLocaleString('en-US')
+  const currencySymbol = getCurrencySymbol(currency)
 
   return (
     <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800 px-3 py-3 sm:px-4 sm:py-4">
@@ -128,10 +147,10 @@ export function StickyCalendarHeader({
                   safeToSpendIsZero ? 'text-amber-100' : 'text-zinc-50',
                 ].join(' ')}
               >
-                ${dollars}
+                {currencySymbol}{wholePart}
               </span>
               <span className="text-2xl font-semibold text-zinc-400 tabular-nums">
-                .{cents}
+                .{decimal}
               </span>
             </div>
 
