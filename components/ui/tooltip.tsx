@@ -49,12 +49,12 @@ export function Tooltip({ content, children }: TooltipProps) {
       {isVisible && (
         <div
           ref={tooltipRef}
-          className="absolute z-50 w-72 p-3 mt-2 text-sm bg-zinc-900 text-zinc-100 rounded-lg shadow-lg border border-zinc-700 left-1/2 -translate-x-1/2"
+          className="absolute z-50 w-80 p-3 text-sm bg-zinc-900 text-zinc-100 rounded-lg shadow-lg border border-zinc-700 left-full ml-2 top-1/2 -translate-y-1/2"
           role="tooltip"
         >
           {content}
-          {/* Arrow */}
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900 border-l border-t border-zinc-700 rotate-45" />
+          {/* Arrow pointing left */}
+          <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
         </div>
       )}
     </div>
