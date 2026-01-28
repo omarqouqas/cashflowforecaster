@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import {
   AreaChart,
   Area,
@@ -29,14 +29,48 @@ interface ChartDataPoint {
   paidOffCards?: string[]
 }
 
+// Custom tooltip component (defined outside to prevent recreation)
+function ChartTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartDataPoint }> }) {
+  if (!active || !payload || !payload.length) return null
+
+  const data = payload[0]?.payload
+  if (!data) return null
+
+  return (
+    <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 shadow-lg">
+      <p className="text-sm font-medium text-zinc-100">
+        {format(data.date, 'MMMM yyyy')}
+      </p>
+      <p className="text-sm text-amber-400 mt-1">
+        Balance: {formatCurrency(data.balance, 'USD')}
+      </p>
+      {data.paidOffCards && data.paidOffCards.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-zinc-700">
+          <p className="text-xs text-emerald-400">
+            🎉 Paid off: {data.paidOffCards.join(', ')}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function PayoffTimelineChart({
   schedule,
   cardSummaries,
   totalDebt,
 }: PayoffTimelineChartProps) {
+  // Use a stable start date based on the first schedule item or current date
+  const startDate = useMemo(() => {
+    if (schedule.length > 0 && schedule[0]) {
+      // Calculate start date by going back from first month's date
+      return addMonths(schedule[0].date, -schedule[0].month)
+    }
+    return new Date()
+  }, [schedule])
+
   // Transform schedule into chart data
   const chartData = useMemo(() => {
-    const startDate = new Date()
 
     // Add starting point (month 0)
     const data: ChartDataPoint[] = [
@@ -68,7 +102,7 @@ export function PayoffTimelineChart({
     }
 
     return data
-  }, [schedule, cardSummaries, totalDebt])
+  }, [schedule, cardSummaries, totalDebt, startDate])
 
   // Get months where cards are paid off for reference lines
   const payoffMilestones = useMemo(() => {
@@ -79,31 +113,11 @@ export function PayoffTimelineChart({
     }))
   }, [cardSummaries])
 
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartDataPoint }> }) => {
-    if (!active || !payload || !payload.length) return null
-
-    const data = payload[0]?.payload
-    if (!data) return null
-
-    return (
-      <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 shadow-lg">
-        <p className="text-sm font-medium text-zinc-100">
-          {format(data.date, 'MMMM yyyy')}
-        </p>
-        <p className="text-sm text-amber-400 mt-1">
-          Balance: {formatCurrency(data.balance, 'USD')}
-        </p>
-        {data.paidOffCards && data.paidOffCards.length > 0 && (
-          <div className="mt-2 pt-2 border-t border-zinc-700">
-            <p className="text-xs text-emerald-400">
-              🎉 Paid off: {data.paidOffCards.join(', ')}
-            </p>
-          </div>
-        )}
-      </div>
-    )
-  }
+  // Memoized X-axis tick formatter using stable startDate
+  const xAxisTickFormatter = useCallback((month: number) => {
+    const date = addMonths(startDate, month)
+    return format(date, 'MMM yy')
+  }, [startDate])
 
   // Calculate tick values for X-axis (show every 3-6 months depending on duration)
   const xAxisTicks = useMemo(() => {
@@ -151,10 +165,7 @@ export function PayoffTimelineChart({
 
             <XAxis
               dataKey="month"
-              tickFormatter={(month) => {
-                const date = addMonths(new Date(), month)
-                return format(date, 'MMM yy')
-              }}
+              tickFormatter={xAxisTickFormatter}
               ticks={xAxisTicks}
               stroke="#71717a"
               tick={{ fill: '#a1a1aa', fontSize: 11 }}
@@ -179,7 +190,7 @@ export function PayoffTimelineChart({
               tickCount={5}
             />
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<ChartTooltip />} />
 
             {/* Reference lines for card payoff milestones */}
             {payoffMilestones.map((milestone) => (
@@ -210,7 +221,17 @@ export function PayoffTimelineChart({
             key={milestone.cardName}
             className="flex items-center gap-2 text-xs"
           >
-            <div className="w-3 h-0.5 bg-emerald-500" style={{ borderStyle: 'dashed' }} />
+            <svg width="12" height="2" className="flex-shrink-0">
+              <line
+                x1="0"
+                y1="1"
+                x2="12"
+                y2="1"
+                stroke="#10b981"
+                strokeWidth="2"
+                strokeDasharray="2 2"
+              />
+            </svg>
             <span className="text-zinc-400">
               {milestone.cardName}: {format(milestone.date, 'MMM yyyy')}
             </span>

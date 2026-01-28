@@ -89,14 +89,22 @@ function calculatePayoff(
   extraPayment: number,
   strategy: 'snowball' | 'avalanche'
 ): PayoffResult {
-  // Sort cards based on strategy
+  // Sort cards based on strategy (with tie-breaking by name for consistent ordering)
   const sortedCards = [...cards].sort((a, b) => {
     if (strategy === 'snowball') {
-      // Smallest balance first
-      return a.balance - b.balance
+      // Smallest balance first, tie-break by highest APR, then by name
+      const balanceDiff = a.balance - b.balance
+      if (balanceDiff !== 0) return balanceDiff
+      const aprDiff = b.apr - a.apr // Higher APR first as tie-breaker
+      if (aprDiff !== 0) return aprDiff
+      return a.name.localeCompare(b.name)
     } else {
-      // Highest APR first
-      return b.apr - a.apr
+      // Highest APR first, tie-break by smallest balance, then by name
+      const aprDiff = b.apr - a.apr
+      if (aprDiff !== 0) return aprDiff
+      const balanceDiff = a.balance - b.balance // Smaller balance first as tie-breaker
+      if (balanceDiff !== 0) return balanceDiff
+      return a.name.localeCompare(b.name)
     }
   })
 

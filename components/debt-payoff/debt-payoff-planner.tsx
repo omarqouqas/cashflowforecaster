@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { CreditCard, TrendingDown, Calculator, Zap, Target, CheckCircle2 } from 'lucide-react'
+import { CreditCard, TrendingDown, Calculator, Zap, Target, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/format'
 import { CurrencyInput } from '@/components/ui/currency-input'
@@ -46,6 +46,12 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
   // Calculate totals
   const totalDebt = useMemo(() => getTotalDebt(creditCards), [creditCards])
   const totalMinimum = useMemo(() => getTotalMinimumPayment(creditCards), [creditCards])
+
+  // Check for cards with 0% APR (might be missing data)
+  const zeroAprCards = useMemo(() =>
+    cards.filter(card => card.apr === 0 || card.apr === null || card.apr === undefined),
+    [cards]
+  )
 
   // Compare strategies
   const comparison = useMemo(() => {
@@ -140,6 +146,23 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
           <p className="text-xs text-zinc-500 mt-1">Combined minimum due</p>
         </div>
       </div>
+
+      {/* Warning for 0% APR cards */}
+      {zeroAprCards.length > 0 && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-amber-300">
+                {zeroAprCards.length === 1 ? '1 card has' : `${zeroAprCards.length} cards have`} 0% APR
+              </p>
+              <p className="text-xs text-amber-400/70 mt-1">
+                {zeroAprCards.map(c => c.name).join(', ')} — If this isn&apos;t a promotional rate, please update the APR in your account settings for accurate calculations.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Extra Payment Input */}
       <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
