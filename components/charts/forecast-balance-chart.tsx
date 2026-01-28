@@ -13,19 +13,11 @@ import {
 } from 'recharts'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/format'
-
-interface CalendarDay {
-  date: Date
-  balance: number
-  income: Array<{ amount: number }>
-  bills: Array<{ amount: number }>
-  status: 'green' | 'yellow' | 'orange' | 'red'
-}
+import type { CalendarDay } from '@/lib/calendar/types'
 
 interface ForecastBalanceChartProps {
   days: CalendarDay[]
   currency: string
-  lowestBalance: number
   lowestBalanceDay: Date
   safetyBuffer: number
 }
@@ -70,7 +62,6 @@ function ChartTooltip({
 export function ForecastBalanceChart({
   days,
   currency,
-  lowestBalance,
   lowestBalanceDay,
   safetyBuffer,
 }: ForecastBalanceChartProps) {
@@ -80,36 +71,62 @@ export function ForecastBalanceChart({
     const maxPoints = 30
     const step = Math.max(1, Math.floor(days.length / maxPoints))
 
+    // Find the index of the actual lowest balance day to ensure it's included
+    const lowestDayFormatted = format(lowestBalanceDay, 'yyyy-MM-dd')
+    const lowestDayIndex = days.findIndex(
+      (day) => format(day.date, 'yyyy-MM-dd') === lowestDayFormatted
+    )
+
     const data: ChartDataPoint[] = []
+    const addedIndices = new Set<number>()
 
     for (let i = 0; i < days.length; i += step) {
       const day = days[i]
       if (!day) continue
 
-      const isLowest = day.balance === lowestBalance &&
-        format(day.date, 'yyyy-MM-dd') === format(lowestBalanceDay, 'yyyy-MM-dd')
-
+      addedIndices.add(i)
       data.push({
         date: day.date,
         dateLabel: format(day.date, 'MMM d'),
         balance: day.balance,
-        isLowest,
+        isLowest: i === lowestDayIndex,
       })
     }
 
+    // Always include the actual lowest balance day if not already sampled
+    if (lowestDayIndex >= 0 && !addedIndices.has(lowestDayIndex)) {
+      const lowestDay = days[lowestDayIndex]
+      if (lowestDay) {
+        // Find the right position to insert (keep chronological order)
+        const insertIndex = data.findIndex((d) => d.date > lowestDay.date)
+        const lowestPoint: ChartDataPoint = {
+          date: lowestDay.date,
+          dateLabel: format(lowestDay.date, 'MMM d'),
+          balance: lowestDay.balance,
+          isLowest: true,
+        }
+        if (insertIndex === -1) {
+          data.push(lowestPoint)
+        } else {
+          data.splice(insertIndex, 0, lowestPoint)
+        }
+      }
+    }
+
     // Always include the last day
-    const lastDay = days[days.length - 1]
-    if (lastDay && (data.length === 0 || data[data.length - 1]?.date !== lastDay.date)) {
+    const lastIndex = days.length - 1
+    const lastDay = days[lastIndex]
+    if (lastDay && !addedIndices.has(lastIndex)) {
       data.push({
         date: lastDay.date,
         dateLabel: format(lastDay.date, 'MMM d'),
         balance: lastDay.balance,
-        isLowest: lastDay.balance === lowestBalance,
+        isLowest: lastIndex === lowestDayIndex,
       })
     }
 
     return data
-  }, [days, lowestBalance, lowestBalanceDay])
+  }, [days, lowestBalanceDay])
 
   // Find the lowest point for the reference dot
   const lowestPoint = useMemo(() => {
@@ -220,8 +237,8 @@ export function ForecastBalanceChart({
             <ReferenceLine y={0} stroke="#f43f5e" strokeDasharray="3 3" strokeOpacity={0.5} />
           )}
 
-          {/* Safety buffer line */}
-          {safetyBuffer > 0 && yDomain[0] < safetyBuffer && (
+          {/* Safety buffer line - only show if within visible Y range */}
+          {safetyBuffer > 0 && safetyBuffer >= yDomain[0] && safetyBuffer <= yDomain[1] && (
             <ReferenceLine
               y={safetyBuffer}
               stroke="#eab308"

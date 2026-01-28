@@ -638,7 +638,6 @@ export function DashboardContent({
                   <ForecastBalanceChart
                     days={filteredCalendarDays}
                     currency={currency}
-                    lowestBalance={forecastMetrics.lowestBalance}
                     lowestBalanceDay={forecastMetrics.lowestBalanceDay}
                     safetyBuffer={safetyBuffer}
                   />
