@@ -185,62 +185,63 @@ This would be a **killer feature** that directly addresses the core anxiety of f
 
 ## 7. Data Visualization / Charts
 
-### Current State
+### Current State ✅ IMPLEMENTED
 
-The app currently has **one chart**: a balance trend line on the Cash Flow Calendar page. There's significant opportunity to add more visualizations.
+The app now has **three charts** built with Recharts:
 
-### Recommended Charts by Page
+1. **Balance Trend Chart** (Cash Flow Calendar page) - Custom SVG implementation
+2. **Forecast Balance Chart** (Dashboard) - Recharts area chart showing projected balance
+3. **Payoff Timeline Chart** (Debt Payoff Planner) - Recharts area chart with milestones
+
+### Implemented Charts
+
+| Location | Chart Type | Status | Notes |
+|----------|------------|--------|-------|
+| **Dashboard Home** | Forecast balance trend | ✅ Done | Area chart with lowest point marker, safety buffer line |
+| **Debt Payoff Planner** | Payoff timeline | ✅ Done | Area chart with card payoff milestone reference lines |
+| **Cash Flow Calendar** | Balance trend | ✅ Done | Custom SVG chart (pre-existing) |
+
+### Future Chart Opportunities
 
 | Location | Chart Type | Purpose | Priority | Effort |
 |----------|------------|---------|----------|--------|
-| **Dashboard Home** | Balance trend (30/60/90 days) | At-a-glance financial health | High | Low |
-| **Debt Payoff Planner** | Payoff timeline chart | Visualize debt reduction over time | High | Medium |
-| **Debt Payoff Planner** | Stacked bar (balance by card) | Show which cards get paid when | High | Medium |
+| **Debt Payoff Planner** | Stacked bar (balance by card) | Show which cards get paid when | Medium | Medium |
 | **Accounts Page** | Pie/donut chart | Account balance distribution | Medium | Low |
 | **CC Payment Simulator** | Balance over time | Show balance projection with different payment amounts | Medium | Medium |
 | **Bills Page** | Category spending bar chart | Monthly expenses by category | Medium | Low |
 | **Dashboard Home** | Income vs Expenses | Monthly comparison | Medium | Medium |
-| **Reports Page (New)** | Multiple charts | Comprehensive financial reports | Low | High |
+| **Reports Page** | Multiple charts | Comprehensive financial reports | Low | High |
 
-### Library Recommendation
+### Library in Use
 
-**Recharts** is the recommended library:
+**Recharts** is now installed and in use:
 - Most popular React charting library
 - Great TypeScript support
 - Works well with Tailwind CSS
 - Lightweight and performant
 - Easy to customize colors to match dark theme
 
-```bash
-npm install recharts
-```
-
-### Implementation Priority
-
-1. **Debt Payoff Timeline Chart** - Highest value, directly enhances new feature
-2. **Dashboard Balance Trend** - High visibility, sets professional tone
-3. **Category Spending Chart** - Helps users understand expense patterns
-4. **Account Distribution Pie** - Quick visual overview
-
-### Code Structure
+### Code Structure (Current)
 
 ```
 components/
   charts/
-    balance-trend-chart.tsx
-    payoff-timeline-chart.tsx
-    category-spending-chart.tsx
-    account-distribution-chart.tsx
-    chart-wrapper.tsx  # Common styling/theming
+    forecast-balance-chart.tsx   ✅ Done
+    payoff-timeline-chart.tsx    ✅ Done
 ```
 
-### Design Considerations
+### Design Patterns Established
 
-- Use existing color scheme: Emerald for positive, Rose for negative, Amber for warnings
-- Dark theme compatible (zinc-900 backgrounds, zinc-700 grid lines)
-- Responsive sizing
-- Loading states with skeletons
-- Empty states when no data
+- Use `useId()` hook for unique gradient IDs (prevents conflicts with multiple charts)
+- Proper negative currency formatting: `-$500` not `$-500`
+- Always include critical data points in sampling (e.g., lowest balance day)
+- Check Y-axis domain before rendering reference lines
+- Use cardId (not cardName) for React keys to prevent collisions
+- Currency passed as prop, not hardcoded
+- Dark theme colors: zinc-900 backgrounds, zinc-700 grid lines
+- Color scheme: Teal for positive, Rose for negative, Amber for warnings/debt
+
+See `docs/charts-roadmap.md` for detailed implementation patterns and future plans.
 
 ---
 
@@ -254,9 +255,11 @@ components/
 | Jan 2026 | Client payment tracking as next big feature | Addresses core freelancer pain point, unique differentiator |
 | Jan 2026 | Recharts for data visualization | Popular, TypeScript support, Tailwind-compatible, lightweight |
 | Jan 2026 | Debt payoff timeline chart as first new chart | High value, enhances newly built feature |
+| Jan 2026 | Implemented forecast balance chart + payoff timeline chart | First 2 Recharts components complete with 11 bug fixes |
+| Jan 2026 | Established chart design patterns | useId() for gradients, proper currency formatting, sampling guarantees |
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** January 27, 2026
 **Next Review:** February 2026

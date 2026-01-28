@@ -184,7 +184,7 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <p className="text-xs text-zinc-500">Balance</p>
-              <p className="text-xl font-bold text-amber-400">{formatCurrency(card.balance, 'USD')}</p>
+              <p className="text-xl font-bold text-amber-400">{formatCurrency(card.balance, currency)}</p>
             </div>
             <div>
               <p className="text-xs text-zinc-500">APR</p>
@@ -279,7 +279,7 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
             <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">Total Debt</p>
           </div>
           <p className="text-2xl font-bold text-amber-300 tabular-nums">
-            {formatCurrency(totalDebt, 'USD')}
+            {formatCurrency(totalDebt, currency)}
           </p>
           <p className="text-xs text-amber-400/70 mt-1">{cards.length} credit cards</p>
         </div>
@@ -290,7 +290,7 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
             <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Minimum Payments</p>
           </div>
           <p className="text-2xl font-bold text-zinc-100 tabular-nums">
-            {formatCurrency(totalMinimum, 'USD')}/mo
+            {formatCurrency(totalMinimum, currency)}/mo
           </p>
           <p className="text-xs text-zinc-500 mt-1">Combined minimum due</p>
         </div>
@@ -332,7 +332,7 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
           />
         </div>
         <p className="text-xs text-zinc-500 mt-2">
-          Total monthly payment: {formatCurrency(totalMinimum + (extraPayment ?? 0), 'USD')}
+          Total monthly payment: {formatCurrency(totalMinimum + (extraPayment ?? 0), currency)}
         </p>
       </div>
 
@@ -373,13 +373,13 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-400">Total interest</span>
                   <span className="text-rose-400 font-medium">
-                    {formatCurrency(comparison.snowball.totalInterest, 'USD')}
+                    {formatCurrency(comparison.snowball.totalInterest, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-400">Total paid</span>
                   <span className="text-zinc-100">
-                    {formatCurrency(comparison.snowball.totalPaid, 'USD')}
+                    {formatCurrency(comparison.snowball.totalPaid, currency)}
                   </span>
                 </div>
               </div>
@@ -420,20 +420,20 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-400">Total interest</span>
                   <span className="text-rose-400 font-medium">
-                    {formatCurrency(comparison.avalanche.totalInterest, 'USD')}
+                    {formatCurrency(comparison.avalanche.totalInterest, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-400">Total paid</span>
                   <span className="text-zinc-100">
-                    {formatCurrency(comparison.avalanche.totalPaid, 'USD')}
+                    {formatCurrency(comparison.avalanche.totalPaid, currency)}
                   </span>
                 </div>
               </div>
 
               {comparison.interestSaved > 0 && (
                 <p className="text-xs text-emerald-400 mt-3">
-                  Saves {formatCurrency(comparison.interestSaved, 'USD')} in interest
+                  Saves {formatCurrency(comparison.interestSaved, currency)} in interest
                 </p>
               )}
             </button>
@@ -470,7 +470,7 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-zinc-100 truncate">{card.cardName}</p>
                   <p className="text-xs text-zinc-500">
-                    {formatCurrency(card.initialBalance, 'USD')} at {card.apr}% APR
+                    {formatCurrency(card.initialBalance, currency)} at {card.apr}% APR
                   </p>
                 </div>
                 <div className="text-right">
@@ -478,7 +478,7 @@ export function DebtPayoffPlanner({ cards, currency = 'USD', totalCreditCardCoun
                     {format(card.paidOffDate, 'MMM yyyy')}
                   </p>
                   <p className="text-xs text-rose-400">
-                    +{formatCurrency(card.totalInterestPaid, 'USD')} interest
+                    +{formatCurrency(card.totalInterestPaid, currency)} interest
                   </p>
                 </div>
               </div>

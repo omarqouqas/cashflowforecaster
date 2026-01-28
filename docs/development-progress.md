@@ -100,10 +100,54 @@
 - `app/dashboard/debt-payoff/page.tsx` - Server component fetching CC accounts
 - `components/debt-payoff/debt-payoff-planner.tsx` - Client component with strategy comparison
 
+**New Files (Charts):**
+- `components/charts/payoff-timeline-chart.tsx` - Debt payoff timeline area chart
+- `components/charts/forecast-balance-chart.tsx` - Dashboard forecast balance chart
+- `docs/charts-roadmap.md` - Charts implementation roadmap and patterns
+
+**Dependencies Added:**
+- `recharts` - React charting library for data visualization
+
 **Modified Files (Debt Payoff Planner):**
 - `app/dashboard/accounts/page.tsx` - Added "Plan Your Debt Payoff" navigation card
 
-**Bug Fixes:**
+**New Charts:**
+- `components/charts/payoff-timeline-chart.tsx` - Debt payoff timeline visualization with Recharts
+  - Area chart showing total balance decreasing over time
+  - Reference lines for card payoff milestones
+  - Custom tooltip with month/balance/cards paid off
+  - Legend showing when each card is paid off
+- `components/charts/forecast-balance-chart.tsx` - Dashboard balance trend visualization
+  - Area chart showing projected balance over forecast period
+  - Lowest balance point marker with reference dot
+  - Safety buffer reference line
+  - Custom tooltip with date/balance formatting
+  - Color-coded for positive (teal) vs negative (rose) balances
+
+**Chart Bug Fixes (11 total):**
+
+*Forecast Balance Chart (6 bugs):*
+- Fixed sampling that could skip actual lowest balance day
+- Fixed duplicate last day when lowest day = last day
+- Fixed negative currency formatting (`$-500` → `-$500`)
+- Fixed gradient ID collision when multiple charts render (used `useId()`)
+- Fixed safety buffer line rendering outside visible Y-axis range
+- Fixed potential undefined array access with explicit checks
+
+*Payoff Timeline Chart (5 bugs):*
+- Fixed hardcoded 'USD' currency (now uses currency prop)
+- Fixed gradient ID collision (used `useId()`)
+- Fixed key collision using cardName (changed to cardId)
+- Fixed overlapping X-axis tick labels at end of chart
+- Fixed negative currency formatting in Y-axis
+
+**Debt Payoff Planner Bug Fixes:**
+- Fixed 11 instances of hardcoded 'USD' currency (now uses currency prop)
+- Improved empty states: differentiate "no cards added" vs "all cards paid off"
+  - No cards: Feature preview with CTA to add credit card
+  - All paid: Celebration message with link to accounts
+
+**Other Bug Fixes:**
 - Statement/Payment day dropdowns now allow 1-31 (was 1-28)
 - Calendar CC payment validation updated for days 29-31
 - Fixed date rollover for months with fewer days (e.g., day 31 in Feb → 28/29)
@@ -657,6 +701,7 @@
 | Form UX consistency | Unified styling, mobile touch targets |
 | Reports & Export | CSV/Excel/JSON export, quick reports, custom builder |
 | Custom Bill Categories | User-defined categories with colors, icons, inline creation |
+| Data Visualization Charts | Forecast balance chart, payoff timeline chart (Recharts) |
 
 ### Upcoming
 
@@ -694,6 +739,8 @@
 - Mobile navigation with user avatar menu and Dashboard as Home
 - Reports & Export with quick reports, custom builder, and export history
 - Custom bill categories with colors, icons, and inline creation
+- Data visualization with Recharts (payoff timeline, forecast balance charts)
+- Improved empty states with context-aware messaging
 
 ## What's Next
 

@@ -363,7 +363,22 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
   - Side-by-side comparison showing debt-free date, total interest, total paid
   - Payoff order visualization with per-card payoff dates and interest
   - Navigation from Accounts page when 2+ credit cards have balances
+  - **Payoff Timeline Chart** showing balance decrease over time with milestones
 - **Credit Card filter** in Accounts page filter dropdown
+
+**18. Data Visualization Charts ✅**
+- Built with Recharts library for responsive, interactive charts
+- **Forecast Balance Chart** on Dashboard:
+  - Area chart showing projected balance trend
+  - Lowest balance point marker
+  - Safety buffer reference line
+  - Color-coded positive (teal) vs negative (rose)
+- **Payoff Timeline Chart** in Debt Payoff Planner:
+  - Area chart showing debt decreasing over time
+  - Reference lines for each card payoff milestone
+  - Legend with payoff dates per card
+- Dark theme styling consistent with app aesthetic
+- Unique gradient IDs to prevent conflicts with multiple charts
 
 **13. Weekly Email Digest ✅**
 - Weekly summary of next 7 days (income, bills, net change)
@@ -933,6 +948,25 @@ User Request
   - Statement/Payment day dropdowns now allow 1-31 (was limited to 1-28)
   - Fixed date rollover for months with fewer days (e.g., day 31 in Feb → 28/29)
   - Fixed filter logic to properly match `credit_card` account type
+- **Data Visualization Charts:**
+  - New `components/charts/payoff-timeline-chart.tsx` - Debt payoff timeline visualization
+    - Area chart showing total balance decreasing over time
+    - Reference lines for card payoff milestones
+    - Custom tooltip with month/balance/cards paid off
+    - Legend showing when each card is paid off
+  - New `components/charts/forecast-balance-chart.tsx` - Dashboard balance trend
+    - Area chart showing projected balance over forecast period
+    - Lowest balance point marker with reference dot
+    - Safety buffer reference line
+    - Color-coded for positive (teal) vs negative (rose) balances
+  - Added `recharts` dependency for React charting
+  - Created `docs/charts-roadmap.md` for implementation patterns
+- **Chart Bug Fixes (11 total):**
+  - Forecast Balance Chart: Fixed sampling skipping lowest day, duplicate last day, negative currency formatting, gradient ID collision, safety buffer line visibility, undefined array access
+  - Payoff Timeline Chart: Fixed hardcoded currency, gradient ID collision, key collision, overlapping X-axis labels, negative currency formatting
+- **Debt Payoff Planner Bug Fixes:**
+  - Fixed 11 instances of hardcoded 'USD' currency (now uses currency prop)
+  - Improved empty states: differentiate "no cards added" vs "all cards paid off"
 
 ### Version 6.4 (January 26, 2026)
 - **Custom Bill Categories Feature:**
