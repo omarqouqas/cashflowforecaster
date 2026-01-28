@@ -31,6 +31,10 @@ export default async function DebtPayoffPage() {
     creditLimit: account.credit_limit ?? null,
   }))
 
+  // Get currency from the first account, default to USD
+  const firstAccount = accounts?.[0] as { currency?: string } | undefined
+  const currency = firstAccount?.currency ?? 'USD'
+
   return (
     <div className="max-w-4xl mx-auto">
       <Link
@@ -41,7 +45,7 @@ export default async function DebtPayoffPage() {
         Back to Accounts
       </Link>
 
-      <DebtPayoffPlanner cards={creditCards} />
+      <DebtPayoffPlanner cards={creditCards} currency={currency} />
     </div>
   )
 }

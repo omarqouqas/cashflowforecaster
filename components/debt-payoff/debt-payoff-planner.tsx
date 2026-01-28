@@ -26,9 +26,10 @@ interface CreditCardInput {
 
 interface DebtPayoffPlannerProps {
   cards: CreditCardInput[]
+  currency?: string
 }
 
-export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
+export function DebtPayoffPlanner({ cards, currency = 'USD' }: DebtPayoffPlannerProps) {
   const [extraPayment, setExtraPayment] = useState<number | undefined>(100)
   const [selectedStrategy, setSelectedStrategy] = useState<'snowball' | 'avalanche'>('snowball')
 
@@ -366,6 +367,7 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
           schedule={selectedResult.schedule}
           cardSummaries={selectedResult.cardSummaries}
           totalDebt={totalDebt}
+          currency={currency}
         />
       )}
 

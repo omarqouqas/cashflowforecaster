@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useCallback } from 'react'
+import { useId, useMemo, useCallback } from 'react'
 import {
   AreaChart,
   Area,
@@ -19,6 +19,7 @@ interface PayoffTimelineChartProps {
   schedule: MonthlySnapshot[]
   cardSummaries: CardPayoffSummary[]
   totalDebt: number
+  currency?: string
 }
 
 interface ChartDataPoint {
@@ -30,7 +31,15 @@ interface ChartDataPoint {
 }
 
 // Custom tooltip component (defined outside to prevent recreation)
-function ChartTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartDataPoint }> }) {
+function ChartTooltip({
+  active,
+  payload,
+  currency,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: ChartDataPoint }>
+  currency: string
+}) {
   if (!active || !payload || !payload.length) return null
 
   const data = payload[0]?.payload
@@ -42,7 +51,7 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: Array<{
         {format(data.date, 'MMMM yyyy')}
       </p>
       <p className="text-sm text-amber-400 mt-1">
-        Balance: {formatCurrency(data.balance, 'USD')}
+        Balance: {formatCurrency(data.balance, currency)}
       </p>
       {data.paidOffCards && data.paidOffCards.length > 0 && (
         <div className="mt-2 pt-2 border-t border-zinc-700">
@@ -59,7 +68,11 @@ export function PayoffTimelineChart({
   schedule,
   cardSummaries,
   totalDebt,
+  currency = 'USD',
 }: PayoffTimelineChartProps) {
+  // Unique ID for gradient to prevent conflicts if multiple charts render
+  const gradientId = useId()
+
   // Use a stable start date based on the first schedule item or current date
   const startDate = useMemo(() => {
     if (schedule.length > 0 && schedule[0]) {
@@ -107,6 +120,7 @@ export function PayoffTimelineChart({
   // Get months where cards are paid off for reference lines
   const payoffMilestones = useMemo(() => {
     return cardSummaries.map(card => ({
+      cardId: card.cardId,
       month: card.paidOffMonth,
       cardName: card.cardName,
       date: card.paidOffDate,
@@ -130,8 +144,13 @@ export function PayoffTimelineChart({
     for (let i = interval; i < totalMonths; i += interval) {
       ticks.push(i)
     }
-    if (totalMonths > 0 && !ticks.includes(totalMonths)) {
-      ticks.push(totalMonths)
+    // Only add final month if it's not too close to the last interval tick
+    // (at least half an interval away to prevent label overlap)
+    if (totalMonths > 0) {
+      const lastTick = ticks[ticks.length - 1] ?? 0
+      if (totalMonths - lastTick >= interval / 2) {
+        ticks.push(totalMonths)
+      }
     }
     return ticks
   }, [schedule])
@@ -155,7 +174,7 @@ export function PayoffTimelineChart({
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={`balanceGradient-${gradientId}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
                 <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
               </linearGradient>
@@ -174,12 +193,15 @@ export function PayoffTimelineChart({
 
             <YAxis
               tickFormatter={(value) => {
-                if (value >= 1000) {
-                  const kValue = value / 1000
+                const isNegative = value < 0
+                const absValue = Math.abs(value)
+                if (absValue >= 1000) {
+                  const kValue = absValue / 1000
                   // Use 1 decimal place if needed to avoid duplicates
-                  return kValue % 1 === 0 ? `$${kValue.toFixed(0)}k` : `$${kValue.toFixed(1)}k`
+                  const formatted = kValue % 1 === 0 ? `${kValue.toFixed(0)}k` : `${kValue.toFixed(1)}k`
+                  return `${isNegative ? '-' : ''}$${formatted}`
                 }
-                return `$${value}`
+                return `${isNegative ? '-' : ''}$${absValue}`
               }}
               stroke="#71717a"
               tick={{ fill: '#a1a1aa', fontSize: 11 }}
@@ -190,12 +212,12 @@ export function PayoffTimelineChart({
               tickCount={5}
             />
 
-            <Tooltip content={<ChartTooltip />} />
+            <Tooltip content={<ChartTooltip currency={currency} />} />
 
             {/* Reference lines for card payoff milestones */}
             {payoffMilestones.map((milestone) => (
               <ReferenceLine
-                key={milestone.cardName}
+                key={milestone.cardId}
                 x={milestone.month}
                 stroke="#10b981"
                 strokeDasharray="4 4"
@@ -208,7 +230,7 @@ export function PayoffTimelineChart({
               dataKey="balance"
               stroke="#f59e0b"
               strokeWidth={2}
-              fill="url(#balanceGradient)"
+              fill={`url(#balanceGradient-${gradientId})`}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -218,7 +240,7 @@ export function PayoffTimelineChart({
       <div className="mt-4 flex flex-wrap gap-3">
         {payoffMilestones.map((milestone) => (
           <div
-            key={milestone.cardName}
+            key={milestone.cardId}
             className="flex items-center gap-2 text-xs"
           >
             <svg width="12" height="2" className="flex-shrink-0">
