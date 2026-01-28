@@ -183,7 +183,68 @@ This would be a **killer feature** that directly addresses the core anxiety of f
 
 ---
 
-## 6. Decision Log
+## 7. Data Visualization / Charts
+
+### Current State
+
+The app currently has **one chart**: a balance trend line on the Cash Flow Calendar page. There's significant opportunity to add more visualizations.
+
+### Recommended Charts by Page
+
+| Location | Chart Type | Purpose | Priority | Effort |
+|----------|------------|---------|----------|--------|
+| **Dashboard Home** | Balance trend (30/60/90 days) | At-a-glance financial health | High | Low |
+| **Debt Payoff Planner** | Payoff timeline chart | Visualize debt reduction over time | High | Medium |
+| **Debt Payoff Planner** | Stacked bar (balance by card) | Show which cards get paid when | High | Medium |
+| **Accounts Page** | Pie/donut chart | Account balance distribution | Medium | Low |
+| **CC Payment Simulator** | Balance over time | Show balance projection with different payment amounts | Medium | Medium |
+| **Bills Page** | Category spending bar chart | Monthly expenses by category | Medium | Low |
+| **Dashboard Home** | Income vs Expenses | Monthly comparison | Medium | Medium |
+| **Reports Page (New)** | Multiple charts | Comprehensive financial reports | Low | High |
+
+### Library Recommendation
+
+**Recharts** is the recommended library:
+- Most popular React charting library
+- Great TypeScript support
+- Works well with Tailwind CSS
+- Lightweight and performant
+- Easy to customize colors to match dark theme
+
+```bash
+npm install recharts
+```
+
+### Implementation Priority
+
+1. **Debt Payoff Timeline Chart** - Highest value, directly enhances new feature
+2. **Dashboard Balance Trend** - High visibility, sets professional tone
+3. **Category Spending Chart** - Helps users understand expense patterns
+4. **Account Distribution Pie** - Quick visual overview
+
+### Code Structure
+
+```
+components/
+  charts/
+    balance-trend-chart.tsx
+    payoff-timeline-chart.tsx
+    category-spending-chart.tsx
+    account-distribution-chart.tsx
+    chart-wrapper.tsx  # Common styling/theming
+```
+
+### Design Considerations
+
+- Use existing color scheme: Emerald for positive, Rose for negative, Amber for warnings
+- Dark theme compatible (zinc-900 backgrounds, zinc-700 grid lines)
+- Responsive sizing
+- Loading states with skeletons
+- Empty states when no data
+
+---
+
+## 8. Decision Log
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
@@ -191,6 +252,8 @@ This would be a **killer feature** that directly addresses the core anxiety of f
 | Jan 2026 | PWA over native app | Already works on iOS, native adds complexity without clear user demand |
 | Jan 2026 | AI categorization as first AI feature | Low effort, high value, reduces friction |
 | Jan 2026 | Client payment tracking as next big feature | Addresses core freelancer pain point, unique differentiator |
+| Jan 2026 | Recharts for data visualization | Popular, TypeScript support, Tailwind-compatible, lightweight |
+| Jan 2026 | Debt payoff timeline chart as first new chart | High value, enhances newly built feature |
 
 ---
 
