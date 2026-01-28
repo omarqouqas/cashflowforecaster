@@ -12,6 +12,7 @@ import {
   type CreditCardDebt,
   type PayoffResult,
 } from '@/lib/debt-payoff/calculate-payoff'
+import { PayoffTimelineChart } from '@/components/charts/payoff-timeline-chart'
 
 interface CreditCardInput {
   id: string
@@ -266,6 +267,15 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Payoff Timeline Chart */}
+      {selectedResult && selectedResult.schedule.length > 0 && (
+        <PayoffTimelineChart
+          schedule={selectedResult.schedule}
+          cardSummaries={selectedResult.cardSummaries}
+          totalDebt={totalDebt}
+        />
       )}
 
       {/* Payoff Order */}
