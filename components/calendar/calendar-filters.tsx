@@ -211,15 +211,17 @@ export function CalendarFilterBar({
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors bg-zinc-800/50 hover:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-700/50"
+          aria-label="Toggle calendar filters"
+          aria-expanded={isExpanded}
         >
-          <SlidersHorizontal className="w-4 h-4" />
+          <SlidersHorizontal className="w-4 h-4" aria-hidden="true" />
           <span>Filters</span>
           {hasActiveFilters && (
             <span className="bg-teal-500/20 text-teal-400 text-xs font-medium px-1.5 py-0.5 rounded">
               {activeFilterPills.length}
             </span>
           )}
-          <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
 
         {/* Quick search always visible */}
