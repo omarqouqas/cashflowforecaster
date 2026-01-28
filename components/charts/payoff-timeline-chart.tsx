@@ -164,7 +164,9 @@ export function PayoffTimelineChart({
             <YAxis
               tickFormatter={(value) => {
                 if (value >= 1000) {
-                  return `$${(value / 1000).toFixed(0)}k`
+                  const kValue = value / 1000
+                  // Use 1 decimal place if needed to avoid duplicates
+                  return kValue % 1 === 0 ? `$${kValue.toFixed(0)}k` : `$${kValue.toFixed(1)}k`
                 }
                 return `$${value}`
               }}
@@ -172,6 +174,9 @@ export function PayoffTimelineChart({
               tick={{ fill: '#a1a1aa', fontSize: 11 }}
               axisLine={{ stroke: '#3f3f46' }}
               width={50}
+              domain={[0, 'auto']}
+              allowDecimals={false}
+              tickCount={5}
             />
 
             <Tooltip content={<CustomTooltip />} />

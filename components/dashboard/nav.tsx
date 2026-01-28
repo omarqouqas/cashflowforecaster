@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   Wallet,
   TrendingUp,
+  TrendingDown,
   Calendar,
   Settings,
   Receipt,
@@ -71,6 +72,7 @@ export function DashboardNav({ userEmail, userName, userTier }: DashboardNavProp
     { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
     { href: '/dashboard/income', label: 'Income', icon: TrendingUp },
     { href: '/dashboard/bills', label: 'Bills', icon: FileText },
+    { href: '/dashboard/debt-payoff', label: 'Debt Payoff', icon: TrendingDown },
     { href: '/dashboard/import', label: 'Import', icon: Upload },
     { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
     { href: '/dashboard/reports', label: 'Reports', icon: FileBarChart },

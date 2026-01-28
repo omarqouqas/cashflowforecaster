@@ -29,7 +29,7 @@ interface DebtPayoffPlannerProps {
 
 export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
   const [extraPayment, setExtraPayment] = useState<number | undefined>(100)
-  const [selectedStrategy, setSelectedStrategy] = useState<'snowball' | 'avalanche'>('avalanche')
+  const [selectedStrategy, setSelectedStrategy] = useState<'snowball' | 'avalanche'>('snowball')
 
   // Transform cards to the calculation format
   const creditCards: CreditCardDebt[] = useMemo(() =>
