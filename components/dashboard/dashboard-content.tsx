@@ -15,6 +15,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
+import { ForecastBalanceChart } from '@/components/charts/forecast-balance-chart';
 import { SuccessMessage } from '@/components/ui/success-message';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { TaxSavingsWidget } from '@/components/dashboard/tax-savings-widget';
@@ -630,6 +631,19 @@ export function DashboardContent({
                   </span>
                 )}
               </div>
+
+              {/* Forecast Chart */}
+              {filteredCalendarDays && filteredCalendarDays.length > 0 && (
+                <div className="py-4 border-t border-zinc-700/50">
+                  <ForecastBalanceChart
+                    days={filteredCalendarDays}
+                    currency={currency}
+                    lowestBalance={forecastMetrics.lowestBalance}
+                    lowestBalanceDay={forecastMetrics.lowestBalanceDay}
+                    safetyBuffer={safetyBuffer}
+                  />
+                </div>
+              )}
 
               <div className="grid grid-cols-3 gap-2 sm:gap-4 py-4 border-t border-b border-zinc-700/50">
                 <div className="min-w-0">
