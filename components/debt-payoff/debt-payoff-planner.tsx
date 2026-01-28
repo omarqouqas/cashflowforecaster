@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { CreditCard, TrendingDown, Calculator, Zap, Target, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { CreditCard, TrendingDown, Calculator, Zap, Target, CheckCircle2, AlertTriangle, Plus, ArrowRight, BarChart3 } from 'lucide-react'
+import Link from 'next/link'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/format'
 import { CurrencyInput } from '@/components/ui/currency-input'
@@ -80,13 +81,14 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
     )
   }
 
-  // Single card - simplified view
+  // Single card - show feature preview and encourage adding more cards
   if (cards.length === 1) {
     const card = cards[0]!
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-zinc-100">Debt Payoff Planner</h1>
 
+        {/* Current card info */}
         <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
@@ -110,10 +112,61 @@ export function DebtPayoffPlanner({ cards }: DebtPayoffPlannerProps) {
           </div>
 
           <p className="text-sm text-zinc-400">
-            With only one card, both Snowball and Avalanche strategies are identical.
-            Use the Payment Simulator on your account card to explore payment options.
+            For single-card debt, use the <span className="text-teal-400">Payment Simulator</span> on your account card to explore payment options.
           </p>
         </div>
+
+        {/* Feature preview - what you get with 2+ cards */}
+        <div className="border border-teal-500/30 bg-teal-500/5 rounded-lg p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="w-6 h-6 text-teal-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+                Unlock Smart Debt Strategies
+              </h3>
+              <p className="text-sm text-zinc-400 mb-4">
+                Add another credit card to compare <span className="text-teal-400 font-medium">Snowball</span> vs <span className="text-teal-400 font-medium">Avalanche</span> payoff strategies and see exactly how much interest you can save.
+              </p>
+
+              {/* Feature benefits */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                <div className="flex items-start gap-2">
+                  <Target className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-zinc-300">Compare payoff strategies</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <TrendingDown className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-zinc-300">See interest savings</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <BarChart3 className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-zinc-300">Visual payoff timeline</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Calculator className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-zinc-300">Optimal payment order</span>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <Link
+                href="/dashboard/accounts/new?type=credit_card"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-medium rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add Another Credit Card
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Why 2+ cards explanation */}
+        <p className="text-xs text-zinc-500 text-center">
+          The Debt Payoff Planner compares strategies for paying off multiple cards. With one card, there&apos;s nothing to compare — just pay it off as fast as you can!
+        </p>
       </div>
     )
   }

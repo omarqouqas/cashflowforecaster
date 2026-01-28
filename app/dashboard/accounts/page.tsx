@@ -171,7 +171,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
             )}
           </div>
 
-          {/* Debt Payoff Planner Link */}
+          {/* Debt Payoff Planner Link - for 2+ cards */}
           {creditCardsWithDebt.length >= 2 && (
             <div className="mt-4 pt-4 border-t border-zinc-800">
               <Link href="/dashboard/debt-payoff">
@@ -194,6 +194,32 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
                   </div>
                 </div>
               </Link>
+            </div>
+          )}
+
+          {/* Debt Payoff Teaser - for exactly 1 card */}
+          {creditCardsWithDebt.length === 1 && (
+            <div className="mt-4 pt-4 border-t border-zinc-800">
+              <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-zinc-400" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-zinc-300">Debt Payoff Planner</p>
+                      <p className="text-xs text-zinc-500">
+                        Add another credit card to compare Snowball vs Avalanche strategies
+                      </p>
+                    </div>
+                  </div>
+                  <Link href="/dashboard/accounts/new?type=credit_card">
+                    <Button variant="secondary" size="sm">
+                      + Add Card
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           )}
         </div>
