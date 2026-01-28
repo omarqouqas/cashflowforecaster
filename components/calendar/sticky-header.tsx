@@ -163,7 +163,7 @@ export function StickyCalendarHeader({
                 <>
                   Without going below your{' '}
                   <Link
-                    href="/dashboard/settings"
+                    href="/dashboard/settings#safety-buffer"
                     className="inline-flex items-center gap-1 text-zinc-400 hover:text-emerald-400 transition-colors"
                   >
                     {formatCurrency(safetyBuffer, currency)} buffer

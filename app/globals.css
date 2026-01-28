@@ -168,6 +168,25 @@
   .animate-fadeIn {
     animation: fadeIn 0.4s ease-out;
   }
+
+  /* Anchor link highlight animation */
+  @keyframes anchor-highlight {
+    0% {
+      background-color: rgba(20, 184, 166, 0.15); /* teal-500 with opacity */
+      box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+    }
+    100% {
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  /* Apply highlight to targeted sections */
+  section:target,
+  div:target {
+    animation: anchor-highlight 2s ease-out;
+    border-radius: 0.75rem;
+  }
 }
 
 /* Custom media query for devices with notches/safe areas */

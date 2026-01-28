@@ -137,7 +137,7 @@ export default async function SettingsPage() {
 
       <div className="space-y-8">
         {/* ===== SUBSCRIPTION SECTION ===== */}
-        <section>
+        <section id="subscription" className="scroll-mt-20">
           <SectionHeader icon={CreditCard} title="Subscription" />
           <SubscriptionStatus
             tier={subscription.tier}
@@ -148,7 +148,7 @@ export default async function SettingsPage() {
         </section>
 
         {/* ===== ACCOUNT SECTION ===== */}
-        <section>
+        <section id="account" className="scroll-mt-20">
           <SectionHeader icon={User} title="Account" />
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 divide-y divide-zinc-800">
             {/* Email */}
@@ -194,25 +194,29 @@ export default async function SettingsPage() {
         </section>
 
         {/* ===== PREFERENCES SECTION ===== */}
-        <section>
+        <section id="preferences" className="scroll-mt-20">
           <SectionHeader icon={Sliders} title="Preferences" />
           <div className="space-y-4">
             {/* Timezone */}
-            <TimezoneForm initialValue={timezone} />
+            <div id="timezone" className="scroll-mt-20">
+              <TimezoneForm initialValue={timezone} />
+            </div>
 
             {/* Safety Buffer */}
-            <SafetyBufferForm initialValue={safetyBuffer} />
+            <div id="safety-buffer" className="scroll-mt-20">
+              <SafetyBufferForm initialValue={safetyBuffer} />
+            </div>
           </div>
         </section>
 
         {/* ===== CATEGORIES SECTION ===== */}
-        <section>
+        <section id="categories" className="scroll-mt-20">
           <SectionHeader icon={Tag} title="Bill Categories" />
           <CategoryManagementForm initialCategories={categories} />
         </section>
 
         {/* ===== NOTIFICATIONS SECTION ===== */}
-        <section>
+        <section id="notifications" className="scroll-mt-20">
           <SectionHeader icon={Bell} title="Notifications" />
           <div className="space-y-4">
             <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
@@ -222,7 +226,7 @@ export default async function SettingsPage() {
 
         {/* ===== STRIPE PAYMENTS SECTION (Pro Only) ===== */}
         {subscription.tier !== 'free' && (
-          <section>
+          <section id="payments" className="scroll-mt-20">
             <SectionHeader icon={Banknote} title="Invoice Payments" />
             <StripeConnectForm
               initialStatus={
@@ -237,7 +241,7 @@ export default async function SettingsPage() {
         )}
 
         {/* ===== INVOICE BRANDING SECTION ===== */}
-        <section>
+        <section id="invoice-branding" className="scroll-mt-20">
           <SectionHeader icon={FileImage} title="Invoice Branding" />
           <InvoiceBrandingForm
             initialBusinessName={businessName}
@@ -247,7 +251,7 @@ export default async function SettingsPage() {
         </section>
 
         {/* ===== TAX TRACKING SECTION ===== */}
-        <section>
+        <section id="tax-settings" className="scroll-mt-20">
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
             <TaxSettingsForm
               initialSettings={{
@@ -264,7 +268,7 @@ export default async function SettingsPage() {
         </section>
 
         {/* ===== EMERGENCY FUND SECTION ===== */}
-        <section>
+        <section id="emergency-fund" className="scroll-mt-20">
           <EmergencyFundForm
             initialEnabled={emergencyFundEnabled}
             initialGoalMonths={emergencyFundGoalMonths}
@@ -275,7 +279,7 @@ export default async function SettingsPage() {
         </section>
 
         {/* ===== DANGER ZONE ===== */}
-        <section>
+        <section id="danger-zone" className="scroll-mt-20">
           <SectionHeader icon={Shield} title="Danger Zone" variant="danger" />
           <DeleteAccountSection />
         </section>

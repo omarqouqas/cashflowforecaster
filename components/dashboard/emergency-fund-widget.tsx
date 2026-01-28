@@ -87,7 +87,7 @@ export function EmergencyFundWidget({
             Financial experts recommend saving 3-6 months of expenses.
           </p>
           <Link
-            href="/dashboard/settings"
+            href="/dashboard/settings#emergency-fund"
             className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-teal-400 hover:text-teal-300"
           >
             <Settings className="h-4 w-4" />
@@ -115,7 +115,7 @@ export function EmergencyFundWidget({
         <div className="flex items-center gap-2">
           {getStatusBadge()}
           <Link
-            href="/dashboard/settings"
+            href="/dashboard/settings#emergency-fund"
             className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
             title="Configure"
           >

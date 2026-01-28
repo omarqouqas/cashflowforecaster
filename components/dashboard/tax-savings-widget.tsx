@@ -34,7 +34,7 @@ export function TaxSavingsWidget({
         </div>
         <div className="mt-4">
           <Link
-            href="/dashboard/settings"
+            href="/dashboard/settings#tax-settings"
             className="inline-flex items-center gap-2 text-sm font-medium text-teal-400 hover:text-teal-300"
           >
             Enable in Settings →
@@ -142,7 +142,7 @@ export function TaxSavingsWidget({
       {/* Actions */}
       <div className="mt-4 flex items-center gap-3">
         <Link
-          href="/dashboard/settings"
+          href="/dashboard/settings#tax-settings"
           className="text-sm font-medium text-teal-400 hover:text-teal-300"
         >
           Update tax settings →
