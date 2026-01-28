@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useId, useMemo } from 'react'
 import {
   AreaChart,
   Area,
@@ -65,6 +65,9 @@ export function ForecastBalanceChart({
   lowestBalanceDay,
   safetyBuffer,
 }: ForecastBalanceChartProps) {
+  // Unique ID for gradient to prevent conflicts if multiple charts render
+  const gradientId = useId()
+
   // Transform calendar days into chart data
   const chartData = useMemo(() => {
     // Sample data points to avoid overcrowding (max ~30 points for smooth chart)
@@ -110,10 +113,12 @@ export function ForecastBalanceChart({
         } else {
           data.splice(insertIndex, 0, lowestPoint)
         }
+        // Mark as added to prevent duplicate when checking last day
+        addedIndices.add(lowestDayIndex)
       }
     }
 
-    // Always include the last day
+    // Always include the last day (if not already added as lowest or sampled)
     const lastIndex = days.length - 1
     const lastDay = days[lastIndex]
     if (lastDay && !addedIndices.has(lastIndex)) {
@@ -189,7 +194,7 @@ export function ForecastBalanceChart({
           margin={{ top: 5, right: 5, left: 0, bottom: 0 }}
         >
           <defs>
-            <linearGradient id="forecastGradient" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={`forecastGradient-${gradientId}`} x1="0" y1="0" x2="0" y2="1">
               <stop
                 offset="5%"
                 stopColor={hasNegative ? '#f43f5e' : '#14b8a6'}
@@ -214,10 +219,12 @@ export function ForecastBalanceChart({
 
           <YAxis
             tickFormatter={(value) => {
-              if (Math.abs(value) >= 1000) {
-                return `$${(value / 1000).toFixed(0)}k`
+              const isNegative = value < 0
+              const absValue = Math.abs(value)
+              if (absValue >= 1000) {
+                return `${isNegative ? '-' : ''}$${(absValue / 1000).toFixed(0)}k`
               }
-              return `$${value}`
+              return `${isNegative ? '-' : ''}$${absValue}`
             }}
             stroke="#52525b"
             tick={{ fill: '#a1a1aa', fontSize: 10 }}
@@ -252,7 +259,7 @@ export function ForecastBalanceChart({
             dataKey="balance"
             stroke={hasNegative ? '#f43f5e' : '#14b8a6'}
             strokeWidth={2}
-            fill="url(#forecastGradient)"
+            fill={`url(#forecastGradient-${gradientId})`}
           />
 
           {/* Lowest point marker */}
