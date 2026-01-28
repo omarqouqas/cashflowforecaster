@@ -59,12 +59,28 @@ function ChartTooltip({
   )
 }
 
+// Get currency symbol for a given currency code
+function getCurrencySymbol(currency: string): string {
+  try {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+    return formatter.format(0).replace(/[\d\s]/g, '').trim()
+  } catch {
+    return '$'
+  }
+}
+
 export function ForecastBalanceChart({
   days,
   currency,
   lowestBalanceDay,
   safetyBuffer,
 }: ForecastBalanceChartProps) {
+  const currencySymbol = getCurrencySymbol(currency)
   // Unique ID for gradient to prevent conflicts if multiple charts render
   const gradientId = useId()
 
@@ -222,9 +238,9 @@ export function ForecastBalanceChart({
               const isNegative = value < 0
               const absValue = Math.abs(value)
               if (absValue >= 1000) {
-                return `${isNegative ? '-' : ''}$${(absValue / 1000).toFixed(0)}k`
+                return `${isNegative ? '-' : ''}${currencySymbol}${(absValue / 1000).toFixed(0)}k`
               }
-              return `${isNegative ? '-' : ''}$${absValue}`
+              return `${isNegative ? '-' : ''}${currencySymbol}${absValue}`
             }}
             stroke="#52525b"
             tick={{ fill: '#a1a1aa', fontSize: 10 }}
