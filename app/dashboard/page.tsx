@@ -34,7 +34,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order('created_at', { ascending: false }),
     supabase
       .from('user_settings')
-      .select('safety_buffer, timezone, tax_rate, tax_tracking_enabled, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id')
+      .select('currency, safety_buffer, timezone, tax_rate, tax_tracking_enabled, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id')
       .eq('user_id', user.id)
       .single(),
     getInvoiceSummary(),
@@ -57,7 +57,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   // Extract settings with type assertion
   const settingsData = settingsResult.data as any;
 
-  // Extract safety buffer with fallback to default
+  // Extract settings with fallbacks
+  const currency = settingsData?.currency ?? 'USD';
   const safetyBuffer = settingsData?.safety_buffer ?? 500;
   const timezone = settingsData?.timezone ?? null;
 
@@ -236,6 +237,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       }}
       message={message}
       calendarError={calendarError}
+      currency={currency}
     />
   );
 }

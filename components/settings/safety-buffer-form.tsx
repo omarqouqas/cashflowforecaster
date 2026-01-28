@@ -2,21 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Gauge } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
 import { FormError } from '@/components/ui/form-error';
-import { formatCurrency } from '@/lib/utils/format';
+import { formatCurrency, getCurrencySymbol } from '@/lib/utils/format';
 
 const safetyBufferSchema = z.object({
   safetyBuffer: z.coerce
     .number({ message: 'Safety buffer must be a valid number' })
-    .min(50, 'Safety buffer must be at least $50')
+    .min(50, 'Safety buffer must be at least 50')
     .multipleOf(50, 'Safety buffer must be a multiple of 50'),
 });
 
@@ -32,13 +32,14 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [currency, setCurrency] = useState('USD');
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
     reset,
     watch,
+    control,
   } = useForm<SafetyBufferFormData>({
     resolver: zodResolver(safetyBufferSchema),
     defaultValues: {
@@ -69,12 +70,17 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
 
       const { data, error: fetchError } = await supabase
         .from('user_settings')
-        .select('safety_buffer')
+        .select('safety_buffer, currency')
         .eq('user_id', user.id)
         .single();
 
-      if (!fetchError && data?.safety_buffer !== null && data?.safety_buffer !== undefined) {
-        reset({ safetyBuffer: data.safety_buffer });
+      if (!fetchError && data) {
+        if (data.safety_buffer !== null && data.safety_buffer !== undefined) {
+          reset({ safetyBuffer: data.safety_buffer });
+        }
+        if (data.currency) {
+          setCurrency(data.currency);
+        }
       }
 
       setIsLoading(false);
@@ -171,17 +177,21 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
             Minimum Balance
           </Label>
           <div className="relative mt-1.5">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
-              $
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">
+              {getCurrencySymbol(currency)}
             </span>
-            <Input
-              id="safetyBuffer"
-              type="number"
-              min="50"
-              step="50"
-              placeholder="500"
-              className="pl-8 bg-zinc-950 border-zinc-800 text-zinc-100 focus:border-teal-500"
-              {...register('safetyBuffer')}
+            <Controller
+              name="safetyBuffer"
+              control={control}
+              render={({ field }) => (
+                <CurrencyInput
+                  id="safetyBuffer"
+                  placeholder="500"
+                  className="pl-12 bg-zinc-950 border-zinc-800 text-zinc-100 focus:border-teal-500"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </div>
           <FormError message={errors.safetyBuffer?.message} />
@@ -199,25 +209,25 @@ export function SafetyBufferForm({ initialValue = 500 }: SafetyBufferFormProps) 
             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5">
               <p className="text-xs text-zinc-400 mb-0.5">Safe</p>
               <p className="text-sm font-semibold text-emerald-400">
-                {formatCurrency(thresholds.safe)}+
+                {formatCurrency(thresholds.safe, currency)}+
               </p>
             </div>
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5">
               <p className="text-xs text-zinc-400 mb-0.5">Caution</p>
               <p className="text-sm font-semibold text-amber-400">
-                {formatCurrency(thresholds.caution)}+
+                {formatCurrency(thresholds.caution, currency)}+
               </p>
             </div>
             <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-2.5">
               <p className="text-xs text-zinc-400 mb-0.5">Low</p>
               <p className="text-sm font-semibold text-orange-400">
-                {formatCurrency(thresholds.low)}+
+                {formatCurrency(thresholds.low, currency)}+
               </p>
             </div>
             <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-2.5">
               <p className="text-xs text-zinc-400 mb-0.5">Danger</p>
               <p className="text-sm font-semibold text-rose-400">
-                &lt; {formatCurrency(thresholds.low)}
+                &lt; {formatCurrency(thresholds.low, currency)}
               </p>
             </div>
           </div>

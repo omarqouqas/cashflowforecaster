@@ -21,6 +21,7 @@ import {
   DollarSign,
   Clock,
 } from 'lucide-react';
+import { getCurrencySymbol } from '@/lib/utils/format';
 
 export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'irregular';
 export type SourceType = 'regular' | 'invoice';
@@ -102,6 +103,7 @@ interface IncomeFilterBarProps {
   totalCount: number;
   visibleFilters: string[];
   onVisibleFiltersChange: (filters: string[]) => void;
+  currency?: string;
 }
 
 /**
@@ -114,7 +116,9 @@ export function IncomeFilterBar({
   totalCount,
   visibleFilters,
   onVisibleFiltersChange,
+  currency = 'USD',
 }: IncomeFilterBarProps) {
+  const currencySymbol = getCurrencySymbol(currency);
   // Build active filter pills
   const activeFilterPills = React.useMemo((): ActiveFilter[] => {
     const pills: ActiveFilter[] = [];
@@ -153,11 +157,11 @@ export function IncomeFilterBar({
     if (filters.amountMin !== null || filters.amountMax !== null) {
       let amountLabel = '';
       if (filters.amountMin !== null && filters.amountMax !== null) {
-        amountLabel = `$${filters.amountMin} - $${filters.amountMax}`;
+        amountLabel = `${currencySymbol}${filters.amountMin} - ${currencySymbol}${filters.amountMax}`;
       } else if (filters.amountMin !== null) {
-        amountLabel = `$${filters.amountMin}+`;
+        amountLabel = `${currencySymbol}${filters.amountMin}+`;
       } else if (filters.amountMax !== null) {
-        amountLabel = `Under $${filters.amountMax}`;
+        amountLabel = `Under ${currencySymbol}${filters.amountMax}`;
       }
       pills.push({ key: 'amount', label: 'Amount', value: amountLabel });
     }
@@ -176,7 +180,7 @@ export function IncomeFilterBar({
     }
 
     return pills;
-  }, [filters]);
+  }, [filters, currencySymbol]);
 
   // Handle removing a filter pill
   const handleRemoveFilter = (key: string, value: string) => {

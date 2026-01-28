@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.5
-**Last Updated:** January 27, 2026
-**Status:** Live - Credit Card Cash Flow Forecasting Added
+**Version:** 6.6
+**Last Updated:** January 28, 2026
+**Status:** Live - User Currency Preference Added
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -506,7 +506,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 1. **accounts** - User bank accounts (extended with CC fields: credit_limit, apr, minimum_payment_percent, statement_close_day, payment_due_day)
 2. **income** - Income sources
 3. **bills** - Recurring expenses
-4. **user_settings** - User preferences (timezone, safety buffer, digest settings, emergency fund)
+4. **user_settings** - User preferences (timezone, safety buffer, digest settings, emergency fund, currency)
 5. **scenarios** - "Can I afford it?" calculations
 6. **invoices** - Runway Collect invoices
 7. **invoice_reminders** - Payment reminder history
@@ -900,6 +900,24 @@ User Request
 ---
 
 ## Changelog
+
+### Version 6.6 (January 28, 2026)
+- **User Currency Preference:**
+  - All currency displays now respect `user_settings.currency` setting
+  - Centralized `getCurrencySymbol(currency)` function in `lib/utils/format.ts`
+  - Uses `Intl.NumberFormat` with `currencyDisplay: 'narrowSymbol'` for proper symbols
+  - Dashboard, Calendar, Debt Payoff pages fetch and pass currency from user_settings
+  - Bills/Income forms show dynamic currency symbol based on user preference
+  - Charts (PayoffTimelineChart, ForecastBalanceChart) use user's currency
+  - Safety buffer form uses CurrencyInput with comma formatting and dynamic symbol
+  - Low balance alert form uses formatCurrency helper with currency prop
+- **Code Quality Improvements:**
+  - Removed 6 duplicate `getCurrencySymbol` implementations across codebase
+  - Consolidated currency formatting to use centralized utility functions
+- **Bug Fixes:**
+  - Fixed Recharts SSR warning "width(-1) and height(-1) of chart should be greater than 0" with `minWidth={0}`
+  - Fixed PayoffTimelineChart Y-axis showing hardcoded $ regardless of user's currency setting
+  - Fixed safety buffer validation message with hardcoded $ symbol
 
 ### Version 6.5 (January 27, 2026)
 - **Credit Card Cash Flow Forecasting Feature:**
@@ -1345,7 +1363,7 @@ User Request
 
 ---
 
-**Document Version:** 6.5
-**Last Updated:** January 27, 2026
-**Status:** Live - Credit Card Cash Flow Forecasting Added 🎉
+**Document Version:** 6.6
+**Last Updated:** January 28, 2026
+**Status:** Live - User Currency Preference Added 🎉
 **Next Review:** February 2026

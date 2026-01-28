@@ -28,6 +28,7 @@ interface Income {
 
 interface IncomeContentProps {
   incomes: Income[];
+  currency?: string;
 }
 
 // Helper function to calculate next payment date for recurring income
@@ -161,7 +162,7 @@ function sortIncomes(incomes: Income[], sortBy: SortOption): Income[] {
 /**
  * IncomeContent - Client component for Income page with filtering
  */
-export function IncomeContent({ incomes }: IncomeContentProps) {
+export function IncomeContent({ incomes, currency = 'USD' }: IncomeContentProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useIncomeFilters();
 
   // Apply filters and sorting to incomes
@@ -185,6 +186,7 @@ export function IncomeContent({ incomes }: IncomeContentProps) {
             totalCount={incomes.length}
             visibleFilters={visibleFilters}
             onVisibleFiltersChange={setVisibleFilters}
+            currency={currency}
           />
         </div>
       )}
@@ -222,7 +224,7 @@ export function IncomeContent({ incomes }: IncomeContentProps) {
       ) : (
         <div className="space-y-3">
           {filteredIncomes.map((income) => (
-            <IncomeCard key={income.id} income={income as any} />
+            <IncomeCard key={income.id} income={income as any} currency={currency} />
           ))}
         </div>
       )}

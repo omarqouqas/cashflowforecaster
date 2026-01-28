@@ -1,6 +1,25 @@
 import { formatDistanceToNow } from 'date-fns';
 
 /**
+ * Gets the currency symbol for a given currency code
+ * @param currency - The currency code (e.g., 'USD', 'EUR', 'GBP')
+ * @returns The currency symbol (e.g., '$', '€', '£')
+ */
+export function getCurrencySymbol(currency: string = 'USD'): string {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      currencyDisplay: 'narrowSymbol',
+    })
+      .formatToParts(0)
+      .find(part => part.type === 'currency')?.value || currency;
+  } catch {
+    return currency;
+  }
+}
+
+/**
  * Formats a number as currency
  * @param amount - The amount to format
  * @param currency - The currency code (default: 'USD')

@@ -84,11 +84,22 @@ export default async function InvoiceDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: invoice } = await supabase
-    .from('invoices')
-    .select('*')
-    .eq('id', id)
-    .single();
+  // Fetch invoice and user settings in parallel
+  const [invoiceResult, settingsResult] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('*')
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('user_settings')
+      .select('currency')
+      .eq('user_id', user.id)
+      .single(),
+  ]);
+
+  const { data: invoice } = invoiceResult;
+  const currency = settingsResult.data?.currency ?? 'USD';
 
   if (!invoice) {
     redirect('/dashboard/invoices');
@@ -222,7 +233,7 @@ export default async function InvoiceDetailPage({
           <div className="text-left sm:text-right">
             <p className="text-sm text-zinc-400 mb-1">Amount</p>
             <p className="text-3xl font-bold text-zinc-100 tabular-nums">
-              {formatCurrency(invoiceData.amount)}
+              {formatCurrency(invoiceData.amount, currency)}
             </p>
           </div>
         </div>
@@ -339,7 +350,7 @@ export default async function InvoiceDetailPage({
             <div>
               <p className="text-sm text-zinc-400 mb-1">Linked Income Entry</p>
               <p className="text-base font-medium text-zinc-100 group-hover:text-teal-400 transition-colors">
-                {formatCurrency(invoiceData.amount)} • {formatDateOnly(invoiceData.due_date)}
+                {formatCurrency(invoiceData.amount, currency)} • {formatDateOnly(invoiceData.due_date)}
               </p>
               <p className="text-xs text-zinc-500 mt-1">
                 This invoice is tracked in your cash flow forecast

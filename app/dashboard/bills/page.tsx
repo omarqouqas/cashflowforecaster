@@ -153,8 +153,8 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  // Fetch bills, categories, and usage stats in parallel
-  const [billsResult, categoriesResult, usageStats] = await Promise.all([
+  // Fetch bills, categories, user settings, and usage stats in parallel
+  const [billsResult, categoriesResult, settingsResult, usageStats] = await Promise.all([
     supabase
       .from('bills')
       .select('*')
@@ -165,10 +165,16 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       .select('*')
       .eq('user_id', user.id)
       .order('sort_order', { ascending: true }),
+    supabase
+      .from('user_settings')
+      .select('currency')
+      .eq('user_id', user.id)
+      .single(),
     getUserUsageStats(user.id),
   ]);
 
   const { data: bills, error } = billsResult;
+  const currency = settingsResult.data?.currency ?? 'USD';
   const userCategories = (categoriesResult.data || []) as Array<{
     id: string;
     name: string;
@@ -361,7 +367,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
                 <InfoTooltip content="Estimated average monthly expenses. Weekly (×52÷12), biweekly (×26÷12), quarterly (÷3), and annual (÷12) bills are converted to monthly equivalents." />
               </div>
               <p className="text-2xl font-bold text-rose-300 tabular-nums">
-                {formatCurrency(monthlyTotal)}
+                {formatCurrency(monthlyTotal, currency)}
               </p>
               <p className="text-xs text-rose-300/80 mt-0.5">
                 From {activeBills.length} active bill{activeBills.length !== 1 ? 's' : ''}
@@ -428,7 +434,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
             </div>
           ) : (
             /* Bills List with Filters */
-            <BillsContent bills={billsList} categories={categories} />
+            <BillsContent bills={billsList} categories={categories} currency={currency} />
           )}
         </>
       )}

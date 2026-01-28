@@ -31,6 +31,7 @@ interface Invoice {
 
 interface InvoicesContentProps {
   invoices: Invoice[];
+  currency?: string;
 }
 
 function statusBadge(status: string | null | undefined) {
@@ -119,7 +120,7 @@ function filterInvoices(invoices: Invoice[], filters: InvoicesFilters): Invoice[
 /**
  * InvoicesContent - Client component for Invoices page with filtering
  */
-export function InvoicesContent({ invoices }: InvoicesContentProps) {
+export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useInvoicesFilters();
   const now = new Date();
 
@@ -246,7 +247,7 @@ export function InvoicesContent({ invoices }: InvoicesContentProps) {
                       </td>
                       <td className="px-4 py-4 text-zinc-300">{invoice.client_name}</td>
                       <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-100 text-base">
-                        {formatCurrency(invoice.amount)}
+                        {formatCurrency(invoice.amount, currency)}
                       </td>
                       <td className="px-4 py-4 text-zinc-300">
                         <div className="flex items-center gap-2">

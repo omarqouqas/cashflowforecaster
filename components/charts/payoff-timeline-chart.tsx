@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { format, addMonths } from 'date-fns'
-import { formatCurrency } from '@/lib/utils/format'
+import { formatCurrency, getCurrencySymbol } from '@/lib/utils/format'
 import type { MonthlySnapshot, CardPayoffSummary } from '@/lib/debt-payoff/calculate-payoff'
 
 interface PayoffTimelineChartProps {
@@ -70,6 +70,7 @@ export function PayoffTimelineChart({
   totalDebt,
   currency = 'USD',
 }: PayoffTimelineChartProps) {
+  const currencySymbol = getCurrencySymbol(currency)
   // Unique ID for gradient to prevent conflicts if multiple charts render
   const gradientId = useId()
 
@@ -168,7 +169,7 @@ export function PayoffTimelineChart({
       <h3 className="text-sm font-medium text-zinc-300 mb-4">Payoff Timeline</h3>
 
       <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <AreaChart
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -199,9 +200,9 @@ export function PayoffTimelineChart({
                   const kValue = absValue / 1000
                   // Use 1 decimal place if needed to avoid duplicates
                   const formatted = kValue % 1 === 0 ? `${kValue.toFixed(0)}k` : `${kValue.toFixed(1)}k`
-                  return `${isNegative ? '-' : ''}$${formatted}`
+                  return `${isNegative ? '-' : ''}${currencySymbol}${formatted}`
                 }
-                return `${isNegative ? '-' : ''}$${absValue}`
+                return `${isNegative ? '-' : ''}${currencySymbol}${absValue}`
               }}
               stroke="#71717a"
               tick={{ fill: '#a1a1aa', fontSize: 11 }}

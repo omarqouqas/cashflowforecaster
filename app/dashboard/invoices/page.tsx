@@ -8,6 +8,8 @@ import { InvoicingUpgradePrompt } from '@/components/invoices/invoicing-upgrade-
 import { InvoicesContent } from '@/components/invoices/invoices-content';
 import type { Tables } from '@/types/supabase';
 import { isRedirectError } from 'next/dist/client/components/redirect';
+import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/auth/session';
 
 interface InvoicesPageProps {
   searchParams?: { success?: string };
@@ -27,11 +29,25 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
     return <InvoicingUpgradePrompt />;
   }
 
+  const user = await requireAuth();
+  const supabase = await createClient();
+
   let invoices: Tables<'invoices'>[] = [];
   let error: string | null = null;
+  let currency = 'USD';
 
   try {
-    invoices = await getInvoices();
+    // Fetch invoices and user settings in parallel
+    const [invoicesData, settingsResult] = await Promise.all([
+      getInvoices(),
+      supabase
+        .from('user_settings')
+        .select('currency')
+        .eq('user_id', user.id)
+        .single(),
+    ]);
+    invoices = invoicesData;
+    currency = settingsResult.data?.currency ?? 'USD';
   } catch (e) {
     // Don't treat auth redirects as fetch failures (common during build/static generation)
     if (isRedirectError(e)) {
@@ -124,7 +140,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                   <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
                     <p className="text-xs font-medium text-zinc-400 mb-1">Total Outstanding</p>
                     <p className="text-2xl font-bold text-zinc-100 tabular-nums">
-                      {formatCurrency(totalOutstanding)}
+                      {formatCurrency(totalOutstanding, currency)}
                     </p>
                   </div>
                   <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4">
@@ -142,7 +158,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                 </div>
 
                 {/* Invoice List with Filters */}
-                <InvoicesContent invoices={invoices as any} />
+                <InvoicesContent invoices={invoices as any} currency={currency} />
               </>
             );
           })()}

@@ -12,6 +12,7 @@ type Income = Tables<'income'>
 
 interface IncomeCardProps {
   income: Income
+  currency?: string
 }
 
 function getActualNextDate(nextDate: string, frequency: string | null | undefined): Date {
@@ -180,7 +181,7 @@ function getFrequencyBadge(frequency: string | null | undefined) {
   }
 }
 
-export function IncomeCard({ income }: IncomeCardProps) {
+export function IncomeCard({ income, currency = 'USD' }: IncomeCardProps) {
   const isInvoiceLinked = Boolean(income.invoice_id)
   const isPending = income.status === 'pending'
   const isConfirmed = income.status === 'confirmed'
@@ -255,7 +256,7 @@ export function IncomeCard({ income }: IncomeCardProps) {
             </div>
 
             <p className="text-xl font-bold tabular-nums text-emerald-400">
-              {formatCurrency(income.amount)}
+              {formatCurrency(income.amount, currency)}
             </p>
           </div>
 

@@ -28,6 +28,7 @@ interface UserCategory {
 interface BillsContentProps {
   bills: Bill[];
   categories?: UserCategory[];
+  currency?: string;
 }
 
 // Helper function to calculate next due date for recurring bills
@@ -188,7 +189,7 @@ function sortBills(bills: Bill[], sortBy: SortOption): Bill[] {
 /**
  * BillsContent - Client component for Bills page with filtering
  */
-export function BillsContent({ bills, categories = [] }: BillsContentProps) {
+export function BillsContent({ bills, categories = [], currency = 'USD' }: BillsContentProps) {
   // Build category options for the filter dropdown
   const categoryOptions: FilterDropdownOption[] = useMemo(() => {
     if (categories.length === 0) {
@@ -296,7 +297,7 @@ export function BillsContent({ bills, categories = [] }: BillsContentProps) {
       ) : (
         <div className="space-y-3">
           {filteredBills.map((bill) => (
-            <BillCard key={bill.id} bill={bill} categories={categories} />
+            <BillCard key={bill.id} bill={bill} categories={categories} currency={currency} />
           ))}
         </div>
       )}

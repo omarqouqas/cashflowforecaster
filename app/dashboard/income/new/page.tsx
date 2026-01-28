@@ -21,6 +21,7 @@ import { showError, showSuccess } from '@/lib/toast';
 import { useSubscriptionWithUsage } from '@/lib/hooks/use-subscription';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { trackIncomeAdded } from '@/lib/posthog/events';
+import { getCurrencySymbol } from '@/lib/utils/format';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
@@ -46,6 +47,7 @@ export default function NewIncomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [currency, setCurrency] = useState('USD');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Feature gating
@@ -64,17 +66,30 @@ export default function NewIncomePage() {
   });
 
   useEffect(() => {
-    async function fetchAccounts() {
+    async function fetchData() {
       const supabase = createClient();
-      const { data } = await supabase
-        .from('accounts')
-        .select('id, name, account_type')
-        .order('name');
 
-      setAccounts((data || []) as any);
+      // Fetch accounts for dropdown and user settings for currency in parallel
+      const [accountsResult, settingsResult] = await Promise.all([
+        supabase
+          .from('accounts')
+          .select('id, name, account_type')
+          .order('name'),
+        supabase
+          .from('user_settings')
+          .select('currency')
+          .single(),
+      ]);
+
+      setAccounts((accountsResult.data || []) as any);
+
+      // Get currency from user settings
+      if (settingsResult.data?.currency) {
+        setCurrency(settingsResult.data.currency);
+      }
     }
 
-    fetchAccounts();
+    fetchData();
   }, []);
 
   // Show upgrade modal if at limit
@@ -232,7 +247,7 @@ export default function NewIncomePage() {
               Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">{getCurrencySymbol(currency)}</span>
               <Controller
                 name="amount"
                 control={control}
@@ -243,7 +258,7 @@ export default function NewIncomePage() {
                     value={field.value}
                     onChange={field.onChange}
                     className={[
-                      'pl-8 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                      'pl-12 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
                       'focus:border-teal-500 focus:ring-teal-500/20',
                       errors.amount ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                     ].join(' ')}

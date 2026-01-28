@@ -26,17 +26,23 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  // Fetch income and usage stats in parallel
-  const [incomeResult, usageStats] = await Promise.all([
+  // Fetch income, user settings (for currency), and usage stats in parallel
+  const [incomeResult, settingsResult, usageStats] = await Promise.all([
     supabase
       .from('income')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }),
+    supabase
+      .from('user_settings')
+      .select('currency')
+      .eq('user_id', user.id)
+      .single(),
     getUserUsageStats(user.id),
   ]);
 
   const { data: incomes, error } = incomeResult;
+  const currency = settingsResult.data?.currency || 'USD';
 
   if (error) {
     console.error('Error fetching income:', error);
@@ -196,7 +202,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
                 <InfoTooltip content="Estimated average monthly income. Weekly and biweekly payments are converted to monthly equivalents (e.g., 26 biweekly payments ÷ 12 months)." />
               </div>
               <p className="text-2xl font-bold text-emerald-300 tabular-nums">
-                {formatCurrency(monthlyTotal)}
+                {formatCurrency(monthlyTotal, currency)}
               </p>
               <p className="text-xs text-emerald-300/80 mt-0.5">
                 From {activeIncomes.length} active source{activeIncomes.length !== 1 ? 's' : ''}
@@ -354,7 +360,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
             </div>
           ) : (
             /* Income List with Filters */
-            <IncomeContent incomes={incomesList} />
+            <IncomeContent incomes={incomesList} currency={currency} />
           )}
         </>
       )}

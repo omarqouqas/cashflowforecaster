@@ -5,13 +5,15 @@ import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { updateAlertSettings } from '@/lib/actions/update-alert-settings';
 import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils/format';
 
 type Props = {
   initialEnabled?: boolean | null;
   safetyBuffer?: number;
+  currency?: string;
 };
 
-export function LowBalanceAlertForm({ initialEnabled, safetyBuffer = 500 }: Props) {
+export function LowBalanceAlertForm({ initialEnabled, safetyBuffer = 500, currency = 'USD' }: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -35,12 +37,7 @@ export function LowBalanceAlertForm({ initialEnabled, safetyBuffer = 500 }: Prop
     setTimeout(() => setSuccess(false), 3000);
   }
 
-  const formattedBuffer = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(safetyBuffer);
+  const formattedBuffer = formatCurrency(safetyBuffer, currency);
 
   return (
     <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">

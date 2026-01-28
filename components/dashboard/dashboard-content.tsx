@@ -86,6 +86,7 @@ interface DashboardContentProps {
   };
   message?: string | string[];
   calendarError?: string | null;
+  currency?: string;
 }
 
 /**
@@ -109,9 +110,9 @@ export function DashboardContent({
   emergencyFundData,
   message,
   calendarError,
+  currency = 'USD',
 }: DashboardContentProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useDashboardFilters(undefined, forecastDays);
-  const currency = accounts[0]?.currency || 'USD';
   const trackedRef = React.useRef(false);
 
   // Track dashboard view once on mount

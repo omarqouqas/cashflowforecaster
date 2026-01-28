@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
+import { getCurrencySymbol } from '@/lib/utils/format';
 
 const incomeSchema = z.object({
   name: z.string().min(1, 'Income name is required').max(100, 'Name too long'),
@@ -41,6 +42,7 @@ export default function EditIncomePage() {
 
   const [income, setIncome] = useState<Income | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [currency, setCurrency] = useState('USD');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,14 +77,24 @@ export default function EditIncomePage() {
 
       const income = incomeData as any;
 
-      // Fetch accounts
-      const { data: accountsData } = await supabase
-        .from('accounts')
-        .select('id, name, account_type')
-        .order('name');
+      // Fetch accounts for dropdown and user settings for currency in parallel
+      const [accountsResult, settingsResult] = await Promise.all([
+        supabase
+          .from('accounts')
+          .select('id, name, account_type')
+          .order('name'),
+        supabase
+          .from('user_settings')
+          .select('currency')
+          .single(),
+      ]);
 
       setIncome(incomeData);
-      setAccounts((accountsData || []) as any[]);
+      setAccounts((accountsResult.data || []) as any[]);
+      // Get currency from user settings
+      if (settingsResult.data?.currency) {
+        setCurrency(settingsResult.data.currency);
+      }
 
       // Pre-fill form with existing data
       // Format date for HTML date input (YYYY-MM-DD)
@@ -235,7 +247,7 @@ export default function EditIncomePage() {
               Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">{getCurrencySymbol(currency)}</span>
               <Controller
                 name="amount"
                 control={control}
@@ -244,7 +256,7 @@ export default function EditIncomePage() {
                     id="amount"
                     placeholder="0.00"
                     className={[
-                      'pl-8',
+                      'pl-12',
                       errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
                     ].join(' ')}
                     value={field.value}

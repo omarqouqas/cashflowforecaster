@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 27, 2026 (Day 50)
+**Last Updated:** January 28, 2026 (Day 51)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 50
-- **Commits:** 165+
+- **Days in Development:** 51
+- **Commits:** 170+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + **Credit Card Cash Flow Forecasting + Debt Payoff Planner**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + **User Settings Currency Support**
 
 **Current Focus:**
 
@@ -29,7 +29,55 @@
 
 ---
 
-## Recent Development (Days 40-50)
+## Recent Development (Days 40-51)
+
+### Day 51: User Settings Currency Support (January 28, 2026)
+
+**Centralized Currency Preference** - All currency displays now respect the user's currency setting from `user_settings.currency`.
+
+**Centralized getCurrencySymbol Function:**
+- Added `getCurrencySymbol(currency: string)` to `lib/utils/format.ts`
+- Uses `Intl.NumberFormat` with `currencyDisplay: 'narrowSymbol'` for proper symbols
+- Falls back to currency code if symbol extraction fails
+- Removed 6 duplicate implementations from across the codebase
+
+**Files Updated to Use User Currency:**
+- Dashboard page (`app/dashboard/page.tsx`) - fetches and passes currency
+- Calendar page (`app/dashboard/calendar/page.tsx`) - fetches and passes currency
+- Debt Payoff page (`app/dashboard/debt-payoff/page.tsx`) - fetches and passes currency
+- Bills new/edit pages - dynamic currency symbol in amount input
+- Income new/edit pages - dynamic currency symbol in amount input
+- Settings page - passes currency to LowBalanceAlertForm
+
+**Chart Currency Fixes:**
+- `PayoffTimelineChart` Y-axis now uses dynamic currency symbol (was hardcoded $)
+- `ForecastBalanceChart` uses passed currency prop
+- Both charts: Added `minWidth={0}` to ResponsiveContainer to fix SSR warning
+
+**Safety Buffer Form Improvements:**
+- Now uses `CurrencyInput` component with comma formatting
+- Fetches currency from `user_settings` for dynamic symbol
+- Updated validation message from "at least $50" to "at least 50" (no hardcoded currency)
+- Threshold preview uses `formatCurrency(value, currency)` for proper formatting
+
+**Low Balance Alert Form:**
+- Added `currency` prop (defaults to 'USD')
+- Uses `formatCurrency` helper instead of inline `Intl.NumberFormat`
+
+**Duplicate Code Removed (6 files):**
+- `components/charts/payoff-timeline-chart.tsx`
+- `components/charts/forecast-balance-chart.tsx`
+- `components/calendar/sticky-header.tsx`
+- `components/income/income-filters.tsx`
+- `app/dashboard/income/new/page.tsx`
+- `app/dashboard/income/[id]/edit/page.tsx`
+
+**Bug Fixes:**
+- Fixed Recharts SSR warning "width(-1) and height(-1) of chart should be greater than 0"
+- Fixed hardcoded $ in safety buffer validation message
+- Fixed chart Y-axis showing $ regardless of user's currency setting
+
+---
 
 ### Day 50: Credit Card Cash Flow Forecasting (January 27, 2026)
 
@@ -702,6 +750,7 @@
 | Reports & Export | CSV/Excel/JSON export, quick reports, custom builder |
 | Custom Bill Categories | User-defined categories with colors, icons, inline creation |
 | Data Visualization Charts | Forecast balance chart, payoff timeline chart (Recharts) |
+| User Currency Preference | All currency displays respect user_settings.currency |
 
 ### Upcoming
 
@@ -741,6 +790,7 @@
 - Custom bill categories with colors, icons, and inline creation
 - Data visualization with Recharts (payoff timeline, forecast balance charts)
 - Improved empty states with context-aware messaging
+- Centralized currency preference from user_settings (no hardcoded $ symbols)
 
 ## What's Next
 

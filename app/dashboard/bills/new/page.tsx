@@ -23,6 +23,7 @@ import { trackBillAdded } from '@/lib/posthog/events';
 import { seedDefaultCategories, createCategory } from '@/lib/actions/manage-categories';
 import { type UserCategory } from '@/lib/categories/constants';
 import { CategorySelect, type PendingCategory } from '@/components/bills/category-select';
+import { getCurrencySymbol } from '@/lib/utils/format';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -50,6 +51,7 @@ export default function NewBillPage() {
   const [categories, setCategories] = useState<UserCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [pendingCategory, setPendingCategory] = useState<PendingCategory | null>(null);
+  const [currency, setCurrency] = useState('USD');
 
   // Feature gating
   const { canAddBill, usage, limits, isLoading: subscriptionLoading } = useSubscriptionWithUsage();
@@ -66,7 +68,7 @@ export default function NewBillPage() {
     },
   });
 
-  // Fetch user categories
+  // Fetch user categories and settings
   useEffect(() => {
     async function loadCategories() {
       const supabase = createClient();
@@ -77,12 +79,26 @@ export default function NewBillPage() {
         return;
       }
 
-      // First try to fetch existing categories
-      let { data: cats, error: fetchError } = await supabase
-        .from('user_categories')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('sort_order', { ascending: true });
+      // Fetch categories and user settings in parallel
+      const [categoriesResult, settingsResult] = await Promise.all([
+        supabase
+          .from('user_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('sort_order', { ascending: true }),
+        supabase
+          .from('user_settings')
+          .select('currency')
+          .eq('user_id', user.id)
+          .single(),
+      ]);
+
+      let { data: cats, error: fetchError } = categoriesResult;
+
+      // Set currency from settings
+      if (settingsResult.data?.currency) {
+        setCurrency(settingsResult.data.currency);
+      }
 
       // If no categories exist, seed defaults
       if (!fetchError && (!cats || cats.length === 0)) {
@@ -278,7 +294,7 @@ export default function NewBillPage() {
               Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">{getCurrencySymbol(currency)}</span>
               <Controller
                 name="amount"
                 control={control}
@@ -289,7 +305,7 @@ export default function NewBillPage() {
                     value={field.value}
                     onChange={field.onChange}
                     className={[
-                      'pl-8 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                      'pl-12 bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
                       'focus:border-teal-500 focus:ring-teal-500/20',
                       errors.amount ? 'border-rose-400 focus:border-rose-400 focus:ring-rose-400/20' : '',
                     ].join(' ')}

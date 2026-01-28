@@ -39,7 +39,7 @@ export default async function CalendarPage() {
       .order('created_at', { ascending: false }),
     supabase
       .from('user_settings')
-      .select('safety_buffer, timezone')
+      .select('safety_buffer, timezone, currency')
       .eq('user_id', user.id)
       .single(),
   ])
@@ -51,6 +51,7 @@ export default async function CalendarPage() {
   const settings = settingsResult.data as any
   const safetyBuffer = settings?.safety_buffer ?? 500
   const timezone = settings?.timezone ?? null
+  const currency = settings?.currency ?? 'USD'
 
   const fetchErrors = [accountsResult.error, incomeResult.error, billsResult.error].filter(
     Boolean
@@ -145,7 +146,6 @@ export default async function CalendarPage() {
   const endingBalance = calendarData.days[calendarData.days.length - 1]?.balance ?? startingBalance
   const totalIncome = calendarData.days.reduce((sum, d) => sum + d.income.reduce((s, t) => s + t.amount, 0), 0)
   const totalBills = calendarData.days.reduce((sum, d) => sum + d.bills.reduce((s, t) => s + t.amount, 0), 0)
-  const currency = accounts[0]?.currency || 'USD'
 
   // Calculate safe to spend
   const next14Days = calendarData.days.slice(0, 14)

@@ -16,6 +16,7 @@ import { showError, showSuccess } from '@/lib/toast';
 import { seedDefaultCategories, createCategory } from '@/lib/actions/manage-categories';
 import { type UserCategory } from '@/lib/categories/constants';
 import { CategorySelect, type PendingCategory } from '@/components/bills/category-select';
+import { getCurrencySymbol } from '@/lib/utils/format';
 
 const billSchema = z.object({
   name: z.string().min(1, 'Bill name is required').max(100, 'Name too long'),
@@ -47,6 +48,7 @@ export default function EditBillPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currency, setCurrency] = useState('USD');
 
   const {
     register,
@@ -73,8 +75,8 @@ export default function EditBillPage() {
         return;
       }
 
-      // Fetch bill and categories in parallel
-      const [billResult, categoriesResult] = await Promise.all([
+      // Fetch bill, categories, and user settings in parallel
+      const [billResult, categoriesResult, settingsResult] = await Promise.all([
         supabase
           .from('bills')
           .select('*')
@@ -85,10 +87,20 @@ export default function EditBillPage() {
           .select('*')
           .eq('user_id', user.id)
           .order('sort_order', { ascending: true }),
+        supabase
+          .from('user_settings')
+          .select('currency')
+          .eq('user_id', user.id)
+          .single(),
       ]);
 
       const { data: billData, error: billError } = billResult;
       let { data: cats } = categoriesResult;
+
+      // Set currency from settings
+      if (settingsResult.data?.currency) {
+        setCurrency(settingsResult.data.currency);
+      }
 
       // If no categories exist, seed defaults
       if (!cats || cats.length === 0) {
@@ -332,7 +344,7 @@ export default function EditBillPage() {
               Amount<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">{getCurrencySymbol(currency)}</span>
               <Controller
                 name="amount"
                 control={control}
@@ -341,7 +353,7 @@ export default function EditBillPage() {
                     id="amount"
                     placeholder="0.00"
                     className={[
-                      'pl-8',
+                      'pl-12',
                       errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
                     ].join(' ')}
                     value={field.value}

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
 import { TimezoneForm } from '@/components/settings/timezone-form';
+import { CurrencyForm } from '@/components/settings/currency-form';
 import { EmailDigestForm } from '@/components/settings/email-digest-form';
 import { LowBalanceAlertForm } from '@/components/settings/low-balance-alert-form';
 import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
@@ -46,7 +47,7 @@ export default async function SettingsPage() {
     supabase
       .from('user_settings')
       .select(
-        'safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id, business_name, logo_url'
+        'currency, safety_buffer, timezone, email_digest_enabled, email_digest_day, low_balance_alert_enabled, tax_rate, tax_tracking_enabled, tax_year, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id, business_name, logo_url'
       )
       .eq('user_id', user.id)
       .single(),
@@ -72,6 +73,7 @@ export default async function SettingsPage() {
   const bills = (billsResult.data || []) as any[];
   const categories = (categoriesResult.data || []) as any[];
 
+  const currency = settingsData?.currency ?? 'USD';
   const safetyBuffer = settingsData?.safety_buffer ?? 500;
   const timezone = settingsData?.timezone ?? null;
   const digestEnabled = settingsData?.email_digest_enabled ?? true;
@@ -197,6 +199,11 @@ export default async function SettingsPage() {
         <section id="preferences" className="scroll-mt-20">
           <SectionHeader icon={Sliders} title="Preferences" />
           <div className="space-y-4">
+            {/* Currency */}
+            <div id="currency" className="scroll-mt-20">
+              <CurrencyForm initialValue={currency} />
+            </div>
+
             {/* Timezone */}
             <div id="timezone" className="scroll-mt-20">
               <TimezoneForm initialValue={timezone} />
@@ -220,7 +227,7 @@ export default async function SettingsPage() {
           <SectionHeader icon={Bell} title="Notifications" />
           <div className="space-y-4">
             <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
-            <LowBalanceAlertForm initialEnabled={lowBalanceAlertEnabled} safetyBuffer={safetyBuffer} />
+            <LowBalanceAlertForm initialEnabled={lowBalanceAlertEnabled} safetyBuffer={safetyBuffer} currency={currency} />
           </div>
         </section>
 

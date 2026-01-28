@@ -21,6 +21,7 @@ interface UserCategory {
 interface BillCardProps {
   bill: Bill
   categories?: UserCategory[]
+  currency?: string
 }
 
 function getActualNextDueDate(dueDate: string, frequency: string | null | undefined): Date {
@@ -281,7 +282,7 @@ function getFrequencyBadge(frequency: string | null | undefined) {
   }
 }
 
-export function BillCard({ bill, categories }: BillCardProps) {
+export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) {
   const isActive = bill.is_active ?? true
   const categoryIcon = getCategoryIcon(bill.category, categories)
   const categoryBadge = getCategoryBadge(bill.category, categories)
@@ -318,7 +319,7 @@ export function BillCard({ bill, categories }: BillCardProps) {
             </div>
 
             <p className="text-xl font-bold tabular-nums text-rose-400">
-              {formatCurrency(bill.amount)}
+              {formatCurrency(bill.amount, currency)}
             </p>
           </div>
 

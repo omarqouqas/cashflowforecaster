@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/lib/utils/format'
+import { formatCurrency, getCurrencySymbol } from '@/lib/utils/format'
 import { InfoTooltip } from '@/components/ui/tooltip'
 import Link from 'next/link'
 import { Pencil } from 'lucide-react'
@@ -37,24 +37,6 @@ function formatShortDate(date: Date) {
     month: 'short',
     day: 'numeric',
   })
-}
-
-/**
- * Get the currency symbol for a given currency code
- */
-function getCurrencySymbol(currency: string): string {
-  try {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-    // Format 0 and extract the symbol (removes the "0")
-    return formatter.format(0).replace(/[\d\s]/g, '').trim()
-  } catch {
-    return '$'
-  }
 }
 
 export function StickyCalendarHeader({

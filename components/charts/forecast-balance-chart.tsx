@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { format } from 'date-fns'
-import { formatCurrency } from '@/lib/utils/format'
+import { formatCurrency, getCurrencySymbol } from '@/lib/utils/format'
 import type { CalendarDay } from '@/lib/calendar/types'
 
 interface ForecastBalanceChartProps {
@@ -57,21 +57,6 @@ function ChartTooltip({
       )}
     </div>
   )
-}
-
-// Get currency symbol for a given currency code
-function getCurrencySymbol(currency: string): string {
-  try {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-    return formatter.format(0).replace(/[\d\s]/g, '').trim()
-  } catch {
-    return '$'
-  }
 }
 
 export function ForecastBalanceChart({
@@ -204,7 +189,7 @@ export function ForecastBalanceChart({
 
   return (
     <div className="h-36 w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <AreaChart
           data={chartData}
           margin={{ top: 5, right: 5, left: 0, bottom: 0 }}
