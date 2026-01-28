@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Info } from 'lucide-react'
 
 interface TooltipProps {
@@ -10,8 +11,20 @@ interface TooltipProps {
 
 export function Tooltip({ content, children }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [position, setPosition] = useState({ top: 0, left: 0 })
   const tooltipRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+
+  // Update tooltip position when visible
+  useEffect(() => {
+    if (isVisible && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setPosition({
+        top: rect.top + rect.height / 2,
+        left: rect.right + 8,
+      })
+    }
+  }, [isVisible])
 
   // Close on click outside
   useEffect(() => {
@@ -46,16 +59,22 @@ export function Tooltip({ content, children }: TooltipProps) {
         {children || <Info className="w-4 h-4" />}
       </button>
 
-      {isVisible && (
+      {isVisible && typeof document !== 'undefined' && createPortal(
         <div
           ref={tooltipRef}
-          className="absolute z-50 w-80 p-3 text-sm bg-zinc-900 text-zinc-100 rounded-lg shadow-lg border border-zinc-700 left-full ml-2 top-1/2 -translate-y-1/2"
+          className="fixed z-[9999] w-80 p-4 text-sm bg-zinc-900 text-zinc-100 rounded-lg shadow-xl border border-zinc-700"
+          style={{
+            top: position.top,
+            left: position.left,
+            transform: 'translateY(-50%)',
+          }}
           role="tooltip"
         >
           {content}
           {/* Arrow pointing left */}
-          <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
-        </div>
+          <div className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-3 h-3 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+        </div>,
+        document.body
       )}
     </div>
   )
