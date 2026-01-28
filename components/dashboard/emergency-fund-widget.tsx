@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Shield, Settings } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils/format';
 
 interface EmergencyFundWidgetProps {
   enabled: boolean;
@@ -9,15 +10,7 @@ interface EmergencyFundWidgetProps {
   monthlyExpenses: number;
   currentBalance: number;
   accountName?: string; // Name of designated savings account, if any
-}
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  currency?: string;
 }
 
 export function EmergencyFundWidget({
@@ -26,6 +19,7 @@ export function EmergencyFundWidget({
   monthlyExpenses,
   currentBalance,
   accountName,
+  currency = 'USD',
 }: EmergencyFundWidgetProps) {
   // Calculate metrics
   const goalAmount = monthlyExpenses * goalMonths;
@@ -133,7 +127,7 @@ export function EmergencyFundWidget({
       {/* Goal Info */}
       <div className="mt-4">
         <p className="text-sm text-zinc-400">
-          Goal: {goalMonths} months of expenses ({formatCurrency(goalAmount)})
+          Goal: {goalMonths} months of expenses ({formatCurrency(goalAmount, currency)})
           {accountName && (
             <span className="text-zinc-500"> &middot; {accountName}</span>
           )}
@@ -143,7 +137,7 @@ export function EmergencyFundWidget({
       {/* Progress Bar */}
       <div className="mt-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-zinc-100">{formatCurrency(currentBalance)}</span>
+          <span className="font-medium text-zinc-100">{formatCurrency(currentBalance, currency)}</span>
           <span className="text-zinc-500">{Math.round(progressPercent)}%</span>
         </div>
         <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-zinc-800">
@@ -169,7 +163,7 @@ export function EmergencyFundWidget({
             To Go
           </p>
           <p className="mt-1 text-xl font-semibold text-zinc-100">
-            {amountToGo > 0 ? formatCurrency(amountToGo) : 'Done!'}
+            {amountToGo > 0 ? formatCurrency(amountToGo, currency) : 'Done!'}
           </p>
         </div>
       </div>
@@ -178,7 +172,7 @@ export function EmergencyFundWidget({
       {progressPercent >= 75 && progressPercent < 100 && (
         <div className="mt-4 rounded-lg bg-teal-500/10 p-3">
           <p className="text-sm text-teal-400">
-            Great progress! You&apos;re only {formatCurrency(amountToGo)} away from your goal.
+            Great progress! You&apos;re only {formatCurrency(amountToGo, currency)} away from your goal.
           </p>
         </div>
       )}

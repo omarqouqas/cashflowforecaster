@@ -808,6 +808,7 @@ export function DashboardContent({
           quarterlyIncome={taxData.quarterlyIncome}
           quarterlyPaid={taxData.quarterlyPaid}
           enabled={taxData.enabled}
+          currency={currency}
         />
       </div>
 
@@ -827,6 +828,7 @@ export function DashboardContent({
               ? accounts.find((a) => a.id === emergencyFundData.accountId)?.name
               : undefined
           }
+          currency={currency}
         />
       </div>
 

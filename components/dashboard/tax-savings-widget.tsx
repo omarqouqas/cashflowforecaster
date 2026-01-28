@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { DollarSign, AlertCircle } from 'lucide-react'
-import { formatCurrency, getNextQuarterlyDeadline, getCurrentQuarter } from '@/lib/tax/calculations'
+import { getNextQuarterlyDeadline, getCurrentQuarter } from '@/lib/tax/calculations'
+import { formatCurrency } from '@/lib/utils/format'
 
 interface TaxSavingsWidgetProps {
   totalIncome: number
@@ -8,6 +9,7 @@ interface TaxSavingsWidgetProps {
   quarterlyIncome: [number, number, number, number]
   quarterlyPaid: [number, number, number, number]
   enabled: boolean
+  currency?: string
 }
 
 export function TaxSavingsWidget({
@@ -16,6 +18,7 @@ export function TaxSavingsWidget({
   quarterlyIncome,
   quarterlyPaid,
   enabled,
+  currency = 'USD',
 }: TaxSavingsWidgetProps) {
   if (!enabled) {
     return (
@@ -75,13 +78,13 @@ export function TaxSavingsWidget({
         <div>
           <p className="text-xs sm:text-sm text-zinc-400">Total Income</p>
           <p className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-100">
-            {formatCurrency(totalIncome)}
+            {formatCurrency(totalIncome, currency)}
           </p>
         </div>
         <div>
           <p className="text-xs sm:text-sm text-zinc-400">After-Tax</p>
           <p className="mt-1 text-xl sm:text-2xl font-semibold text-emerald-400">
-            {formatCurrency(afterTaxIncome)}
+            {formatCurrency(afterTaxIncome, currency)}
           </p>
         </div>
       </div>
@@ -91,7 +94,7 @@ export function TaxSavingsWidget({
         <div className="flex items-center justify-between text-xs sm:text-sm">
           <span className="text-zinc-400">Tax Progress</span>
           <span className="font-medium text-zinc-100">
-            {formatCurrency(totalPaid)} / {formatCurrency(totalTaxOwed)}
+            {formatCurrency(totalPaid, currency)} / {formatCurrency(totalTaxOwed, currency)}
           </span>
         </div>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-800">
@@ -113,7 +116,7 @@ export function TaxSavingsWidget({
             <span className="text-teal-400 font-medium">✓ Fully saved</span>
           ) : (
             <>
-              {formatCurrency(remaining)} remaining to save
+              {formatCurrency(remaining, currency)} remaining to save
             </>
           )}
         </p>
@@ -129,7 +132,7 @@ export function TaxSavingsWidget({
                 Q{nextDeadline.quarter} deadline in {daysUntilDeadline} days
               </p>
               <p className="text-xs sm:text-sm text-amber-400 mt-1">
-                {formatCurrency(currentQuarterRemaining)} estimated tax due by {nextDeadline.formatted}
+                {formatCurrency(currentQuarterRemaining, currency)} estimated tax due by {nextDeadline.formatted}
               </p>
             </div>
           </div>
