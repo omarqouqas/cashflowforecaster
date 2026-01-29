@@ -124,11 +124,6 @@ const structuredData = {
     price: '0',
     priceCurrency: 'USD',
   },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: 4.8,
-    ratingCount: 25,
-  },
 } as const;
 
 const howToSchema = {
@@ -263,15 +258,6 @@ export default async function Home({ searchParams }: HomeProps) {
                   Log in
                 </Link>
               </p>
-
-              <div className="mt-2 flex items-center gap-2 text-sm text-zinc-500">
-                <div className="flex -space-x-2">
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 ring-2 ring-zinc-950" />
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 ring-2 ring-zinc-950" />
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 ring-2 ring-zinc-950" />
-                </div>
-                <span>Trusted by designers, writers &amp; developers</span>
-              </div>
             </div>
 
             <div className="mt-10 max-w-4xl mx-auto rounded-2xl shadow-2xl border border-zinc-800 overflow-hidden bg-zinc-900/40">
@@ -373,7 +359,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
             <div className="mt-10 text-center">
               <p className="text-zinc-400 mb-4">Most users are set up in under 3 minutes</p>
-              <GetStartedCTA className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 px-6 py-2.5 rounded-lg text-sm font-medium h-auto" />
+              <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-6 py-2.5 rounded-lg text-sm font-semibold h-auto" />
             </div>
           </div>
         </section>

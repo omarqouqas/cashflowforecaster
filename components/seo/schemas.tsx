@@ -134,11 +134,4 @@ export const productSchema = {
       availability: 'https://schema.org/InStock',
     },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    ratingCount: '25',
-    bestRating: '5',
-    worstRating: '1',
-  },
 } as const;
