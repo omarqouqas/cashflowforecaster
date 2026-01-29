@@ -179,7 +179,7 @@ function sortBills(bills: Bill[], sortBy: SortOption): Bill[] {
       case 'amount':
         return b.amount - a.amount; // Highest first
       case 'created_at':
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Newest first
+        return new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime(); // Newest first
       default:
         return 0;
     }

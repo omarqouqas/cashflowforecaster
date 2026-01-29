@@ -24,7 +24,7 @@ export default async function ReportsPage() {
   // Handle potential table not existing yet (migration not run)
   const exportHistory: ExportHistoryItem[] = exportsResult.error
     ? []
-    : (exportsResult.data as ExportHistoryItem[]) ?? [];
+    : (exportsResult.data as unknown as ExportHistoryItem[]) ?? [];
 
   // Serialize limits for client (Infinity -> null)
   const serializedLimits = {
