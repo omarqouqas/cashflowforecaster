@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.6
-**Last Updated:** January 28, 2026
-**Status:** Live - User Currency Preference Added
+**Version:** 6.7
+**Last Updated:** January 29, 2026
+**Status:** Live - Quotes Feature Added
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -321,6 +321,17 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - **Improved empty state** with value proposition messaging
 - **Stripe Payment Links** - One-click payment for clients via Stripe Connect
 - **Invoice Branding** - Upload logo and set business name for professional invoices
+- **Quotes Feature:**
+  - Create professional quotes with auto-generated numbers (QTE-0001)
+  - Per-document currency support (independent from user default)
+  - Valid until date with preset options (14/30/60 days)
+  - Email quotes with PDF attachment
+  - Download quote PDFs
+  - Quote statuses: draft, sent, viewed, accepted, rejected, expired
+  - Timeline tracking: Created → Sent → Viewed → Accepted/Rejected
+  - Convert accepted quotes to invoices (preserves all details)
+  - Multi-currency summary stats (Total Pending grouped by currency)
+  - Expiring soon indicator (within 7 days)
 - **Gated:** Pro+ only
 
 **9. Onboarding Wizard ✅**
@@ -501,7 +512,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - **Deployment:** Vercel
 - **Version Control:** Git + GitHub
 
-### Database Schema (15 tables + extended fields)
+### Database Schema (16 tables + extended fields)
 
 1. **accounts** - User bank accounts (extended with CC fields: credit_limit, apr, minimum_payment_percent, statement_close_day, payment_due_day)
 2. **income** - Income sources
@@ -510,14 +521,15 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 5. **scenarios** - "Can I afford it?" calculations
 6. **invoices** - Runway Collect invoices
 7. **invoice_reminders** - Payment reminder history
-8. **parsed_emails** - Email parser results (future)
-9. **weekly_checkins** - Burn rate tracking (future)
-10. **notifications** - User notifications
-11. **users** - Extended user profiles
-12. **subscriptions** - Stripe subscription data
-13. **feedback** - User feedback submissions (bug reports, suggestions, questions)
-14. **exports** - Export history (report type, format, config, file URL, status)
-15. **user_categories** - Custom bill categories (name, color, icon, sort_order)
+8. **quotes** - Runway Collect quotes (quote_number, client_name, client_email, amount, currency, valid_until, description, status, sent_at, viewed_at, accepted_at, rejected_at, converted_invoice_id)
+9. **parsed_emails** - Email parser results (future)
+10. **weekly_checkins** - Burn rate tracking (future)
+11. **notifications** - User notifications
+12. **users** - Extended user profiles
+13. **subscriptions** - Stripe subscription data
+14. **feedback** - User feedback submissions (bug reports, suggestions, questions)
+15. **exports** - Export history (report type, format, config, file URL, status)
+16. **user_categories** - Custom bill categories (name, color, icon, sort_order)
 
 ### Feature Gating Architecture
 
@@ -900,6 +912,40 @@ User Request
 ---
 
 ## Changelog
+
+### Version 6.7 (January 29, 2026)
+- **Quotes Feature (Runway Collect):**
+  - New `quotes` table with RLS policies
+  - Auto-generated quote numbers (QTE-0001 format)
+  - Quote statuses: draft, sent, viewed, accepted, rejected, expired
+  - Per-document currency support (independent from user default)
+  - Valid until date with preset options (14/30/60 days)
+  - Email quotes with PDF attachment via Resend
+  - Download quote PDFs
+  - Timeline tracking: Created → Sent → Viewed → Accepted/Rejected
+  - Convert accepted quotes to invoices (preserves client, amount, currency, description)
+  - Multi-currency summary stats (Total Pending grouped by currency)
+  - Expiring soon indicator (within 7 days of valid_until)
+- **New Pages:**
+  - `/dashboard/quotes` - Quote list with filters and summary stats
+  - `/dashboard/quotes/new` - Create quote form
+  - `/dashboard/quotes/[id]` - Quote detail with timeline and actions
+  - `/dashboard/quotes/[id]/edit` - Edit quote form
+- **New Components:**
+  - 10 quote components: new-quote-form, edit-quote-form, quotes-content, quotes-filters, send-quote-button, download-quote-pdf-button, convert-to-invoice-button, delete-quote-button, delete-quote-icon-button, mark-quote-status-button
+- **Server Actions:**
+  - `lib/actions/quotes.ts` - CRUD operations, status updates, convert to invoice
+  - `lib/actions/send-quote.ts` - Email quote via Resend
+- **Email & PDF:**
+  - `lib/email/templates/quote-email.tsx` - Quote email template
+  - `lib/pdf/quote-template.tsx` - Quote PDF template
+  - `app/api/quotes/[id]/pdf/route.ts` - PDF streaming endpoint
+- **Bug Fixes:**
+  - Fixed dark theme styling in quote components
+  - Security: quote detail page uses `getQuote()` action for defense in depth
+  - Updated upgrade prompt to mention both quotes and invoices
+- **Navigation:**
+  - Added "Quotes" link to sidebar navigation
 
 ### Version 6.6 (January 28, 2026)
 - **User Currency Preference:**

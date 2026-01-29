@@ -31,6 +31,67 @@
 
 ## Recent Development (Days 40-51)
 
+### Day 52: Quotes Feature (January 29, 2026)
+
+**New Feature: Quotes** - Freelancers can now create professional quotes, send them to clients, and convert accepted quotes to invoices. Part of the Pro-tier Runway Collect feature.
+
+**Database:**
+- New `quotes` table with fields: id, user_id, quote_number, client_name, client_email, amount, currency, valid_until, description, status, sent_at, viewed_at, accepted_at, rejected_at, converted_invoice_id, created_at, updated_at
+- Quote numbering format: QTE-0001 (auto-incremented per user)
+- Statuses: draft, sent, viewed, accepted, rejected, expired
+
+**New Pages:**
+- `/dashboard/quotes` - Quote list with summary stats (Total Pending by currency, Awaiting Response, Accepted, Expiring Soon)
+- `/dashboard/quotes/new` - Create quote form with currency selector and valid_until presets (14/30/60 days)
+- `/dashboard/quotes/[id]` - Quote detail page with timeline, status actions, and convert-to-invoice button
+- `/dashboard/quotes/[id]/edit` - Edit form (draft/sent quotes only)
+
+**New Components:**
+- `components/quotes/new-quote-form.tsx` - Quote creation with currency selector
+- `components/quotes/edit-quote-form.tsx` - Quote editing
+- `components/quotes/quotes-content.tsx` - Filterable quote list
+- `components/quotes/quotes-filters.tsx` - Status, amount, and search filters
+- `components/quotes/send-quote-button.tsx` - Send/resend quote via email
+- `components/quotes/download-quote-pdf-button.tsx` - Download quote PDF
+- `components/quotes/convert-to-invoice-button.tsx` - Convert accepted quote to invoice
+- `components/quotes/delete-quote-button.tsx` - Delete draft quotes
+- `components/quotes/delete-quote-icon-button.tsx` - Icon version for list view
+- `components/quotes/mark-quote-status-button.tsx` - Accept/Reject buttons
+
+**Server Actions (`lib/actions/quotes.ts`):**
+- `getQuotes()` - List user's quotes
+- `getQuote(id)` - Get single quote with user_id verification
+- `createQuote(input)` - Create quote with auto-generated number
+- `updateQuote(id, input)` - Update quote (draft/sent only)
+- `deleteQuote(id)` - Delete quote (draft only)
+- `updateQuoteStatus(id, status)` - Change status with timestamp
+- `convertQuoteToInvoice(quoteId)` - Create invoice from accepted quote
+- `getQuoteSummary()` - Stats with per-currency totals
+
+**Email & PDF:**
+- `lib/email/templates/quote-email.tsx` - Quote email template
+- `lib/pdf/quote-template.tsx` - Quote PDF template (QUOTE header, Valid Until instead of Due Date)
+- `app/api/quotes/[id]/pdf/route.ts` - PDF streaming endpoint
+- `lib/actions/send-quote.ts` - Send quote via Resend with PDF attachment
+
+**Key Features:**
+- Per-document currency (quotes have their own currency, separate from user default)
+- Multi-currency support in summary stats (displays totals per currency)
+- Quote-to-invoice conversion preserves client, amount, currency, and description
+- Timeline tracking: Created → Sent → Viewed → Accepted/Rejected
+- Expiration tracking with "Expiring Soon" indicator (within 7 days)
+- Pro tier gating via `canUseInvoicing()`
+
+**Bug Fixes:**
+- Fixed dark theme styling in quote components (was using light theme colors)
+- Fixed security: quote detail page now uses `getQuote(id)` action for defense in depth
+- Updated upgrade prompt to mention both quotes and invoices
+
+**Navigation:**
+- Added "Quotes" link to sidebar navigation (after Invoices)
+
+---
+
 ### Day 51: User Settings Currency Support (January 28, 2026)
 
 **Centralized Currency Preference** - All currency displays now respect the user's currency setting from `user_settings.currency`.
@@ -791,6 +852,7 @@
 - Data visualization with Recharts (payoff timeline, forecast balance charts)
 - Improved empty states with context-aware messaging
 - Centralized currency preference from user_settings (no hardcoded $ symbols)
+- Quotes feature with quote-to-invoice conversion workflow
 
 ## What's Next
 

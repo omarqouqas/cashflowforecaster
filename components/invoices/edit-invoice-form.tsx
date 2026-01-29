@@ -15,6 +15,19 @@ import { updateInvoice } from '@/lib/actions/invoices';
 import { showError, showSuccess } from '@/lib/toast';
 import { optionalEmailSchema } from '@/lib/validations/email';
 
+const CURRENCY_OPTIONS = [
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'EUR', label: 'EUR (€)' },
+  { value: 'GBP', label: 'GBP (£)' },
+  { value: 'CAD', label: 'CAD ($)' },
+  { value: 'AUD', label: 'AUD ($)' },
+  { value: 'JPY', label: 'JPY (¥)' },
+  { value: 'CHF', label: 'CHF' },
+  { value: 'INR', label: 'INR (₹)' },
+  { value: 'BRL', label: 'BRL (R$)' },
+  { value: 'MXN', label: 'MXN ($)' },
+];
+
 const invoiceSchema = z.object({
   invoice_number: z
     .string()
@@ -29,7 +42,8 @@ const invoiceSchema = z.object({
       invalid_type_error: 'Amount must be a number',
     })
     .positive('Amount must be positive')
-    .refine((n) => n >= 0.01, 'Amount must be at least $0.01'),
+    .refine((n) => n >= 0.01, 'Amount must be at least 0.01'),
+  currency: z.string().min(1, 'Currency is required'),
   due_date: z.string().min(1, 'Due date is required'),
   description: z.string().max(2000, 'Description too long').optional(),
 });
@@ -56,6 +70,7 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
       client_name: invoice.client_name ?? '',
       client_email: invoice.client_email ?? '',
       amount: invoice.amount ?? 0,
+      currency: (invoice as any).currency ?? 'USD',
       due_date: invoice.due_date ?? '',
       description: invoice.description ?? '',
     },
@@ -99,6 +114,7 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
         client_name: data.client_name,
         client_email: data.client_email ? data.client_email : null,
         amount: data.amount,
+        currency: data.currency,
         due_date: data.due_date,
         description: data.description ? data.description : null,
       });
@@ -178,13 +194,12 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
             )}
           </div>
 
-          {/* Amount */}
-          <div>
-            <Label htmlFor="amount" className="text-zinc-300 mb-1.5 block">
-              Amount<span className="text-rose-400 ml-0.5">*</span>
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+          {/* Amount and Currency */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              <Label htmlFor="amount" className="text-zinc-300 mb-1.5 block">
+                Amount<span className="text-rose-400 ml-0.5">*</span>
+              </Label>
               <Controller
                 name="amount"
                 control={control}
@@ -192,19 +207,40 @@ export function EditInvoiceForm({ invoice }: { invoice: Invoice }) {
                   <CurrencyInput
                     id="amount"
                     placeholder="0.00"
-                    className={[
-                      'pl-8',
-                      errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
-                    ].join(' ')}
                     value={field.value}
                     onChange={field.onChange}
+                    className={[
+                      'bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+                      'focus:border-teal-500 focus:ring-teal-500/20',
+                      errors.amount ? 'border-rose-500 focus:ring-rose-500' : '',
+                    ].join(' ')}
                   />
                 )}
               />
+              {errors.amount?.message && (
+                <p className="text-sm text-rose-400 mt-1.5">{errors.amount.message}</p>
+              )}
             </div>
-            {errors.amount?.message && (
-              <p className="text-sm text-rose-400 mt-1.5">{errors.amount.message}</p>
-            )}
+            <div>
+              <Label htmlFor="currency" className="text-zinc-300 mb-1.5 block">
+                Currency
+              </Label>
+              <select
+                id="currency"
+                {...register('currency')}
+                className={[
+                  'w-full h-10 bg-zinc-800 border border-zinc-700 rounded-md px-3 text-zinc-100',
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent',
+                  errors.currency ? 'border-rose-500 focus:ring-rose-500' : '',
+                ].join(' ')}
+              >
+                {CURRENCY_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Due date */}

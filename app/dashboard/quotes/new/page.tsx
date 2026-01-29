@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation';
 import { canUseInvoicing } from '@/lib/stripe/subscription';
-import { NewInvoiceForm } from '@/components/invoices/new-invoice-form';
+import { NewQuoteForm } from '@/components/quotes/new-quote-form';
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 
-export default async function NewInvoicePage() {
+export default async function NewQuotePage() {
   const hasAccess = await canUseInvoicing();
   if (!hasAccess) {
-    redirect('/dashboard/invoices');
+    redirect('/dashboard/quotes');
   }
 
   // Get user's default currency
@@ -21,5 +21,5 @@ export default async function NewInvoicePage() {
 
   const defaultCurrency = settings?.currency ?? 'USD';
 
-  return <NewInvoiceForm defaultCurrency={defaultCurrency} />;
+  return <NewQuoteForm defaultCurrency={defaultCurrency} />;
 }

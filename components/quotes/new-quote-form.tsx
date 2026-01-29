@@ -10,10 +10,9 @@ import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
-import { createInvoice } from '@/lib/actions/invoices';
+import { createQuote } from '@/lib/actions/quotes';
 import { showError, showSuccess } from '@/lib/toast';
 import { optionalEmailSchema } from '@/lib/validations/email';
-import { trackInvoiceCreated } from '@/lib/posthog/events';
 
 const CURRENCY_OPTIONS = [
   { value: 'USD', label: 'USD ($)' },
@@ -28,10 +27,10 @@ const CURRENCY_OPTIONS = [
   { value: 'MXN', label: 'MXN ($)' },
 ];
 
-const invoiceSchema = z.object({
-  invoice_number: z
+const quoteSchema = z.object({
+  quote_number: z
     .string()
-    .max(50, 'Invoice number too long')
+    .max(50, 'Quote number too long')
     .optional()
     .or(z.literal('')),
   client_name: z.string().min(1, 'Client name is required').max(100, 'Name too long'),
@@ -44,36 +43,36 @@ const invoiceSchema = z.object({
     .positive('Amount must be positive')
     .refine((n) => n >= 0.01, 'Amount must be at least 0.01'),
   currency: z.string().min(1, 'Currency is required'),
-  due_date: z
+  valid_until: z
     .string()
-    .min(1, 'Due date is required')
+    .min(1, 'Valid until date is required')
     .refine((dateStr) => {
-      const dueDate = new Date(dateStr);
+      const validUntil = new Date(dateStr);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return dueDate >= today;
-    }, 'Due date cannot be in the past'),
+      return validUntil >= today;
+    }, 'Valid until date cannot be in the past'),
   description: z.string().max(2000, 'Description too long').optional(),
 });
 
-type InvoiceFormData = z.infer<typeof invoiceSchema>;
+type QuoteFormData = z.infer<typeof quoteSchema>;
 
-function defaultDueDateString() {
+function defaultValidUntilString(days: number = 30) {
   const d = new Date();
-  d.setDate(d.getDate() + 14);
+  d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 }
 
-interface NewInvoiceFormProps {
+interface NewQuoteFormProps {
   defaultCurrency?: string;
 }
 
-export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps) {
+export function NewQuoteForm({ defaultCurrency = 'USD' }: NewQuoteFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const defaultDueDate = useMemo(() => defaultDueDateString(), []);
+  const defaultValidUntil = useMemo(() => defaultValidUntilString(30), []);
 
   const {
     register,
@@ -81,43 +80,38 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
     control,
     formState: { errors },
     setValue,
-  } = useForm<InvoiceFormData>({
-    resolver: zodResolver(invoiceSchema),
+  } = useForm<QuoteFormData>({
+    resolver: zodResolver(quoteSchema),
     defaultValues: {
-      due_date: defaultDueDate,
+      valid_until: defaultValidUntil,
       currency: defaultCurrency,
     },
   });
 
-  const setPaymentTerm = (days: number) => {
+  const setValidityPeriod = (days: number) => {
     const d = new Date();
     d.setDate(d.getDate() + days);
-    setValue('due_date', d.toISOString().slice(0, 10));
+    setValue('valid_until', d.toISOString().slice(0, 10));
   };
 
-  const onSubmit = async (data: InvoiceFormData) => {
+  const onSubmit = async (data: QuoteFormData) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      await createInvoice({
-        invoice_number: data.invoice_number ? data.invoice_number.trim() : null,
+      await createQuote({
+        quote_number: data.quote_number ? data.quote_number.trim() : null,
         client_name: data.client_name,
         client_email: data.client_email ? data.client_email : null,
         amount: data.amount,
         currency: data.currency,
-        due_date: data.due_date,
+        valid_until: data.valid_until,
         description: data.description ? data.description : null,
       });
 
-      trackInvoiceCreated({
-        amount: data.amount,
-        hasLineItems: false,
-        lineItemCount: 0,
-      });
-      showSuccess('Invoice created');
+      showSuccess('Quote created');
       router.refresh();
-      router.push('/dashboard/invoices');
+      router.push('/dashboard/quotes');
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Something went wrong';
       showError(message);
@@ -130,30 +124,30 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
   return (
     <div className="max-w-lg mx-auto">
       <Link
-        href="/dashboard/invoices"
+        href="/dashboard/quotes"
         className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-6"
       >
         <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-        Back to Invoices
+        Back to Quotes
       </Link>
 
-      <h1 className="text-2xl font-bold text-zinc-100 mb-6">Create Invoice</h1>
+      <h1 className="text-2xl font-bold text-zinc-100 mb-6">Create Quote</h1>
 
       <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Invoice number */}
+          {/* Quote number */}
           <div>
-            <Label htmlFor="invoice_number" className="text-zinc-300 mb-1.5 block">
-              Invoice number <span className="text-zinc-500">(optional)</span>
+            <Label htmlFor="quote_number" className="text-zinc-300 mb-1.5 block">
+              Quote number <span className="text-zinc-500">(optional)</span>
             </Label>
             <Input
-              id="invoice_number"
-              placeholder="Leave blank to auto-generate (e.g., INV-0007)"
-              {...register('invoice_number')}
-              className={errors.invoice_number ? 'border-rose-500 focus:ring-rose-500' : undefined}
+              id="quote_number"
+              placeholder="Leave blank to auto-generate (e.g., QTE-0001)"
+              {...register('quote_number')}
+              className={errors.quote_number ? 'border-rose-500 focus:ring-rose-500' : undefined}
             />
-            {errors.invoice_number?.message && (
-              <p className="text-sm text-rose-400 mt-1.5">{errors.invoice_number.message}</p>
+            {errors.quote_number?.message && (
+              <p className="text-sm text-rose-400 mt-1.5">{errors.quote_number.message}</p>
             )}
           </div>
 
@@ -176,7 +170,7 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
           {/* Client email */}
           <div>
             <Label htmlFor="client_email" className="text-zinc-300 mb-1.5 block">
-              Client email <span className="text-zinc-500">(optional)</span>
+              Client email <span className="text-zinc-500">(optional, required to send)</span>
             </Label>
             <Input
               id="client_email"
@@ -239,47 +233,47 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
             </div>
           </div>
 
-          {/* Due date */}
+          {/* Valid until */}
           <div>
-            <Label htmlFor="due_date" className="text-zinc-300 mb-1.5 block">
-              Due date<span className="text-rose-400 ml-0.5">*</span>
+            <Label htmlFor="valid_until" className="text-zinc-300 mb-1.5 block">
+              Valid until<span className="text-rose-400 ml-0.5">*</span>
             </Label>
             <div className="flex gap-2 mb-2">
               <button
                 type="button"
-                onClick={() => setPaymentTerm(15)}
+                onClick={() => setValidityPeriod(14)}
                 className="px-3 py-1.5 text-xs font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 rounded hover:bg-zinc-700 hover:text-teal-400 hover:border-teal-500/30 transition-colors"
               >
-                Net-15
+                14 days
               </button>
               <button
                 type="button"
-                onClick={() => setPaymentTerm(30)}
+                onClick={() => setValidityPeriod(30)}
                 className="px-3 py-1.5 text-xs font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 rounded hover:bg-zinc-700 hover:text-teal-400 hover:border-teal-500/30 transition-colors"
               >
-                Net-30
+                30 days
               </button>
               <button
                 type="button"
-                onClick={() => setPaymentTerm(60)}
+                onClick={() => setValidityPeriod(60)}
                 className="px-3 py-1.5 text-xs font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 rounded hover:bg-zinc-700 hover:text-teal-400 hover:border-teal-500/30 transition-colors"
               >
-                Net-60
+                60 days
               </button>
             </div>
             <Input
-              id="due_date"
+              id="valid_until"
               type="date"
-              {...register('due_date')}
+              {...register('valid_until')}
               className={[
                 'cursor-pointer [color-scheme:dark]',
-                errors.due_date ? 'border-rose-500 focus:ring-rose-500' : '',
+                errors.valid_until ? 'border-rose-500 focus:ring-rose-500' : '',
               ].join(' ')}
             />
-            {errors.due_date?.message && (
-              <p className="text-sm text-rose-400 mt-1.5">{errors.due_date.message}</p>
+            {errors.valid_until?.message && (
+              <p className="text-sm text-rose-400 mt-1.5">{errors.valid_until.message}</p>
             )}
-            <p className="text-sm text-zinc-400 mt-1.5">Quick select payment terms or choose a custom date.</p>
+            <p className="text-sm text-zinc-400 mt-1.5">Quick select validity period or choose a custom date.</p>
           </div>
 
           {/* Description */}
@@ -298,7 +292,7 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
                 'min-h-[96px]',
                 errors.description ? 'border-rose-500 focus:ring-rose-500' : '',
               ].join(' ')}
-              placeholder="What is this invoice for?"
+              placeholder="What is this quote for?"
             />
             {errors.description?.message && (
               <p className="text-sm text-rose-400 mt-1.5">{errors.description.message}</p>
@@ -310,7 +304,7 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
           <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-800">
             <button
               type="button"
-              onClick={() => router.push('/dashboard/invoices')}
+              onClick={() => router.push('/dashboard/quotes')}
               disabled={isLoading}
               className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-100 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -321,7 +315,7 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
               disabled={isLoading}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isLoading ? 'Creating...' : 'Create Invoice'}
+              {isLoading ? 'Creating...' : 'Create Quote'}
             </button>
           </div>
         </form>
@@ -329,5 +323,3 @@ export function NewInvoiceForm({ defaultCurrency = 'USD' }: NewInvoiceFormProps)
     </div>
   );
 }
-
-

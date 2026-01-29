@@ -189,7 +189,7 @@ export function ForecastBalanceChart({
 
   return (
     <div className="h-36 w-full">
-      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <AreaChart
           data={chartData}
           margin={{ top: 5, right: 5, left: 0, bottom: 0 }}

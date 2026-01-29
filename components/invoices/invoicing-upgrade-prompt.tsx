@@ -2,11 +2,16 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Bell, CreditCard, FileText, Lock } from 'lucide-react';
+import { Bell, CreditCard, FileText, Lock, ClipboardCheck } from 'lucide-react';
 
 import { createCheckoutSession } from '@/lib/actions/stripe';
 
 const FEATURES = [
+  {
+    icon: ClipboardCheck,
+    title: 'Professional Quotes',
+    description: 'Send proposals, convert to invoices',
+  },
   {
     icon: FileText,
     title: 'PDF Invoices',
@@ -20,7 +25,7 @@ const FEATURES = [
   {
     icon: Bell,
     title: 'Auto Reminders',
-    description: 'Friendly \u2192 Firm \u2192 Final sequence',
+    description: 'Friendly → Firm → Final sequence',
   },
 ] as const;
 
@@ -68,13 +73,13 @@ export function InvoicingUpgradePrompt() {
             Get Paid Faster with Runway Collect
           </h1>
           <p className="text-lg text-zinc-400 max-w-lg mx-auto">
-            Stop chasing payments. Send professional invoices and get paid directly — all synced
-            with your forecast.
+            Stop chasing payments. Send quotes, convert to invoices, and get paid directly — all
+            synced with your forecast.
           </p>
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
             return (

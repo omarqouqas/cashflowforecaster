@@ -12,6 +12,7 @@ export type CreateInvoiceInput = {
   client_name: string;
   client_email?: string | null;
   amount: number;
+  currency?: string;
   due_date: string; // YYYY-MM-DD
   description?: string | null;
 };
@@ -21,6 +22,7 @@ export type UpdateInvoiceInput = {
   client_name: string;
   client_email?: string | null;
   amount: number;
+  currency?: string;
   due_date: string; // YYYY-MM-DD
   description?: string | null;
 };
@@ -103,6 +105,7 @@ export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: st
           client_name: input.client_name,
           client_email: input.client_email || null,
           amount: input.amount,
+          currency: input.currency || 'USD',
           due_date: input.due_date,
           description: input.description || null,
           status: 'draft',
@@ -250,6 +253,7 @@ export async function updateInvoice(id: string, input: UpdateInvoiceInput): Prom
       client_name: input.client_name,
       client_email: input.client_email || null,
       amount: input.amount,
+      currency: input.currency || 'USD',
       due_date: input.due_date,
       description: input.description || null,
       updated_at: new Date().toISOString(),

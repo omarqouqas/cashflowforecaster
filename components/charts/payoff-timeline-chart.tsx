@@ -169,7 +169,7 @@ export function PayoffTimelineChart({
       <h3 className="text-sm font-medium text-zinc-300 mb-4">Payoff Timeline</h3>
 
       <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <AreaChart
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}

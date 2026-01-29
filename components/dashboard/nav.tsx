@@ -18,6 +18,7 @@ import {
   LogOut,
   Home,
   FileBarChart,
+  ClipboardList,
 } from 'lucide-react';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { createPortalSession } from '@/lib/actions/stripe';
@@ -75,6 +76,7 @@ export function DashboardNav({ userEmail, userName, userTier }: DashboardNavProp
     { href: '/dashboard/debt-payoff', label: 'Debt Payoff', icon: TrendingDown },
     { href: '/dashboard/import', label: 'Import', icon: Upload },
     { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt },
+    { href: '/dashboard/quotes', label: 'Quotes', icon: ClipboardList },
     { href: '/dashboard/reports', label: 'Reports', icon: FileBarChart },
   ];
 
