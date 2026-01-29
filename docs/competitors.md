@@ -198,7 +198,7 @@ This document tracks competitors in the personal finance and cash flow managemen
 | Invoice-to-forecast sync | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Built-in invoicing | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ Core |
 | Recurring invoices | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ Pro |
-| Quotes feature | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Quotes feature | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Bank sync | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Net worth tracking | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Native mobile app | ❌ PWA | ✅ | ✅ | ✅ | ✅ | ❌ PWA |
