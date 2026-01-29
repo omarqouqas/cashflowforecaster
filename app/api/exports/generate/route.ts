@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Json } from '@/types/supabase';
 import { canUseAdvancedExports, canAccessReport } from '@/lib/stripe/feature-gate';
 import { getForecastDaysLimit } from '@/lib/stripe/subscription';
 import generateCalendar from '@/lib/calendar/generate';
@@ -685,7 +686,7 @@ export async function POST(request: Request) {
         name: exportName,
         report_type: config.reportType,
         format: config.format,
-        config: config as unknown as Record<string, unknown>,
+        config: config as unknown as Json,
         file_url: downloadUrl,
         status: 'completed',
         row_count: rowCount,
