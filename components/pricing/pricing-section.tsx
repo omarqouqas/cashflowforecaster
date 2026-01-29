@@ -59,9 +59,10 @@ const TIERS: TierConfig[] = [
     features: [
       { text: 'Everything in Free' },
       { text: '365-day forecast (12 months ahead)' },
-      { text: 'Runway Collect invoicing' },
+      { text: 'Runway Collect: Quotes & Invoices' },
+      { text: 'Send quotes, convert to invoices when accepted' },
       { text: 'One-click Stripe payments for invoices' },
-      { text: 'Generate & download PDF invoices' },
+      { text: 'Generate & download PDF quotes & invoices' },
       { text: 'Custom invoice branding (logo + business name)' },
       { text: 'Unlimited bills & income sources' },
       { text: 'Priority support (24hr)' },
