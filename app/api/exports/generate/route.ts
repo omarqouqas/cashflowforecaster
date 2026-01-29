@@ -685,7 +685,7 @@ export async function POST(request: Request) {
         name: exportName,
         report_type: config.reportType,
         format: config.format,
-        config: config,
+        config: config as unknown as Record<string, unknown>,
         file_url: downloadUrl,
         status: 'completed',
         row_count: rowCount,
