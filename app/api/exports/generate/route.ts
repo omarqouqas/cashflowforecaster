@@ -698,7 +698,7 @@ export async function POST(request: Request) {
 
     // If table doesn't exist yet (migration not run), still return the file
     const exportHistoryItem: ExportHistoryItem | null = exportRecord
-      ? (exportRecord as ExportHistoryItem)
+      ? (exportRecord as unknown as ExportHistoryItem)
       : null;
 
     return NextResponse.json({
