@@ -34,7 +34,6 @@ interface IncomeRecord {
   amount: number;
   frequency: string;
   next_date: string | null;
-  start_date: string | null;
   is_active: boolean | null;
 }
 
@@ -407,7 +406,7 @@ export async function POST(request: Request) {
               name: i.name,
               amount: i.amount,
               frequency: i.frequency,
-              next_date: i.next_date || i.start_date,
+              next_date: i.next_date,
               is_active: i.is_active ?? true,
             })),
             columns: INCOME_COLUMNS,
@@ -459,7 +458,7 @@ export async function POST(request: Request) {
               name: i.name,
               amount: i.amount,
               frequency: i.frequency,
-              next_date: i.next_date || i.start_date,
+              next_date: i.next_date,
               is_active: i.is_active ?? true,
             })),
             columns: INCOME_COLUMNS,
@@ -582,7 +581,7 @@ export async function POST(request: Request) {
               Name: i.name,
               Amount: i.amount,
               Frequency: i.frequency,
-              'Next Date': i.next_date || i.start_date,
+              'Next Date': i.next_date,
               Active: i.is_active ?? true,
             })),
           });
