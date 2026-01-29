@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import type { Database } from '@/types/supabase';
 import { Input } from '@/components/ui/input';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
@@ -101,7 +102,7 @@ export default function NewAccountPage() {
     }
 
     // Insert account with credit card fields if applicable
-    const accountData: Record<string, any> = {
+    const accountData: Database['public']['Tables']['accounts']['Insert'] = {
       user_id: user.id,
       name: data.name,
       account_type: data.account_type,
