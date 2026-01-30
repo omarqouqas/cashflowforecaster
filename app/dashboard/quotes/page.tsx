@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Plus, FileText, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
-import { canUseInvoicing } from '@/lib/stripe/subscription';
+import { canUseInvoicing, getUserSubscription } from '@/lib/stripe/subscription';
 import { InvoicingUpgradePrompt } from '@/components/invoices/invoicing-upgrade-prompt';
 import { QuotesContent } from '@/components/quotes/quotes-content';
+import { LifetimeDealBanner } from '@/components/subscription/lifetime-deal-banner';
 import { isRedirectError } from 'next/dist/client/components/redirect';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth/session';
@@ -27,10 +28,11 @@ export default async function QuotesPage({ searchParams }: QuotesPageProps) {
   let summary: Awaited<ReturnType<typeof getQuoteSummary>> | null = null;
   let error: string | null = null;
   let currency = 'USD';
+  let subscriptionTier: Awaited<ReturnType<typeof getUserSubscription>>['tier'] = 'free';
 
   try {
-    // Fetch quotes, summary, and user settings in parallel
-    const [quotesData, summaryData, settingsResult] = await Promise.all([
+    // Fetch quotes, summary, user settings, and subscription in parallel
+    const [quotesData, summaryData, settingsResult, subscription] = await Promise.all([
       getQuotes(),
       getQuoteSummary(),
       supabase
@@ -38,10 +40,12 @@ export default async function QuotesPage({ searchParams }: QuotesPageProps) {
         .select('currency')
         .eq('user_id', user.id)
         .single(),
+      getUserSubscription(user.id),
     ]);
     quotes = quotesData;
     summary = summaryData;
     currency = settingsResult.data?.currency ?? 'USD';
+    subscriptionTier = subscription.tier;
   } catch (e) {
     // Don't treat auth redirects as fetch failures
     if (isRedirectError(e)) {
@@ -54,6 +58,9 @@ export default async function QuotesPage({ searchParams }: QuotesPageProps) {
 
   return (
     <>
+      {/* Lifetime Deal Banner */}
+      <LifetimeDealBanner currentTier={subscriptionTier} />
+
       {/* Breadcrumb */}
       <div className="mb-6">
         <Link

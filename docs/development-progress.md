@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 28, 2026 (Day 51)
+**Last Updated:** January 29, 2026 (Day 53)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 51
+- **Days in Development:** 53
 - **Commits:** 170+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + **User Settings Currency Support**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + **Lifetime Deal**
 
 **Current Focus:**
 
@@ -29,7 +29,63 @@
 
 ---
 
-## Recent Development (Days 40-51)
+## Recent Development (Days 40-53)
+
+### Day 53: Lifetime Deal Feature (January 29, 2026)
+
+**New Feature: Lifetime Deal** - One-time $149 payment for permanent Pro access. Appeals to budget-conscious freelancers who prefer upfront payment over subscriptions.
+
+**Stripe Integration:**
+- New `createLifetimeCheckoutSession()` server action for one-time payment checkout
+- Webhook handler for `checkout.session.completed` with `type: 'lifetime_purchase'` metadata
+- Automatic cancellation of existing Pro subscription with prorated refund
+- Database update with `tier: 'lifetime'` and 100-year expiration date
+
+**Promotional Banner:**
+- New `LifetimeDealBanner` component with amber/gold styling
+- Dismissible with 7-day localStorage cooldown
+- Direct checkout button ("Get Lifetime — $149")
+- Shows for free/pro users only (hidden for lifetime/premium)
+- Added to Dashboard, Invoices, Quotes, and Settings pages
+
+**UI Updates:**
+- `SubscriptionStatus` component updated with Sparkles icon for lifetime tier
+- Shows "Lifetime access — no renewal needed" instead of renewal date
+- "Manage" button hidden for lifetime users (no subscription to manage)
+- Pricing page comparison table updated with lifetime option
+
+**Webhook Safety:**
+- Operation order: Update database FIRST, then cancel Stripe subscription
+- Race condition protection: `handleSubscriptionCanceled` skips downgrade if tier is 'lifetime'
+- Error handling for subscription cancellation failures (logs warning, doesn't fail)
+
+**Feature Gating:**
+- Lifetime tier has same limits as Pro (all features unlocked)
+- `TIER_RANK['lifetime'] = 2` (same as premium) for access checks
+- Export features properly include lifetime in `isPro` checks
+- `canUseInvoicing()` correctly grants access to lifetime users
+
+**Bug Fixes:**
+- Fixed Safari private mode localStorage error with try-catch
+- Fixed invalid date parsing from corrupted localStorage
+- Fixed potential double-billing for Pro users upgrading to lifetime
+
+**New Files:**
+- `components/subscription/lifetime-deal-banner.tsx` - Promotional banner component
+
+**Modified Files:**
+- `lib/actions/stripe.ts` - Added `createLifetimeCheckoutSession()` action
+- `app/api/webhooks/stripe/route.ts` - Added lifetime purchase handler with safety fixes
+- `components/subscription/subscription-status.tsx` - Lifetime tier UI updates
+- `components/reports/export-builder-modal.tsx` - Added lifetime to isPro check
+- `components/reports/reports-page-content.tsx` - Added lifetime to isPro check
+- `app/dashboard/page.tsx` - Added LifetimeDealBanner
+- `app/dashboard/invoices/page.tsx` - Added LifetimeDealBanner
+- `app/dashboard/quotes/page.tsx` - Added LifetimeDealBanner
+- `app/dashboard/settings/page.tsx` - Added LifetimeDealBanner
+- `app/compare/cash-flow-calendar-apps/page.tsx` - Updated pricing comparison
+
+---
 
 ### Day 52: Quotes Feature (January 29, 2026)
 
@@ -754,16 +810,17 @@
 
 ## Tier Limits
 
-| Feature | Free | Pro |
-|---------|------|-----|
-| Bills | 10 | Unlimited |
-| Income Sources | 10 | Unlimited |
-| Forecast Days | 90 | 365 |
-| Invoicing | No | Yes |
-| Stripe Payment Links | No | Yes |
-| CSV Export | Yes | Yes |
-| Excel/JSON Export | No | Yes |
-| Export History | 5 items | Unlimited |
+| Feature | Free | Pro | Lifetime |
+|---------|------|-----|----------|
+| Bills | 10 | Unlimited | Unlimited |
+| Income Sources | 10 | Unlimited | Unlimited |
+| Forecast Days | 90 | 365 | 365 |
+| Invoicing | No | Yes | Yes |
+| Stripe Payment Links | No | Yes | Yes |
+| CSV Export | Yes | Yes | Yes |
+| Excel/JSON Export | No | Yes | Yes |
+| Export History | 5 items | Unlimited | Unlimited |
+| Price | $0 | $7.99/mo | $149 one-time |
 
 ---
 
@@ -853,6 +910,7 @@
 - Improved empty states with context-aware messaging
 - Centralized currency preference from user_settings (no hardcoded $ symbols)
 - Quotes feature with quote-to-invoice conversion workflow
+- Lifetime deal option ($149) for upfront payment preference
 
 ## What's Next
 

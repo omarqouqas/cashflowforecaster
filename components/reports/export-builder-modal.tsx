@@ -63,7 +63,7 @@ export function ExportBuilderModal({
   const [dateRangePreset, setDateRangePreset] = useState<DateRangePreset>('this_month');
   const [format, setFormat] = useState<ExportFormat>('csv');
 
-  const isPro = exportLimits.tier === 'pro' || exportLimits.tier === 'premium';
+  const isPro = exportLimits.tier === 'pro' || exportLimits.tier === 'premium' || exportLimits.tier === 'lifetime';
 
   // Initialize with preselected report if provided
   useEffect(() => {

@@ -395,19 +395,26 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
  */
 async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
-  
-  // Find user by customer ID
+
+  // Find user by customer ID and check their current tier
   const { data } = await supabaseAdmin
     .from('subscriptions')
-    .select('user_id')
+    .select('user_id, tier')
     .eq('stripe_customer_id', customerId)
     .single();
-  
+
   if (!data?.user_id) {
     console.error('No user found for canceled subscription:', subscription.id);
     return;
   }
-  
+
+  // Don't downgrade lifetime users - they may have just upgraded from Pro
+  // and this webhook is from canceling their old Pro subscription
+  if (data.tier === 'lifetime') {
+    console.log(`Skipping downgrade for lifetime user ${data.user_id} (subscription ${subscription.id} was canceled as part of lifetime upgrade)`);
+    return;
+  }
+
   // Downgrade to free tier
   const { error } = await supabaseAdmin
     .from('subscriptions')
@@ -422,12 +429,12 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
       cancel_at_period_end: false,
     })
     .eq('user_id', data.user_id);
-  
+
   if (error) {
     console.error('Database error in handleSubscriptionCanceled:', error);
     throw error;
   }
-  
+
   console.log(`Subscription canceled for user ${data.user_id}`);
 }
 
@@ -521,6 +528,19 @@ async function handleLifetimePurchaseCompleted(session: Stripe.Checkout.Session)
     return;
   }
 
+  // Check if user has an existing subscription that needs to be canceled
+  const { data: existingSub } = await supabaseAdmin
+    .from('subscriptions')
+    .select('stripe_subscription_id')
+    .eq('user_id', userId)
+    .single();
+
+  const existingSubscriptionId = existingSub?.stripe_subscription_id;
+
+  // IMPORTANT: Update database FIRST, then cancel Stripe subscription
+  // This ensures user gets lifetime even if Stripe cancel fails
+  // (If DB update fails, we don't cancel Stripe - user keeps Pro and can retry)
+
   // Update subscription to lifetime tier
   // Lifetime has no expiration - set current_period_end to far future (100 years)
   const farFuture = new Date();
@@ -549,6 +569,20 @@ async function handleLifetimePurchaseCompleted(session: Stripe.Checkout.Session)
   }
 
   console.log(`Lifetime purchase completed for user ${userId}`);
+
+  // NOW cancel existing Stripe subscription (after DB is updated)
+  // If this fails, user has lifetime but also keeps Pro until next billing - not ideal but not critical
+  if (existingSubscriptionId) {
+    try {
+      await stripe.subscriptions.cancel(existingSubscriptionId, {
+        prorate: true, // Give them a prorated refund
+      });
+      console.log(`Canceled existing subscription ${existingSubscriptionId} for lifetime upgrade`);
+    } catch (err) {
+      // Log but don't fail - subscription might already be canceled, or we'll handle manually
+      console.warn('Could not cancel existing subscription (user has lifetime, may need manual cleanup):', err);
+    }
+  }
 }
 
 /**

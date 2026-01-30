@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Plus, Receipt, ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/format';
-import { canUseInvoicing } from '@/lib/stripe/subscription';
+import { canUseInvoicing, getUserSubscription } from '@/lib/stripe/subscription';
 import { InvoicingUpgradePrompt } from '@/components/invoices/invoicing-upgrade-prompt';
 import { InvoicesContent } from '@/components/invoices/invoices-content';
+import { LifetimeDealBanner } from '@/components/subscription/lifetime-deal-banner';
 import type { Tables } from '@/types/supabase';
 import { isRedirectError } from 'next/dist/client/components/redirect';
 import { createClient } from '@/lib/supabase/server';
@@ -35,19 +36,22 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
   let invoices: Tables<'invoices'>[] = [];
   let error: string | null = null;
   let currency = 'USD';
+  let subscriptionTier: Awaited<ReturnType<typeof getUserSubscription>>['tier'] = 'free';
 
   try {
-    // Fetch invoices and user settings in parallel
-    const [invoicesData, settingsResult] = await Promise.all([
+    // Fetch invoices, user settings, and subscription in parallel
+    const [invoicesData, settingsResult, subscription] = await Promise.all([
       getInvoices(),
       supabase
         .from('user_settings')
         .select('currency')
         .eq('user_id', user.id)
         .single(),
+      getUserSubscription(user.id),
     ]);
     invoices = invoicesData;
     currency = settingsResult.data?.currency ?? 'USD';
+    subscriptionTier = subscription.tier;
   } catch (e) {
     // Don't treat auth redirects as fetch failures (common during build/static generation)
     if (isRedirectError(e)) {
@@ -60,6 +64,9 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
 
   return (
     <>
+      {/* Lifetime Deal Banner */}
+      <LifetimeDealBanner currentTier={subscriptionTier} />
+
       {/* Breadcrumb */}
       <div className="mb-6">
         <Link

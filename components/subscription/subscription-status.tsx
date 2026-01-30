@@ -6,7 +6,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import { Crown, Zap, Settings, ExternalLink, Loader2 } from 'lucide-react';
+import { Crown, Zap, Settings, ExternalLink, Loader2, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
 import { type SubscriptionTier, PRICING_TIERS } from '@/lib/stripe/config';
 import { createPortalSession } from '@/lib/actions/stripe';
@@ -28,6 +28,7 @@ export function SubscriptionStatus({
   const [isPending, startTransition] = useTransition();
   const tierConfig = PRICING_TIERS[tier];
   const isPaid = tier !== 'free';
+  const isLifetime = tier === 'lifetime';
 
   const handleManageSubscription = () => {
     startTransition(async () => {
@@ -49,7 +50,7 @@ export function SubscriptionStatus({
     <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">Subscription</h3>
-        {isPaid && (
+        {isPaid && !isLifetime && (
           <button
             onClick={handleManageSubscription}
             disabled={isPending}
@@ -75,10 +76,12 @@ export function SubscriptionStatus({
         <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
           tier === 'free' ? 'bg-zinc-800' :
           tier === 'pro' ? 'bg-teal-500/20' :
+          tier === 'lifetime' ? 'bg-amber-500/20' :
           'bg-amber-500/20'
         }`}>
           {tier === 'free' && <Zap className="w-7 h-7 text-zinc-400" />}
           {tier === 'pro' && <Zap className="w-7 h-7 text-teal-400" />}
+          {tier === 'lifetime' && <Sparkles className="w-7 h-7 text-amber-400" />}
           {tier === 'premium' && <Crown className="w-7 h-7 text-amber-400" />}
         </div>
 
@@ -98,13 +101,15 @@ export function SubscriptionStatus({
             </span>
           </div>
           
-          {isPaid && currentPeriodEnd && (
+          {isPaid && (
             <p className="text-sm text-zinc-400 mt-1">
-              {cancelAtPeriodEnd ? (
+              {isLifetime ? (
+                <>Lifetime access — no renewal needed</>
+              ) : cancelAtPeriodEnd && currentPeriodEnd ? (
                 <>Cancels on {format(currentPeriodEnd, 'MMM d, yyyy')}</>
-              ) : (
+              ) : currentPeriodEnd ? (
                 <>Renews on {format(currentPeriodEnd, 'MMM d, yyyy')}</>
-              )}
+              ) : null}
             </p>
           )}
           

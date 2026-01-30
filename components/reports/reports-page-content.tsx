@@ -28,7 +28,7 @@ export function ReportsPageContent({
   const [exportHistory, setExportHistory] = useState(initialHistory);
   const [preSelectedReport, setPreSelectedReport] = useState<ReportType | undefined>();
 
-  const isPro = exportLimits.tier === 'pro' || exportLimits.tier === 'premium';
+  const isPro = exportLimits.tier === 'pro' || exportLimits.tier === 'premium' || exportLimits.tier === 'lifetime';
 
   const handleQuickExport = (reportType: ReportType) => {
     setPreSelectedReport(reportType);

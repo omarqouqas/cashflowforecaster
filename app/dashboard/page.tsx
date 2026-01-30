@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import generateCalendar from '@/lib/calendar/generate';
 import { getInvoiceSummary } from '@/lib/actions/invoices';
-import { getForecastDaysLimit } from '@/lib/stripe/subscription';
+import { getForecastDaysLimit, getUserSubscription } from '@/lib/stripe/subscription';
 import { getQuarterForDate } from '@/lib/tax/calculations';
 import { DashboardContent } from '@/components/dashboard/dashboard-content';
 
@@ -16,7 +16,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const supabase = await createClient();
 
   // Fetch accounts, income, bills, and user settings in parallel
-  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult, topInvoicesResult, forecastDays] = await Promise.all([
+  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult, topInvoicesResult, forecastDays, subscription] = await Promise.all([
     supabase
       .from('accounts')
       .select('*')
@@ -46,6 +46,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order('due_date', { ascending: true })
       .limit(3),
     getForecastDaysLimit(user.id),
+    getUserSubscription(user.id),
   ]);
 
   const accounts = (accountsResult.data || []) as any;
@@ -238,6 +239,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       message={message}
       calendarError={calendarError}
       currency={currency}
+      subscriptionTier={subscription.tier}
     />
   );
 }

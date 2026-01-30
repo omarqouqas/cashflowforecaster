@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.7
+**Version:** 6.8
 **Last Updated:** January 29, 2026
-**Status:** Live - Quotes Feature Added
+**Status:** Live - Lifetime Deal Added
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -464,29 +464,31 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 
 ### Pricing Tiers (Live)
 
-*Note: Premium tier is sunset (kept only for backwards compatibility). Live offering is Free + Pro.*
+*Note: Premium tier is sunset (kept only for backwards compatibility). Live offering is Free + Pro + Lifetime.*
 
-| Feature | Free ($0) | Pro ($7.99/mo) |
-|---------|-----------|----------------|
-| Bills | 10 | Unlimited |
-| Income Sources | 10 | Unlimited |
-| Forecast Days | 90 | 365 |
-| Calendar View | ✅ | ✅ |
-| "Can I Afford It?" | ✅ | ✅ |
-| Weekly Email Digest | ✅ | ✅ |
-| Bill Collision Alerts | ✅ | ✅ |
-| CSV Import | ✅ | ✅ |
-| Onboarding Wizard | ✅ | ✅ |
-| Runway Collect Invoicing | ❌ | ✅ |
-| PDF Invoices | ❌ | ✅ |
-| Payment Reminders | ❌ | ✅ |
-| CSV Export | ✅ | ✅ |
-| Excel/JSON Export | ❌ | ✅ |
-| Export History | 5 items | Unlimited |
-| Support | 48hr email | 24hr priority |
+| Feature | Free ($0) | Pro ($7.99/mo) | Lifetime ($149) |
+|---------|-----------|----------------|-----------------|
+| Bills | 10 | Unlimited | Unlimited |
+| Income Sources | 10 | Unlimited | Unlimited |
+| Forecast Days | 90 | 365 | 365 |
+| Calendar View | ✅ | ✅ | ✅ |
+| "Can I Afford It?" | ✅ | ✅ | ✅ |
+| Weekly Email Digest | ✅ | ✅ | ✅ |
+| Bill Collision Alerts | ✅ | ✅ | ✅ |
+| CSV Import | ✅ | ✅ | ✅ |
+| Onboarding Wizard | ✅ | ✅ | ✅ |
+| Runway Collect Invoicing | ❌ | ✅ | ✅ |
+| PDF Invoices | ❌ | ✅ | ✅ |
+| Payment Reminders | ❌ | ✅ | ✅ |
+| CSV Export | ✅ | ✅ | ✅ |
+| Excel/JSON Export | ❌ | ✅ | ✅ |
+| Export History | 5 items | Unlimited | Unlimited |
+| Support | 48hr email | 24hr priority | 24hr priority |
 
-**Yearly Pricing:**
-- Pro: $79/year (2 months free)
+**Pricing Options:**
+- Pro Monthly: $7.99/mo
+- Pro Yearly: $79/year (2 months free)
+- Lifetime: $149 one-time (permanent Pro access, no renewals)
 
 ### Revenue Projections
 
@@ -912,6 +914,23 @@ User Request
 ---
 
 ## Changelog
+
+### Version 6.8 (January 29, 2026)
+- **Lifetime Deal Feature:**
+  - One-time $149 payment for permanent Pro access
+  - New `createLifetimeCheckoutSession()` server action for Stripe one-time payment
+  - Webhook handler for `checkout.session.completed` with lifetime purchase metadata
+  - Automatic cancellation of existing Pro subscription with prorated refund
+  - Promotional banner component (`LifetimeDealBanner`) with amber/gold styling
+  - Banner dismissible with 7-day localStorage cooldown
+  - Banner shows on Dashboard, Invoices, Quotes, and Settings pages
+  - Hidden for lifetime/premium users, shown for free/pro users
+  - `SubscriptionStatus` component updated with Sparkles icon for lifetime tier
+  - Shows "Lifetime access — no renewal needed" instead of renewal date
+  - "Manage" button hidden for lifetime users
+  - Pricing comparison table updated on compare page
+  - Feature gating: Lifetime tier has same limits as Pro
+  - Bug fixes: Safari localStorage, race condition protection, operation ordering
 
 ### Version 6.7 (January 29, 2026)
 - **Quotes Feature (Runway Collect):**
@@ -1409,7 +1428,7 @@ User Request
 
 ---
 
-**Document Version:** 6.6
-**Last Updated:** January 28, 2026
-**Status:** Live - User Currency Preference Added 🎉
+**Document Version:** 6.8
+**Last Updated:** January 29, 2026
+**Status:** Live - Lifetime Deal Added 🎉
 **Next Review:** February 2026

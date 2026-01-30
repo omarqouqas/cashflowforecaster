@@ -131,7 +131,7 @@ Features that set Cash Flow Forecaster apart from competitors:
 | Invoice-to-forecast sync | ✅ | ❌ | ❌ | ❌ |
 | Credit utilization warnings | ✅ | ❌ | ❌ | ❌ |
 | Built for irregular income | ✅ | ❌ | ❌ | ❌ |
-| Price | $7.99/mo | $14.99/mo | $14.99/mo | $9.99/mo |
+| Price | $7.99/mo or $149 lifetime | $14.99/mo | $14.99/mo | $9.99/mo |
 
 ### Core Differentiator
 
@@ -527,7 +527,7 @@ Analysis of Flow by Acertine (flow.acertine.com) revealed trust-building element
 | User testimonials | 5-star reviews section | None | ⬜ Need to collect |
 | Quantified value props | "Save 90% of your time" | Partial | ⬜ Can improve |
 | Trust badges | HMRC, ICO, GDPR | None | N/A (not UK-focused) |
-| Lifetime deal option | Yes (VIP tier) | No | ⬜ Future consideration |
+| Lifetime deal option | Yes (VIP tier) | Yes ($149) | ✅ Implemented |
 | Quotes feature | Yes | Yes | ✅ Implemented |
 
 ### Action Plan
@@ -583,29 +583,34 @@ SELECT COUNT(*) FROM invoices WHERE status != 'draft';
 SELECT COUNT(*) FROM quotes WHERE converted_invoice_id IS NOT NULL;
 ```
 
-#### Phase 5: Lifetime Deal Option (Future)
+#### Phase 5: Lifetime Deal Option ✅ IMPLEMENTED
 
-Consider offering a one-time "Lifetime" tier:
-- Appeals to budget-conscious freelancers
-- Generates upfront cash
-- Reduces churn (they're locked in forever)
+One-time "Lifetime" tier is now live:
+- **Price:** $149 one-time payment
+- **Access:** Permanent Pro features, no renewals
+- **Appeals to:** Budget-conscious freelancers who prefer upfront payment
 
-**Pricing considerations:**
-- Flow charges ~$200-300 for lifetime
-- Break-even vs monthly: 2-3 years
-- Risk: if product improves significantly, lifetime users get it "free"
+**Implementation Details:**
+- Stripe one-time payment via `createLifetimeCheckoutSession()` action
+- Webhook handler for `checkout.session.completed` with `type: 'lifetime_purchase'`
+- Automatic cancellation of existing Pro subscription with prorated refund
+- Database tier set to 'lifetime' with 100-year expiration
+- Promotional banner on Dashboard, Invoices, Quotes, Settings pages
+- Banner dismissible with 7-day localStorage cooldown
+- Subscription status shows Sparkles icon and "Lifetime access — no renewal needed"
 
-**Implementation:**
-- Add Stripe one-time payment product
-- Create "Lifetime" tier in subscription logic
-- Update pricing page
+**Business rationale:**
+- Break-even vs $7.99/mo: ~19 months
+- Generates upfront cash for business
+- Reduces churn (lifetime users are locked in)
+- Competitive with Flow ($200-300) and other lifetime deals in market
 
 ### Priority Order
 
 1. **Testimonials** — High impact, just need to email users
 2. **Quantified value props** — Copy changes only
 3. **Social proof stats** — Need more users first
-4. **Lifetime deal** — Business decision, implement later
+4. ~~**Lifetime deal**~~ — ✅ Implemented
 
 ---
 
@@ -627,10 +632,10 @@ Consider offering a one-time "Lifetime" tier:
 | Jan 2026 | Delay US bank sync until regulatory clarity | Section 1033 being contested, JPMorgan charging for API access, wait for stability |
 | Jan 2026 | Implemented Quotes feature | Learned from Flow/Acertine competitor analysis; quotes → invoice workflow |
 | Jan 2026 | Prioritize testimonial collection | Only 13 users, need social proof before adding stats to landing page |
-| Jan 2026 | Defer lifetime deal option | Collect testimonials first, then consider lifetime tier |
+| Jan 2026 | Implemented lifetime deal at $149 | Competitive with Flow ($200-300), generates upfront cash, reduces churn |
 
 ---
 
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Last Updated:** January 29, 2026
 **Next Review:** February 2026

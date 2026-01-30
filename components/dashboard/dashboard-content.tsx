@@ -26,6 +26,8 @@ import {
 } from './dashboard-filters';
 import type { CalendarDay } from '@/lib/calendar/types';
 import { trackDashboardViewed } from '@/lib/posthog/events';
+import { LifetimeDealBanner } from '@/components/subscription/lifetime-deal-banner';
+import type { SubscriptionTier } from '@/lib/stripe/config';
 
 interface Account {
   id: string;
@@ -87,6 +89,7 @@ interface DashboardContentProps {
   message?: string | string[];
   calendarError?: string | null;
   currency?: string;
+  subscriptionTier?: SubscriptionTier;
 }
 
 /**
@@ -111,6 +114,7 @@ export function DashboardContent({
   message,
   calendarError,
   currency = 'USD',
+  subscriptionTier = 'free',
 }: DashboardContentProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useDashboardFilters(undefined, forecastDays);
   const trackedRef = React.useRef(false);
@@ -272,8 +276,12 @@ export function DashboardContent({
   const horizonTitle = formatHorizonTitle(horizonDays);
 
   return (
-    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 sm:p-6">
-      {/* Success Message */}
+    <>
+      {/* Lifetime Deal Banner */}
+      <LifetimeDealBanner currentTier={subscriptionTier} />
+
+      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 sm:p-6">
+        {/* Success Message */}
       {message === 'password-updated' && (
         <div className="mb-6">
           <SuccessMessage message="Password updated successfully" />
@@ -860,5 +868,6 @@ export function DashboardContent({
         </Link>
       </div>
     </div>
+    </>
   );
 }

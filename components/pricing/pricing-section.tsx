@@ -258,7 +258,7 @@ export default function PricingSection({
         </p>
 
         {/* Lifetime Deal Section */}
-        <div className="mt-12 border border-amber-500/30 bg-amber-500/5 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto">
+        <div id="lifetime" className="mt-12 border border-amber-500/30 bg-amber-500/5 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto scroll-mt-20">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-5 h-5 text-amber-400" />
             <span className="text-sm font-medium text-amber-400 uppercase tracking-wide">

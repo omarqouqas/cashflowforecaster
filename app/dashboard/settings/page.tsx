@@ -24,6 +24,7 @@ import { LowBalanceAlertForm } from '@/components/settings/low-balance-alert-for
 import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
 import { EmergencyFundForm } from '@/components/settings/emergency-fund-form';
 import { SubscriptionStatus } from '@/components/subscription/subscription-status';
+import { LifetimeDealBanner } from '@/components/subscription/lifetime-deal-banner';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 import { DeleteAccountSection } from '@/components/settings/delete-account-section';
 import { ChangePasswordButton } from '@/components/settings/change-password-button';
@@ -122,6 +123,9 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
+      {/* Lifetime Deal Banner */}
+      <LifetimeDealBanner currentTier={subscription.tier} />
+
       {/* Header */}
       <div className="mb-8">
         <Link
