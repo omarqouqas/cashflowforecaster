@@ -17,8 +17,16 @@ interface QuotesPageProps {
 
 export default async function QuotesPage({ searchParams }: QuotesPageProps) {
   const hasInvoicingAccess = await canUseInvoicing();
+
+  // For free users, show upgrade prompt with lifetime banner
   if (!hasInvoicingAccess) {
-    return <InvoicingUpgradePrompt />;
+    const subscription = await getUserSubscription();
+    return (
+      <>
+        <LifetimeDealBanner currentTier={subscription.tier} />
+        <InvoicingUpgradePrompt />
+      </>
+    );
   }
 
   const user = await requireAuth();

@@ -26,8 +26,16 @@ function isOverdue(dueDate: string, status: string | null | undefined) {
 
 export default async function InvoicesPage({ searchParams }: InvoicesPageProps) {
   const hasInvoicingAccess = await canUseInvoicing();
+
+  // For free users, show upgrade prompt with lifetime banner
   if (!hasInvoicingAccess) {
-    return <InvoicingUpgradePrompt />;
+    const subscription = await getUserSubscription();
+    return (
+      <>
+        <LifetimeDealBanner currentTier={subscription.tier} />
+        <InvoicingUpgradePrompt />
+      </>
+    );
   }
 
   const user = await requireAuth();
