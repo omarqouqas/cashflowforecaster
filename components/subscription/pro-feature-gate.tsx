@@ -11,6 +11,7 @@ const TIER_RANK: Record<SubscriptionTier, number> = {
   free: 0,
   pro: 1,
   premium: 2,
+  lifetime: 2, // Lifetime has same access level as premium
 };
 
 export interface ProFeatureGateProps {

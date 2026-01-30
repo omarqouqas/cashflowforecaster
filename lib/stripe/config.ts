@@ -5,11 +5,12 @@
 
 // NOTE: Keep 'premium' for backwards compatibility with any legacy subscriptions.
 // Premium is not currently offered in the UI/checkout flows pre-launch.
-export type SubscriptionTier = 'free' | 'pro' | 'premium';
+// 'lifetime' is a one-time purchase that grants permanent Pro access.
+export type SubscriptionTier = 'free' | 'pro' | 'premium' | 'lifetime';
 export type BillingInterval = 'month' | 'year';
 
 export function isSubscriptionTier(value: unknown): value is SubscriptionTier {
-  return value === 'free' || value === 'pro' || value === 'premium';
+  return value === 'free' || value === 'pro' || value === 'premium' || value === 'lifetime';
 }
 
 export function normalizeSubscriptionTier(
@@ -57,6 +58,7 @@ export const STRIPE_PRICE_IDS = {
     monthly: process.env.STRIPE_PRICE_PREMIUM_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY || '',
     yearly: process.env.STRIPE_PRICE_PREMIUM_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_YEARLY || '',
   },
+  lifetime: process.env.STRIPE_PRICE_LIFETIME || process.env.NEXT_PUBLIC_STRIPE_PRICE_LIFETIME || '',
 } as const;
 
 // Placeholder patterns to detect unconfigured price IDs
@@ -171,6 +173,31 @@ export const PRICING_TIERS: Record<SubscriptionTier, PricingTier> = {
       yearly: { amount: 14900, priceId: STRIPE_PRICE_IDS.premium.yearly },
     },
   },
+  lifetime: {
+    // One-time purchase for permanent Pro access
+    name: 'Lifetime',
+    description: 'Pay once, use forever',
+    features: [
+      'Everything in Pro',
+      'One-time payment',
+      'Lifetime access — no renewals',
+      'All future updates included',
+    ],
+    limits: {
+      maxBills: Infinity,
+      maxIncome: Infinity,
+      forecastDays: 365,
+      invoicesEnabled: true,
+      bankSyncEnabled: false,
+      smsAlertsEnabled: false,
+      couplesModeEnabled: false,
+    },
+    prices: {
+      // Lifetime is a one-time payment, stored in 'monthly' slot for simplicity
+      monthly: { amount: 14900, priceId: STRIPE_PRICE_IDS.lifetime }, // $149 one-time
+      yearly: { amount: 14900, priceId: STRIPE_PRICE_IDS.lifetime },
+    },
+  },
 };
 
 // Helper to format price for display
@@ -188,21 +215,25 @@ export function formatPrice(cents: number): string {
  */
 export function getTierFromPriceId(priceId: string): SubscriptionTier | null {
   if (!priceId) return null;
-  
+
   if (
     priceId === STRIPE_PRICE_IDS.premium.monthly ||
     priceId === STRIPE_PRICE_IDS.premium.yearly
   ) {
     return 'premium';
   }
-  
+
   if (
     priceId === STRIPE_PRICE_IDS.pro.monthly ||
     priceId === STRIPE_PRICE_IDS.pro.yearly
   ) {
     return 'pro';
   }
-  
+
+  if (priceId === STRIPE_PRICE_IDS.lifetime) {
+    return 'lifetime';
+  }
+
   // Don't silently return 'free' for unknown price IDs
   return null;
 }

@@ -73,9 +73,11 @@ export async function POST(request: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        // Check if this is an invoice payment or subscription checkout
+        // Check the type of checkout
         if (session.metadata?.type === 'invoice_payment') {
           await handleInvoicePaymentCompleted(session);
+        } else if (session.metadata?.type === 'lifetime_purchase') {
+          await handleLifetimePurchaseCompleted(session);
         } else {
           await handleCheckoutCompleted(session);
         }
@@ -505,6 +507,48 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
     console.log(`Payment failed for user ${data.user_id}`);
   }
+}
+
+/**
+ * Handle lifetime purchase completed (one-time payment)
+ */
+async function handleLifetimePurchaseCompleted(session: Stripe.Checkout.Session) {
+  const customerId = session.customer as string;
+  const userId = session.metadata?.supabase_user_id;
+
+  if (!userId) {
+    console.error('No user ID found for lifetime purchase:', session.id);
+    return;
+  }
+
+  // Update subscription to lifetime tier
+  // Lifetime has no expiration - set current_period_end to far future (100 years)
+  const farFuture = new Date();
+  farFuture.setFullYear(farFuture.getFullYear() + 100);
+
+  const { error } = await supabaseAdmin
+    .from('subscriptions')
+    .upsert({
+      user_id: userId,
+      stripe_customer_id: customerId,
+      stripe_subscription_id: null, // No subscription, it's a one-time payment
+      price_id: null,
+      tier: 'lifetime',
+      status: 'active',
+      interval: null,
+      current_period_start: new Date().toISOString(),
+      current_period_end: farFuture.toISOString(),
+      cancel_at_period_end: false,
+    }, {
+      onConflict: 'user_id',
+    });
+
+  if (error) {
+    console.error('Database error in handleLifetimePurchaseCompleted:', error);
+    throw error;
+  }
+
+  console.log(`Lifetime purchase completed for user ${userId}`);
 }
 
 /**

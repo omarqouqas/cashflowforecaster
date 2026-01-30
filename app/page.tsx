@@ -182,7 +182,7 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
   // Get subscription tier if logged in
-  let currentTier: 'free' | 'pro' | 'premium' = 'free';
+  let currentTier: 'free' | 'pro' | 'premium' | 'lifetime' = 'free';
   if (user) {
     try {
       const subscription = await getUserSubscription(user.id);

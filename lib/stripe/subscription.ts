@@ -89,6 +89,7 @@ export async function userHasAccess(
     free: 0,
     pro: 1,
     premium: 2,
+    lifetime: 2, // Lifetime has same access level as premium
   };
   
   return tierHierarchy[subscription.tier] >= tierHierarchy[requiredTier];

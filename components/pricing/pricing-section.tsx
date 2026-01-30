@@ -11,8 +11,9 @@ import toast from 'react-hot-toast';
 
 import { BillingToggle, type BillingPeriod } from './billing-toggle';
 import { PricingCard, type PricingFeature, type PricingCta } from './pricing-card';
-import { createCheckoutSession } from '@/lib/actions/stripe';
+import { createCheckoutSession, createLifetimeCheckoutSession } from '@/lib/actions/stripe';
 import type { SubscriptionTier } from '@/lib/stripe/config';
+import { Sparkles, Check } from 'lucide-react';
 
 interface PricingSectionProps {
   isLoggedIn?: boolean;
@@ -70,16 +71,19 @@ const TIERS: TierConfig[] = [
   },
 ];
 
-export default function PricingSection({ 
-  isLoggedIn = false, 
+export default function PricingSection({
+  isLoggedIn = false,
   currentTier = 'free',
   showHeader = true,
 }: PricingSectionProps) {
   const router = useRouter();
+  // Treat premium and lifetime as having Pro-level access
   const effectiveTier: SubscriptionTier = currentTier === 'premium' ? 'pro' : currentTier;
+  const hasProAccess = effectiveTier === 'pro' || effectiveTier === 'lifetime';
   const [period, setPeriod] = React.useState<BillingPeriod>('monthly');
   const [priceTransitioning, setPriceTransitioning] = React.useState(false);
   const [loadingTier, setLoadingTier] = React.useState<SubscriptionTier | null>(null);
+  const [loadingLifetime, setLoadingLifetime] = React.useState(false);
 
   // Animate price transition
   React.useEffect(() => {
@@ -88,8 +92,8 @@ export default function PricingSection({
     return () => window.clearTimeout(t);
   }, [period]);
 
-  // Handle subscription checkout
-  const handleSubscribe = async (tier: Exclude<SubscriptionTier, 'free'>) => {
+  // Handle subscription checkout (excludes lifetime which has its own handler)
+  const handleSubscribe = async (tier: Exclude<SubscriptionTier, 'free' | 'lifetime'>) => {
     // If not logged in, redirect to signup with plan info
     if (!isLoggedIn) {
       router.push(`/auth/signup?redirect=/pricing&plan=${tier}`);
@@ -125,6 +129,31 @@ export default function PricingSection({
     }
   };
 
+  // Handle lifetime purchase
+  const handleLifetimePurchase = async () => {
+    if (!isLoggedIn) {
+      router.push('/auth/signup?redirect=/pricing&plan=lifetime');
+      return;
+    }
+
+    setLoadingLifetime(true);
+
+    try {
+      const result = await createLifetimeCheckoutSession();
+
+      if ('error' in result) {
+        toast.error(result.error);
+      } else {
+        window.location.href = result.url;
+      }
+    } catch (error) {
+      console.error('Lifetime checkout error:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoadingLifetime(false);
+    }
+  };
+
   // Build CTA for each tier
   const buildCta = (tierConfig: TierConfig): PricingCta => {
     const { tier } = tierConfig;
@@ -156,7 +185,7 @@ export default function PricingSection({
     return {
       label: isLoading ? 'Loading...' : isLoggedIn ? 'Upgrade to Pro' : 'Try Pro Free for 14 Days',
       variant: 'solid',
-      onClick: () => handleSubscribe(tier as Exclude<SubscriptionTier, 'free'>),
+      onClick: () => handleSubscribe(tier as Exclude<SubscriptionTier, 'free' | 'lifetime'>),
       loading: isLoading,
     };
   };
@@ -227,6 +256,83 @@ export default function PricingSection({
         <p className="mt-10 text-center text-sm text-zinc-500">
           Cancel anytime • 14-day money-back guarantee • No credit card required for free tier
         </p>
+
+        {/* Lifetime Deal Section */}
+        <div className="mt-12 border border-amber-500/30 bg-amber-500/5 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+            <span className="text-sm font-medium text-amber-400 uppercase tracking-wide">
+              Limited Time Offer
+            </span>
+          </div>
+
+          <h3 className="text-2xl font-bold text-white mb-2">
+            Lifetime Deal — Pay Once, Use Forever
+          </h3>
+
+          <p className="text-zinc-400 mb-6">
+            Get permanent Pro access with a single payment. No monthly fees, no renewals,
+            all future updates included.
+          </p>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-bold text-white">$149</span>
+              <span className="text-zinc-500 line-through">$192/2yr</span>
+            </div>
+            <span className="text-sm text-amber-400 font-medium">
+              Save over 22% vs 2 years of Pro
+            </span>
+          </div>
+
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 text-sm text-zinc-300">
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-teal-400 flex-shrink-0" />
+              Everything in Pro
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-teal-400 flex-shrink-0" />
+              One-time payment
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-teal-400 flex-shrink-0" />
+              Lifetime access
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-teal-400 flex-shrink-0" />
+              All future updates
+            </li>
+          </ul>
+
+          {effectiveTier === 'lifetime' ? (
+            <button
+              disabled
+              className="w-full py-3 px-6 rounded-lg font-medium bg-zinc-800 text-zinc-500 cursor-not-allowed"
+            >
+              You Have Lifetime Access
+            </button>
+          ) : hasProAccess ? (
+            <button
+              onClick={handleLifetimePurchase}
+              disabled={loadingLifetime}
+              className="w-full py-3 px-6 rounded-lg font-medium bg-amber-500 hover:bg-amber-400 text-zinc-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingLifetime ? 'Loading...' : 'Switch to Lifetime'}
+            </button>
+          ) : (
+            <button
+              onClick={handleLifetimePurchase}
+              disabled={loadingLifetime}
+              className="w-full py-3 px-6 rounded-lg font-medium bg-amber-500 hover:bg-amber-400 text-zinc-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingLifetime ? 'Loading...' : 'Get Lifetime Access'}
+            </button>
+          )}
+
+          <p className="mt-3 text-center text-xs text-zinc-500">
+            Secure payment via Stripe • 30-day money-back guarantee
+          </p>
+        </div>
       </div>
     </section>
   );

@@ -9,7 +9,7 @@ export function identifyUser(
   properties?: {
     email?: string
     name?: string
-    tier?: 'free' | 'pro' | 'premium'
+    tier?: 'free' | 'pro' | 'premium' | 'lifetime'
     created_at?: string
     auth_provider?: 'email' | 'google'
   }
@@ -28,7 +28,7 @@ export function identifyUser(
  * Update user properties (e.g., after tier change)
  */
 export function updateUserProperties(properties: {
-  tier?: 'free' | 'pro' | 'premium'
+  tier?: 'free' | 'pro' | 'premium' | 'lifetime'
   has_completed_onboarding?: boolean
   account_count?: number
   income_count?: number
