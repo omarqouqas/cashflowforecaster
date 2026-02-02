@@ -508,7 +508,7 @@ Based on the analysis above, here's a prioritized action plan to strengthen comp
 
 | Action | Rationale | Status |
 |--------|-----------|--------|
-| **Review lifetime pricing** | Cash Flow Calendar offers $72 lifetime vs our $149. Consider $99-119 to close the gap while maintaining margin. | ⏳ Review |
+| **Review lifetime pricing** | Cash Flow Calendar offers $72 lifetime vs our $149. Reduced to $99 to close the gap while maintaining margin. | ✅ Done |
 | **Add social proof metrics** | Competitors show "153k+ transactions" / "£395K+ processed". Add similar trust signals (invoices sent, forecasts generated, etc.). | ❌ Not started |
 | **Create YNAB comparison page** | `/compare/ynab` - Target frustrated YNAB users searching for alternatives. Emphasize 47% price savings + forward-looking approach. | ❌ Not started |
 | **Create Mint migration page** | `/compare/mint` - Capture Mint refugees. Emphasize no ads, forward-looking, real free tier. | ❌ Not started |
@@ -558,7 +558,7 @@ Track key competitive decisions here:
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | Jan 2026 | Hold on Plaid integration | Cost ($500/mo min) doesn't justify at current scale. Revisit at 500+ Pro users. |
-| Jan 2026 | Launched lifetime deal at $149 | Competitive with Cash Flow Calendar ($72) but maintains margin. Monitor conversion. |
+| Jan 2026 | Launched lifetime deal at $149, reduced to $99 | Closer to Cash Flow Calendar ($72) while maintaining margin. $99 = 48% savings vs 2yr Pro. |
 | Jan 2026 | Added Quotes feature | Differentiator vs Cash Flow Calendar (no invoicing). Strengthens "forecast + get paid" positioning. |
 
 ---

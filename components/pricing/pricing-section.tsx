@@ -277,11 +277,11 @@ export default function PricingSection({
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-bold text-white">$149</span>
+              <span className="text-4xl font-bold text-white">$99</span>
               <span className="text-zinc-500 line-through">$192/2yr</span>
             </div>
             <span className="text-sm text-amber-400 font-medium">
-              Save over 22% vs 2 years of Pro
+              Save over 48% vs 2 years of Pro
             </span>
           </div>
 

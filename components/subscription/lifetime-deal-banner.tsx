@@ -97,7 +97,7 @@ export function LifetimeDealBanner({ currentTier }: LifetimeDealBannerProps) {
             disabled={isLoading}
             className="px-3 py-1.5 text-sm font-medium bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-md transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Loading...' : 'Get Lifetime — $149'}
+            {isLoading ? 'Loading...' : 'Get Lifetime — $99'}
           </button>
           <button
             onClick={handleDismiss}
