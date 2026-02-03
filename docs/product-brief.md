@@ -915,6 +915,25 @@ User Request
 
 ## Changelog
 
+### Version 6.10 (February 2, 2026)
+- **YNAB CSV Import Feature:**
+  - Dedicated YNAB import page at `/dashboard/import/ynab`
+  - Auto-detects YNAB format (basic and register exports)
+  - Handles Outflow/Inflow column structure automatically
+  - Uses YNAB categories to suggest income vs bill classification
+  - Link to YNAB import from generic import page
+- **Bug Fixes (11 total):**
+  - Fixed one-time bills/income not showing dates (only showed if future)
+  - Fixed missing null check in income-card for `income.next_date`
+  - Fixed UUID regeneration when existingTransactions loads (both import pages)
+  - Fixed React setState inside setState callback in transaction-selector
+  - Fixed file input not resetting (can't re-upload same file)
+  - Fixed Date serialization bug in CalendarHybridView (desktop calendar crash)
+  - Fixed UTC date parsing bugs in invoices.ts, send-reminder.ts, quotes.ts
+  - Fixed unhandled promise and unmount issues in scenario-modal.tsx
+  - Fixed missing useEffect dependency in filter-panel.tsx
+  - Fixed redundant timeout logic in weekly-digest route.ts
+
 ### Version 6.9 (February 2, 2026)
 - **Lifetime Pricing Adjustment:**
   - Reduced lifetime deal from $149 to $99 (competitive with Cash Flow Calendar's $72)
@@ -1445,7 +1464,7 @@ User Request
 
 ---
 
-**Document Version:** 6.8
-**Last Updated:** January 29, 2026
-**Status:** Live - Lifetime Deal Added 🎉
-**Next Review:** February 2026
+**Document Version:** 6.10
+**Last Updated:** February 2, 2026
+**Status:** Live - YNAB Import + Bug Fixes 🎉
+**Next Review:** March 2026

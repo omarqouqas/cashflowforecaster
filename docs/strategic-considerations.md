@@ -213,7 +213,7 @@ Attracting users from competitor apps (YNAB, Monarch, Mint, Neontra) represents 
 
 | Need | Current State | Priority | Notes |
 |------|---------------|----------|-------|
-| **Competitor CSV importers** | Generic CSV only | High | YNAB/Mint formats are documented |
+| **Competitor CSV importers** | YNAB ✅, Mint TODO | High | YNAB importer complete, Mint next |
 | **Bank sync (Plaid)** | Not implemented | Medium | Table stakes for many users, but expensive |
 | **AI auto-categorization** | Manual only | High | Reduces friction significantly |
 | **Native mobile app** | PWA only | Medium | Expected by switchers |
@@ -222,9 +222,9 @@ Attracting users from competitor apps (YNAB, Monarch, Mint, Neontra) represents 
 ### Migration Implementation Roadmap
 
 **Phase 1: Quick Wins (Immediate)**
-- Build YNAB CSV importer (their export format is documented)
+- ✅ Build YNAB CSV importer (completed Feb 2026 - `/dashboard/import/ynab`)
 - Build Mint CSV importer (capture exodus urgently)
-- Create migration landing pages with step-by-step guides
+- ✅ Create migration landing pages with step-by-step guides (completed Feb 2026)
 - Offer "migration concierge" service for Pro signups
 - 30-day Pro trial for users from paid competitors
 
@@ -636,9 +636,11 @@ One-time "Lifetime" tier is now live:
 | Feb 2026 | Created YNAB comparison page | `/compare/ynab` - Target price-sensitive users ($14.99 → $7.99), 47% savings |
 | Feb 2026 | Created Mint migration page | `/compare/mint` - Capture Mint exodus with forward-looking positioning |
 | Feb 2026 | Fixed Pro→Lifetime refund logic | Prorated amounts now refund to payment method, not just Stripe credit |
+| Feb 2026 | Built dedicated YNAB CSV importer | Part of competitor migration strategy; auto-detects format, handles Outflow/Inflow |
+| Feb 2026 | Fixed 11 bugs across codebase | Date serialization, async handling, React patterns, UTC parsing issues |
 
 ---
 
-**Document Version:** 1.6
+**Document Version:** 1.7
 **Last Updated:** February 2, 2026
 **Next Review:** March 2026

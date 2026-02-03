@@ -11,13 +11,13 @@
 ## Quick Stats
 
 - **Days in Development:** 54
-- **Commits:** 175+
+- **Commits:** 180+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + **Pricing Updates + Comparison Pages**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + **YNAB Import + Bug Fixes (11)**
 
 **Current Focus:**
 
@@ -67,6 +67,42 @@
 **New Files:**
 - `app/compare/ynab/page.tsx` — YNAB comparison page
 - `app/compare/mint/page.tsx` — Mint migration page
+
+**Bug Fixes (11 total):**
+
+*YNAB Import & Date Display (5 bugs):*
+- Fixed one-time bills/income not showing dates (only showed if future)
+- Fixed missing null check in income-card for `income.next_date`
+- Fixed UUID regeneration when existingTransactions loads (both import pages)
+- Fixed React setState inside setState callback in transaction-selector
+- Fixed file input not resetting (can't re-upload same file)
+
+*Calendar & Date Handling (3 bugs):*
+- Fixed Date serialization bug in CalendarHybridView (desktop calendar crash)
+- Added `toDate()`, `normalizeDay()` functions to normalize server-serialized dates
+- Prevents `.getTime()` crash on string dates from server components
+
+*Server Actions & Async (3 bugs):*
+- Fixed UTC date parsing bugs in invoices.ts, send-reminder.ts, quotes.ts
+- Fixed unhandled promise and unmount issues in scenario-modal.tsx
+- Fixed missing useEffect dependency in filter-panel.tsx
+- Fixed redundant timeout logic in weekly-digest route.ts
+
+**Modified Files (Bug Fixes):**
+- `components/bills/bill-card.tsx` — Date display for one-time bills
+- `components/income/income-card.tsx` — Date display + null check
+- `components/import/ynab-import-page-client.tsx` — UUID stability
+- `components/import/import-page-client.tsx` — UUID stability
+- `components/import/transaction-selector.tsx` — React state fix
+- `components/import/ynab-csv-upload.tsx` — File input reset
+- `components/import/csv-upload.tsx` — File input reset
+- `components/calendar/calendar-hybrid-view.tsx` — Date normalization
+- `components/filters/filter-panel.tsx` — useEffect dependency
+- `components/scenarios/scenario-modal.tsx` — Async/unmount handling
+- `lib/actions/invoices.ts` — Local date parsing
+- `lib/actions/send-reminder.ts` — Local date parsing
+- `lib/actions/quotes.ts` — Local date parsing
+- `app/api/cron/weekly-digest/route.ts` — Timeout simplification
 
 ---
 
