@@ -261,34 +261,34 @@ export function TransactionSelector({
     let keptBills = 0;
     let keptIncome = 0;
 
-    setSelectedIds((prevSelected) => {
-      const nextSelected = { ...prevSelected };
-      const nextActions: Record<string, ImportAction> = { ...actions };
+    // Calculate new states outside of setState callbacks to avoid stale closure issues
+    const nextSelected: Record<string, boolean> = { ...selectedIds };
+    const nextActions: Record<string, ImportAction> = { ...actions };
 
-      for (const t of transactions) {
-        if (!nextSelected[t.id]) continue;
+    for (const t of transactions) {
+      if (!nextSelected[t.id]) continue;
 
-        const action = nextActions[t.id] ?? suggestedActionFor(t);
-        if (action === 'bill') {
-          if (keptBills < billsKeep) {
-            keptBills++;
-          } else {
-            nextSelected[t.id] = false;
-            nextActions[t.id] = 'ignore';
-          }
-        } else if (action === 'income') {
-          if (keptIncome < incomeKeep) {
-            keptIncome++;
-          } else {
-            nextSelected[t.id] = false;
-            nextActions[t.id] = 'ignore';
-          }
+      const action = nextActions[t.id] ?? suggestedActionFor(t);
+      if (action === 'bill') {
+        if (keptBills < billsKeep) {
+          keptBills++;
+        } else {
+          nextSelected[t.id] = false;
+          nextActions[t.id] = 'ignore';
+        }
+      } else if (action === 'income') {
+        if (keptIncome < incomeKeep) {
+          keptIncome++;
+        } else {
+          nextSelected[t.id] = false;
+          nextActions[t.id] = 'ignore';
         }
       }
+    }
 
-      setActions(nextActions);
-      return nextSelected;
-    });
+    // Update both states atomically (React batches these)
+    setSelectedIds(nextSelected);
+    setActions(nextActions);
   };
 
   const submit = async () => {

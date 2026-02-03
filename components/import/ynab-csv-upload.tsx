@@ -108,7 +108,10 @@ export function YnabCsvUpload({ onLoaded }: Props) {
         type="file"
         accept=".csv,text/csv"
         className="hidden"
-        onChange={(e) => void handleFile(e.target.files?.[0] ?? null)}
+        onChange={(e) => {
+          void handleFile(e.target.files?.[0] ?? null);
+          e.target.value = ''; // Reset so same file can be re-uploaded
+        }}
       />
 
       {error && (
