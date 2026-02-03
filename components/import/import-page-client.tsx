@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { CsvUpload } from '@/components/import/csv-upload';
 import { ColumnMapper } from '@/components/import/column-mapper';
 import { TransactionSelector, type NormalizedTransaction } from '@/components/import/transaction-selector';
@@ -372,6 +372,22 @@ export function ImportPageClient({ userId, usage }: Props) {
           </p>
         )}
       </div>
+
+      {/* YNAB Quick Import Banner */}
+      <Link
+        href="/dashboard/import/ynab"
+        className="block border border-teal-500/30 bg-teal-500/10 rounded-lg p-4 hover:bg-teal-500/15 transition-colors group"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-teal-200 font-medium">Importing from YNAB?</p>
+            <p className="text-sm text-teal-200/70 mt-0.5">
+              Use our dedicated YNAB importer for automatic format detection - no column mapping needed.
+            </p>
+          </div>
+          <ArrowRight className="w-5 h-5 text-teal-400 group-hover:translate-x-1 transition-transform flex-shrink-0 ml-4" />
+        </div>
+      </Link>
 
       {/* Step Indicator */}
       <StepIndicator

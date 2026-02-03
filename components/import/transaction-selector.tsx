@@ -16,6 +16,7 @@ export type NormalizedTransaction = {
   raw_data: unknown;
   original_row_number: number | null;
   isPotentialDuplicate?: boolean;
+  suggestedAction?: 'income' | 'bill'; // Pre-computed suggestion (e.g., from YNAB category)
 };
 
 type Props = {
@@ -110,8 +111,11 @@ export function TransactionSelector({
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>(() => ({}));
   const [actions, setActions] = useState<Record<string, ImportAction>>(() => ({}));
 
-  const suggestedActionFor = (amount: number): Exclude<ImportAction, 'ignore'> =>
-    amount >= 0 ? 'income' : 'bill';
+  // Use pre-computed suggestion if available, otherwise fall back to amount-based detection
+  const suggestedActionFor = (tx: NormalizedTransaction): Exclude<ImportAction, 'ignore'> => {
+    if (tx.suggestedAction) return tx.suggestedAction;
+    return tx.amount >= 0 ? 'income' : 'bill';
+  };
 
   const dateFilteredTransactions = useMemo(() => {
     const cutoff = (minImportDate || '').trim();
@@ -128,8 +132,8 @@ export function TransactionSelector({
 
   const enriched = useMemo(() => {
     return dateFilteredTransactions.map((t) => {
-      // Default action suggestion by sign
-      const action = actions[t.id] ?? suggestedActionFor(t.amount);
+      // Default action suggestion (uses pre-computed suggestion if available, else amount-based)
+      const action = actions[t.id] ?? suggestedActionFor(t);
       // Auto-select rows whose effective action is not "ignore" unless the user explicitly toggled selection.
       const selected = selectedIds[t.id] ?? action !== 'ignore';
       return { ...t, selected, action };
@@ -186,7 +190,7 @@ export function TransactionSelector({
         if (prev[id] && prev[id] !== 'ignore') return prev;
         const tx = transactions.find((t) => t.id === id);
         if (!tx) return prev;
-        return { ...prev, [id]: suggestedActionFor(tx.amount) };
+        return { ...prev, [id]: suggestedActionFor(tx) };
       });
     } else {
       // Unchecking implies "don't import"
@@ -215,7 +219,7 @@ export function TransactionSelector({
         const tx = transactions.find((t) => t.id === id);
         if (!tx) continue;
         // Only set if missing/ignore, preserve explicit user choices
-        if (!next[id] || next[id] === 'ignore') next[id] = suggestedActionFor(tx.amount);
+        if (!next[id] || next[id] === 'ignore') next[id] = suggestedActionFor(tx);
       }
       return next;
     });
@@ -264,7 +268,7 @@ export function TransactionSelector({
       for (const t of transactions) {
         if (!nextSelected[t.id]) continue;
 
-        const action = nextActions[t.id] ?? suggestedActionFor(t.amount);
+        const action = nextActions[t.id] ?? suggestedActionFor(t);
         if (action === 'bill') {
           if (keptBills < billsKeep) {
             keptBills++;
