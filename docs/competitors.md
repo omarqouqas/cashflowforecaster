@@ -510,8 +510,8 @@ Based on the analysis above, here's a prioritized action plan to strengthen comp
 |--------|-----------|--------|
 | **Review lifetime pricing** | Cash Flow Calendar offers $72 lifetime vs our $149. Reduced to $99 to close the gap while maintaining margin. | ✅ Done |
 | **Add social proof metrics** | Competitors show "153k+ transactions" / "£395K+ processed". Add similar trust signals (invoices sent, forecasts generated, etc.). | ❌ Not started |
-| **Create YNAB comparison page** | `/compare/ynab` - Target frustrated YNAB users searching for alternatives. Emphasize 47% price savings + forward-looking approach. | ❌ Not started |
-| **Create Mint migration page** | `/compare/mint` - Capture Mint refugees. Emphasize no ads, forward-looking, real free tier. | ❌ Not started |
+| **Create YNAB comparison page** | `/compare/ynab` - Target frustrated YNAB users searching for alternatives. Emphasize 47% price savings + forward-looking approach. | ✅ Done |
+| **Create Mint migration page** | `/compare/mint` - Capture Mint refugees. Emphasize no ads, forward-looking, real free tier. | ✅ Done |
 | **Update messaging: "Forecast + Get Paid"** | Hammer home unique invoice-to-forecast sync. This is our moat vs Cash Flow Calendar. | ⏳ Partial |
 
 ### Phase 2: Migration Infrastructure (High Impact, Medium Effort)
@@ -560,8 +560,10 @@ Track key competitive decisions here:
 | Jan 2026 | Hold on Plaid integration | Cost ($500/mo min) doesn't justify at current scale. Revisit at 500+ Pro users. |
 | Jan 2026 | Launched lifetime deal at $149, reduced to $99 | Closer to Cash Flow Calendar ($72) while maintaining margin. $99 = 48% savings vs 2yr Pro. |
 | Jan 2026 | Added Quotes feature | Differentiator vs Cash Flow Calendar (no invoicing). Strengthens "forecast + get paid" positioning. |
+| Feb 2026 | Created YNAB comparison page | `/compare/ynab` - Target $14.99/mo users frustrated with pricing. 47% savings messaging. |
+| Feb 2026 | Created Mint migration page | `/compare/mint` - Capture Mint exodus. Forward-looking vs backward-looking positioning. |
 
 ---
 
-**Document Version:** 2.4
-**Next Review:** February 2026
+**Document Version:** 2.5
+**Next Review:** March 2026

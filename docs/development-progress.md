@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** January 29, 2026 (Day 53)
+**Last Updated:** February 2, 2026 (Day 54)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 53
-- **Commits:** 170+
+- **Days in Development:** 54
+- **Commits:** 175+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + **Lifetime Deal**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + **Pricing Updates + Comparison Pages**
 
 **Current Focus:**
 
@@ -25,11 +25,50 @@
 - Monitor Stripe Connect adoption among Pro users
 - Track invoice payment conversion rates
 - Monitor NPS survey responses (PostHog)
-- A/B test landing page hero conversion
+- Capture YNAB/Mint migration traffic via comparison pages
 
 ---
 
-## Recent Development (Days 40-53)
+## Recent Development (Days 40-54)
+
+### Day 54: Pricing Updates & Comparison Pages (February 2, 2026)
+
+**Lifetime Pricing Adjustment:**
+- Reduced lifetime deal from $149 to $99 (closer to Cash Flow Calendar's $72)
+- Updated savings text to "37% vs 2 years of Pro (yearly)" — honest comparison vs yearly pricing
+- Updated all UI components, docs, and comparison pages
+
+**Pro→Lifetime Refund Fix:**
+- Fixed prorated refund logic for Pro users upgrading to lifetime
+- Previously: Stripe credit balance was created but NOT refunded to payment method
+- Now: Automatically refunds prorated amount to customer's original charge
+- Excludes lifetime purchase charge from refund search
+- Handles yearly Pro members with larger prorated amounts
+- Fallback for partial refunds if needed
+
+**Checkout Success Messages:**
+- Added success banners on dashboard after checkout completion
+- Pro: "🎉 Welcome to Pro! Your subscription is now active." (teal styling)
+- Lifetime: "✨ Welcome to Lifetime! You now have permanent Pro access with no recurring fees." (amber styling)
+
+**Competitor Migration Pages:**
+- Created `/compare/ynab` — Target frustrated YNAB users ($14.99/mo → $7.99/mo, 47% savings)
+- Created `/compare/mint` — Capture Mint refugees with migration guide
+- SEO-optimized with structured data, FAQs, and comparison tables
+
+**Modified Files:**
+- `lib/stripe/config.ts` — Updated lifetime amount to 9900 cents
+- `components/subscription/lifetime-deal-banner.tsx` — $149 → $99
+- `components/pricing/pricing-section.tsx` — $149 → $99, savings 48% → 37%
+- `app/api/webhooks/stripe/route.ts` — Fixed prorated refund logic
+- `app/dashboard/page.tsx` — Pass checkout params to content
+- `components/dashboard/dashboard-content.tsx` — Show checkout success messages
+
+**New Files:**
+- `app/compare/ynab/page.tsx` — YNAB comparison page
+- `app/compare/mint/page.tsx` — Mint migration page
+
+---
 
 ### Day 53: Lifetime Deal Feature (January 29, 2026)
 

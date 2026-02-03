@@ -915,6 +915,23 @@ User Request
 
 ## Changelog
 
+### Version 6.9 (February 2, 2026)
+- **Lifetime Pricing Adjustment:**
+  - Reduced lifetime deal from $149 to $99 (competitive with Cash Flow Calendar's $72)
+  - Updated savings text to "37% vs 2 years of Pro (yearly)" — honest comparison
+  - Updated all UI components, pricing pages, and documentation
+- **Pro→Lifetime Refund Fix:**
+  - Fixed prorated refund logic — now refunds to customer's payment method (not just Stripe credit)
+  - Excludes lifetime purchase charge from refund search
+  - Handles yearly Pro members with larger prorated amounts correctly
+- **Checkout Success Messages:**
+  - Added success banners on dashboard after checkout
+  - Different styling for Pro (teal) vs Lifetime (amber) purchases
+- **Competitor Migration Pages:**
+  - New `/compare/ynab` page — Target YNAB users frustrated with $14.99/mo pricing
+  - New `/compare/mint` page — Capture Mint refugees with migration guide
+  - SEO-optimized with structured data and comparison tables
+
 ### Version 6.8 (January 29, 2026)
 - **Lifetime Deal Feature:**
   - One-time $99 payment for permanent Pro access

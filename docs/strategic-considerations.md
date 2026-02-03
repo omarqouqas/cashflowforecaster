@@ -633,9 +633,12 @@ One-time "Lifetime" tier is now live:
 | Jan 2026 | Implemented Quotes feature | Learned from Flow/Acertine competitor analysis; quotes → invoice workflow |
 | Jan 2026 | Prioritize testimonial collection | Only 13 users, need social proof before adding stats to landing page |
 | Jan 2026 | Implemented lifetime deal at $99 | Competitive with Cash Flow Calendar ($72), generates upfront cash, reduces churn |
+| Feb 2026 | Created YNAB comparison page | `/compare/ynab` - Target price-sensitive users ($14.99 → $7.99), 47% savings |
+| Feb 2026 | Created Mint migration page | `/compare/mint` - Capture Mint exodus with forward-looking positioning |
+| Feb 2026 | Fixed Pro→Lifetime refund logic | Prorated amounts now refund to payment method, not just Stripe credit |
 
 ---
 
-**Document Version:** 1.5
-**Last Updated:** January 29, 2026
-**Next Review:** February 2026
+**Document Version:** 1.6
+**Last Updated:** February 2, 2026
+**Next Review:** March 2026
