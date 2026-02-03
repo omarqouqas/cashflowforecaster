@@ -192,15 +192,15 @@ export function IncomeCard({ income, currency = 'USD' }: IncomeCardProps) {
   const IncomeIcon = typeIcon.icon
 
   // Calculate the actual next payment date
-  const actualNextDate = getActualNextDate(income.next_date, income.frequency)
+  const actualNextDate = income.next_date ? getActualNextDate(income.next_date, income.frequency) : null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   // Show next payment date if it's in the future, OR for one-time income (show historical date)
   const isOneTime = (income.frequency ?? '').toLowerCase() === 'one-time'
-  const showNextPayment = actualNextDate >= today || isOneTime
-  const nextDateString = actualNextDate.toISOString().split('T')[0] ?? ''
-  const dateLabel = isOneTime && actualNextDate < today ? 'Date' : 'Next payment'
+  const showNextPayment = actualNextDate && (actualNextDate >= today || isOneTime)
+  const nextDateString = actualNextDate ? actualNextDate.toISOString().split('T')[0] ?? '' : ''
+  const dateLabel = isOneTime && actualNextDate && actualNextDate < today ? 'Date' : 'Next payment'
 
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
