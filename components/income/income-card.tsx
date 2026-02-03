@@ -196,9 +196,11 @@ export function IncomeCard({ income, currency = 'USD' }: IncomeCardProps) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  // Only show next payment date if it's in the future
-  const showNextPayment = actualNextDate >= today
+  // Show next payment date if it's in the future, OR for one-time income (show historical date)
+  const isOneTime = (income.frequency ?? '').toLowerCase() === 'one-time'
+  const showNextPayment = actualNextDate >= today || isOneTime
   const nextDateString = actualNextDate.toISOString().split('T')[0] ?? ''
+  const dateLabel = isOneTime && actualNextDate < today ? 'Date' : 'Next payment'
 
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
@@ -250,7 +252,7 @@ export function IncomeCard({ income, currency = 'USD' }: IncomeCardProps) {
               </div>
               {showNextPayment && (
                 <p className="text-sm text-zinc-400 mt-1">
-                  Next payment: {formatDateOnly(nextDateString)}
+                  {dateLabel}: {formatDateOnly(nextDateString)}
                 </p>
               )}
             </div>

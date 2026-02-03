@@ -294,9 +294,11 @@ export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  // Only show due date if it's in the future
-  const showDueDate = actualDueDate && actualDueDate >= today
+  // Show due date if it's in the future, OR for one-time bills (show historical date)
+  const isOneTime = (bill.frequency ?? '').toLowerCase() === 'one-time'
+  const showDueDate = actualDueDate && (actualDueDate >= today || isOneTime)
   const dueDateString = actualDueDate ? actualDueDate.toISOString().split('T')[0] ?? '' : ''
+  const dateLabel = isOneTime && actualDueDate && actualDueDate < today ? 'Date' : 'Due'
 
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
@@ -313,7 +315,7 @@ export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) 
               <p className="text-base font-semibold text-zinc-100 truncate">{bill.name}</p>
               {showDueDate && (
                 <p className="text-sm text-zinc-400 mt-1">
-                  Due: {formatDateOnly(dueDateString)}
+                  {dateLabel}: {formatDateOnly(dueDateString)}
                 </p>
               )}
             </div>
