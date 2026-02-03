@@ -34,7 +34,7 @@ export function FilterPanel({
     if (activeFilterCount > 0 && isCollapsed) {
       setIsCollapsed(false);
     }
-  }, [activeFilterCount]);
+  }, [activeFilterCount, isCollapsed]);
 
   return (
     <div

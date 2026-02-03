@@ -125,7 +125,11 @@ export async function sendInvoiceReminder(
     }
 
     const senderName = getSenderName(user);
-    const dueDate = new Date(`${invoice.due_date}T00:00:00`);
+    // Parse as local date (noon) to avoid timezone shifts
+    const [year, month, day] = (invoice.due_date ?? '').split('-').map(Number);
+    const dueDate = year && month && day
+      ? new Date(year, month - 1, day, 12, 0, 0)
+      : new Date();
     const url = invoiceUrlFor(invoice.id);
 
     // 3) Choose template

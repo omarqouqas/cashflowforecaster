@@ -90,27 +90,46 @@ export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
     setPreview([]);
     setNextAffordableDate(null);
 
+    let cancelled = false;
+
     (async () => {
       try {
         const { data } = await supabase.auth.getUser();
+        if (cancelled) return;
         const id = data.user?.id ?? '';
         setUserId(id);
       } catch {
-        setUserId('');
+        if (!cancelled) setUserId('');
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [open, supabase]);
 
   useEffect(() => {
     if (!open) return;
     if (!userId) return;
 
+    let cancelled = false;
     setLoadingSaved(true);
+
     (async () => {
-      const res = await getSavedScenarios(userId);
-      if (res.ok) setSaved(res.scenarios);
-      setLoadingSaved(false);
+      try {
+        const res = await getSavedScenarios(userId);
+        if (cancelled) return;
+        if (res.ok) setSaved(res.scenarios);
+      } catch {
+        // Ignore errors if component unmounted or fetch failed
+      } finally {
+        if (!cancelled) setLoadingSaved(false);
+      }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [open, userId]);
 
   if (!open) return null;

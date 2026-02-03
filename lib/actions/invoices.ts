@@ -367,11 +367,14 @@ export async function getInvoiceSummary(): Promise<{
   const totalOutstanding = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
 
   const today = new Date();
-  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayNoon = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0);
   const overdueCount = invoices.reduce((count, inv) => {
     if (!inv.due_date) return count;
-    const due = new Date(`${inv.due_date}T00:00:00`);
-    return due < todayMidnight ? count + 1 : count;
+    // Parse as local date (noon) to avoid timezone shifts
+    const [year, month, day] = inv.due_date.split('-').map(Number);
+    if (!year || !month || !day) return count;
+    const due = new Date(year, month - 1, day, 12, 0, 0);
+    return due < todayNoon ? count + 1 : count;
   }, 0);
 
   return { unpaidCount, totalOutstanding, overdueCount };

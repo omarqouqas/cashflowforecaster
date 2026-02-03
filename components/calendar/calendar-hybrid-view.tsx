@@ -15,6 +15,32 @@ import {
 import type { CalendarDay, Transaction } from '@/lib/calendar/types';
 
 /**
+ * Safely convert any date-like value to a Date object.
+ * Server components serialize Date objects as strings, so we need to normalize them.
+ */
+function toDate(value: unknown): Date {
+  if (value instanceof Date) return value;
+  if (typeof value === 'string' || typeof value === 'number') return new Date(value);
+  return new Date(String(value));
+}
+
+function normalizeTransaction(t: Transaction): Transaction {
+  return {
+    ...t,
+    date: toDate((t as unknown as { date: unknown }).date),
+  };
+}
+
+function normalizeDay(day: CalendarDay): CalendarDay {
+  return {
+    ...day,
+    date: toDate((day as unknown as { date: unknown }).date),
+    income: (day.income || []).map(normalizeTransaction),
+    bills: (day.bills || []).map(normalizeTransaction),
+  };
+}
+
+/**
  * Filter a single transaction based on filter criteria
  */
 function matchesTransactionFilters(
@@ -97,18 +123,28 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useCalendarFilters();
   const trackedRef = useRef(false);
 
+  // Normalize dates from server component serialization (Date objects become strings)
+  const normalizedDays = useMemo(
+    () => calendarData.days.map(normalizeDay),
+    [calendarData.days]
+  );
+  const normalizedLowestBalanceDate = useMemo(
+    () => toDate(calendarData.lowestBalanceDate),
+    [calendarData.lowestBalanceDate]
+  );
+
   // Track calendar view once on mount
   useEffect(() => {
     if (!trackedRef.current) {
       trackedRef.current = true;
-      trackCalendarView(calendarData.days.length);
+      trackCalendarView(normalizedDays.length);
     }
-  }, [calendarData.days.length]);
+  }, [normalizedDays.length]);
 
   // Apply filters to the calendar data
   const filteredDays = useMemo(
-    () => filterCalendarDays(calendarData.days, filters),
-    [calendarData.days, filters]
+    () => filterCalendarDays(normalizedDays, filters),
+    [normalizedDays, filters]
   );
 
   // Recalculate derived values based on filtered days
@@ -139,7 +175,7 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
 
     const lowestBalanceDay =
       filteredDays.find((d) => d.balance === lowestBalance)?.date ??
-      calendarData.lowestBalanceDate;
+      normalizedLowestBalanceDate;
 
     return {
       days: filteredDays,
@@ -156,7 +192,7 @@ export function CalendarHybridView({ calendarData }: CalendarContainerProps) {
       collisions: calendarData.collisions,
       forecastDays: calendarData.forecastDays,
     };
-  }, [filteredDays, calendarData]);
+  }, [filteredDays, calendarData, normalizedLowestBalanceDate]);
 
   // Show empty state when all days are filtered out
   const showEmptyState = filteredDays.length === 0;

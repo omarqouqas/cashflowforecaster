@@ -60,12 +60,13 @@ function shouldSendDigestNow(input: {
   // (If you need precise hour-level scheduling across timezones, use an hourly scheduler on Vercel Pro
   //  or trigger this endpoint from an external scheduler.)
 
-  // Safety: prevent duplicates if called multiple times in the same hour
+  // Safety: prevent sending another digest if one was sent within the last 6 days
+  // This allows for weekly digests with some flexibility in scheduling
   if (input.last_digest_sent_at) {
     const last = new Date(input.last_digest_sent_at);
     const diffMs = input.now.getTime() - last.getTime();
-    if (Number.isFinite(diffMs) && diffMs < 20 * 60 * 60 * 1000) return false; // < 20 hours
-    if (Number.isFinite(diffMs) && diffMs < 6 * 24 * 60 * 60 * 1000) return false; // < 6 days
+    const sixDaysMs = 6 * 24 * 60 * 60 * 1000;
+    if (Number.isFinite(diffMs) && diffMs < sixDaysMs) return false;
   }
 
   return true;

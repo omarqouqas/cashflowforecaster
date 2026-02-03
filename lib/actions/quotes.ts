@@ -410,11 +410,15 @@ export async function getQuoteSummary(): Promise<{
 
   // Count quotes expiring within 7 days (only active quotes)
   const today = new Date();
-  const sevenDaysFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const todayNoon = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0);
+  const sevenDaysFromNow = new Date(todayNoon.getTime() + 7 * 24 * 60 * 60 * 1000);
   const expiringSoon = pendingQuotes.reduce((count, q) => {
     if (!q.valid_until) return count;
-    const validUntil = new Date(`${q.valid_until}T23:59:59`);
-    return validUntil >= today && validUntil <= sevenDaysFromNow ? count + 1 : count;
+    // Parse as local date (noon) to avoid timezone shifts
+    const [year, month, day] = q.valid_until.split('-').map(Number);
+    if (!year || !month || !day) return count;
+    const validUntil = new Date(year, month - 1, day, 12, 0, 0);
+    return validUntil >= todayNoon && validUntil <= sevenDaysFromNow ? count + 1 : count;
   }, 0);
 
   return { pendingByCurrency, awaitingResponse, accepted, expiringSoon };
