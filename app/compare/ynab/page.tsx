@@ -5,7 +5,7 @@ import { LandingFooter } from '@/components/landing/footer';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { breadcrumbs } from '@/components/seo/schemas';
-import { CheckCircle2, XCircle, AlertTriangle, Sparkles, BookOpen, ArrowRight, DollarSign } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, BookOpen, ArrowRight, DollarSign } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'YNAB Alternative for Freelancers | Cash Flow Forecaster vs YNAB',
