@@ -131,7 +131,7 @@ Features that set Cash Flow Forecaster apart from competitors:
 | Invoice-to-forecast sync | ✅ | ❌ | ❌ | ❌ |
 | Credit utilization warnings | ✅ | ❌ | ❌ | ❌ |
 | Built for irregular income | ✅ | ❌ | ❌ | ❌ |
-| Price | $7.99/mo or $149 lifetime | $14.99/mo | $14.99/mo | $9.99/mo |
+| Price | $7.99/mo or $99 lifetime | $14.99/mo | $14.99/mo | $9.99/mo |
 
 ### Core Differentiator
 
@@ -527,7 +527,7 @@ Analysis of Flow by Acertine (flow.acertine.com) revealed trust-building element
 | User testimonials | 5-star reviews section | None | ⬜ Need to collect |
 | Quantified value props | "Save 90% of your time" | Partial | ⬜ Can improve |
 | Trust badges | HMRC, ICO, GDPR | None | N/A (not UK-focused) |
-| Lifetime deal option | Yes (VIP tier) | Yes ($149) | ✅ Implemented |
+| Lifetime deal option | Yes (VIP tier) | Yes ($99) | ✅ Implemented |
 | Quotes feature | Yes | Yes | ✅ Implemented |
 
 ### Action Plan
@@ -586,7 +586,7 @@ SELECT COUNT(*) FROM quotes WHERE converted_invoice_id IS NOT NULL;
 #### Phase 5: Lifetime Deal Option ✅ IMPLEMENTED
 
 One-time "Lifetime" tier is now live:
-- **Price:** $149 one-time payment
+- **Price:** $99 one-time payment
 - **Access:** Permanent Pro features, no renewals
 - **Appeals to:** Budget-conscious freelancers who prefer upfront payment
 
@@ -632,7 +632,7 @@ One-time "Lifetime" tier is now live:
 | Jan 2026 | Delay US bank sync until regulatory clarity | Section 1033 being contested, JPMorgan charging for API access, wait for stability |
 | Jan 2026 | Implemented Quotes feature | Learned from Flow/Acertine competitor analysis; quotes → invoice workflow |
 | Jan 2026 | Prioritize testimonial collection | Only 13 users, need social proof before adding stats to landing page |
-| Jan 2026 | Implemented lifetime deal at $149 | Competitive with Flow ($200-300), generates upfront cash, reduces churn |
+| Jan 2026 | Implemented lifetime deal at $99 | Competitive with Cash Flow Calendar ($72), generates upfront cash, reduces churn |
 
 ---
 

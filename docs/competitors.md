@@ -45,7 +45,7 @@ This document tracks competitors in the personal finance and cash flow managemen
 - Balance forecasting across days/weeks/months
 - Plaid bank sync for automatic transaction import (US only)
 - Recurring & irregular expense support (weekly, bi-weekly, monthly, quarterly, custom)
-- **Much cheaper lifetime** ($72 vs our $149)
+- **Much cheaper lifetime** ($72 vs our $99)
 - Simple reports and spending analysis
 - Social proof: "153,000+ transactions tracked"
 - 14-day free trial (no credit card required)
@@ -69,7 +69,7 @@ This document tracks competitors in the personal finance and cash flow managemen
 
 **Their Advantages:**
 - **Plaid bank sync** — Major convenience feature we don't have
-- **Much cheaper lifetime** — $72 vs $149 (ours is 2x more expensive)
+- **Cheaper lifetime** — $72 vs $99 (ours is ~37% more expensive)
 - **Social proof** — 153k+ transactions is a strong trust signal
 
 **Competitive Overlap:** **HIGH** — This is our most direct competitor. Same target audience, same calendar-based approach, same problem being solved. Key differentiation is our invoicing features vs their bank sync.
@@ -77,7 +77,7 @@ This document tracks competitors in the personal finance and cash flow managemen
 **Strategic Implications:**
 1. Monthly pricing is competitive ($7.99 vs $8)
 2. They don't offer annual — our $79/year is a middle option they lack
-3. Their lifetime ($72) undercuts ours ($149) significantly — consider lowering to ~$99
+3. Their lifetime ($72) undercuts ours ($99) — gap narrowed but they still have price advantage
 4. Emphasize invoicing as key differentiator: "See your cash flow AND get paid faster"
 5. Plaid integration would neutralize their main advantage (see Plaid Analysis section below)
 6. Need stronger social proof (transaction count, user count, testimonials)
@@ -257,7 +257,7 @@ This document tracks competitors in the personal finance and cash flow managemen
 | Native mobile app | ❌ PWA | ❌ (coming) | ✅ | ✅ | ✅ | ✅ | ❌ PWA |
 | Irregular income support | ✅ | ✅ | ⚠️ | ❌ | ❌ | ❌ | ❌ |
 | UK compliance (HMRC/VAT) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Lifetime deal option | ✅ $149 | ✅ $72 | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Lifetime deal option | ✅ $99 | ✅ $72 | ❌ | ❌ | ❌ | ❌ | ✅ |
 | **Price** | **$7.99** | $8 | $14.99 | $14.99 | ~$12 | $9.99 | $15-20 |
 
 ---

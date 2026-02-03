@@ -466,7 +466,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 
 *Note: Premium tier is sunset (kept only for backwards compatibility). Live offering is Free + Pro + Lifetime.*
 
-| Feature | Free ($0) | Pro ($7.99/mo) | Lifetime ($149) |
+| Feature | Free ($0) | Pro ($7.99/mo) | Lifetime ($99) |
 |---------|-----------|----------------|-----------------|
 | Bills | 10 | Unlimited | Unlimited |
 | Income Sources | 10 | Unlimited | Unlimited |
@@ -488,7 +488,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 **Pricing Options:**
 - Pro Monthly: $7.99/mo
 - Pro Yearly: $79/year (2 months free)
-- Lifetime: $149 one-time (permanent Pro access, no renewals)
+- Lifetime: $99 one-time (permanent Pro access, no renewals)
 
 ### Revenue Projections
 
@@ -917,7 +917,7 @@ User Request
 
 ### Version 6.8 (January 29, 2026)
 - **Lifetime Deal Feature:**
-  - One-time $149 payment for permanent Pro access
+  - One-time $99 payment for permanent Pro access
   - New `createLifetimeCheckoutSession()` server action for Stripe one-time payment
   - Webhook handler for `checkout.session.completed` with lifetime purchase metadata
   - Automatic cancellation of existing Pro subscription with prorated refund

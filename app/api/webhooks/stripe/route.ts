@@ -574,13 +574,92 @@ async function handleLifetimePurchaseCompleted(session: Stripe.Checkout.Session)
   // If this fails, user has lifetime but also keeps Pro until next billing - not ideal but not critical
   if (existingSubscriptionId) {
     try {
+      // Cancel subscription with proration - this creates a credit on the customer's balance
       await stripe.subscriptions.cancel(existingSubscriptionId, {
-        prorate: true, // Give them a prorated refund
+        prorate: true,
       });
       console.log(`Canceled existing subscription ${existingSubscriptionId} for lifetime upgrade`);
+
+      // Refund the prorated credit to the customer's payment method
+      // Stripe stores credits as negative balance (e.g., -400 = $4.00 credit)
+      const customer = await stripe.customers.retrieve(customerId);
+
+      if (!('deleted' in customer) && customer.balance < 0) {
+        const creditAmount = Math.abs(customer.balance);
+
+        // Get the payment intent from the lifetime purchase to exclude it from refund search
+        const lifetimePaymentIntentId = session.payment_intent as string | null;
+
+        // Find the Pro subscription charge to refund against (not the lifetime purchase)
+        const charges = await stripe.charges.list({
+          customer: customerId,
+          limit: 10,
+        });
+
+        // Find a successful subscription charge we can refund against
+        // Exclude: the lifetime purchase charge, already refunded charges
+        const refundableCharge = charges.data.find((charge) => {
+          // Must be successful
+          if (charge.status !== 'succeeded') return false;
+          // Must not be fully refunded
+          if (charge.refunded) return false;
+          // Must not be the lifetime purchase we just made
+          if (charge.payment_intent === lifetimePaymentIntentId) return false;
+          // Must have enough remaining to cover the credit (for partial refunds)
+          const refundedAmount = charge.amount_refunded || 0;
+          const remainingAmount = charge.amount - refundedAmount;
+          if (remainingAmount < creditAmount) return false;
+          return true;
+        });
+
+        if (refundableCharge) {
+          await stripe.refunds.create({
+            charge: refundableCharge.id,
+            amount: creditAmount,
+            reason: 'requested_by_customer',
+          });
+
+          // Clear the customer's credit balance since we refunded it
+          await stripe.customers.update(customerId, {
+            balance: 0,
+          });
+
+          console.log(`Refunded prorated amount of ${creditAmount} cents from charge ${refundableCharge.id} to customer ${customerId}`);
+        } else {
+          // Fallback: If no single charge covers the credit, try to refund what we can
+          const partialRefundCharge = charges.data.find((charge) => {
+            if (charge.status !== 'succeeded') return false;
+            if (charge.refunded) return false;
+            if (charge.payment_intent === lifetimePaymentIntentId) return false;
+            const remainingAmount = charge.amount - (charge.amount_refunded || 0);
+            return remainingAmount > 0;
+          });
+
+          if (partialRefundCharge) {
+            const remainingAmount = partialRefundCharge.amount - (partialRefundCharge.amount_refunded || 0);
+            const refundAmount = Math.min(creditAmount, remainingAmount);
+
+            await stripe.refunds.create({
+              charge: partialRefundCharge.id,
+              amount: refundAmount,
+              reason: 'requested_by_customer',
+            });
+
+            // Adjust the balance by the refunded amount
+            const newBalance = customer.balance + refundAmount;
+            await stripe.customers.update(customerId, {
+              balance: newBalance,
+            });
+
+            console.log(`Partially refunded ${refundAmount} cents from charge ${partialRefundCharge.id} to customer ${customerId}. Remaining credit: ${Math.abs(newBalance)} cents`);
+          } else {
+            console.warn(`No refundable charge found for customer ${customerId}, credit balance remains: ${creditAmount} cents. Manual refund may be needed.`);
+          }
+        }
+      }
     } catch (err) {
       // Log but don't fail - subscription might already be canceled, or we'll handle manually
-      console.warn('Could not cancel existing subscription (user has lifetime, may need manual cleanup):', err);
+      console.warn('Could not cancel existing subscription or process refund (user has lifetime, may need manual cleanup):', err);
     }
   }
 }

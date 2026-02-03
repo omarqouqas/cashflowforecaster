@@ -33,7 +33,7 @@
 
 ### Day 53: Lifetime Deal Feature (January 29, 2026)
 
-**New Feature: Lifetime Deal** - One-time $149 payment for permanent Pro access. Appeals to budget-conscious freelancers who prefer upfront payment over subscriptions.
+**New Feature: Lifetime Deal** - One-time $99 payment for permanent Pro access. Appeals to budget-conscious freelancers who prefer upfront payment over subscriptions.
 
 **Stripe Integration:**
 - New `createLifetimeCheckoutSession()` server action for one-time payment checkout
@@ -44,7 +44,7 @@
 **Promotional Banner:**
 - New `LifetimeDealBanner` component with amber/gold styling
 - Dismissible with 7-day localStorage cooldown
-- Direct checkout button ("Get Lifetime — $149")
+- Direct checkout button ("Get Lifetime — $99")
 - Shows for free/pro users only (hidden for lifetime/premium)
 - Added to Dashboard, Invoices, Quotes, and Settings pages
 
@@ -820,7 +820,7 @@
 | CSV Export | Yes | Yes | Yes |
 | Excel/JSON Export | No | Yes | Yes |
 | Export History | 5 items | Unlimited | Unlimited |
-| Price | $0 | $7.99/mo | $149 one-time |
+| Price | $0 | $7.99/mo | $99 one-time |
 
 ---
 
@@ -910,7 +910,7 @@
 - Improved empty states with context-aware messaging
 - Centralized currency preference from user_settings (no hardcoded $ symbols)
 - Quotes feature with quote-to-invoice conversion workflow
-- Lifetime deal option ($149) for upfront payment preference
+- Lifetime deal option ($99) for upfront payment preference
 
 ## What's Next
 
