@@ -76,11 +76,21 @@ export function YnabImportPageClient({ userId, usage }: Props) {
     loadExisting();
   }, [userId]);
 
+  // Generate stable IDs when file is first parsed (not on every useMemo re-run)
+  const stableIds = useMemo(() => {
+    if (!parsed) return new Map<number, string>();
+    const ids = new Map<number, string>();
+    for (let i = 0; i < parsed.result.transactions.length; i++) {
+      ids.set(i, crypto.randomUUID());
+    }
+    return ids;
+  }, [parsed]); // Only regenerate when a new file is parsed
+
   // Convert YNAB transactions to NormalizedTransaction format
   const normalizedTransactions = useMemo(() => {
     if (!parsed) return [];
 
-    return parsed.result.transactions.map((t) => {
+    return parsed.result.transactions.map((t, index) => {
       // Check for potential duplicate
       const isDuplicate = existingTransactions.some(
         (existing) =>
@@ -90,7 +100,7 @@ export function YnabImportPageClient({ userId, usage }: Props) {
       );
 
       const normalized: NormalizedTransaction = {
-        id: crypto.randomUUID(),
+        id: stableIds.get(index) ?? `fallback-${index}`,
         transaction_date: t.date,
         description: t.payee,
         amount: t.amount,
@@ -111,7 +121,7 @@ export function YnabImportPageClient({ userId, usage }: Props) {
 
       return normalized;
     });
-  }, [parsed, existingTransactions]);
+  }, [parsed, existingTransactions, stableIds]);
 
   const openUpgrade = (feature: 'bills' | 'income' | 'general') => {
     setUpgradeFeature(feature);

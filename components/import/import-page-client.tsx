@@ -136,6 +136,24 @@ export function ImportPageClient({ userId, usage }: Props) {
     };
   }, [loaded]);
 
+  // Generate stable IDs when file/mapping changes (not when existingTransactions loads)
+  const stableIds = useMemo(() => {
+    if (!loaded) return new Map<number, string>();
+    const dateIndex = mapping.dateIndex;
+    const descriptionIndex = mapping.descriptionIndex;
+    const amountIndex = mapping.amountIndex;
+    if (dateIndex === null || descriptionIndex === null || amountIndex === null) return new Map<number, string>();
+
+    const ids = new Map<number, string>();
+    for (let i = 0; i < loaded.rows.length; i++) {
+      const normalized = normalizeRow(loaded.rows[i] ?? [], mapping, i + 2);
+      if (normalized) {
+        ids.set(i, crypto.randomUUID());
+      }
+    }
+    return ids;
+  }, [loaded, mapping]);
+
   const normalizedTransactions = useMemo(() => {
     if (!loaded) return [];
     const dateIndex = mapping.dateIndex;
@@ -157,13 +175,13 @@ export function ImportPageClient({ userId, usage }: Props) {
       );
 
       result.push({
-        id: crypto.randomUUID(),
+        id: stableIds.get(i) ?? `fallback-${i}`,
         ...normalized,
         isPotentialDuplicate: isDuplicate,
       });
     }
     return result;
-  }, [loaded, mapping, existingTransactions]);
+  }, [loaded, mapping, existingTransactions, stableIds]);
 
   const mappingReady =
     mapping.dateIndex !== null &&
