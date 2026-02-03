@@ -512,7 +512,7 @@ Based on the analysis above, here's a prioritized action plan to strengthen comp
 | **Add social proof metrics** | Competitors show "153k+ transactions" / "£395K+ processed". Add similar trust signals (invoices sent, forecasts generated, etc.). | ❌ Not started |
 | **Create YNAB comparison page** | `/compare/ynab` - Target frustrated YNAB users searching for alternatives. Emphasize 47% price savings + forward-looking approach. | ✅ Done |
 | **Create Mint migration page** | `/compare/mint` - Capture Mint refugees. Emphasize no ads, forward-looking, real free tier. | ✅ Done |
-| **Update messaging: "Forecast + Get Paid"** | Hammer home unique invoice-to-forecast sync. This is our moat vs Cash Flow Calendar. | ⏳ Partial |
+| **Update messaging: "Forecast + Get Paid"** | Hammer home unique invoice-to-forecast sync. This is our moat vs Cash Flow Calendar. | ✅ Done |
 
 ### Phase 2: Migration Infrastructure (High Impact, Medium Effort)
 

@@ -55,13 +55,13 @@ const TIERS: TierConfig[] = [
     tier: 'pro',
     priceMonthly: 7.99,
     priceYearly: 79,
-    description: 'For freelancers who want year-round clarity',
+    description: 'Forecast + Get Paid — all in one',
     popular: true,
     features: [
       { text: 'Everything in Free' },
       { text: '365-day forecast (12 months ahead)' },
+      { text: 'Invoice → Forecast sync (unique feature)' },
       { text: 'Runway Collect: Quotes & Invoices' },
-      { text: 'Send quotes, convert to invoices when accepted' },
       { text: 'One-click Stripe payments for invoices' },
       { text: 'Generate & download PDF quotes & invoices' },
       { text: 'Custom invoice branding (logo + business name)' },
@@ -200,14 +200,14 @@ export default function PricingSection({
       <div className="mx-auto max-w-6xl">
         {showHeader ? (
           <div className="text-center">
-            <h2 
-              id="pricing-heading" 
+            <h2
+              id="pricing-heading"
               className="text-3xl md:text-4xl font-semibold text-white tracking-tight"
             >
-              Simple, transparent pricing
+              Forecast + Get Paid. One simple price.
             </h2>
             <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-              Start free. Upgrade when you want invoicing, longer forecasts, and priority support.
+              Start free. Upgrade to Pro for invoicing that syncs with your forecast, longer projections, and priority support.
             </p>
 
             <div className="mt-8">

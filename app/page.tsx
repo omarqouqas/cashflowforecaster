@@ -32,7 +32,7 @@ import { getUserSubscription } from '@/lib/stripe/subscription';
 export const metadata: Metadata = {
   title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
   description:
-    'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
+    'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your 365-day forecast automatically.',
   keywords: [
     // Core product terms
     'cash flow calendar',
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
+      'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your forecast automatically.',
     url: 'https://cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
@@ -108,7 +108,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
-      'A cash flow calendar app for freelancers with irregular income—see your bank balance up to 365 days ahead with interactive charts, filters, and bill alerts.',
+      'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your forecast automatically.',
     images: ['https://cashflowforecaster.io/hero-dashboard.png'],
   },
 };
@@ -233,18 +233,24 @@ export default async function Home({ searchParams }: HomeProps) {
       <main>
         <section className="px-6 pt-16 pb-10">
           <div className="mx-auto max-w-5xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 border border-zinc-800 px-4 py-2 text-sm text-zinc-200">
-              <Sparkles className="h-4 w-4 text-teal-400" />
-              <span>Built for freelancers with irregular income</span>
+            <div className="flex flex-wrap justify-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 border border-zinc-800 px-4 py-2 text-sm text-zinc-200">
+                <Sparkles className="h-4 w-4 text-teal-400" />
+                <span>Built for freelancers with irregular income</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/10 border border-teal-500/20 px-4 py-2 text-sm text-teal-300">
+                <FileText className="h-4 w-4" />
+                <span>Invoice → Forecast sync</span>
+              </div>
             </div>
 
             <h1 className="mt-6 text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Stop Guessing If You Can Cover Rent
+              Forecast Your Cash Flow. Get Paid Faster.
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
               Know exactly what&apos;s <span className="text-teal-300 font-semibold">safe to spend</span> — today and for the next <span className="text-teal-300 font-semibold">365 days</span>.
-              Your personal cash flow calendar with interactive charts, smart filters, and every bill mapped out.
+              The only cash flow calendar with built-in invoicing: send invoices, collect payments, and watch expected income appear in your forecast automatically.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -280,6 +286,43 @@ export default async function Home({ searchParams }: HomeProps) {
                 Built for the <span className="font-semibold text-white">47%</span> of freelancers who say income instability is
                 their #1 financial worry.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Differentiator callout */}
+        <section className="px-6 py-8">
+          <div className="mx-auto max-w-5xl">
+            <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-r from-teal-500/5 to-zinc-900/40 p-6 md:p-8">
+              <div className="flex flex-col md:flex-row md:items-center gap-6">
+                <div className="flex-1">
+                  <h2 className="text-xl md:text-2xl font-semibold text-white">
+                    The only cash flow app where invoicing updates your forecast
+                  </h2>
+                  <p className="mt-2 text-zinc-300">
+                    Other apps make you track invoices separately. We connect them: send an invoice, and expected income instantly appears in your cash flow calendar.
+                    When it&apos;s paid, your forecast updates automatically. <span className="text-teal-300 font-medium">Forecast + Get Paid</span> — in one place.
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="flex items-center gap-3 rounded-xl bg-zinc-900/60 border border-zinc-800 p-4">
+                    <div className="flex flex-col items-center text-center">
+                      <FileText className="h-8 w-8 text-teal-400" />
+                      <span className="mt-1 text-xs text-zinc-400">Invoice</span>
+                    </div>
+                    <div className="text-teal-500 text-2xl">→</div>
+                    <div className="flex flex-col items-center text-center">
+                      <Calendar className="h-8 w-8 text-teal-400" />
+                      <span className="mt-1 text-xs text-zinc-400">Forecast</span>
+                    </div>
+                    <div className="text-teal-500 text-2xl">→</div>
+                    <div className="flex flex-col items-center text-center">
+                      <DollarSign className="h-8 w-8 text-emerald-400" />
+                      <span className="mt-1 text-xs text-zinc-400">Paid</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -368,10 +411,10 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-                Four pillars of cash flow clarity
+                Forecast + Get Paid — in one place
               </h2>
               <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-                Our cash flow forecasting tool helps you know what&apos;s safe today, get paid faster, avoid getting blindsided, and save for taxes—without spreadsheets.
+                Most cash flow apps stop at forecasting. We go further: built-in invoicing that syncs with your forecast, so you always know what&apos;s coming in and when.
               </p>
             </div>
 
@@ -442,18 +485,25 @@ export default async function Home({ searchParams }: HomeProps) {
                       <span className="text-xs text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-full px-3 py-1">
                         Runway Collect
                       </span>
+                      <span className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1">
+                        Unique Feature
+                      </span>
                     </div>
                   </div>
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
-                    Send quotes, convert to invoices, and get paid with a one-click &quot;Pay Now&quot; button. Auto-remind clients who forget.
-                    Watch expected income appear in your forecast the moment you hit send—and get paid directly via Stripe.
+                    <strong className="text-white">This is what makes us different:</strong> Send quotes, convert to invoices, and get paid—all while your forecast updates automatically.
+                    The moment you send an invoice, expected income appears in your cash flow calendar. When it&apos;s paid, your balance updates. No other cash flow app does this.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span><strong className="text-white">Professional quotes</strong> — send proposals, convert accepted quotes to invoices</span>
+                      <CheckCircle2 className="h-4 w-4 text-amber-300 mt-0.5" />
+                      <span><strong className="text-white">Invoice → Forecast sync</strong> — send invoice, income appears in forecast instantly</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-amber-300 mt-0.5" />
+                      <span><strong className="text-white">Payment → Balance sync</strong> — when paid, your cash flow updates automatically</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
@@ -461,15 +511,11 @@ export default async function Home({ searchParams }: HomeProps) {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Professional PDF invoices with payment links</span>
+                      <span>Professional quotes that convert to invoices</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Custom branding with your logo and business name</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5" />
-                      <span>Automated payment reminders</span>
+                      <span>Automated payment reminders (3 escalating templates)</span>
                     </li>
                   </ul>
                 </div>
@@ -785,9 +831,9 @@ export default async function Home({ searchParams }: HomeProps) {
         <section className="px-6 pb-16">
           <div className="mx-auto max-w-4xl">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-10 text-center">
-              <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">Ready to stop guessing?</h3>
+              <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">Ready to forecast your cash flow and get paid faster?</h3>
               <p className="mt-3 text-zinc-400 max-w-lg mx-auto">
-                See your cash flow calendar in minutes. No credit card, no commitment.
+                See your cash flow calendar in minutes. Send your first invoice today. No credit card, no commitment.
               </p>
               <div className="mt-6 flex justify-center">
                 <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
@@ -808,10 +854,10 @@ export default async function Home({ searchParams }: HomeProps) {
         <section className="px-6 py-16">
           <div className="mx-auto max-w-6xl text-center">
             <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-              Ready to see your financial future?
+              Ready to forecast and get paid — in one place?
             </h2>
             <p className="mt-3 text-zinc-400">
-              Join freelancers who use our cash flow forecast software to finally know where their money is going.
+              Join freelancers who see their future cash flow, send invoices, and collect payments — all without switching apps.
             </p>
             <div className="mt-6 flex justify-center">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
