@@ -21,12 +21,22 @@ export function FilterDateRange({
   label,
 }: FilterDateRangeProps) {
   const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? new Date(e.target.value + 'T00:00:00') : null;
+    if (!e.target.value) {
+      onChange(null, endDate);
+      return;
+    }
+    const [year, month, day] = e.target.value.split('-').map(Number);
+    const value = year && month && day ? new Date(year, month - 1, day, 12, 0, 0) : null;
     onChange(value, endDate);
   };
 
   const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? new Date(e.target.value + 'T00:00:00') : null;
+    if (!e.target.value) {
+      onChange(startDate, null);
+      return;
+    }
+    const [year, month, day] = e.target.value.split('-').map(Number);
+    const value = year && month && day ? new Date(year, month - 1, day, 12, 0, 0) : null;
     onChange(startDate, value);
   };
 

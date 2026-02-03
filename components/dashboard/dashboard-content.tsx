@@ -786,7 +786,10 @@ export function DashboardContent({
                       today.getMonth(),
                       today.getDate()
                     );
-                    const dueDate = new Date(`${invoice.due_date}T00:00:00`);
+                    const [year, month, day] = (invoice.due_date ?? '').split('-').map(Number);
+                    const dueDate = year && month && day
+                      ? new Date(year, month - 1, day, 12, 0, 0)
+                      : new Date();
                     const isOverdue = dueDate < todayMidnight;
 
                     return (

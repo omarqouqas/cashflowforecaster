@@ -32,7 +32,8 @@ function isOverdue(dueDate: string, status: string | null | undefined) {
   if ((status ?? 'draft') === 'paid') return false;
   const today = new Date();
   const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const due = new Date(`${dueDate}T00:00:00`);
+  const [year, month, day] = dueDate.split('-').map(Number);
+  const due = year && month && day ? new Date(year, month - 1, day, 12, 0, 0) : new Date();
   return due < todayMidnight;
 }
 

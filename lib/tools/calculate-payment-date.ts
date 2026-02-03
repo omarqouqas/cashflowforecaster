@@ -72,8 +72,12 @@ function pad2(n: number) {
 }
 
 function dateOnlyToLocalDate(dateOnly: string): Date {
-  // Parse as local midnight to avoid timezone shifting.
-  return new Date(`${dateOnly}T00:00:00`);
+  // Parse as local noon to avoid timezone shifting and DST issues.
+  const parts = dateOnly.split('-').map(Number);
+  const year = parts[0] ?? 0;
+  const month = parts[1] ?? 1;
+  const day = parts[2] ?? 1;
+  return new Date(year, month - 1, day, 12, 0, 0);
 }
 
 function localDateToDateOnly(d: Date): string {

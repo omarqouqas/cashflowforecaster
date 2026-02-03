@@ -161,6 +161,11 @@ export async function POST(
   if (updateErr) {
     // eslint-disable-next-line no-console
     console.error('Invoice update error:', updateErr);
+    // Email was sent but status update failed - warn the user
+    return NextResponse.json(
+      { ok: true, sentTo: toEmail, sentAt, warning: 'Email sent but invoice status could not be updated. Please refresh.' },
+      { status: 200 }
+    );
   }
 
   return NextResponse.json({ ok: true, sentTo: toEmail, sentAt });

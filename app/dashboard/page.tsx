@@ -144,7 +144,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const monthlyBills = calculateMonthlyBills(bills);
-  const activeBillsCount = bills.filter((b: any) => b.is_active).length;
+  const activeBillsCount = bills.filter((b: any) => b.is_active !== false).length;
 
   // Calculate quarterly income for tax tracking
   const calculateQuarterlyIncome = (incomes: any[]): [number, number, number, number] => {
