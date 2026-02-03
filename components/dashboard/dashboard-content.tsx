@@ -90,6 +90,8 @@ interface DashboardContentProps {
   calendarError?: string | null;
   currency?: string;
   subscriptionTier?: SubscriptionTier;
+  checkoutSuccess?: boolean;
+  isLifetimePurchase?: boolean;
 }
 
 /**
@@ -115,6 +117,8 @@ export function DashboardContent({
   calendarError,
   currency = 'USD',
   subscriptionTier = 'free',
+  checkoutSuccess = false,
+  isLifetimePurchase = false,
 }: DashboardContentProps) {
   const { filters, setFilters, visibleFilters, setVisibleFilters } = useDashboardFilters(undefined, forecastDays);
   const trackedRef = React.useRef(false);
@@ -281,12 +285,32 @@ export function DashboardContent({
       <LifetimeDealBanner currentTier={subscriptionTier} />
 
       <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 sm:p-6">
-        {/* Success Message */}
-      {message === 'password-updated' && (
-        <div className="mb-6">
-          <SuccessMessage message="Password updated successfully" />
-        </div>
-      )}
+        {/* Checkout Success Messages */}
+        {checkoutSuccess && (
+          <div className="mb-6">
+            {isLifetimePurchase ? (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                <p className="text-amber-400 font-medium flex items-center gap-2">
+                  <span>✨</span>
+                  Welcome to Lifetime! You now have permanent Pro access with no recurring fees.
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 bg-teal-500/10 border border-teal-500/20 rounded-lg">
+                <p className="text-teal-400 font-medium">
+                  🎉 Welcome to Pro! Your subscription is now active.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Password Updated Message */}
+        {message === 'password-updated' && (
+          <div className="mb-6">
+            <SuccessMessage message="Password updated successfully" />
+          </div>
+        )}
 
       {/* Filters Panel */}
       <div className="mb-6">

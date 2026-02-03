@@ -13,6 +13,8 @@ interface DashboardPageProps {
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const user = await requireAuth();
   const message = searchParams.message;
+  const checkoutStatus = searchParams.checkout;
+  const isLifetimePurchase = searchParams.lifetime === 'true';
   const supabase = await createClient();
 
   // Fetch accounts, income, bills, and user settings in parallel
@@ -240,6 +242,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       calendarError={calendarError}
       currency={currency}
       subscriptionTier={subscription.tier}
+      checkoutSuccess={checkoutStatus === 'success'}
+      isLifetimePurchase={isLifetimePurchase}
     />
   );
 }
