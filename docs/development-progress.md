@@ -11,13 +11,13 @@
 ## Quick Stats
 
 - **Days in Development:** 54
-- **Commits:** 180+
+- **Commits:** 395+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + **YNAB Import + Bug Fixes (11)**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + **YNAB Import + Bug Fixes (18)**
 
 **Current Focus:**
 
@@ -103,6 +103,26 @@
 - `lib/actions/send-reminder.ts` — Local date parsing
 - `lib/actions/quotes.ts` — Local date parsing
 - `app/api/cron/weekly-digest/route.ts` — Timeout simplification
+
+**Additional Bug Fixes (7 more):**
+
+*UTC Date Parsing (5 bugs):*
+- Fixed `filter-date-range.tsx` — Parse date parts manually, use local noon instead of UTC midnight
+- Fixed `dashboard-content.tsx` — Invoice due date parsing for overdue status
+- Fixed `calculate-payment-date.ts` — `dateOnlyToLocalDate()` now uses local noon
+- Fixed `calculate-affordability.ts` — `dateOnlyToLocalDate()` now uses local noon
+- Fixed `invoices/[id]/page.tsx` — `isOverdue()` function uses local noon for due date
+
+*Error Handling & Logic (2 bugs):*
+- Fixed `invoices/[id]/send/route.ts` — Returns warning if DB update fails after email sent
+- Fixed `dashboard/page.tsx` — `is_active` check consistency (changed `b.is_active` to `b.is_active !== false`)
+
+**SEO Updates (YNAB Import):**
+- Updated YNAB comparison page FAQ (was "coming soon", now describes actual importer)
+- Added YNAB data migration row to comparison table
+- Added YNAB/Mint migration keywords to landing page meta
+- Added FAQ about importing from YNAB/Mint to landing page
+- Updated CSV Import feature card to highlight YNAB support
 
 ---
 
