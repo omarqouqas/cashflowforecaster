@@ -338,8 +338,8 @@ export default function YNABComparisonPage() {
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
                 <h3 className="text-white font-semibold">Can I import from YNAB?</h3>
                 <p className="mt-2 text-zinc-400">
-                  Yes! Export your data from YNAB as CSV, then import recurring transactions into Cash Flow Forecaster.
-                  A dedicated YNAB importer is coming soon.
+                  Yes! We have a dedicated YNAB importer that auto-detects your export format.
+                  Just upload your CSV and we handle the rest—no manual column mapping required.
                 </p>
               </div>
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
