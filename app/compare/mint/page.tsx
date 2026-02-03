@@ -100,6 +100,22 @@ const faqStructuredData = {
         text: 'Cash Flow Forecaster supports CSV import. Export your recurring bills and income from Mint, then import them into Cash Flow Forecaster. A dedicated Mint importer is on our roadmap.',
       },
     },
+    {
+      '@type': 'Question',
+      name: 'What is the best free Mint alternative in 2026?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Cash Flow Forecaster is the best free Mint alternative in 2026. It offers a generous free tier with 10 bills, 10 income sources, and 90-day forecasting—with no ads and no data selling. For freelancers, it\'s better than Mint because it shows future cash flow, not just past spending.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What happened to Mint budget app?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Intuit discontinued the Mint budget app in late 2023/early 2024 and migrated users to Credit Karma. Credit Karma focuses on credit scores and financial product offers (ads), not budgeting. Many users are now looking for true budgeting alternatives like Cash Flow Forecaster.',
+      },
+    },
   ],
 } as const;
 
@@ -375,13 +391,52 @@ export default function MintComparisonPage() {
             </div>
           </section>
 
+          {/* Other comparisons */}
+          <section className="mt-14">
+            <h2 className="text-xl font-semibold text-white mb-6">Other comparisons</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link
+                href="/compare/ynab"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-teal-500/50 transition-colors group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                      YNAB Alternative
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-400">
+                      Save 47% vs YNAB with forward-looking forecasts built for freelancers.
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-zinc-600 group-hover:text-teal-400 transition-colors flex-shrink-0" />
+                </div>
+              </Link>
+              <Link
+                href="/compare/cash-flow-calendar-apps"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-teal-500/50 transition-colors group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+                      Cash Flow Calendar Apps
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-400">
+                      Compare all the best cash flow apps for freelancers in 2026.
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-zinc-600 group-hover:text-teal-400 transition-colors flex-shrink-0" />
+                </div>
+              </Link>
+            </div>
+          </section>
+
           {/* Related articles */}
           <section className="mt-14">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="h-5 w-5 text-teal-400" />
               <h2 className="text-xl font-semibold text-white">Related guides</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 href="/blog/how-to-manage-irregular-income-as-freelancer"
                 className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
@@ -408,20 +463,6 @@ export default function MintComparisonPage() {
                 </p>
                 <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
                   Read guide <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </Link>
-              <Link
-                href="/compare/ynab"
-                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
-              >
-                <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
-                  YNAB Alternative
-                </p>
-                <p className="mt-1 text-sm text-zinc-400">
-                  Save 47% with forward-looking forecasts
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
-                  Compare <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </Link>
             </div>

@@ -332,6 +332,48 @@ export default function CashFlowCalendarAppsComparePage() {
             </div>
           </section>
 
+          {/* Specific competitor comparisons */}
+          <section className="mt-14">
+            <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">Switching from another app?</h2>
+            <p className="mt-3 text-zinc-400 max-w-3xl">
+              See detailed comparisons for popular budgeting and cash flow tools—and learn what makes Cash Flow Forecaster the better choice for freelancers.
+            </p>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link
+                href="/compare/ynab"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-teal-500/50 transition-colors group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-white group-hover:text-teal-300 transition-colors text-lg">
+                      Cash Flow Forecaster vs YNAB
+                    </p>
+                    <p className="mt-2 text-sm text-zinc-400">
+                      YNAB costs $14.99/month. See why freelancers are switching to a tool built for irregular income—at half the price.
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-zinc-600 group-hover:text-teal-400 transition-colors flex-shrink-0 ml-4" />
+                </div>
+              </Link>
+              <Link
+                href="/compare/mint"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 hover:border-teal-500/50 transition-colors group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-white group-hover:text-teal-300 transition-colors text-lg">
+                      Mint Alternative for Freelancers
+                    </p>
+                    <p className="mt-2 text-sm text-zinc-400">
+                      Mint shut down in 2024. Migrate to a forward-looking cash flow tool that actually helps freelancers plan ahead.
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-zinc-600 group-hover:text-teal-400 transition-colors flex-shrink-0 ml-4" />
+                </div>
+              </Link>
+            </div>
+          </section>
+
           {/* Related articles for internal linking */}
           <section className="mt-14">
             <div className="flex items-center gap-2 mb-6">

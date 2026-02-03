@@ -6,7 +6,7 @@ import posthog from 'posthog-js';
 export function LandingFooter() {
   return (
     <footer className="px-6 py-12 border-t border-zinc-900">
-      <div className="mx-auto max-w-6xl grid grid-cols-2 md:grid-cols-5 gap-8 text-sm">
+      <div className="mx-auto max-w-6xl grid grid-cols-2 md:grid-cols-6 gap-8 text-sm">
         <div className="col-span-2 md:col-span-1">
           <p className="text-white font-semibold">Cash Flow Forecaster</p>
           <p className="mt-2 text-zinc-400">Made for freelancers, by a freelancer.</p>
@@ -101,6 +101,12 @@ export function LandingFooter() {
             >
               What is Safe to Spend?
             </Link>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-zinc-300 font-medium">Compare</p>
+          <div className="mt-3 flex flex-col gap-2 text-zinc-400">
             <Link
               href="/compare/cash-flow-calendar-apps"
               className="hover:text-zinc-200 transition-colors"
@@ -110,7 +116,29 @@ export function LandingFooter() {
                 } catch {}
               }}
             >
-              Compare Apps
+              Cash Flow Apps
+            </Link>
+            <Link
+              href="/compare/ynab"
+              className="hover:text-zinc-200 transition-colors"
+              onClick={() => {
+                try {
+                  posthog.capture('footer_compare_clicked', { link: '/compare/ynab' });
+                } catch {}
+              }}
+            >
+              vs YNAB
+            </Link>
+            <Link
+              href="/compare/mint"
+              className="hover:text-zinc-200 transition-colors"
+              onClick={() => {
+                try {
+                  posthog.capture('footer_compare_clicked', { link: '/compare/mint' });
+                } catch {}
+              }}
+            >
+              Mint Alternative
             </Link>
           </div>
         </div>
