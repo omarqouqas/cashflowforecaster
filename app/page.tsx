@@ -84,6 +84,13 @@ export const metadata: Metadata = {
     'freelancer tax tracking',
     'quarterly tax payments freelancer',
     'emergency fund tracker',
+    // Migration terms
+    'ynab alternative',
+    'ynab import',
+    'migrate from ynab',
+    'switch from ynab',
+    'mint alternative',
+    'mint replacement',
   ],
   alternates: {
     canonical: 'https://cashflowforecaster.io',
@@ -727,9 +734,9 @@ export default async function Home({ searchParams }: HomeProps) {
                         CSV Import
                       </span>
                     </div>
-                    <h4 className="mt-4 font-semibold text-white">Import from your bank</h4>
+                    <h4 className="mt-4 font-semibold text-white">Import from YNAB or your bank</h4>
                     <p className="mt-2 text-zinc-400">
-                      Upload a CSV export and quickly add bills &amp; income—no manual entry required.
+                      Dedicated YNAB importer auto-detects your export format. Or upload any bank CSV—no manual column mapping required.
                     </p>
                     <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
                       <Image

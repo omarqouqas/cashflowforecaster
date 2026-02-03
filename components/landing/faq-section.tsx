@@ -30,6 +30,10 @@ const faqs: FAQItem[] = [
     answer: "Traditional budgeting apps like Mint and YNAB focus on tracking where your money went—they're backward-looking. Cash Flow Forecaster is forward-looking. Instead of categorizing past expenses, we show you your projected daily balance for up to a full year ahead. The calendar interface answers the real question freelancers have: 'Can I afford this expense before my next paycheck arrives?' Plus, our 'Can I Afford It?' feature lets you test hypothetical purchases and see exactly how they'd impact your future balance."
   },
   {
+    question: "Can I import my data from YNAB or Mint?",
+    answer: "Yes! We have a dedicated YNAB importer that auto-detects your export format—just upload your CSV and we'll handle the rest. The importer recognizes both YNAB's basic export and register export formats, automatically converting transactions into bills and income sources. No manual column mapping required. For Mint users, our generic CSV importer works great with Mint exports. Either way, you can be up and running with your historical data in minutes. Find the import tools in your dashboard under Import Transactions."
+  },
+  {
     question: "Is my financial data secure?",
     answer: "Absolutely. Your data is protected with enterprise-grade security. We use Supabase with Row Level Security (RLS), meaning your data is completely isolated and only accessible by you. All connections are encrypted with SSL, and we never store sensitive payment information—that's handled securely by Stripe. We don't sell your data, and you can delete your account and all associated data at any time."
   },

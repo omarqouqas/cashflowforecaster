@@ -60,6 +60,7 @@ const comparisonRows = [
   { feature: 'Invoice → forecast sync', cff: '✅ Automatic', ynab: '❌ Not applicable' },
   { feature: 'Bank sync', cff: '❌ Optional (coming soon)', ynab: '✅ Yes (Plaid)' },
   { feature: 'Learning curve', cff: '✅ Simple calendar view', ynab: '⚠️ Steep (envelope method)' },
+  { feature: 'YNAB data migration', cff: '✅ Dedicated importer (auto-detects format)', ynab: '❌ Export only' },
   { feature: 'Mobile app', cff: '⚠️ PWA (works on mobile)', ynab: '✅ Native iOS/Android' },
 ] as const;
 
@@ -96,7 +97,7 @@ const faqStructuredData = {
       name: 'Can I import my data from YNAB?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Cash Flow Forecaster supports CSV import. You can export your recurring transactions from YNAB and import them. A dedicated YNAB importer is on our roadmap.',
+        text: 'Yes! We have a dedicated YNAB importer that auto-detects your export format (both basic and register exports). Just export your transactions from YNAB as CSV, upload to our YNAB import page, and we automatically handle the Outflow/Inflow columns and use your YNAB categories to suggest income vs bill classification.',
       },
     },
     {
