@@ -216,7 +216,7 @@ export default function YNABComparisonPage() {
               </div>
               <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6 text-center">
                 <p className="text-sm text-amber-300 font-medium">Your Savings</p>
-                <p className="mt-2 text-3xl font-bold text-emerald-400">$84<span className="text-lg text-zinc-400">/year</span></p>
+                <p className="mt-2 text-3xl font-bold text-emerald-400">$7<span className="text-lg text-zinc-400">/mo</span></p>
                 <p className="mt-1 text-sm text-zinc-400">47% less than YNAB</p>
               </div>
             </div>
