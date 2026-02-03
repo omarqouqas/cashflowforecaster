@@ -26,6 +26,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Comparison pages
     { url: `${baseUrl}/compare`, lastModified, priority: 0.7 },
     { url: `${baseUrl}/compare/cash-flow-calendar-apps`, lastModified, priority: 0.7 },
+    { url: `${baseUrl}/compare/ynab`, lastModified, priority: 0.8 },
+    { url: `${baseUrl}/compare/mint`, lastModified, priority: 0.8 },
 
     // Free tools
     { url: `${baseUrl}/tools`, lastModified, priority: 0.6 },
