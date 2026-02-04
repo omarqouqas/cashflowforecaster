@@ -248,8 +248,8 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
 interface TransferCardProps {
   transfer: TransferWithAccounts;
   currency: string;
-  onDelete: (id: string) => void;
-  onToggleActive: (id: string, isActive: boolean) => void;
+  onDelete: (_id: string) => void;
+  onToggleActive: (_id: string, _isActive: boolean) => void;
   isDeleting: boolean;
   isToggling: boolean;
 }
