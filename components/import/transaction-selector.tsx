@@ -46,9 +46,17 @@ function toYyyyMmDdLocal(d: Date) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-function firstDayOfCurrentMonthLocal() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1);
+function getEarliestDateFromTransactions(transactions: NormalizedTransaction[]): Date | null {
+  if (transactions.length === 0) return null;
+
+  let earliest: Date | null = null;
+  for (const tx of transactions) {
+    const date = parseIsoDateToLocalDate(tx.transaction_date);
+    if (date && (!earliest || date < earliest)) {
+      earliest = date;
+    }
+  }
+  return earliest;
 }
 
 function parseIsoDateToLocalDate(iso: string): Date | null {
@@ -137,15 +145,27 @@ export function TransactionSelector({
   const [query, setQuery] = useState('');
   const [direction, setDirection] = useState<'all' | 'in' | 'out'>('all');
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
-  const [minImportDate, setMinImportDate] = useState<string>(() =>
-    toYyyyMmDdLocal(firstDayOfCurrentMonthLocal())
-  );
+  // Initialize with empty string, will be set from transactions data
+  const [minImportDate, setMinImportDate] = useState<string>('');
+  const [hasInitializedDateFilter, setHasInitializedDateFilter] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>(() => ({}));
   const [actions, setActions] = useState<Record<string, ImportAction>>(() => ({}));
   const [frequencies, setFrequencies] = useState<Record<string, RecurringFrequency>>(() => ({}));
+
+  // Auto-detect date range from transactions on first load
+  useEffect(() => {
+    if (hasInitializedDateFilter || transactions.length === 0) return;
+
+    const earliest = getEarliestDateFromTransactions(transactions);
+    if (earliest) {
+      // Set to earliest date in the CSV so all transactions are shown by default
+      setMinImportDate(toYyyyMmDdLocal(earliest));
+    }
+    setHasInitializedDateFilter(true);
+  }, [transactions, hasInitializedDateFilter]);
 
   // Use pre-computed suggestion if available, otherwise fall back to amount-based detection
   const suggestedActionFor = (tx: NormalizedTransaction): Exclude<ImportAction, 'ignore'> => {
@@ -389,26 +409,16 @@ export function TransactionSelector({
 
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-base font-semibold text-zinc-100">Review transactions</p>
-          <p className="text-sm text-zinc-500 mt-1">
-            File: <span className="font-medium text-zinc-300">{fileName}</span>
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={selectAllVisible}>
-            Select all
-          </Button>
-          <Button type="button" variant="secondary" onClick={deselectAllVisible}>
-            Deselect all
-          </Button>
-        </div>
+      <div className="min-w-0">
+        <p className="text-base font-semibold text-zinc-100">Review transactions</p>
+        <p className="text-sm text-zinc-400 mt-1">
+          File: <span className="font-medium text-zinc-200">{fileName}</span>
+        </p>
       </div>
 
       <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2">
-          <label className="text-sm text-zinc-300 block mb-1.5">
+          <label className="text-sm text-zinc-200 font-medium block mb-1.5">
             Only import transactions after:
           </label>
           <Input
@@ -417,15 +427,15 @@ export function TransactionSelector({
             onChange={(e) => setMinImportDate(e.target.value)}
           />
           {cutoffHuman && (
-            <p className="text-xs text-zinc-500 mt-1.5">
-              Filtering from <span className="font-medium text-zinc-300">{cutoffHuman}</span>
+            <p className="text-xs text-zinc-400 mt-1.5">
+              Showing transactions from <span className="font-medium text-zinc-200">{cutoffHuman}</span> onwards
             </p>
           )}
         </div>
         <div className="flex items-end">
-          <div className="text-sm text-zinc-400">
-            Showing <span className="font-semibold">{dateFilteredTransactions.length}</span> of{' '}
-            <span className="font-semibold">{transactions.length}</span> transactions (filtered by date)
+          <div className="text-sm text-zinc-300">
+            <span className="font-semibold text-zinc-100">{dateFilteredTransactions.length}</span> of{' '}
+            <span className="font-semibold text-zinc-100">{transactions.length}</span> transactions
           </div>
         </div>
       </div>
@@ -451,12 +461,12 @@ export function TransactionSelector({
             <option value="in">Money in</option>
             <option value="out">Money out</option>
           </select>
-          <label className="flex items-center gap-2 text-sm text-zinc-300 select-none">
+          <label className="flex items-center gap-2 text-sm text-zinc-200 select-none cursor-pointer">
             <input
               type="checkbox"
               checked={showSelectedOnly}
               onChange={(e) => setShowSelectedOnly(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-300 text-zinc-100 focus:ring-2 focus:ring-zinc-900"
+              className="h-4 w-4 rounded border-zinc-600 text-teal-500 focus:ring-2 focus:ring-teal-500 bg-zinc-800"
             />
             Selected only
           </label>
@@ -464,15 +474,18 @@ export function TransactionSelector({
       </div>
 
       <div className="mt-4 space-y-2">
-        <div className="text-sm text-zinc-400">
+        <div className="text-sm text-zinc-300">
           {counts.total === 0 ? (
-            <span>Select rows to import.</span>
+            <span className="text-zinc-400">Select transactions to import</span>
           ) : (
             <span>
-              Ready to import: <span className="font-semibold">{counts.total}</span> (Income: {counts.income}, Bills: {counts.bill})
+              Ready to import: <span className="font-semibold text-zinc-100">{counts.total}</span>{' '}
+              <span className="text-zinc-400">
+                ({counts.income} income, {counts.bill} bill{counts.bill !== 1 ? 's' : ''})
+              </span>
               {counts.recurring > 0 && (
                 <span className="text-teal-400 ml-1">
-                  ({counts.recurring} recurring)
+                  including {counts.recurring} recurring
                 </span>
               )}
             </span>
@@ -492,9 +505,9 @@ export function TransactionSelector({
       </div>
 
       {tier === 'free' && (billsLimit !== null || incomeLimit !== null) && (
-        <div className="mt-3 text-sm text-zinc-400">
-          <span className="font-medium text-zinc-300">Free tier remaining:</span>{' '}
-          <span>
+        <div className="mt-3 text-sm text-zinc-300">
+          <span className="font-medium text-zinc-200">Free tier remaining:</span>{' '}
+          <span className="text-zinc-400">
             {limits.billsRemaining === Infinity ? '∞' : limits.billsRemaining} bills,{' '}
             {limits.incomeRemaining === Infinity ? '∞' : limits.incomeRemaining} income sources
           </span>
@@ -502,11 +515,11 @@ export function TransactionSelector({
       )}
 
       {tier === 'free' && (over.billsOverBy > 0 || over.incomeOverBy > 0) && (
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
-          <p className="text-sm text-amber-800 font-medium">
-            You&apos;re over the Free tier limit.
+        <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+          <p className="text-sm text-amber-300 font-medium">
+            You&apos;re over the Free tier limit
           </p>
-          <p className="text-sm text-amber-700 mt-1">
+          <p className="text-sm text-amber-400/80 mt-1">
             {over.billsOverBy > 0 && (
               <span className="block">
                 Bills: selected {counts.bill}, remaining {limits.billsRemaining}
@@ -539,39 +552,49 @@ export function TransactionSelector({
         </div>
       )}
 
-      {/* Phase 2 hint */}
-      <div className="mt-4 rounded-lg border border-zinc-700 bg-zinc-800 p-3">
-        <p className="text-sm text-zinc-300 font-medium">Invoice matching coming soon</p>
-        <p className="text-sm text-zinc-400 mt-1">
-          Soon you&apos;ll be able to match imported transactions to unpaid invoices and mark them as paid.
+
+      {/* Select all/Deselect all buttons - positioned near table */}
+      <div className="mt-5 flex items-center justify-between gap-3 mb-3">
+        <p className="text-sm text-zinc-400">
+          {visibleRows.length} transaction{visibleRows.length === 1 ? '' : 's'} shown
+          {selectedVisibleCount > 0 && (
+            <span className="text-teal-400 ml-1">
+              ({selectedVisibleCount} selected)
+            </span>
+          )}
         </p>
+        <div className="flex gap-2">
+          <Button type="button" variant="secondary" size="sm" onClick={selectAllVisible}>
+            Select all
+          </Button>
+          <Button type="button" variant="secondary" size="sm" onClick={deselectAllVisible}>
+            Deselect all
+          </Button>
+        </div>
       </div>
 
-      <div className="mt-5 overflow-auto border border-zinc-700 rounded-lg">
+      <div className="overflow-auto border border-zinc-700 rounded-lg">
         <table className="min-w-[800px] w-full text-sm">
           <thead className="bg-zinc-800">
             <tr>
-              <th className="text-left px-3 py-2 w-[44px]"> </th>
-              <th className="text-left px-3 py-2 w-[130px]">
-                <div className="flex items-center gap-2">
-                  <input
-                    ref={headerSelectAllRef}
-                    type="checkbox"
-                    checked={allVisibleSelected}
-                    disabled={visibleRows.length === 0}
-                    onChange={(e) => {
-                      if (e.target.checked) selectAllVisible();
-                      else deselectAllVisible();
-                    }}
-                    className="h-4 w-4 rounded border-zinc-300 text-zinc-100 focus:ring-2 focus:ring-zinc-900"
-                    aria-label="Select all visible transactions"
-                  />
-                  <span>Date</span>
-                </div>
+              <th className="text-left px-3 py-2.5 w-[44px]">
+                <input
+                  ref={headerSelectAllRef}
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  disabled={visibleRows.length === 0}
+                  onChange={(e) => {
+                    if (e.target.checked) selectAllVisible();
+                    else deselectAllVisible();
+                  }}
+                  className="h-4 w-4 rounded border-zinc-600 text-teal-500 focus:ring-2 focus:ring-teal-500 bg-zinc-700"
+                  aria-label="Select all visible transactions"
+                />
               </th>
-              <th className="text-left px-3 py-2">Description</th>
-              <th className="text-right px-3 py-2 w-[140px]">Amount</th>
-              <th className="text-left px-3 py-2 w-[220px]">Action</th>
+              <th className="text-left px-3 py-2.5 w-[130px] text-zinc-200 font-semibold">Date</th>
+              <th className="text-left px-3 py-2.5 text-zinc-200 font-semibold">Description</th>
+              <th className="text-right px-3 py-2.5 w-[120px] text-zinc-200 font-semibold">Amount</th>
+              <th className="text-left px-3 py-2.5 w-[200px] text-zinc-200 font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -588,7 +611,9 @@ export function TransactionSelector({
                       className="h-4 w-4 rounded border-zinc-600 text-teal-500 focus:ring-2 focus:ring-teal-500"
                     />
                   </td>
-                  <td className="px-3 py-2 text-zinc-300 tabular-nums">{t.transaction_date}</td>
+                  <td className="px-3 py-2 text-zinc-200 tabular-nums whitespace-nowrap">
+                    {formatIsoDateHuman(t.transaction_date) || t.transaction_date}
+                  </td>
                   <td className="px-3 py-2 text-zinc-100">
                     <div className="flex items-center gap-2">
                       <div className="truncate max-w-[520px]" title={t.description}>
@@ -629,12 +654,12 @@ export function TransactionSelector({
       </div>
 
       {filtered.length > 1000 && (
-        <p className="text-sm text-amber-700 mt-3">
-          Showing the first 1000 filtered rows for performance. Narrow your search to find other rows.
+        <p className="text-sm text-amber-400 mt-3">
+          Showing the first 1,000 transactions for performance. Use the search or date filter to find specific transactions.
         </p>
       )}
 
-      {error && <p className="text-sm text-rose-600 mt-4">{error}</p>}
+      {error && <p className="text-sm text-rose-400 mt-4">{error}</p>}
 
       <div className="mt-6 flex flex-col sm:flex-row gap-3">
         <Button
@@ -645,7 +670,9 @@ export function TransactionSelector({
           disabled={counts.total === 0 || (tier === 'free' && (over.billsOverBy > 0 || over.incomeOverBy > 0))}
           onClick={() => void submit()}
         >
-          {counts.total === 0 ? 'Select rows to import' : 'Import selected'}
+          {counts.total === 0
+            ? 'Select transactions to import'
+            : `Import ${counts.total} transaction${counts.total === 1 ? '' : 's'}`}
         </Button>
       </div>
     </div>

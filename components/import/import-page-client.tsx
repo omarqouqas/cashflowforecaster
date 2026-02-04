@@ -61,6 +61,66 @@ function remainingSlots(limit: number | null, current: number): number {
   return Math.max(0, limit - current);
 }
 
+// Mask sensitive data like account numbers (show last 4 digits only)
+function maskSensitiveValue(value: string, headerName: string): string {
+  const header = headerName.toLowerCase();
+
+  // Check if this column likely contains sensitive data
+  const sensitivePatterns = /account.*num|card.*num|acct.*num|account.*no|card.*no|routing|ssn|social/i;
+  if (!sensitivePatterns.test(header)) {
+    return value;
+  }
+
+  // Mask numeric values, keeping last 4 digits
+  const digitsOnly = value.replace(/\D/g, '');
+  if (digitsOnly.length > 4) {
+    const masked = '*'.repeat(digitsOnly.length - 4) + digitsOnly.slice(-4);
+    return masked;
+  }
+
+  return value;
+}
+
+// Prioritize columns for display: Date, Description, Amount first, then others
+function getPrioritizedColumnIndices(headers: string[]): number[] {
+  const datePatterns = /^(date|posted.*date|transaction.*date|trans.*date|posting.*date)$/i;
+  const descriptionPatterns = /^(description|payee|memo|merchant|name|narrative|details?)$/i;
+  const amountPatterns = /^(amount|total|debit|credit|value|sum|outflow|inflow)$/i;
+
+  const priorityColumns: number[] = [];
+  const otherColumns: number[] = [];
+
+  // First pass: find priority columns in order (Date, Description, Amount)
+  let dateIdx = -1;
+  let descIdx = -1;
+  let amountIdx = -1;
+
+  headers.forEach((header, idx) => {
+    const trimmed = header.trim();
+    if (dateIdx === -1 && datePatterns.test(trimmed)) {
+      dateIdx = idx;
+    } else if (descIdx === -1 && descriptionPatterns.test(trimmed)) {
+      descIdx = idx;
+    } else if (amountIdx === -1 && amountPatterns.test(trimmed)) {
+      amountIdx = idx;
+    }
+  });
+
+  // Add priority columns in desired order
+  if (dateIdx !== -1) priorityColumns.push(dateIdx);
+  if (descIdx !== -1) priorityColumns.push(descIdx);
+  if (amountIdx !== -1) priorityColumns.push(amountIdx);
+
+  // Add remaining columns
+  headers.forEach((_, idx) => {
+    if (!priorityColumns.includes(idx)) {
+      otherColumns.push(idx);
+    }
+  });
+
+  return [...priorityColumns, ...otherColumns];
+}
+
 // Auto-detect column indices based on common header names
 function autoDetectColumns(headers: string[]): ColumnMapping {
   const datePatterns = /^(date|posted.*date|transaction.*date|trans.*date|posting.*date)$/i;
@@ -130,9 +190,11 @@ export function ImportPageClient({ userId, usage }: Props) {
 
   const preview = useMemo(() => {
     if (!loaded) return null;
+    const columnOrder = getPrioritizedColumnIndices(loaded.headers);
     return {
       headers: loaded.headers,
       rows: loaded.rows.slice(0, 10),
+      columnOrder,
     };
   }, [loaded]);
 
@@ -382,28 +444,30 @@ export function ImportPageClient({ userId, usage }: Props) {
           Upload a CSV export from your bank, map columns, then select the transactions you want to track.
         </p>
         {usage.tier === 'free' && (
-          <p className="text-sm text-zinc-500 mt-2">
-            Free tier limits: {usage.bills.current}/{usage.bills.limit ?? '∞'} bills,{' '}
-            {usage.income.current}/{usage.income.limit ?? '∞'} income sources.
+          <p className="text-sm text-zinc-400 mt-2">
+            Free tier usage: {usage.bills.current}/{usage.bills.limit ?? '∞'} bills,{' '}
+            {usage.income.current}/{usage.income.limit ?? '∞'} income sources
           </p>
         )}
       </div>
 
-      {/* YNAB Quick Import Banner */}
-      <Link
-        href="/dashboard/import/ynab"
-        className="block border border-teal-500/30 bg-teal-500/10 rounded-lg p-4 hover:bg-teal-500/15 transition-colors group"
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-teal-200 font-medium">Importing from YNAB?</p>
-            <p className="text-sm text-teal-200/70 mt-0.5">
-              Use our dedicated YNAB importer for automatic format detection - no column mapping needed.
-            </p>
+      {/* YNAB Quick Import Banner - only show before file is uploaded */}
+      {!loaded && (
+        <Link
+          href="/dashboard/import/ynab"
+          className="block border border-teal-500/30 bg-teal-500/10 rounded-lg p-4 hover:bg-teal-500/15 transition-colors group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-teal-200 font-medium">Importing from YNAB?</p>
+              <p className="text-sm text-teal-300/70 mt-0.5">
+                Use our dedicated YNAB importer for automatic format detection - no column mapping needed.
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-teal-400 group-hover:translate-x-1 transition-transform flex-shrink-0 ml-4" />
           </div>
-          <ArrowRight className="w-5 h-5 text-teal-400 group-hover:translate-x-1 transition-transform flex-shrink-0 ml-4" />
-        </div>
-      </Link>
+        </Link>
+      )}
 
       {/* Step Indicator */}
       <StepIndicator
@@ -440,25 +504,33 @@ export function ImportPageClient({ userId, usage }: Props) {
           <p className="text-sm text-zinc-400 mt-1">
             This is just a preview. You&apos;ll choose which rows to import later.
           </p>
-          <div className="mt-4 overflow-auto border border-zinc-800 rounded-lg">
+          <div className="mt-4 overflow-auto border border-zinc-700 rounded-lg">
             <table className="min-w-full w-full text-sm">
               <thead className="bg-zinc-800">
                 <tr>
-                  {preview.headers.map((h, idx) => (
-                    <th key={`${h}-${idx}`} className="text-left px-3 py-2 whitespace-nowrap text-zinc-300 font-medium">
-                      {h || `(Column ${idx + 1})`}
-                    </th>
-                  ))}
+                  {preview.columnOrder.map((colIdx) => {
+                    const h = preview.headers[colIdx] ?? '';
+                    return (
+                      <th key={`${h}-${colIdx}`} className="text-left px-3 py-2.5 whitespace-nowrap text-zinc-200 font-semibold">
+                        {h || `(Column ${colIdx + 1})`}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
                 {preview.rows.map((row, rIdx) => (
                   <tr key={rIdx} className="border-t border-zinc-800">
-                    {preview.headers.map((_, cIdx) => (
-                      <td key={cIdx} className="px-3 py-2 text-zinc-400 whitespace-nowrap">
-                        {row[cIdx] ?? ''}
-                      </td>
-                    ))}
+                    {preview.columnOrder.map((colIdx) => {
+                      const header = preview.headers[colIdx] ?? '';
+                      const rawValue = row[colIdx] ?? '';
+                      const displayValue = maskSensitiveValue(rawValue, header);
+                      return (
+                        <td key={colIdx} className="px-3 py-2 text-zinc-300 whitespace-nowrap">
+                          {displayValue}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

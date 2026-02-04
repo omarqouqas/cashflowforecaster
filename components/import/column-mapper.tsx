@@ -65,7 +65,7 @@ export function ColumnMapper({ headers, mapping, onChange }: Props) {
   return (
     <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-6">
       <p className="text-base font-semibold text-zinc-100">Map your columns</p>
-      <p className="text-sm text-zinc-400 mt-1">
+      <p className="text-sm text-zinc-300 mt-1">
         Tell us which columns contain the date, description, and amount.
       </p>
 

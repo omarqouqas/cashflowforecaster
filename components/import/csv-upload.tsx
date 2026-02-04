@@ -80,7 +80,7 @@ export function CsvUpload({ onLoaded }: Props) {
             <Upload className="w-8 h-8 text-teal-400" />
           </div>
           <p className="text-base font-semibold text-zinc-100 mb-2">Upload your bank CSV</p>
-          <p className="text-sm text-zinc-400 mb-4 max-w-md">
+          <p className="text-sm text-zinc-300 mb-4 max-w-md">
             Drag and drop your CSV file here, or click the button below to browse
           </p>
           <Button
@@ -91,7 +91,7 @@ export function CsvUpload({ onLoaded }: Props) {
           >
             Choose file
           </Button>
-          <p className="text-xs text-zinc-500 mt-3">
+          <p className="text-xs text-zinc-400 mt-3">
             Accepts .csv files only (max 5MB)
           </p>
         </div>
@@ -127,25 +127,25 @@ export function CsvUpload({ onLoaded }: Props) {
 
         {showHelp && (
           <div className="mt-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg text-sm">
-            <p className="text-zinc-300 mb-3">
+            <p className="text-zinc-200 mb-3">
               Export a CSV file from your bank&apos;s website. Most banks support CSV export from the transaction history page.
             </p>
 
-            <p className="text-zinc-400 font-medium mb-2">Your CSV should include columns for:</p>
+            <p className="text-zinc-300 font-medium mb-2">Your CSV should include columns for:</p>
             <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
-              <li><span className="text-zinc-300">Date</span> - when the transaction occurred</li>
-              <li><span className="text-zinc-300">Description</span> - merchant name or memo</li>
-              <li><span className="text-zinc-300">Amount</span> - transaction amount (can be single column or separate debit/credit)</li>
+              <li><span className="text-zinc-200">Date</span> - when the transaction occurred</li>
+              <li><span className="text-zinc-200">Description</span> - merchant name or memo</li>
+              <li><span className="text-zinc-200">Amount</span> - transaction amount (can be single column or separate debit/credit)</li>
             </ul>
 
-            <p className="text-zinc-400 font-medium mb-2">Supported formats:</p>
+            <p className="text-zinc-300 font-medium mb-2">Supported formats:</p>
             <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
               <li>Date formats: MM/DD/YYYY, YYYY-MM-DD, MM/DD/YY</li>
               <li>Amount formats: $1,234.56, -100.00, (100.00) for negatives</li>
               <li>Delimiters: comma, tab, or semicolon separated</li>
             </ul>
 
-            <p className="text-zinc-500 text-xs">
+            <p className="text-zinc-400 text-xs">
               After uploading, you&apos;ll be able to map columns manually if auto-detection doesn&apos;t work.
             </p>
           </div>
