@@ -17,8 +17,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const isLifetimePurchase = searchParams.lifetime === 'true';
   const supabase = await createClient();
 
-  // Fetch accounts, income, bills, and user settings in parallel
-  const [accountsResult, incomeResult, billsResult, settingsResult, invoiceSummaryResult, topInvoicesResult, forecastDays, subscription] = await Promise.all([
+  // Fetch accounts, income, bills, transfers, and user settings in parallel
+  const [accountsResult, incomeResult, billsResult, transfersResult, settingsResult, invoiceSummaryResult, topInvoicesResult, forecastDays, subscription] = await Promise.all([
     supabase
       .from('accounts')
       .select('*')
@@ -34,6 +34,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }),
+    supabase
+      .from('transfers')
+      .select(`
+        *,
+        from_account:accounts!transfers_from_account_id_fkey(name),
+        to_account:accounts!transfers_to_account_id_fkey(name)
+      `)
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('transfer_date', { ascending: true }),
     supabase
       .from('user_settings')
       .select('currency, safety_buffer, timezone, tax_rate, tax_tracking_enabled, estimated_tax_q1_paid, estimated_tax_q2_paid, estimated_tax_q3_paid, estimated_tax_q4_paid, emergency_fund_enabled, emergency_fund_goal_months, emergency_fund_account_id')
@@ -56,6 +66,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const bills = (billsResult.data || []) as any;
   const invoiceSummary = invoiceSummaryResult;
   const topInvoices = (topInvoicesResult.data || []) as any;
+
+  // Process transfers to add account names
+  const transfers = ((transfersResult.data || []) as any[]).map((t: any) => ({
+    ...t,
+    from_account_name: t.from_account?.name,
+    to_account_name: t.to_account?.name,
+  }));
 
   // Extract settings with type assertion
   const settingsData = settingsResult.data as any;
@@ -88,7 +105,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   let calendarError: string | null = null;
   if (accounts.length > 0) {
     try {
-      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined, forecastDays);
+      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined, forecastDays, transfers);
     } catch (error) {
       console.error('Error generating calendar:', error);
       calendarError = 'We couldn\'t generate your forecast. Please try refreshing the page.';
@@ -203,6 +220,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       date: day.date.toISOString(),
       income: day.income.map(t => ({ ...t, date: t.date.toISOString() })),
       bills: day.bills.map(t => ({ ...t, date: t.date.toISOString() })),
+      transfers: day.transfers.map(t => ({ ...t, date: t.date.toISOString() })),
     })),
     startingBalance: calendarData.startingBalance,
     lowestBalance: calendarData.lowestBalance,
@@ -220,6 +238,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           date: new Date(day.date),
           income: day.income.map(t => ({ ...t, date: new Date(t.date) })),
           bills: day.bills.map(t => ({ ...t, date: new Date(t.date) })),
+          transfers: day.transfers.map(t => ({ ...t, date: new Date(t.date) })),
         })),
         lowestBalanceDay: new Date(serializedCalendarData.lowestBalanceDay),
       } : null}

@@ -1,17 +1,19 @@
 /**
  * Main calendar generation function for cash flow forecasting.
- * 
+ *
  * This module generates a 60-day calendar projection by:
  * 1. Calculating starting balance from active accounts
  * 2. Generating all income and bill occurrences
- * 3. Projecting daily balances forward
- * 4. Identifying the lowest balance day
+ * 3. Generating all transfer occurrences
+ * 4. Projecting daily balances forward
+ * 5. Identifying the lowest balance day
  */
 
 import { CalendarData, CalendarDay } from './types';
 import { calculateIncomeOccurrences } from './calculate-income';
 import { calculateBillOccurrences } from './calculate-bills';
 import { calculateAllCCPayments } from './calculate-cc-payments';
+import { calculateTransferOccurrences } from './calculate-transfers';
 import { addDays, isSameDay, getStatusColor, getTodayAtNoon } from './utils';
 import { detectBillCollisions } from './detect-collisions';
 import { Tables } from '@/types/supabase';
@@ -35,6 +37,14 @@ type IncomeRecord = Tables<'income'>;
  * Bill record structure for calendar generation.
  */
 type BillRecord = Tables<'bills'>;
+
+/**
+ * Transfer record structure for calendar generation.
+ */
+type TransferRecord = Tables<'transfers'> & {
+  from_account_name?: string;
+  to_account_name?: string;
+};
 
 function getTodayAtNoonForTimezone(timezone?: string): Date {
   if (!timezone) return getTodayAtNoon();
@@ -67,22 +77,26 @@ function getTodayAtNoonForTimezone(timezone?: string): Date {
 
 /**
  * Generates a 60-day cash flow calendar projection.
- * 
+ *
  * This function:
  * 1. Calculates the starting balance from all active accounts
  * 2. Generates a 60-day date array starting from today
  * 3. Calculates all income occurrences within the date range
  * 4. Calculates all bill occurrences within the date range
- * 5. Projects daily balances by applying income and bills chronologically
- * 6. Identifies the lowest balance day
- * 7. Applies status colors based on the safety buffer threshold
- * 
+ * 5. Calculates all transfer occurrences within the date range
+ * 6. Projects daily balances by applying income, bills, and transfers chronologically
+ * 7. Identifies the lowest balance day
+ * 8. Applies status colors based on the safety buffer threshold
+ *
  * @param accounts - Array of account records (uses is_spendable to determine active accounts)
  * @param income - Array of income source records
  * @param bills - Array of bill records
  * @param safetyBuffer - The minimum safety buffer amount for status color calculation (default: 500)
- * @returns CalendarData object containing 60 days of projected cash flow
- * 
+ * @param timezone - Optional user timezone for date calculations
+ * @param forecastDays - Number of days to forecast (default: 60)
+ * @param transfers - Optional array of transfer records for inter-account transfers
+ * @returns CalendarData object containing forecast days of projected cash flow
+ *
  * @throws {Error} If accounts array is empty or invalid
  * @throws {Error} If date calculations fail
  */
@@ -92,7 +106,8 @@ export default function generateCalendar(
   bills: BillRecord[],
   safetyBuffer: number = 500,
   timezone?: string,
-  forecastDays: number = 60
+  forecastDays: number = 60,
+  transfers: TransferRecord[] = []
 ): CalendarData {
   try {
     // Step 1: Calculate starting balance
@@ -138,6 +153,22 @@ export default function generateCalendar(
     const allBillOccurrences = [...regularBillOccurrences, ...ccPaymentOccurrences];
     if (CALENDAR_VERBOSE) console.log('Total bill occurrences:', allBillOccurrences.length);
 
+    // Step 4c: Calculate transfer occurrences
+    // Build a map of account IDs to their spendable status for efficient lookup
+    const accountSpendableMap = new Map<string, boolean>();
+    accounts.forEach(a => {
+      accountSpendableMap.set(a.id, a.is_spendable !== false);
+    });
+
+    const allTransferOccurrences = transfers
+      .filter(t => t.is_active !== false)
+      .flatMap(t => calculateTransferOccurrences({
+        ...t,
+        from_account_name: t.from_account_name,
+        to_account_name: t.to_account_name,
+      }, today, endDate));
+    if (CALENDAR_VERBOSE) console.log('Transfer occurrences:', allTransferOccurrences.length);
+
     // Step 5: Project daily balances using reduce to build array incrementally
     const days = dates.reduce((acc, date, index) => {
       const previousBalance = index === 0 ? startingBalance : acc[index - 1]!.balance;
@@ -148,12 +179,36 @@ export default function generateCalendar(
       // Find bills for this specific day
       const billsToday = allBillOccurrences.filter(occ => isSameDay(occ.date, date));
 
+      // Find transfers for this specific day
+      const transfersToday = allTransferOccurrences.filter(occ => isSameDay(occ.date, date));
+
       // Calculate totals
       const incomeAmount = incomeToday.reduce((sum, i) => sum + i.amount, 0);
       const billsAmount = billsToday.reduce((sum, b) => sum + b.amount, 0);
 
+      // Calculate transfer impact on spendable cash
+      // Transfer affects cash flow when crossing the spendable/non-spendable boundary:
+      // - From spendable to non-spendable: decreases cash (like a CC payment)
+      // - From non-spendable to spendable: increases cash (rare, but possible)
+      // - Between two spendable accounts: no net effect on total cash
+      let transferOutAmount = 0;
+      let transferInAmount = 0;
+      for (const transfer of transfersToday) {
+        const fromSpendable = accountSpendableMap.get(transfer.from_account_id) ?? false;
+        const toSpendable = accountSpendableMap.get(transfer.to_account_id) ?? false;
+
+        if (fromSpendable && !toSpendable) {
+          // Money leaving spendable accounts (e.g., paying CC)
+          transferOutAmount += transfer.amount;
+        } else if (!fromSpendable && toSpendable) {
+          // Money entering spendable accounts (e.g., CC refund to checking)
+          transferInAmount += transfer.amount;
+        }
+        // If both spendable or both non-spendable, no net effect on total cash
+      }
+
       // Debug logging for multiple transactions on same day
-      if (incomeToday.length > 1 || billsToday.length > 1) {
+      if (incomeToday.length > 1 || billsToday.length > 1 || transfersToday.length > 0) {
         if (CALENDAR_VERBOSE) {
           console.log(
             'Multi-transaction day:',
@@ -162,16 +217,22 @@ export default function generateCalendar(
             incomeToday.length,
             'Bills:',
             billsToday.length,
+            'Transfers:',
+            transfersToday.length,
             'Total income:',
             incomeAmount,
             'Total bills:',
-            billsAmount
+            billsAmount,
+            'Transfer out:',
+            transferOutAmount,
+            'Transfer in:',
+            transferInAmount
           );
         }
       }
 
       // Calculate new balance
-      const balance = previousBalance + incomeAmount - billsAmount;
+      const balance = previousBalance + incomeAmount - billsAmount + transferInAmount - transferOutAmount;
 
       // Determine status using the safety buffer
       const status = getStatusColor(balance, safetyBuffer);
@@ -184,6 +245,7 @@ export default function generateCalendar(
         balance,
         income: incomeToday,
         bills: billsToday,
+        transfers: transfersToday,
         status,
       });
 

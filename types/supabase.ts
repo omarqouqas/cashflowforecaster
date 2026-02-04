@@ -828,6 +828,73 @@ export type Database = {
         }
         Relationships: []
       }
+      transfers: {
+        Row: {
+          id: string
+          user_id: string
+          from_account_id: string
+          to_account_id: string
+          amount: number
+          description: string | null
+          transfer_date: string
+          frequency: string
+          recurrence_day: number | null
+          is_active: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          from_account_id: string
+          to_account_id: string
+          amount: number
+          description?: string | null
+          transfer_date: string
+          frequency?: string
+          recurrence_day?: number | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          from_account_id?: string
+          to_account_id?: string
+          amount?: number
+          description?: string | null
+          transfer_date?: string
+          frequency?: string
+          recurrence_day?: number | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_from_account_id_fkey"
+            columns: ["from_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_to_account_id_fkey"
+            columns: ["to_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_categories: {
         Row: {
           color: string | null

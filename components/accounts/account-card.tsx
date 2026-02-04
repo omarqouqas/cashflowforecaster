@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { Tables } from '@/types/supabase'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp, Calculator } from 'lucide-react'
+import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp, Calculator, DollarSign } from 'lucide-react'
 import { formatCurrency, formatRelativeTime } from '@/lib/utils/format'
 import { DeleteAccountButton } from '@/components/accounts/delete-account-button'
 import { SpendableToggleButton } from '@/components/accounts/spendable-toggle-button'
@@ -183,17 +183,30 @@ export function AccountCard({ account }: { account: Account }) {
                 Edit
               </Button>
             </Link>
-            {/* Payment Simulator button for credit cards */}
+            {/* Payment Simulator and Pay button for credit cards */}
             {isCreditCard && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSimulator(true)}
-                className="border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-amber-500/50 text-zinc-100 hover:text-amber-400 transition-all"
-                aria-label="Simulate payment"
-              >
-                <Calculator className="w-4 h-4" />
-              </Button>
+              <>
+                <Link href={`/dashboard/transfers/new?to=${account.id}&amount=${balance > 0 ? balance : ''}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 transition-all"
+                    aria-label="Pay credit card"
+                  >
+                    <DollarSign className="w-4 h-4 mr-1" />
+                    Pay
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSimulator(true)}
+                  className="border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-amber-500/50 text-zinc-100 hover:text-amber-400 transition-all"
+                  aria-label="Simulate payment"
+                >
+                  <Calculator className="w-4 h-4" />
+                </Button>
+              </>
             )}
             {!isCreditCard && (
               <div className="flex items-center gap-1">

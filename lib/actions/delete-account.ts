@@ -17,6 +17,7 @@ import { captureServerEvent } from '@/lib/posthog/server';
  * 4. bills
  * 5. imported_transactions
  * 6. scenarios
+ * 6b. transfers
  * 7. accounts
  * 8. subscriptions
  * 9. user_settings
@@ -102,6 +103,17 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
 
     if (scenariosError) {
       console.error('Error deleting scenarios:', scenariosError);
+      // Continue anyway - this is not critical
+    }
+
+    // 6b. Delete transfers (before accounts since they reference accounts)
+    const { error: transfersError } = await supabase
+      .from('transfers')
+      .delete()
+      .eq('user_id', user.id);
+
+    if (transfersError) {
+      console.error('Error deleting transfers:', transfersError);
       // Continue anyway - this is not critical
     }
 

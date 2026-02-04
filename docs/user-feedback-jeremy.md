@@ -464,8 +464,9 @@ Feb 15 ────────────────────────�
 **Feedback:** "I think I would want to be able to transfer between accounts - I actually use MS Money (which was sunset a long time ago) to do what your site is working towards - I setup all my accounts and forecast all my income/bills/transfers to forecast my cash balance in the next 12 months - I could also pick a date in the future (like retirement date)"
 
 **Current State:**
-- No transfer functionality between accounts
-- Each account tracked independently
+- Full transfer functionality between accounts implemented
+- Transfers appear in calendar forecast
+- Pay Credit Card shortcut on account cards
 
 **Analysis:** This is a significant feature for power users who want complete cash flow picture. MS Money comparison is telling - that was comprehensive personal finance software.
 
@@ -476,13 +477,23 @@ Key insights:
 
 **Action:** Implement account-to-account transfers
 
-**Status:** 🔲 Not Started
+**Status:** ✅ Implemented (Day 55)
 
-**Implementation Ideas:**
-- New transfer type that decreases one account, increases another
-- Show in forecast as paired entries
-- Support recurring transfers (e.g., monthly savings contribution)
-- "Balance on date X" calculator
+**Delivered Features:**
+- New `/dashboard/transfers` page to manage all transfers
+- Transfer form with source/destination account selection
+- Support for recurring transfers (weekly, bi-weekly, semi-monthly, monthly, quarterly, annually)
+- One-time transfer support
+- "Pay Credit Card" button on credit card account cards (pre-fills destination)
+- Transfers integrated into calendar cash flow forecast
+- Smart cash flow impact: only affects balance when crossing spendable/non-spendable boundary
+- Transfer occurrences calculated same as bills (handles all frequencies)
+
+**Technical Implementation:**
+- New `transfers` table with RLS
+- `from_account_id` and `to_account_id` foreign keys to accounts
+- Calendar generation updated to include transfers
+- Transfer impact: from spendable to non-spendable = outflow, reverse = inflow
 
 ---
 
@@ -580,9 +591,9 @@ Jeremy's key points:
 
 ### Completed
 1. ✅ **Import → Recurring entries** - Implemented! (#6)
+2. ✅ **Account transfers** - Key for complete cash picture (#9) - Implemented Day 55!
 
 ### Immediate (High Value, Addresses Jeremy's Feedback)
-2. 🔲 **Account transfers** - Key for complete cash picture (#9)
 3. 🔲 **CC dashboard visibility** - UX fix (#8)
 
 ### Strategic (Decision Made)

@@ -19,7 +19,7 @@ export default async function CalendarPage() {
   const forecastDays = await getForecastDaysLimit(user.id)
 
   // Fetch active data for current user
-  const [accountsResult, incomeResult, billsResult, settingsResult] = await Promise.all([
+  const [accountsResult, incomeResult, billsResult, transfersResult, settingsResult] = await Promise.all([
     supabase
       .from('accounts')
       .select('*')
@@ -38,6 +38,16 @@ export default async function CalendarPage() {
       .or('is_active.is.null,is_active.eq.true')
       .order('created_at', { ascending: false }),
     supabase
+      .from('transfers')
+      .select(`
+        *,
+        from_account:accounts!transfers_from_account_id_fkey(name),
+        to_account:accounts!transfers_to_account_id_fkey(name)
+      `)
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('transfer_date', { ascending: true }),
+    supabase
       .from('user_settings')
       .select('safety_buffer, timezone, currency')
       .eq('user_id', user.id)
@@ -48,12 +58,19 @@ export default async function CalendarPage() {
   const income: Income[] = (incomeResult.data || []) as any
   const bills: Bill[] = (billsResult.data || []) as any
 
+  // Process transfers to add account names
+  const transfers = ((transfersResult.data || []) as any[]).map((t: any) => ({
+    ...t,
+    from_account_name: t.from_account?.name,
+    to_account_name: t.to_account?.name,
+  }))
+
   const settings = settingsResult.data as any
   const safetyBuffer = settings?.safety_buffer ?? 500
   const timezone = settings?.timezone ?? null
   const currency = settings?.currency ?? 'USD'
 
-  const fetchErrors = [accountsResult.error, incomeResult.error, billsResult.error].filter(
+  const fetchErrors = [accountsResult.error, incomeResult.error, billsResult.error, transfersResult.error].filter(
     Boolean
   )
 
@@ -106,7 +123,7 @@ export default async function CalendarPage() {
   let calendarError: string | null = null
 
   try {
-    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays)
+    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays, transfers)
   } catch (e) {
     calendarError = e instanceof Error ? e.message : 'Failed to generate calendar'
   }

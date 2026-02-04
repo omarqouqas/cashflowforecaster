@@ -6,7 +6,7 @@ import type { CollisionSummary } from './detect-collisions';
 
 /**
  * Represents a transaction (income or bill) in the calendar.
- * 
+ *
  * @interface Transaction
  */
 export interface Transaction {
@@ -32,8 +32,36 @@ export interface Transaction {
 }
 
 /**
+ * Represents a transfer between accounts in the calendar.
+ *
+ * @interface TransferTransaction
+ */
+export interface TransferTransaction {
+  /** Unique identifier for the transfer */
+  id: string;
+  /** Description of the transfer */
+  name: string;
+  /** Transfer amount */
+  amount: number;
+  /** Type marker for transfers */
+  type: 'transfer';
+  /** Frequency of the transfer */
+  frequency: string;
+  /** Date when this transfer occurs */
+  date: Date;
+  /** Source account ID */
+  from_account_id: string;
+  /** Source account name */
+  from_account_name?: string;
+  /** Destination account ID */
+  to_account_id: string;
+  /** Destination account name */
+  to_account_name?: string;
+}
+
+/**
  * Represents a single day in the calendar with its financial data.
- * 
+ *
  * @interface CalendarDay
  */
 export interface CalendarDay {
@@ -45,6 +73,8 @@ export interface CalendarDay {
   income: Transaction[];
   /** Array of bill transactions occurring on this day */
   bills: Transaction[];
+  /** Array of transfer transactions occurring on this day */
+  transfers: TransferTransaction[];
   /** Status indicator for this day - color-coded financial health status */
   status: 'green' | 'yellow' | 'orange' | 'red';
 }
