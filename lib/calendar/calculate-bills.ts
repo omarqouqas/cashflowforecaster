@@ -1,6 +1,6 @@
-import { parseISO, startOfDay, isAfter, isBefore, isEqual, addMonths, getDate, setDate, endOfMonth } from 'date-fns';
+import { parseISO, isAfter, isBefore, isEqual, addMonths, getDate, setDate, endOfMonth } from 'date-fns';
 import { Transaction } from './types';
-import { parseLocalDate } from './utils';
+import { parseLocalDate, normalizeToNoon } from './utils';
 
 /**
  * Bill record structure for calculating occurrences.
@@ -55,9 +55,10 @@ export function calculateBillOccurrences(
   const billDueDate = parseLocalDate(bill.due_date);
 
   const occurrences: Transaction[] = [];
-  const rangeStartDay = startOfDay(rangeStart);
-  const rangeEndDay = startOfDay(rangeEnd);
-  const billDueDay = startOfDay(billDueDate);
+  // Use noon to avoid timezone shifts when dates are serialized
+  const rangeStartDay = normalizeToNoon(rangeStart);
+  const rangeEndDay = normalizeToNoon(rangeEnd);
+  const billDueDay = normalizeToNoon(billDueDate);
 
   // If bill due date is after the range end, return empty
   if (isAfter(billDueDay, rangeEndDay)) {
@@ -67,28 +68,27 @@ export function calculateBillOccurrences(
   switch (bill.frequency) {
     case 'weekly': {
       // Start from bill.due_date
-      let currentDate = billDueDay;
+      let currentDate = new Date(billDueDay);
 
       // If due_date is before range start, find first occurrence in range
       if (isBefore(currentDate, rangeStartDay)) {
         // Calculate days difference and find next weekly occurrence
         const daysDiff = Math.floor((rangeStartDay.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
         const weeksToAdd = Math.ceil(daysDiff / 7);
-        currentDate = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + (weeksToAdd * 7));
       }
 
       // Add occurrence every 7 days until past rangeEndDay
       while (currentDate <= rangeEndDay) {
         occurrences.push({
-          date: new Date(currentDate),
+          date: normalizeToNoon(currentDate),
           id: bill.id,
           name: bill.name,
           amount: bill.amount,
           type: 'bill',
           frequency: bill.frequency,
         });
-        
+
         currentDate = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + 7);
       }
@@ -97,28 +97,27 @@ export function calculateBillOccurrences(
 
     case 'biweekly': {
       // Start from bill.due_date
-      let currentDate = billDueDay;
+      let currentDate = new Date(billDueDay);
 
       // If due_date is before range start, find first occurrence in range
       if (isBefore(currentDate, rangeStartDay)) {
         // Calculate days difference and find next biweekly occurrence
         const daysDiff = Math.floor((rangeStartDay.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
         const periodsToAdd = Math.ceil(daysDiff / 14);
-        currentDate = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + (periodsToAdd * 14));
       }
 
       // Add occurrence every 14 days until past rangeEndDay
       while (currentDate <= rangeEndDay) {
         occurrences.push({
-          date: new Date(currentDate),
+          date: normalizeToNoon(currentDate),
           id: bill.id,
           name: bill.name,
           amount: bill.amount,
           type: 'bill',
           frequency: bill.frequency,
         });
-        
+
         currentDate = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + 14);
       }
@@ -131,17 +130,17 @@ export function calculateBillOccurrences(
       // Common patterns: 1st & 15th, or 15th & last day of month
       // We use the user's due_date to determine the pattern
       const primaryDay = billDueDay.getDate();
-      
+
       // Calculate the secondary day (the other payment in the month)
       const secondaryDay = primaryDay <= 15 ? primaryDay + 15 : primaryDay - 15;
-      
+
       // Start from the beginning of the month containing the due date
       let currentYear = billDueDay.getFullYear();
       let currentMonth = billDueDay.getMonth();
-      
+
       // If due_date is before range start, advance to the correct month
       if (isBefore(billDueDay, rangeStartDay)) {
-        const monthsDiff = (rangeStartDay.getFullYear() - currentYear) * 12 + 
+        const monthsDiff = (rangeStartDay.getFullYear() - currentYear) * 12 +
                           (rangeStartDay.getMonth() - currentMonth);
         currentMonth += monthsDiff;
         currentYear += Math.floor(currentMonth / 12);
@@ -151,27 +150,27 @@ export function calculateBillOccurrences(
           currentYear -= 1;
         }
       }
-      
+
       // Generate occurrences for up to 24 months (to cover 365-day forecast)
       for (let monthOffset = 0; monthOffset < 24; monthOffset++) {
         const year = currentYear + Math.floor((currentMonth + monthOffset) / 12);
         const month = (currentMonth + monthOffset) % 12;
-        
+
         // Get last day of this month
         const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-        
+
         // Calculate both payment dates for this month
         const day1 = Math.min(primaryDay, lastDayOfMonth);
         const day2 = Math.min(secondaryDay, lastDayOfMonth);
-        
+
         // Sort them so we process in chronological order
         const [firstDay, secondDay] = day1 < day2 ? [day1, day2] : [day2, day1];
-        
-        // First occurrence of the month
+
+        // First occurrence of the month (use noon to avoid timezone shifts)
         const firstDate = new Date(year, month, firstDay, 12, 0, 0);
         if (!isBefore(firstDate, rangeStartDay) && !isAfter(firstDate, rangeEndDay)) {
           occurrences.push({
-            date: new Date(firstDate),
+            date: normalizeToNoon(firstDate),
             id: bill.id,
             name: bill.name,
             amount: bill.amount,
@@ -179,12 +178,12 @@ export function calculateBillOccurrences(
             frequency: bill.frequency,
           });
         }
-        
+
         // Second occurrence of the month
         const secondDate = new Date(year, month, secondDay, 12, 0, 0);
         if (!isBefore(secondDate, rangeStartDay) && !isAfter(secondDate, rangeEndDay)) {
           occurrences.push({
-            date: new Date(secondDate),
+            date: normalizeToNoon(secondDate),
             id: bill.id,
             name: bill.name,
             amount: bill.amount,
@@ -192,7 +191,7 @@ export function calculateBillOccurrences(
             frequency: bill.frequency,
           });
         }
-        
+
         // Stop if we've passed the range end date
         if (isAfter(new Date(year, month + 1, 1), rangeEndDay)) {
           break;
@@ -219,15 +218,15 @@ export function calculateBillOccurrences(
       if (!year || !month || !day || Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
         break;
       }
-      
+
       // Start with the due day
       const targetDay = day;
-      
+
       // Ensure initial date is valid for the month (handle month-end edge cases)
       const lastDayOfInitialMonth = new Date(year, month, 0).getDate();
       const initialDayToUse = Math.min(targetDay, lastDayOfInitialMonth);
       let currentDate = new Date(year, month - 1, initialDayToUse, 12, 0, 0);
-      
+
       // If due_date is before startDate, calculate next occurrence
       if (isBefore(billDueDay, rangeStartDay)) {
         // Find the next monthly occurrence
@@ -235,30 +234,30 @@ export function calculateBillOccurrences(
           // Increment month
           let nextMonth = currentDate.getMonth() + 1;
           let nextYear = currentDate.getFullYear();
-          
+
           // Handle year rollover
           if (nextMonth > 11) {
             nextMonth = 0;
             nextYear++;
           }
-          
+
           // Get last day of next month
           const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
-          
+
           // Use target day OR last day of month (whichever is smaller)
           const dayToUse = Math.min(targetDay, lastDayOfNextMonth);
-          
+
           currentDate = new Date(nextYear, nextMonth, dayToUse, 12, 0, 0);
         }
       }
-      
+
       // Add occurrence on same day each month
       // Handle month-end edge cases
       // Continue until past endDate
       while (currentDate <= rangeEndDay) {
         if (currentDate >= rangeStartDay) {
           occurrences.push({
-            date: new Date(currentDate),
+            date: normalizeToNoon(currentDate),
             id: bill.id,
             name: bill.name,
             amount: bill.amount,
@@ -266,26 +265,26 @@ export function calculateBillOccurrences(
             frequency: bill.frequency,
           });
         }
-        
+
         // Increment month - THIS IS THE KEY FIX
         let nextMonth = currentDate.getMonth() + 1;
         let nextYear = currentDate.getFullYear();
-        
+
         // Handle year rollover
         if (nextMonth > 11) {
           nextMonth = 0;
           nextYear++;
         }
-        
+
         // Get last day of next month
         const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
-        
+
         // Use target day OR last day of month (whichever is smaller)
         const dayToUse = Math.min(targetDay, lastDayOfNextMonth);
-        
+
         currentDate = new Date(nextYear, nextMonth, dayToUse, 12, 0, 0);
       }
-      
+
       break;
     }
 
@@ -328,7 +327,7 @@ export function calculateBillOccurrences(
         }
 
         occurrences.push({
-          date: new Date(occurrenceDate),
+          date: normalizeToNoon(occurrenceDate),
           id: bill.id,
           name: bill.name,
           amount: bill.amount,
@@ -385,7 +384,7 @@ export function calculateBillOccurrences(
         }
 
         occurrences.push({
-          date: new Date(occurrenceDate),
+          date: normalizeToNoon(occurrenceDate),
           id: bill.id,
           name: bill.name,
           amount: bill.amount,
@@ -412,7 +411,7 @@ export function calculateBillOccurrences(
       ) {
         // If yes, add single occurrence
         occurrences.push({
-          date: new Date(billDueDay),
+          date: normalizeToNoon(billDueDay),
           id: bill.id,
           name: bill.name,
           amount: bill.amount,

@@ -1,6 +1,6 @@
-import { parseISO, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
+import { parseISO, isAfter, isBefore, isEqual } from 'date-fns';
 import { Transaction } from './types';
-import { getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate } from './utils';
+import { getNextWeeklyDate, getNextBiweeklyDate, parseLocalDate, normalizeToNoon } from './utils';
 
 const CALENDAR_VERBOSE =
   typeof process !== 'undefined' &&
@@ -44,7 +44,7 @@ interface IncomeRecord {
  * - quarterly: every 3 months from next_date on the same day of month
  * - annually: every 12 months from next_date on the same month and day each year
  * - one-time: includes if next_date falls within the range
- * - irregular: returns empty array (cannot predict)
+ * - irregular: shows once on next_date (user updates next_date when they know the next payment)
  *
  * Only includes occurrences if is_active is true.
  * Stops adding occurrences after end_date if it exists and is before endDate.
@@ -105,9 +105,10 @@ export function calculateIncomeOccurrences(
   const incomeEndDate = income.end_date ? parseLocalDate(income.end_date) : null;
 
   const occurrences: Transaction[] = [];
-  const rangeStartDay = startOfDay(rangeStart);
-  const rangeEndDay = startOfDay(rangeEnd);
-  const incomeNextDay = startOfDay(incomeNextDate);
+  // Use noon to avoid timezone shifts when dates are serialized
+  const rangeStartDay = normalizeToNoon(rangeStart);
+  const rangeEndDay = normalizeToNoon(rangeEnd);
+  const incomeNextDay = normalizeToNoon(incomeNextDate);
 
   // If income next_date is after the range end, return empty
   if (isAfter(incomeNextDay, rangeEndDay)) {
@@ -139,7 +140,7 @@ export function calculateIncomeOccurrences(
       while (!isAfter(currentDate, effectiveEndDate)) {
         if (CALENDAR_VERBOSE) console.log('Added occurrence:', currentDate.toDateString());
         occurrences.push({
-          date: new Date(currentDate),
+          date: normalizeToNoon(currentDate),
           id: income.id,
           name: income.name,
           amount: income.amount,
@@ -179,7 +180,7 @@ export function calculateIncomeOccurrences(
           console.log('Added occurrence:', currentDate.toDateString());
         }
         occurrences.push({
-          date: new Date(currentDate),
+          date: normalizeToNoon(currentDate),
           id: income.id,
           name: income.name,
           amount: income.amount,
@@ -251,7 +252,7 @@ export function calculateIncomeOccurrences(
         const firstDate = new Date(year, month, firstDay, 12, 0, 0);
         if (!isBefore(firstDate, rangeStartDay) && !isAfter(firstDate, effectiveEndDate)) {
           occurrences.push({
-            date: new Date(firstDate),
+            date: normalizeToNoon(firstDate),
             id: income.id,
             name: income.name,
             amount: income.amount,
@@ -267,7 +268,7 @@ export function calculateIncomeOccurrences(
         const secondDate = new Date(year, month, secondDay, 12, 0, 0);
         if (!isBefore(secondDate, rangeStartDay) && !isAfter(secondDate, effectiveEndDate)) {
           occurrences.push({
-            date: new Date(secondDate),
+            date: normalizeToNoon(secondDate),
             id: income.id,
             name: income.name,
             amount: income.amount,
@@ -303,7 +304,7 @@ export function calculateIncomeOccurrences(
       if (CALENDAR_VERBOSE) console.log('Processing monthly income');
       
       // If next_date is before range start, find first occurrence in range
-      if (isBefore(startOfDay(currentDate), rangeStartDay)) {
+      if (isBefore(normalizeToNoon(currentDate), rangeStartDay)) {
         // Find the next monthly occurrence
         while (currentDate < rangeStartDay) {
           // Increment month with month-end handling
@@ -325,7 +326,7 @@ export function calculateIncomeOccurrences(
       while (currentDate <= effectiveEndDate) {
         if (currentDate >= rangeStartDay) {
           occurrences.push({
-            date: new Date(currentDate),
+            date: normalizeToNoon(currentDate),
             id: income.id,
             name: income.name,
             amount: income.amount,
@@ -371,7 +372,7 @@ export function calculateIncomeOccurrences(
       if (CALENDAR_VERBOSE) console.log('Processing quarterly income');
 
       // If next_date is before range start, find first occurrence in range
-      while (isBefore(startOfDay(currentDate), rangeStartDay)) {
+      while (isBefore(normalizeToNoon(currentDate), rangeStartDay)) {
         currentMonth += 3;
         if (currentMonth > 11) {
           currentYear += Math.floor(currentMonth / 12);
@@ -385,7 +386,7 @@ export function calculateIncomeOccurrences(
       while (currentDate <= effectiveEndDate) {
         if (currentDate >= rangeStartDay) {
           occurrences.push({
-            date: new Date(currentDate),
+            date: normalizeToNoon(currentDate),
             id: income.id,
             name: income.name,
             amount: income.amount,
@@ -427,7 +428,7 @@ export function calculateIncomeOccurrences(
       if (CALENDAR_VERBOSE) console.log('Processing annually income');
 
       // If next_date is before range start, find first occurrence in range
-      while (isBefore(startOfDay(currentDate), rangeStartDay)) {
+      while (isBefore(normalizeToNoon(currentDate), rangeStartDay)) {
         currentYear++;
         const lastDayOfMonth = new Date(currentYear, targetMonth + 1, 0).getDate();
         const dayToUse = Math.min(targetDay, lastDayOfMonth);
@@ -437,7 +438,7 @@ export function calculateIncomeOccurrences(
       while (currentDate <= effectiveEndDate) {
         if (currentDate >= rangeStartDay) {
           occurrences.push({
-            date: new Date(currentDate),
+            date: normalizeToNoon(currentDate),
             id: income.id,
             name: income.name,
             amount: income.amount,
@@ -468,7 +469,7 @@ export function calculateIncomeOccurrences(
       ) {
         // If yes, add single occurrence
         occurrences.push({
-          date: new Date(incomeNextDay),
+          date: normalizeToNoon(incomeNextDay),
           id: income.id,
           name: income.name,
           amount: income.amount,
@@ -484,7 +485,23 @@ export function calculateIncomeOccurrences(
 
     case 'irregular': {
       if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
-      // Return empty array (cannot predict)
+      // Show irregular income on its next_date as a one-time occurrence
+      // User can update next_date when they know the next payment
+      if (
+        (isAfter(incomeNextDay, rangeStartDay) || isEqual(incomeNextDay, rangeStartDay)) &&
+        (isBefore(incomeNextDay, rangeEndDay) || isEqual(incomeNextDay, rangeEndDay))
+      ) {
+        occurrences.push({
+          date: normalizeToNoon(incomeNextDay),
+          id: income.id,
+          name: income.name,
+          amount: income.amount,
+          type: 'income',
+          frequency: income.frequency,
+          status: income.status ?? null,
+          invoice_id: income.invoice_id ?? null,
+        });
+      }
       break;
     }
 
