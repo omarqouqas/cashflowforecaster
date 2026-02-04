@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** February 2, 2026 (Day 54)
+**Last Updated:** February 3, 2026 (Day 55)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 54
+- **Days in Development:** 55
 - **Commits:** 395+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + **YNAB Import + Bug Fixes (18)**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (10 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + **Import Recurring Entries + Quarterly/Annually Income Frequencies**
 
 **Current Focus:**
 
@@ -29,7 +29,51 @@
 
 ---
 
-## Recent Development (Days 40-54)
+## Recent Development (Days 40-55)
+
+### Day 55: Import Recurring Entries + Income Frequency Expansion (February 3, 2026)
+
+**User Feedback Session** - Jeremy (CPA CA CMA MBA, 20+ years CFO experience) provided strategic feedback on product direction and feature requests.
+
+**Strategic Direction Decided:**
+- **Cash Flow First, Light Invoicing** - Core value prop is cash flow forecasting, not invoicing
+- Invoicing features serve AR tracking for cash flow, not as standalone invoicing solution
+- Future cleanup: Consider renaming "Invoices" → "Expected Income" or "Receivables"
+
+**New Feature: Import → Recurring Entries**
+- Import wizard now offers 5 options: Ignore, One-time income, Recurring income, One-time bill, Recurring bill
+- When recurring is selected, frequency dropdown appears (weekly, bi-weekly, semi-monthly, monthly, quarterly, annually)
+- Works in both generic CSV import and YNAB import
+- Default frequency is monthly if not specified
+
+**Income Frequency Expansion:**
+- Added quarterly and annually frequency options to income (previously bills-only)
+- Use cases: quarterly dividends, annual bonuses, tax refunds, seasonal income
+- Updated income new/edit forms with new frequency options
+- Updated zod schemas to validate new frequencies
+- Updated income-card.tsx with next date calculations and frequency badges (orange for quarterly, rose for annually)
+- Updated income-filters.tsx with new frequency filter options
+- Updated income-content.tsx with next date calculations
+- Updated income page with monthly income calculations (quarterly = amount/3, annually = amount/12)
+
+**Files Modified (Import Feature):**
+- `components/import/transaction-selector.tsx` - New action types, FrequencySelect component
+- `components/import/import-page-client.tsx` - Handle recurring entries in import
+- `components/import/ynab-import-page-client.tsx` - Handle recurring entries in YNAB import
+
+**Files Modified (Income Frequencies):**
+- `app/dashboard/income/new/page.tsx` - Added quarterly/annually options + zod schema
+- `app/dashboard/income/[id]/edit/page.tsx` - Added quarterly/annually options + zod schema
+- `components/income/income-card.tsx` - Next date calc, icon, badge for quarterly/annually
+- `components/income/income-filters.tsx` - Added quarterly/annually to FrequencyType and filter options
+- `components/income/income-content.tsx` - Next date calculations for quarterly/annually
+- `app/dashboard/income/page.tsx` - Monthly income calculations + next date calculations
+- `lib/calendar/calculate-income.ts` - Added quarterly/annually cases to calendar generation (bug fix)
+
+**Documentation Updated:**
+- `docs/user-feedback-jeremy.md` - Added Feb 2026 feedback, strategic direction, implementation status
+
+---
 
 ### Day 54: Pricing Updates & Comparison Pages (February 2, 2026)
 

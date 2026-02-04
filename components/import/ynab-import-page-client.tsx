@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { YnabCsvUpload } from '@/components/import/ynab-csv-upload';
-import { TransactionSelector, type NormalizedTransaction } from '@/components/import/transaction-selector';
+import { TransactionSelector, type NormalizedTransaction, type ImportRow } from '@/components/import/transaction-selector';
 import { StepIndicator } from '@/components/import/step-indicator';
 import { createClient } from '@/lib/supabase/client';
 import { showError, showSuccess } from '@/lib/toast';
@@ -135,9 +135,7 @@ export function YnabImportPageClient({ userId, usage }: Props) {
     setShowUpgradeModal(true);
   };
 
-  const handleImport = async (
-    rows: Array<NormalizedTransaction & { action: 'income' | 'bill' }>
-  ) => {
+  const handleImport = async (rows: ImportRow[]) => {
     const supabase = createClient();
 
     if (rows.length > 500) {
@@ -145,8 +143,8 @@ export function YnabImportPageClient({ userId, usage }: Props) {
       return;
     }
 
-    const toCreateBills = rows.filter((r) => r.action === 'bill').length;
-    const toCreateIncome = rows.filter((r) => r.action === 'income').length;
+    const toCreateBills = rows.filter((r) => r.action === 'bill' || r.action === 'bill-recurring').length;
+    const toCreateIncome = rows.filter((r) => r.action === 'income' || r.action === 'income-recurring').length;
 
     // Re-check current counts
     const [billsCountRes, incomeCountRes] = await Promise.all([
@@ -225,25 +223,25 @@ export function YnabImportPageClient({ userId, usage }: Props) {
 
     // Create bills/income records
     const billsToInsert = rows
-      .filter((r) => r.action === 'bill')
+      .filter((r) => r.action === 'bill' || r.action === 'bill-recurring')
       .map((r) => ({
         user_id: userId,
         name: r.description.slice(0, 100),
         amount: Math.abs(r.amount),
         due_date: r.transaction_date,
-        frequency: 'one-time',
+        frequency: r.action === 'bill-recurring' ? (r.frequency ?? 'monthly') : 'one-time',
         category: 'other',
         is_active: true,
         source_import_id: r.id,
       }));
 
     const incomeToInsert = rows
-      .filter((r) => r.action === 'income')
+      .filter((r) => r.action === 'income' || r.action === 'income-recurring')
       .map((r) => ({
         user_id: userId,
         name: r.description.slice(0, 100),
         amount: Math.abs(r.amount),
-        frequency: 'one-time',
+        frequency: r.action === 'income-recurring' ? (r.frequency ?? 'monthly') : 'one-time',
         next_date: r.transaction_date,
         account_id: null,
         is_active: true,

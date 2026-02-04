@@ -35,18 +35,20 @@ interface IncomeRecord {
 
 /**
  * Calculates all income transaction occurrences within a date range.
- * 
+ *
  * Handles different frequencies:
  * - weekly: every 7 days from next_date, using getNextWeeklyDate helper
  * - biweekly: every 14 days from next_date, using getNextBiweeklyDate helper
  * - semi-monthly: twice per month (e.g., 1st & 15th, or 15th & last day)
  * - monthly: same day each month, handling month-end edge cases (e.g., Jan 31 → Feb 28)
+ * - quarterly: every 3 months from next_date on the same day of month
+ * - annually: every 12 months from next_date on the same month and day each year
  * - one-time: includes if next_date falls within the range
  * - irregular: returns empty array (cannot predict)
- * 
+ *
  * Only includes occurrences if is_active is true.
  * Stops adding occurrences after end_date if it exists and is before endDate.
- * 
+ *
  * @param income - The income record to calculate occurrences for
  * @param startDate - Start date of the calendar range (inclusive)
  * @param endDate - End date of the calendar range (inclusive)
@@ -350,6 +352,110 @@ export function calculateIncomeOccurrences(
         currentDate = new Date(nextYear, nextMonth, dayToUse, 12, 0, 0);
       }
       
+      break;
+    }
+
+    case 'quarterly': {
+      // Quarterly: every 3 months from next_date
+      const baseDate = parsedStartDate;
+      const targetDay = baseDate.getDate();
+
+      let currentYear = baseDate.getFullYear();
+      let currentMonth = baseDate.getMonth();
+
+      // Get initial date with month-end handling
+      const lastDayOfInitialMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const initialDayToUse = Math.min(targetDay, lastDayOfInitialMonth);
+      let currentDate = new Date(currentYear, currentMonth, initialDayToUse, 12, 0, 0);
+
+      if (CALENDAR_VERBOSE) console.log('Processing quarterly income');
+
+      // If next_date is before range start, find first occurrence in range
+      while (isBefore(startOfDay(currentDate), rangeStartDay)) {
+        currentMonth += 3;
+        if (currentMonth > 11) {
+          currentYear += Math.floor(currentMonth / 12);
+          currentMonth = currentMonth % 12;
+        }
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const dayToUse = Math.min(targetDay, lastDayOfMonth);
+        currentDate = new Date(currentYear, currentMonth, dayToUse, 12, 0, 0);
+      }
+
+      while (currentDate <= effectiveEndDate) {
+        if (currentDate >= rangeStartDay) {
+          occurrences.push({
+            date: new Date(currentDate),
+            id: income.id,
+            name: income.name,
+            amount: income.amount,
+            type: 'income',
+            frequency: income.frequency,
+            status: income.status ?? null,
+            invoice_id: income.invoice_id ?? null,
+          });
+          if (CALENDAR_VERBOSE) console.log('Added quarterly occurrence:', currentDate.toDateString());
+        }
+
+        // Increment by 3 months with month-end handling
+        currentMonth += 3;
+        if (currentMonth > 11) {
+          currentYear += Math.floor(currentMonth / 12);
+          currentMonth = currentMonth % 12;
+        }
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const dayToUse = Math.min(targetDay, lastDayOfMonth);
+        currentDate = new Date(currentYear, currentMonth, dayToUse, 12, 0, 0);
+      }
+
+      break;
+    }
+
+    case 'annually': {
+      // Annually: every 12 months from next_date
+      const baseDate = parsedStartDate;
+      const targetDay = baseDate.getDate();
+      const targetMonth = baseDate.getMonth();
+
+      let currentYear = baseDate.getFullYear();
+
+      // Get initial date with month-end handling (for Feb 29 edge case)
+      const lastDayOfInitialMonth = new Date(currentYear, targetMonth + 1, 0).getDate();
+      const initialDayToUse = Math.min(targetDay, lastDayOfInitialMonth);
+      let currentDate = new Date(currentYear, targetMonth, initialDayToUse, 12, 0, 0);
+
+      if (CALENDAR_VERBOSE) console.log('Processing annually income');
+
+      // If next_date is before range start, find first occurrence in range
+      while (isBefore(startOfDay(currentDate), rangeStartDay)) {
+        currentYear++;
+        const lastDayOfMonth = new Date(currentYear, targetMonth + 1, 0).getDate();
+        const dayToUse = Math.min(targetDay, lastDayOfMonth);
+        currentDate = new Date(currentYear, targetMonth, dayToUse, 12, 0, 0);
+      }
+
+      while (currentDate <= effectiveEndDate) {
+        if (currentDate >= rangeStartDay) {
+          occurrences.push({
+            date: new Date(currentDate),
+            id: income.id,
+            name: income.name,
+            amount: income.amount,
+            type: 'income',
+            frequency: income.frequency,
+            status: income.status ?? null,
+            invoice_id: income.invoice_id ?? null,
+          });
+          if (CALENDAR_VERBOSE) console.log('Added annually occurrence:', currentDate.toDateString());
+        }
+
+        // Increment by 1 year with month-end handling
+        currentYear++;
+        const lastDayOfMonth = new Date(currentYear, targetMonth + 1, 0).getDate();
+        const dayToUse = Math.min(targetDay, lastDayOfMonth);
+        currentDate = new Date(currentYear, targetMonth, dayToUse, 12, 0, 0);
+      }
+
       break;
     }
 

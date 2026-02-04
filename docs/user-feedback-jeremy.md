@@ -1,7 +1,7 @@
-# User Feedback: Jeremy (Jan 2026)
+# User Feedback: Jeremy (Jan-Feb 2026)
 
 ## Summary
-Jeremy tested the app and provided valuable feedback on missing/desired features.
+Jeremy tested the app and provided valuable feedback on missing/desired features. Jeremy is a CPA CA CMA MBA with 20+ years of CFO experience.
 
 ## Feedback Points
 
@@ -393,3 +393,206 @@ Feb 15 ────────────────────────�
    - [x] Interest cost calculator (integrated into simulator)
    - [x] Utilization warnings (color-coded badges on account cards)
    - [x] Debt payoff planner (snowball/avalanche) - Implemented!
+
+---
+
+## February 2026 Feedback
+
+### 6. Import → Recurring Forecast Entries
+**Feedback:** "The import feature should allow the user to create a recurring forecast entry - currently only allows one time or ignore"
+
+**Current State:**
+- Import wizard now offers 5 options: Ignore, One-time income, Recurring income, One-time bill, Recurring bill
+- When recurring is selected, frequency dropdown appears (weekly, bi-weekly, semi-monthly, monthly, quarterly, annually)
+- Works in both generic CSV import and YNAB import
+
+**Action:** Add "Create as recurring" option to import wizard
+
+**Status:** ✅ Implemented
+
+**Technical Implementation:**
+- Updated `ImportAction` type to include `income-recurring` and `bill-recurring`
+- Added `RecurringFrequency` type with all frequency options
+- Added `FrequencySelect` component that appears when recurring action is selected
+- Updated both `import-page-client.tsx` and `ynab-import-page-client.tsx` to handle recurring entries
+- Bills get frequency options: weekly, biweekly, semi-monthly, monthly, quarterly, annually
+- Income gets frequency options: weekly, biweekly, semi-monthly, monthly
+
+---
+
+### 7. Excel File Imports
+**Feedback:** "Is it possible to allow excel file imports (maybe not that important)"
+
+**Current State:**
+- CSV import only
+
+**Analysis:** Many users export from accounting software as Excel. Low priority per Jeremy but would reduce friction.
+
+**Action:** Add .xlsx import support
+
+**Status:** 🔲 Not Started (Low Priority)
+
+**Implementation Ideas:**
+- Use existing `xlsx` package (already installed for exports)
+- Parse first sheet, convert to same format as CSV handler
+- Minimal effort since infrastructure exists
+
+---
+
+### 8. Credit Cards on Dashboard
+**Feedback:** "I couldn't easily identify how to add the credit card to the dashboard - I would want to see them all"
+
+**Current State:**
+- Credit cards can be added as account type
+- All accounts show on Accounts page
+- Dashboard shows total balance but may not prominently feature CCs
+
+**Analysis:** UX/discoverability issue. Users want to see all credit cards prominently.
+
+**Action:** Review dashboard to ensure credit cards are visible and easy to add
+
+**Status:** 🔲 Needs Investigation
+
+**Questions:**
+- Should CCs have their own dashboard section?
+- Should there be a quick "Add Credit Card" button?
+- Is the issue adding CCs or seeing them once added?
+
+---
+
+### 9. Account Transfers
+**Feedback:** "I think I would want to be able to transfer between accounts - I actually use MS Money (which was sunset a long time ago) to do what your site is working towards - I setup all my accounts and forecast all my income/bills/transfers to forecast my cash balance in the next 12 months - I could also pick a date in the future (like retirement date)"
+
+**Current State:**
+- No transfer functionality between accounts
+- Each account tracked independently
+
+**Analysis:** This is a significant feature for power users who want complete cash flow picture. MS Money comparison is telling - that was comprehensive personal finance software.
+
+Key insights:
+1. **Account transfers** - Moving money between checking/savings affects which account has cash
+2. **12-month forecasting** - Already have 365 days in Pro tier ✅
+3. **Future date targeting** - "What's my balance on retirement date?" scenario planning
+
+**Action:** Implement account-to-account transfers
+
+**Status:** 🔲 Not Started
+
+**Implementation Ideas:**
+- New transfer type that decreases one account, increases another
+- Show in forecast as paired entries
+- Support recurring transfers (e.g., monthly savings contribution)
+- "Balance on date X" calculator
+
+---
+
+### 10. Product Focus: Cash Flow vs Invoicing
+**Feedback:** "I guess I am a little confused by the purpose of the tool - there is a space for invoices and quotes - are you looking to build this to be a quoting and invoicing tool or a cash flow tool - I would imagine that most would already have invoicing or accounting software of some sort... so either all in for accounting or focus on cash planning?"
+
+**Analysis:** This is **critical strategic feedback** from an experienced CFO.
+
+Jeremy's key points:
+1. Most businesses already have invoicing/accounting software
+2. Requiring data entry in two systems creates friction
+3. The tool name is "Cash Flow Forecaster" - that's the core value prop
+4. Cash flow forecasting is genuinely challenging for small clients
+
+**Jeremy's suggested split:**
+1. **Cash flow forecast** - revenue estimates, cost estimates, opening cash
+2. **Quoting and invoicing** - delivery format, calculations
+
+**Current State:**
+- We have both invoicing AND cash flow features
+- Invoice module tracks outstanding invoices for AR aging
+- May be creating confusion about core purpose
+
+**Strategic Options:**
+
+**Option A: Pure Cash Flow Focus**
+- Remove or minimize invoicing features
+- Import invoice data from other systems (QuickBooks, FreshBooks, etc.)
+- Focus 100% on forecasting accuracy and insights
+- Clearer positioning, less feature bloat
+
+**Option B: Full Small Business Suite**
+- Expand invoicing to compete with FreshBooks/Wave
+- Risk: competing with established players
+- Benefit: one-stop shop for tiny businesses
+
+**Option C: Cash Flow First, Light Invoicing**
+- Keep invoicing as lightweight feature for tracking AR
+- Don't try to compete on invoicing features
+- Position invoices as "track what's owed to you" not "send professional invoices"
+- Focus development on cash flow differentiation
+
+**Recommendation:** Option C seems right. The invoicing exists to feed the cash flow forecast (AR aging), not to be a standalone feature. Should clarify this in marketing/UI.
+
+**Status:** ✅ Strategic Direction Decided
+
+### Strategic Direction: Cash Flow First, Light Invoicing
+
+**Decision:** Focus on cash flow forecasting as the core value prop. Invoicing features serve the forecast (AR tracking), not as a standalone invoicing solution.
+
+**Core Value Prop:**
+> "Most small businesses know they have money problems 2 weeks too late. We show you 90 days (or 365) ahead."
+
+**Reframe Invoicing As:**
+- "Track what clients owe you" → feeds into → "Know when cash arrives"
+- NOT "Professional invoicing solution to send to clients"
+
+**Future Cleanup Tasks:**
+- [ ] Consider renaming "Invoices" → "Expected Income" or "Receivables" in UI
+- [ ] Simplify invoice creation (don't need fancy templates if users send from QuickBooks)
+- [ ] Emphasize cash flow connection when viewing invoices
+- [ ] Add "import invoice" option (just amount + due date, not full invoice creation)
+- [ ] Update marketing to lead with cash flow, not invoicing
+
+---
+
+### 11. Target Market Clarity
+**Feedback:** "Your target seems to be that small startup business... As businesses expand and get more sophisticated so does their accounting and forecasting."
+
+**Analysis:** Jeremy correctly identifies the target market. This is helpful validation.
+
+**Target User Profile:**
+- Small business / startup / freelancer
+- Revenue: $0 - ~$500K (before they hire a controller)
+- Current tools: Spreadsheets, basic accounting software
+- Pain: Cash flow surprises, not knowing if they can make payroll/rent
+- NOT enterprise with sophisticated FP&A teams
+
+**Action:** Ensure product decisions align with this target market
+
+---
+
+### 12. Bank Sync Not Required
+**Feedback:** "Don't worry about the bank sync - importing is perfectly fine"
+
+**Analysis:** Validates our current approach. Bank sync (Plaid) is expensive and complex. Import-based workflow is acceptable to power users like Jeremy.
+
+**Action:** Continue with import-focused approach. Bank sync can be future nice-to-have.
+
+**Status:** ✅ Validated (no change needed)
+
+---
+
+## Updated Priority List (Feb 2026)
+
+### Completed
+1. ✅ **Import → Recurring entries** - Implemented! (#6)
+
+### Immediate (High Value, Addresses Jeremy's Feedback)
+2. 🔲 **Account transfers** - Key for complete cash picture (#9)
+3. 🔲 **CC dashboard visibility** - UX fix (#8)
+
+### Strategic (Decision Made)
+4. ✅ **Product focus clarification** - Cash flow vs invoicing (#10)
+   - Decision: Cash Flow First, Light Invoicing
+   - Future cleanup: Rename invoices, simplify creation, emphasize cash flow connection
+
+### Lower Priority
+5. 🔲 **Excel imports** - Nice to have (#7)
+
+### Validated/No Change
+6. ✅ Bank sync approach validated (#12)
+7. ✅ Target market confirmed (#11)

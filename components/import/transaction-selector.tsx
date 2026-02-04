@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input';
 import { formatCurrency } from '@/lib/utils/format';
 import type { SubscriptionTier } from '@/lib/stripe/config';
 
-export type ImportAction = 'ignore' | 'income' | 'bill';
+export type ImportAction = 'ignore' | 'income' | 'bill' | 'income-recurring' | 'bill-recurring';
+
+export type RecurringFrequency = 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually';
 
 export type NormalizedTransaction = {
   id: string;
@@ -19,10 +21,15 @@ export type NormalizedTransaction = {
   suggestedAction?: 'income' | 'bill'; // Pre-computed suggestion (e.g., from YNAB category)
 };
 
+export type ImportRow = NormalizedTransaction & {
+  action: Exclude<ImportAction, 'ignore'>;
+  frequency?: RecurringFrequency; // Only set when action is *-recurring
+};
+
 type Props = {
   transactions: NormalizedTransaction[];
   fileName: string;
-  onImport: (rows: Array<NormalizedTransaction & { action: Exclude<ImportAction, 'ignore'> }>) => Promise<void>;
+  onImport: (rows: ImportRow[]) => Promise<void>;
   tier: SubscriptionTier;
   currentBills: number;
   currentIncome: number;
@@ -83,7 +90,35 @@ function ActionSelect({
     >
       <option value="ignore">Ignore</option>
       <option value="income">One-time income</option>
+      <option value="income-recurring">Recurring income</option>
       <option value="bill">One-time bill</option>
+      <option value="bill-recurring">Recurring bill</option>
+    </select>
+  );
+}
+
+function FrequencySelect({
+  value,
+  onChange,
+}: {
+  value: RecurringFrequency;
+  onChange: (v: RecurringFrequency) => void;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value as RecurringFrequency)}
+      className={[
+        'w-full bg-zinc-800 border border-zinc-700 rounded-md px-2 py-1.5 text-zinc-100 text-sm min-h-[32px]',
+        'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
+      ].join(' ')}
+    >
+      <option value="weekly">Weekly</option>
+      <option value="biweekly">Bi-weekly</option>
+      <option value="semi-monthly">Semi-monthly</option>
+      <option value="monthly">Monthly</option>
+      <option value="quarterly">Quarterly</option>
+      <option value="annually">Annually</option>
     </select>
   );
 }
@@ -110,6 +145,7 @@ export function TransactionSelector({
 
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>(() => ({}));
   const [actions, setActions] = useState<Record<string, ImportAction>>(() => ({}));
+  const [frequencies, setFrequencies] = useState<Record<string, RecurringFrequency>>(() => ({}));
 
   // Use pre-computed suggestion if available, otherwise fall back to amount-based detection
   const suggestedActionFor = (tx: NormalizedTransaction): Exclude<ImportAction, 'ignore'> => {
@@ -136,9 +172,11 @@ export function TransactionSelector({
       const action = actions[t.id] ?? suggestedActionFor(t);
       // Auto-select rows whose effective action is not "ignore" unless the user explicitly toggled selection.
       const selected = selectedIds[t.id] ?? action !== 'ignore';
-      return { ...t, selected, action };
+      // Default frequency is monthly for recurring entries
+      const frequency = frequencies[t.id] ?? 'monthly';
+      return { ...t, selected, action, frequency };
     });
-  }, [dateFilteredTransactions, selectedIds, actions]);
+  }, [dateFilteredTransactions, selectedIds, actions, frequencies]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -155,14 +193,15 @@ export function TransactionSelector({
 
   const selectedRows = useMemo(() => enriched.filter((t) => t.selected), [enriched]);
   const actionableSelected = useMemo(
-    () => selectedRows.filter((t) => t.action === 'income' || t.action === 'bill'),
+    () => selectedRows.filter((t) => t.action !== 'ignore'),
     [selectedRows]
   );
 
   const counts = useMemo(() => {
-    const income = actionableSelected.filter((t) => t.action === 'income').length;
-    const bill = actionableSelected.filter((t) => t.action === 'bill').length;
-    return { total: actionableSelected.length, income, bill };
+    const income = actionableSelected.filter((t) => t.action === 'income' || t.action === 'income-recurring').length;
+    const bill = actionableSelected.filter((t) => t.action === 'bill' || t.action === 'bill-recurring').length;
+    const recurring = actionableSelected.filter((t) => t.action === 'income-recurring' || t.action === 'bill-recurring').length;
+    return { total: actionableSelected.length, income, bill, recurring };
   }, [actionableSelected]);
 
   const limits = useMemo(() => {
@@ -204,6 +243,12 @@ export function TransactionSelector({
     // If Action is not Ignore, auto-select the row. If Ignore, auto-deselect.
     setSelectedIds((prev) => ({ ...prev, [id]: action !== 'ignore' }));
   };
+
+  const setRowFrequency = (id: string, frequency: RecurringFrequency) => {
+    setFrequencies((prev) => ({ ...prev, [id]: frequency }));
+  };
+
+  const isRecurringAction = (action: ImportAction) => action === 'income-recurring' || action === 'bill-recurring';
 
   const selectAllVisible = () => {
     setError(null);
@@ -269,14 +314,14 @@ export function TransactionSelector({
       if (!nextSelected[t.id]) continue;
 
       const action = nextActions[t.id] ?? suggestedActionFor(t);
-      if (action === 'bill') {
+      if (action === 'bill' || action === 'bill-recurring') {
         if (keptBills < billsKeep) {
           keptBills++;
         } else {
           nextSelected[t.id] = false;
           nextActions[t.id] = 'ignore';
         }
-      } else if (action === 'income') {
+      } else if (action === 'income' || action === 'income-recurring') {
         if (keptIncome < incomeKeep) {
           keptIncome++;
         } else {
@@ -332,6 +377,7 @@ export function TransactionSelector({
           raw_data: t.raw_data,
           original_row_number: t.original_row_number,
           action: t.action as Exclude<ImportAction, 'ignore'>,
+          frequency: isRecurringAction(t.action) ? t.frequency : undefined,
         }))
       );
     } catch (e) {
@@ -424,6 +470,11 @@ export function TransactionSelector({
           ) : (
             <span>
               Ready to import: <span className="font-semibold">{counts.total}</span> (Income: {counts.income}, Bills: {counts.bill})
+              {counts.recurring > 0 && (
+                <span className="text-teal-400 ml-1">
+                  ({counts.recurring} recurring)
+                </span>
+              )}
             </span>
           )}
         </div>
@@ -557,10 +608,18 @@ export function TransactionSelector({
                     {formatCurrency(t.amount)}
                   </td>
                   <td className="px-3 py-2">
-                    <ActionSelect
-                      value={t.action}
-                      onChange={(v) => setRowAction(t.id, v)}
-                    />
+                    <div className="flex flex-col gap-1.5">
+                      <ActionSelect
+                        value={t.action}
+                        onChange={(v) => setRowAction(t.id, v)}
+                      />
+                      {isRecurringAction(t.action) && (
+                        <FrequencySelect
+                          value={t.frequency}
+                          onChange={(v) => setRowFrequency(t.id, v)}
+                        />
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

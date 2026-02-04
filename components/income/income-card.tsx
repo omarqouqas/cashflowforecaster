@@ -84,6 +84,18 @@ function getActualNextDate(nextDate: string, frequency: string | null | undefine
       }
       break
 
+    case 'quarterly':
+      while (currentDate < today) {
+        currentDate.setMonth(currentDate.getMonth() + 3)
+      }
+      break
+
+    case 'annually':
+      while (currentDate < today) {
+        currentDate.setFullYear(currentDate.getFullYear() + 1)
+      }
+      break
+
     case 'one-time':
     case 'irregular':
       // For one-time and irregular, just return the stored date
@@ -107,7 +119,7 @@ function getIncomeTypeIcon(frequency: string | null | undefined, isInvoiceLinked
 
   const freq = (frequency ?? 'monthly').toLowerCase()
 
-  if (freq === 'monthly' || freq === 'semi-monthly' || freq === 'biweekly' || freq === 'weekly') {
+  if (freq === 'monthly' || freq === 'semi-monthly' || freq === 'biweekly' || freq === 'weekly' || freq === 'quarterly' || freq === 'annually') {
     return {
       icon: Briefcase,
       className: 'bg-emerald-500/10 border border-emerald-500/30',
@@ -172,6 +184,20 @@ function getFrequencyBadge(frequency: string | null | undefined) {
     return {
       label: 'One-time',
       className: 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+    }
+  }
+
+  if (freq === 'quarterly') {
+    return {
+      label: 'Quarterly',
+      className: 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
+    }
+  }
+
+  if (freq === 'annually') {
+    return {
+      label: 'Annually',
+      className: 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
     }
   }
 

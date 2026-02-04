@@ -64,6 +64,10 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           return total + income.amount * 2;
         case 'monthly':
           return total + income.amount;
+        case 'quarterly':
+          return total + income.amount / 3;
+        case 'annually':
+          return total + income.amount / 12;
         case 'irregular':
           return total;
         case 'one-time':
@@ -286,6 +290,16 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
                     const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate()
                     const dayToUse = Math.min(targetDay, lastDayOfNextMonth)
                     currentDate = new Date(nextYear, nextMonth, dayToUse)
+                  }
+                  break
+                case 'quarterly':
+                  while (currentDate < today) {
+                    currentDate.setMonth(currentDate.getMonth() + 3)
+                  }
+                  break
+                case 'annually':
+                  while (currentDate < today) {
+                    currentDate.setFullYear(currentDate.getFullYear() + 1)
                   }
                   break
                 default:

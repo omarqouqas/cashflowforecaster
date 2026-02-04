@@ -81,6 +81,16 @@ function getActualNextDate(nextDate: string, frequency: string | null | undefine
         currentDate.setMonth(currentDate.getMonth() + 1);
       }
       break;
+    case 'quarterly':
+      while (currentDate < today) {
+        currentDate.setMonth(currentDate.getMonth() + 3);
+      }
+      break;
+    case 'annually':
+      while (currentDate < today) {
+        currentDate.setFullYear(currentDate.getFullYear() + 1);
+      }
+      break;
     default:
       return storedDate;
   }

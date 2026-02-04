@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { CsvUpload } from '@/components/import/csv-upload';
 import { ColumnMapper } from '@/components/import/column-mapper';
-import { TransactionSelector, type NormalizedTransaction } from '@/components/import/transaction-selector';
+import { TransactionSelector, type NormalizedTransaction, type ImportRow } from '@/components/import/transaction-selector';
 import { StepIndicator } from '@/components/import/step-indicator';
 import { type ColumnMapping, parseUsAmount, parseUsDateToIsoDate } from '@/lib/import/parse-csv';
 import { createClient } from '@/lib/supabase/client';
@@ -203,9 +203,7 @@ export function ImportPageClient({ userId, usage }: Props) {
     setShowUpgradeModal(true);
   };
 
-  const handleImport = async (
-    rows: Array<NormalizedTransaction & { action: 'income' | 'bill' }>
-  ) => {
+  const handleImport = async (rows: ImportRow[]) => {
     const supabase = createClient();
 
     // Simple sanity limits: prevent accidental huge imports
@@ -214,8 +212,8 @@ export function ImportPageClient({ userId, usage }: Props) {
       return;
     }
 
-    const toCreateBills = rows.filter((r) => r.action === 'bill').length;
-    const toCreateIncome = rows.filter((r) => r.action === 'income').length;
+    const toCreateBills = rows.filter((r) => r.action === 'bill' || r.action === 'bill-recurring').length;
+    const toCreateIncome = rows.filter((r) => r.action === 'income' || r.action === 'income-recurring').length;
 
     // Enforce tier limits using existing feature-gate limits.
     // We re-check current counts right before creating records (prevents stale UI / race issues).
@@ -299,27 +297,27 @@ export function ImportPageClient({ userId, usage }: Props) {
       return;
     }
 
-    // 2) Create one-time income/bills referencing source_import_id
+    // 2) Create income/bills referencing source_import_id
     const billsToInsert = rows
-      .filter((r) => r.action === 'bill')
+      .filter((r) => r.action === 'bill' || r.action === 'bill-recurring')
       .map((r) => ({
         user_id: userId,
         name: r.description.slice(0, 100),
         amount: Math.abs(r.amount),
         due_date: r.transaction_date,
-        frequency: 'one-time',
+        frequency: r.action === 'bill-recurring' ? (r.frequency ?? 'monthly') : 'one-time',
         category: 'other',
         is_active: true,
         source_import_id: r.id,
       }));
 
     const incomeToInsert = rows
-      .filter((r) => r.action === 'income')
+      .filter((r) => r.action === 'income' || r.action === 'income-recurring')
       .map((r) => ({
         user_id: userId,
         name: r.description.slice(0, 100),
         amount: Math.abs(r.amount),
-        frequency: 'one-time',
+        frequency: r.action === 'income-recurring' ? (r.frequency ?? 'monthly') : 'one-time',
         next_date: r.transaction_date,
         account_id: null,
         is_active: true,

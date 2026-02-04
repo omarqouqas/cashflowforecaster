@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { getCurrencySymbol } from '@/lib/utils/format';
 
-export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'irregular';
+export type FrequencyType = 'one-time' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly' | 'quarterly' | 'annually' | 'irregular';
 export type SourceType = 'regular' | 'invoice';
 export type SortOption = 'next_date' | 'name' | 'amount' | 'created_at';
 
@@ -38,7 +38,7 @@ export interface IncomeFilters {
   sortBy: SortOption;
 }
 
-const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'irregular'];
+const allFrequencies: FrequencyType[] = ['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually', 'irregular'];
 const allSourceTypes: SourceType[] = ['regular', 'invoice'];
 
 export const defaultIncomeFilters: IncomeFilters = {
@@ -69,6 +69,8 @@ const frequencyOptions: FilterDropdownOption[] = [
   { value: 'biweekly', label: 'Biweekly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'semi-monthly', label: 'Semi-monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'monthly', label: 'Monthly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'quarterly', label: 'Quarterly', icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  { value: 'annually', label: 'Annually', icon: <RefreshCw className="w-3.5 h-3.5" /> },
   { value: 'irregular', label: 'Irregular' },
 ];
 
