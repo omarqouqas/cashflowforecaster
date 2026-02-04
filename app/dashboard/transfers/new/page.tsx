@@ -277,11 +277,21 @@ export default function NewTransferPage() {
                 ].join(' ')}
               >
                 <option value="">Select source account...</option>
-                {sourceAccounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name} ({account.account_type === 'credit_card' ? 'Credit Card' : account.account_type})
-                  </option>
-                ))}
+                {sourceAccounts.map((account) => {
+                  const balance = account.current_balance;
+                  const formattedBalance = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: currency,
+                  }).format(Math.abs(balance));
+                  const balanceDisplay = account.account_type === 'credit_card'
+                    ? (balance > 0 ? `owes ${formattedBalance}` : formattedBalance)
+                    : formattedBalance;
+                  return (
+                    <option key={account.id} value={account.id}>
+                      {account.name} • {balanceDisplay}
+                    </option>
+                  );
+                })}
               </select>
               <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -310,11 +320,21 @@ export default function NewTransferPage() {
                 ].join(' ')}
               >
                 <option value="">Select destination account...</option>
-                {destinationAccounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name} ({account.account_type === 'credit_card' ? 'Credit Card' : account.account_type})
-                  </option>
-                ))}
+                {destinationAccounts.map((account) => {
+                  const balance = account.current_balance;
+                  const formattedBalance = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: currency,
+                  }).format(Math.abs(balance));
+                  const balanceDisplay = account.account_type === 'credit_card'
+                    ? (balance > 0 ? `owes ${formattedBalance}` : formattedBalance)
+                    : formattedBalance;
+                  return (
+                    <option key={account.id} value={account.id}>
+                      {account.name} • {balanceDisplay}
+                    </option>
+                  );
+                })}
               </select>
               <ChevronDown className="w-5 h-5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>

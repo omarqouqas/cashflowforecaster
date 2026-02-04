@@ -1,6 +1,8 @@
 import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { TransfersContent } from '@/components/transfers/transfers-content';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 export default async function TransfersPage() {
   const user = await requireAuth();
@@ -34,10 +36,23 @@ export default async function TransfersPage() {
   const currency = settings?.currency || 'USD';
 
   return (
-    <TransfersContent
-      transfers={(transfers || []) as any}
-      accounts={(accounts || []) as any}
-      currency={currency}
-    />
+    <div>
+      {/* Breadcrumb */}
+      <div className="mb-6">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+          Back to Dashboard
+        </Link>
+      </div>
+
+      <TransfersContent
+        transfers={(transfers || []) as any}
+        accounts={(accounts || []) as any}
+        currency={currency}
+      />
+    </div>
   );
 }
