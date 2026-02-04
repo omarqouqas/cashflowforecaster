@@ -85,14 +85,32 @@ function getActualNextDate(nextDate: string, frequency: string | null | undefine
       break
 
     case 'quarterly':
+      const quarterlyTargetDay = storedDate.getDate()
       while (currentDate < today) {
-        currentDate.setMonth(currentDate.getMonth() + 3)
+        let nextMonth = currentDate.getMonth() + 3
+        let nextYear = currentDate.getFullYear()
+
+        while (nextMonth > 11) {
+          nextMonth -= 12
+          nextYear++
+        }
+
+        const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate()
+        const dayToUse = Math.min(quarterlyTargetDay, lastDayOfNextMonth)
+
+        currentDate = new Date(nextYear, nextMonth, dayToUse)
       }
       break
 
     case 'annually':
+      const annualTargetDay = storedDate.getDate()
+      const annualTargetMonth = storedDate.getMonth()
       while (currentDate < today) {
-        currentDate.setFullYear(currentDate.getFullYear() + 1)
+        const nextYear = currentDate.getFullYear() + 1
+        const lastDayOfMonth = new Date(nextYear, annualTargetMonth + 1, 0).getDate()
+        const dayToUse = Math.min(annualTargetDay, lastDayOfMonth)
+
+        currentDate = new Date(nextYear, annualTargetMonth, dayToUse)
       }
       break
 

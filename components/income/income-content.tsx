@@ -76,21 +76,47 @@ function getActualNextDate(nextDate: string, frequency: string | null | undefine
         }
       }
       break;
-    case 'monthly':
+    case 'monthly': {
+      const monthlyTargetDay = storedDate.getDate();
       while (currentDate < today) {
-        currentDate.setMonth(currentDate.getMonth() + 1);
+        let nextMonth = currentDate.getMonth() + 1;
+        let nextYear = currentDate.getFullYear();
+        if (nextMonth > 11) {
+          nextMonth = 0;
+          nextYear++;
+        }
+        const lastDayOfMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+        const dayToUse = Math.min(monthlyTargetDay, lastDayOfMonth);
+        currentDate = new Date(nextYear, nextMonth, dayToUse);
       }
       break;
-    case 'quarterly':
+    }
+    case 'quarterly': {
+      const quarterlyTargetDay = storedDate.getDate();
       while (currentDate < today) {
-        currentDate.setMonth(currentDate.getMonth() + 3);
+        let nextMonth = currentDate.getMonth() + 3;
+        let nextYear = currentDate.getFullYear();
+        while (nextMonth > 11) {
+          nextMonth -= 12;
+          nextYear++;
+        }
+        const lastDayOfMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+        const dayToUse = Math.min(quarterlyTargetDay, lastDayOfMonth);
+        currentDate = new Date(nextYear, nextMonth, dayToUse);
       }
       break;
-    case 'annually':
+    }
+    case 'annually': {
+      const annualTargetDay = storedDate.getDate();
+      const annualTargetMonth = storedDate.getMonth();
       while (currentDate < today) {
-        currentDate.setFullYear(currentDate.getFullYear() + 1);
+        const nextYear = currentDate.getFullYear() + 1;
+        const lastDayOfMonth = new Date(nextYear, annualTargetMonth + 1, 0).getDate();
+        const dayToUse = Math.min(annualTargetDay, lastDayOfMonth);
+        currentDate = new Date(nextYear, annualTargetMonth, dayToUse);
       }
       break;
+    }
     default:
       return storedDate;
   }
