@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.8
-**Last Updated:** January 29, 2026
-**Status:** Live - Lifetime Deal Added
+**Version:** 6.11
+**Last Updated:** February 3, 2026
+**Status:** Live - Import Page UX Polish
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -915,6 +915,27 @@ User Request
 
 ## Changelog
 
+### Version 6.11 (February 3, 2026)
+- **Import Page UX Polish** (10 improvements):
+  - Auto-detect date range from CSV data (no more empty results on initial load)
+  - Show transaction count in import button ("Import 5 transactions" instead of "Select rows to import")
+  - Remove premature "Invoice matching coming soon" banner (reduces UI clutter)
+  - Prioritize Date, Description, Amount columns in preview table
+  - Mask sensitive data (account numbers) in preview (shows last 4 digits only)
+  - Move Select all/Deselect all buttons near transaction table (better proximity)
+  - Display dates in unambiguous human-readable format ("Nov 29, 2025" instead of YYYY-MM-DD)
+  - Hide YNAB import banner after CSV is uploaded
+  - Improve font colors for better visibility (zinc-500 → zinc-400/zinc-300)
+  - Improved color contrast throughout import components for accessibility
+- **Import Recurring Entries Feature:**
+  - Import wizard now offers 5 action options: Ignore, One-time income, Recurring income, One-time bill, Recurring bill
+  - Frequency dropdown appears when recurring is selected (weekly, bi-weekly, semi-monthly, monthly, quarterly, annually)
+  - Works in both generic CSV import and YNAB import
+- **Income Frequency Expansion:**
+  - Added quarterly and annually frequency options to income (previously bills-only)
+  - Updated income forms, filters, cards, and calculations
+  - Use cases: quarterly dividends, annual bonuses, tax refunds, seasonal income
+
 ### Version 6.10 (February 2, 2026)
 - **YNAB CSV Import Feature:**
   - Dedicated YNAB import page at `/dashboard/import/ynab`
@@ -1464,7 +1485,7 @@ User Request
 
 ---
 
-**Document Version:** 6.10
-**Last Updated:** February 2, 2026
-**Status:** Live - YNAB Import + Bug Fixes 🎉
+**Document Version:** 6.11
+**Last Updated:** February 3, 2026
+**Status:** Live - Import Page UX Polish 🎉
 **Next Review:** March 2026
