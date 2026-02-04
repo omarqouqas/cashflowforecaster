@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format, differenceInDays } from 'date-fns';
-import { AlertTriangle, Clock, Layers, X } from 'lucide-react';
+import { AlertTriangle, Clock, Layers, X, ArrowRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getBalanceStatus } from '@/lib/calendar/constants';
@@ -45,7 +45,7 @@ export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModa
       trackDayDetailOpened({
         balance: day.balance,
         isNegative: day.balance < 0,
-        transactionCount: day.income.length + day.bills.length,
+        transactionCount: day.income.length + day.bills.length + (day.transfers?.length || 0),
         daysFromToday,
       });
     }
@@ -304,8 +304,40 @@ export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModa
             </div>
           )}
 
+          {/* Transfers Section */}
+          {day.transfers && day.transfers.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-zinc-100 mb-3">
+                Transfers
+              </h3>
+              <div className="space-y-2">
+                {day.transfers.map((transfer, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-800 border border-zinc-800 rounded-lg p-3 flex items-center justify-between hover:bg-zinc-700/60 transition-colors border-l-2 border-l-blue-500"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <ArrowRightLeft className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                        <p className="font-medium text-zinc-300 truncate">
+                          {transfer.name}
+                        </p>
+                      </div>
+                      <p className="text-xs text-zinc-400 mt-0.5">
+                        {transfer.from_account_name} → {transfer.to_account_name}
+                      </p>
+                    </div>
+                    <p className="text-lg font-semibold text-blue-400 ml-4 tabular-nums">
+                      {formatCurrency(transfer.amount, currency)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Empty State */}
-          {day.income.length === 0 && day.bills.length === 0 && (
+          {day.income.length === 0 && day.bills.length === 0 && (!day.transfers || day.transfers.length === 0) && (
             <div className="text-center py-12">
               <p className="text-zinc-400">
                 No transactions on this day

@@ -3,7 +3,7 @@
 import { CalendarDay } from '@/lib/calendar/types';
 import { formatCurrency } from '@/lib/utils/format';
 import { format } from 'date-fns';
-import { TrendingUp, TrendingDown, AlertTriangle, Layers } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, Layers, ArrowRightLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DayCardProps {
@@ -80,7 +80,8 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance, currenc
   })();
 
   // Calculate transaction totals
-  const totalTransactions = day.income.length + day.bills.length;
+  const transferCount = day.transfers?.length || 0;
+  const totalTransactions = day.income.length + day.bills.length + transferCount;
   const hasBillCollision = day.bills.length >= 2;
 
   // Truncate name with more generous threshold
@@ -198,6 +199,19 @@ export function DayCard({ day, isLowestDay, onClick, previousDayBalance, currenc
                 </p>
                 <p className="text-xs text-zinc-400 truncate flex-1">
                   {truncateName(day.bills[0].name)}
+                </p>
+              </div>
+            )}
+
+            {/* Top Transfer - Show if no income or bill shown */}
+            {day.transfers && day.transfers.length > 0 && day.transfers[0] && day.income.length === 0 && day.bills.length === 0 && (
+              <div className="flex items-center gap-1.5 group/tx" title={day.transfers[0].name}>
+                <ArrowRightLeft className="w-3 h-3 text-blue-400 flex-shrink-0" />
+                <p className="text-xs font-bold text-blue-400 tabular-nums">
+                  {formatCurrency(day.transfers[0].amount, currency)}
+                </p>
+                <p className="text-xs text-zinc-400 truncate flex-1">
+                  {truncateName(day.transfers[0].name)}
                 </p>
               </div>
             )}

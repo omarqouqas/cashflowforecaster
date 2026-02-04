@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Plus, ArrowRight, CreditCard, Wallet, PiggyBank, Trash2, Pause, Play, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatCurrency, formatDate } from '@/lib/utils/format';
+import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { deleteTransfer, updateTransfer } from '@/lib/actions/transfers';
 import { showError, showSuccess } from '@/lib/toast';
 import type { Tables } from '@/types/supabase';
@@ -299,7 +299,7 @@ function TransferCard({
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <span className="inline-flex items-center gap-1 text-xs text-zinc-400">
               <Calendar className="w-3 h-3" />
-              {formatDate(transfer.transfer_date)}
+              {formatDateOnly(transfer.transfer_date)}
             </span>
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
               transfer.frequency === 'one-time'
@@ -323,7 +323,7 @@ function TransferCard({
               size="sm"
               onClick={() => onToggleActive(transfer.id, isActive)}
               disabled={isToggling}
-              className="text-zinc-400 hover:text-zinc-100"
+              className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
             >
               {isActive ? (
                 <>
