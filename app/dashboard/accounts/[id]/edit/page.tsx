@@ -76,6 +76,9 @@ export default function EditAccountPage() {
   const isCreditCard = accountType === 'credit_card';
 
   useEffect(() => {
+    let redirectTimeout: NodeJS.Timeout | null = null;
+    let isMounted = true;
+
     async function fetchAccount() {
       const supabase = createClient();
 
@@ -85,6 +88,8 @@ export default function EditAccountPage() {
         .eq('id', accountId)
         .single();
 
+      if (!isMounted) return;
+
       if (fetchError) {
         console.error('Error fetching account:', fetchError);
         const message = 'Account not found';
@@ -92,8 +97,10 @@ export default function EditAccountPage() {
         setError(message);
         setIsLoading(false);
         // Redirect to accounts list after a short delay
-        setTimeout(() => {
-          router.push('/dashboard/accounts');
+        redirectTimeout = setTimeout(() => {
+          if (isMounted) {
+            router.push('/dashboard/accounts');
+          }
         }, 2000);
         return;
       }
@@ -122,6 +129,13 @@ export default function EditAccountPage() {
     if (accountId) {
       fetchAccount();
     }
+
+    return () => {
+      isMounted = false;
+      if (redirectTimeout) {
+        clearTimeout(redirectTimeout);
+      }
+    };
   }, [accountId, router, reset]);
 
   const onSubmit = async (data: AccountFormData) => {
