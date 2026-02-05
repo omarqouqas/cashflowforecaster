@@ -186,17 +186,19 @@ export function AccountCard({ account }: { account: Account }) {
             {/* Payment Simulator and Pay button for credit cards */}
             {isCreditCard && (
               <>
-                <Link href={`/dashboard/transfers/new?to=${account.id}&amount=${balance > 0 ? balance : ''}`}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 transition-all"
-                    aria-label="Pay credit card"
-                  >
-                    <DollarSign className="w-4 h-4 mr-1" />
-                    Pay
-                  </Button>
-                </Link>
+                {balance > 0 && (
+                  <Link href={`/dashboard/transfers/new?to=${account.id}&amount=${balance}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 transition-all"
+                      aria-label="Pay credit card"
+                    >
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      Pay
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
