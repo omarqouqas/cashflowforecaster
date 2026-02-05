@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Plus, ArrowRight, CreditCard, Wallet, PiggyBank, Trash2, Pause, Play, Calendar, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { InfoTooltip } from '@/components/ui/tooltip';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { deleteTransfer, updateTransfer } from '@/lib/actions/transfers';
 import { showError, showSuccess } from '@/lib/toast';
@@ -156,7 +157,27 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
         <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-zinc-400">Monthly Transfer Total</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm text-zinc-400">Monthly Transfer Total</p>
+                <InfoTooltip
+                  content={
+                    <div className="space-y-2">
+                      <p className="font-medium">How this is calculated:</p>
+                      <ul className="text-xs text-zinc-300 space-y-1 list-disc list-inside">
+                        <li>Weekly transfers × 4.33</li>
+                        <li>Bi-weekly transfers × 2.17</li>
+                        <li>Semi-monthly transfers × 2</li>
+                        <li>Monthly transfers × 1</li>
+                        <li>Quarterly transfers ÷ 3</li>
+                        <li>Annual transfers ÷ 12</li>
+                      </ul>
+                      <p className="text-xs text-zinc-400 pt-1 border-t border-zinc-700">
+                        One-time transfers are not included in this total.
+                      </p>
+                    </div>
+                  }
+                />
+              </div>
               <p className="text-2xl font-bold text-zinc-100">
                 {formatCurrency(monthlyTransferTotal, currency)}
               </p>
