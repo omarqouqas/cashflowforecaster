@@ -193,7 +193,7 @@ export function FAQSection() {
         <div className="space-y-3">
           {faqs.map((faq, index) => (
             <FAQAccordionItem
-              key={index}
+              key={faq.question}
               item={faq}
               isOpen={openIndex === index}
               onToggle={() => handleToggle(index)}

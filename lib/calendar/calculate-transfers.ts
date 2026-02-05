@@ -315,9 +315,28 @@ export function calculateTransferOccurrences(
       break;
     }
 
-    case 'one-time':
-    default: {
+    case 'one-time': {
       // For one-time transfers, include if within range
+      if (!isBefore(transferDay, rangeStartDay) && !isAfter(transferDay, rangeEndDay)) {
+        occurrences.push({
+          date: transferDay,
+          id: transfer.id,
+          name,
+          amount: transfer.amount,
+          type: 'transfer',
+          frequency: transfer.frequency,
+          from_account_id: transfer.from_account_id,
+          from_account_name: transfer.from_account_name,
+          to_account_id: transfer.to_account_id,
+          to_account_name: transfer.to_account_name,
+        });
+      }
+      break;
+    }
+
+    default: {
+      // Warn about unknown frequency and treat as one-time
+      console.warn(`Unknown transfer frequency "${transfer.frequency}" for transfer "${transfer.id}", treating as one-time`);
       if (!isBefore(transferDay, rangeStartDay) && !isAfter(transferDay, rangeEndDay)) {
         occurrences.push({
           date: transferDay,

@@ -245,9 +245,9 @@ export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModa
                 Income Transactions
               </h3>
               <div className="space-y-2">
-                {day.income.map((transaction, index) => (
+                {day.income.map((transaction) => (
                   <div
-                    key={index}
+                    key={transaction.id}
                     className="bg-zinc-800 border border-zinc-800 rounded-lg p-3 flex items-center justify-between hover:bg-zinc-700/60 transition-colors border-l-2 border-l-teal-500"
                   >
                     <div className="flex-1">
@@ -282,9 +282,9 @@ export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModa
                 Bill Transactions
               </h3>
               <div className="space-y-2">
-                {day.bills.map((transaction, index) => (
+                {day.bills.map((transaction) => (
                   <div
-                    key={index}
+                    key={transaction.id}
                     className="bg-zinc-800 border border-zinc-800 rounded-lg p-3 flex items-center justify-between hover:bg-zinc-700/60 transition-colors border-l-2 border-l-rose-500"
                   >
                     <div className="flex-1">
@@ -311,9 +311,9 @@ export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModa
                 Transfers
               </h3>
               <div className="space-y-2">
-                {day.transfers.map((transfer, index) => (
+                {day.transfers.map((transfer) => (
                   <div
-                    key={index}
+                    key={transfer.id}
                     className="bg-zinc-800 border border-zinc-800 rounded-lg p-3 flex items-center justify-between hover:bg-zinc-700/60 transition-colors border-l-2 border-l-blue-500"
                   >
                     <div className="flex-1">

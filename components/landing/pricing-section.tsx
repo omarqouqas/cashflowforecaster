@@ -125,8 +125,8 @@ export function PricingSection() {
 
                 {/* Features */}
                 <ul className="mt-6 space-y-3">
-                  {config.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-3 text-sm">
+                  {config.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3 text-sm">
                       <Check className={`w-5 h-5 flex-shrink-0 ${
                         tier.key === 'free' ? 'text-zinc-500' :
                         tier.key === 'pro' ? 'text-teal-500' :
