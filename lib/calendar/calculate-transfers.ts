@@ -41,8 +41,9 @@ export function calculateTransferOccurrences(
   startDate: string | Date,
   endDate: string | Date
 ): TransferTransaction[] {
-  // Return empty array if transfer is not active
-  if (!transfer.is_active) {
+  // Return empty array if transfer is explicitly inactive
+  // Note: null is treated as active (default behavior) to match generate.ts filtering
+  if (transfer.is_active === false) {
     return [];
   }
 

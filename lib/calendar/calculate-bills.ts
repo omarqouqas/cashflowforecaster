@@ -45,8 +45,9 @@ export function calculateBillOccurrences(
   startDate: string | Date,
   endDate: string | Date
 ): Transaction[] {
-  // Return empty array if bill is not active
-  if (!bill.is_active) {
+  // Return empty array if bill is explicitly inactive
+  // Note: null is treated as active (default behavior) to match generate.ts filtering
+  if (bill.is_active === false) {
     return [];
   }
 
