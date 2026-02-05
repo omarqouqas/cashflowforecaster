@@ -36,17 +36,20 @@ function toDate(value: unknown): Date {
   return new Date(String(value))
 }
 
+// Server components serialize Date objects as strings, so we need to normalize them
+type SerializedDate = Date | string | number
+
 function normalizeTransaction(t: Transaction): Transaction {
   return {
     ...t,
-    date: toDate((t as any).date),
+    date: toDate((t as { date: SerializedDate }).date),
   }
 }
 
 function normalizeDay(day: CalendarDay): CalendarDay {
   return {
     ...day,
-    date: toDate((day as any).date),
+    date: toDate((day as { date: SerializedDate }).date),
     income: (day.income || []).map(normalizeTransaction),
     bills: (day.bills || []).map(normalizeTransaction),
   }
@@ -57,9 +60,11 @@ function normalizeCollisions(collisions: CollisionSummary): CollisionSummary {
     ...collisions,
     collisions: (collisions?.collisions ?? []).map((c) => ({
       ...c,
-      date: toDate((c as any).date),
+      date: toDate((c as { date: SerializedDate }).date),
     })),
-    highestCollisionDate: collisions?.highestCollisionDate ? toDate((collisions as any).highestCollisionDate) : null,
+    highestCollisionDate: collisions?.highestCollisionDate
+      ? toDate((collisions.highestCollisionDate as SerializedDate))
+      : null,
   }
 }
 

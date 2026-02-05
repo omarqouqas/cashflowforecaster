@@ -81,7 +81,7 @@ export function AccountCard({ account }: { account: Account }) {
   const isStale = daysSinceUpdate !== null && daysSinceUpdate > 7
 
   // Credit card utilization
-  const creditLimit = (account as any).credit_limit as number | null | undefined
+  const creditLimit = account.credit_limit
   const utilization = isCreditCard && creditLimit && creditLimit > 0
     ? calculateUtilization(balance, creditLimit)
     : null

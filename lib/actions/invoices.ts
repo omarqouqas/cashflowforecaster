@@ -30,7 +30,8 @@ export type UpdateInvoiceInput = {
 function extractInvoiceNumber(invoiceNumber: string | null | undefined): number {
   // Expected pattern: INV-0001, but we handle unknown formats gracefully.
   const match = (invoiceNumber ?? '').match(/(\d+)\s*$/);
-  const num = match ? Number.parseInt(match[1]!, 10) : 0;
+  const captured = match?.[1];
+  const num = captured ? Number.parseInt(captured, 10) : 0;
   return Number.isFinite(num) ? num : 0;
 }
 

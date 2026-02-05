@@ -54,18 +54,25 @@ export default async function CalendarPage() {
       .single(),
   ])
 
-  const accounts: Account[] = (accountsResult.data || []) as any
-  const income: Income[] = (incomeResult.data || []) as any
-  const bills: Bill[] = (billsResult.data || []) as any
+  const accounts: Account[] = accountsResult.data || []
+  const income: Income[] = incomeResult.data || []
+  const bills: Bill[] = billsResult.data || []
 
   // Process transfers to add account names
-  const transfers = ((transfersResult.data || []) as any[]).map((t: any) => ({
-    ...t,
-    from_account_name: t.from_account?.name,
-    to_account_name: t.to_account?.name,
-  }))
+  type TransferWithAccounts = {
+    from_account: { name: string } | null
+    to_account: { name: string } | null
+  }
+  const transfers = (transfersResult.data || []).map((t) => {
+    const transfer = t as typeof t & TransferWithAccounts
+    return {
+      ...t,
+      from_account_name: transfer.from_account?.name,
+      to_account_name: transfer.to_account?.name,
+    }
+  })
 
-  const settings = settingsResult.data as any
+  const settings = settingsResult.data
   const safetyBuffer = settings?.safety_buffer ?? 500
   const timezone = settings?.timezone ?? null
   const currency = settings?.currency ?? 'USD'

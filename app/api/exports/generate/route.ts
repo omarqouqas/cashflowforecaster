@@ -42,9 +42,30 @@ interface AccountRecord {
   id: string;
   name: string;
   account_type: string | null;
-  current_balance: number | null;
+  current_balance: number;
   currency: string | null;
   is_spendable: boolean | null;
+  // Credit card fields for generateCalendar
+  credit_limit?: number | null;
+  apr?: number | null;
+  payment_due_day?: number | null;
+  statement_close_day?: number | null;
+}
+
+// Type for forecast data stored during export generation
+interface ForecastExportData {
+  forecastData: Record<string, unknown>[];
+  forecastSummary: {
+    startingBalance: number;
+    lowestBalance: number;
+    lowestBalanceDate: string;
+    totalIncome: number;
+    totalBills: number;
+    endingBalance: number;
+    netChange: number;
+    safeToSpend: number;
+    forecastDays: number;
+  };
 }
 
 interface InvoiceRecord {
@@ -163,6 +184,7 @@ export async function POST(request: Request) {
     // Generate export based on report type
     let csvContent = '';
     let rowCount = 0;
+    let forecastExport: ForecastExportData | null = null;
 
     switch (config.reportType) {
       case 'monthly_summary': {
@@ -305,9 +327,9 @@ export async function POST(request: Request) {
 
         // Generate real calendar data
         const calendarData = generateCalendar(
-          accounts as any,
-          income as any,
-          bills as any,
+          accounts,
+          income,
+          bills,
           safetyBuffer,
           timezone,
           forecastDays
@@ -349,17 +371,19 @@ export async function POST(request: Request) {
         const netChange = endingBalance - calendarData.startingBalance;
 
         // Store for use in Excel/JSON section
-        (config as any)._forecastData = forecastExportData;
-        (config as any)._forecastSummary = {
-          startingBalance: calendarData.startingBalance,
-          lowestBalance: lowestDayBalance,
-          lowestBalanceDate: lowestDayBalanceDate?.toISOString().split('T')[0] ?? calendarData.lowestBalanceDay.toISOString().split('T')[0],
-          totalIncome,
-          totalBills,
-          endingBalance,
-          netChange,
-          safeToSpend: calendarData.safeToSpend,
-          forecastDays,
+        forecastExport = {
+          forecastData: forecastExportData,
+          forecastSummary: {
+            startingBalance: calendarData.startingBalance,
+            lowestBalance: lowestDayBalance,
+            lowestBalanceDate: lowestDayBalanceDate?.toISOString().split('T')[0] ?? calendarData.lowestBalanceDay.toISOString().split('T')[0],
+            totalIncome,
+            totalBills,
+            endingBalance,
+            netChange,
+            safeToSpend: calendarData.safeToSpend,
+            forecastDays,
+          },
         };
 
         csvContent = generateCSV(forecastExportData, FORECAST_COLUMNS);
@@ -516,9 +540,8 @@ export async function POST(request: Request) {
       const sheets = [];
 
       // Handle cash_forecast specially with proper data
-      if (config.reportType === 'cash_forecast' && (config as any)._forecastData) {
-        const forecastData = (config as any)._forecastData as Record<string, unknown>[];
-        const summary = (config as any)._forecastSummary;
+      if (config.reportType === 'cash_forecast' && forecastExport) {
+        const { forecastData, forecastSummary: summary } = forecastExport;
 
         // Add forecast sheet
         sheets.push({
@@ -630,10 +653,9 @@ export async function POST(request: Request) {
       // JSON export
       let jsonData: Record<string, unknown>;
 
-      if (config.reportType === 'cash_forecast' && (config as any)._forecastData) {
+      if (config.reportType === 'cash_forecast' && forecastExport) {
         // Include full forecast data for cash_forecast reports
-        const forecastData = (config as any)._forecastData;
-        const summary = (config as any)._forecastSummary;
+        const { forecastData, forecastSummary: summary } = forecastExport;
 
         jsonData = {
           exportedAt: new Date().toISOString(),
