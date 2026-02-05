@@ -45,16 +45,30 @@ function toISODate(d: Date) {
   return `${yyyy}-${mm}-${dd}`
 }
 
+function getLastDayOfMonth(year: number, month: number) {
+  // Day 0 of next month = last day of current month
+  return new Date(year, month + 1, 0).getDate()
+}
+
 function nextDueDateForDay(dayOfMonth: number) {
   const today = new Date()
-  const day = clamp(dayOfMonth, 1, 28)
+  const year = today.getFullYear()
+  const month = today.getMonth()
 
-  const thisMonth = new Date(today.getFullYear(), today.getMonth(), day)
-  if (thisMonth >= new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+  // Clamp to valid range 1-31, then to actual month length
+  const requestedDay = clamp(dayOfMonth, 1, 31)
+  const lastDayThisMonth = getLastDayOfMonth(year, month)
+  const day = Math.min(requestedDay, lastDayThisMonth)
+
+  const thisMonth = new Date(year, month, day)
+  if (thisMonth >= new Date(year, month, today.getDate())) {
     return toISODate(thisMonth)
   }
 
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, day)
+  // For next month, also clamp to that month's last day
+  const lastDayNextMonth = getLastDayOfMonth(year, month + 1)
+  const nextMonthDay = Math.min(requestedDay, lastDayNextMonth)
+  const nextMonth = new Date(year, month + 1, nextMonthDay)
   return toISODate(nextMonth)
 }
 
