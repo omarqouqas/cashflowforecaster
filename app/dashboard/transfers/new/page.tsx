@@ -30,7 +30,10 @@ const transferSchema = z.object({
   frequency: z.enum(['one-time', 'weekly', 'biweekly', 'semi-monthly', 'monthly', 'quarterly', 'annually'], {
     message: 'Please select a frequency',
   }),
-  recurrence_day: z.coerce.number().min(1).max(31).optional(),
+  recurrence_day: z.preprocess(
+    (val) => (val === '' || val === undefined || val === null ? undefined : val),
+    z.coerce.number().min(1).max(31).optional()
+  ),
 }).refine((data) => data.from_account_id !== data.to_account_id, {
   message: 'Source and destination accounts must be different',
   path: ['to_account_id'],
