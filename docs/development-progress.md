@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** February 3, 2026 (Day 55) - Evening Update
+**Last Updated:** February 4, 2026 (Day 56)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,8 +10,8 @@
 
 ## Quick Stats
 
-- **Days in Development:** 55
-- **Commits:** 395+
+- **Days in Development:** 56
+- **Commits:** 405+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
@@ -29,7 +29,68 @@
 
 ---
 
-## Recent Development (Days 40-55)
+## Recent Development (Days 40-56)
+
+### Day 56: Bug Fixes & Type Safety Improvements (February 4, 2026)
+
+**Comprehensive Bug Fix Session** - Fixed 8 bugs across calendar, accounts, transfers, and onboarding.
+
+**Critical Bug Fixes:**
+
+1. **CC payment not showing in calendar modal** - CC payments had `frequency: 'once'` but calendar filters expected `'one-time'`. Fixed mismatch in `calculate-cc-payments.ts`.
+
+2. **is_active null handling** - Bills and transfers with `is_active=null` were incorrectly treated as inactive due to truthy check. Changed to explicit `=== false` check to match `generate.ts` behavior.
+
+3. **Onboarding bill due date clamp** - Was clamping days to 1-28, breaking bills due on 29th-31st. Now properly handles month-end edge cases.
+
+**Medium Priority Fixes:**
+
+4. **Dynamic currency symbols** - Account new/edit forms were showing hardcoded `$`. Now use `getCurrencySymbol(currency)` for proper symbol based on selected currency.
+
+5. **Broken CC link in dashboard** - Credit cards section linked to `/dashboard/accounts/[id]` (404). Fixed to `/dashboard/accounts/[id]/edit`.
+
+6. **Unknown transfer frequency warning** - Added `console.warn()` for unknown frequencies in `calculateTransferOccurrences` to help debug issues.
+
+**Code Quality Improvements:**
+
+7. **Array index as React key** - Fixed in 5 locations:
+   - `day-detail-modal.tsx`: income, bills, transfers → use `transaction.id`/`transfer.id`
+   - `pricing-section.tsx`: features → use feature text
+   - `faq-section.tsx`: faqs → use `faq.question`
+
+8. **Type safety improvements** - Removed `as any` casts across codebase:
+   - `calendar/page.tsx`: Proper typing for Supabase data and transfers
+   - `account-card.tsx`: Use `account.credit_limit` directly (already in type)
+   - `calendar-container.tsx`: Added `SerializedDate` type for date normalization
+   - `invoices.ts`: Replace non-null assertion with optional chaining
+   - `exports/route.ts`: Added `ForecastExportData` type, use separate variable
+
+**Files Modified:**
+- `lib/calendar/calculate-cc-payments.ts` - Frequency fix
+- `lib/calendar/calculate-bills.ts` - is_active null handling
+- `lib/calendar/calculate-transfers.ts` - is_active null handling + unknown frequency warning
+- `components/dashboard/credit-cards-section.tsx` - Fixed link
+- `app/dashboard/accounts/new/page.tsx` - Dynamic currency symbol
+- `app/dashboard/accounts/[id]/edit/page.tsx` - Dynamic currency symbol
+- `components/onboarding/step-bills.tsx` - Day clamp fix
+- `components/calendar/day-detail-modal.tsx` - React keys
+- `components/landing/pricing-section.tsx` - React keys
+- `components/landing/faq-section.tsx` - React keys
+- `app/dashboard/calendar/page.tsx` - Type safety
+- `components/accounts/account-card.tsx` - Type safety
+- `components/calendar/calendar-container.tsx` - Type safety
+- `lib/actions/invoices.ts` - Type safety
+- `app/api/exports/generate/route.ts` - Type safety
+
+**Commits:**
+- `619704d` fix: improve type safety across codebase
+- `fb2f0de` fix: onboarding bill due date now supports days 29-31
+- `1270d9f` fix: minor code quality improvements
+- `fbb0009` fix: is_active null handling in bills and transfers calculation
+- `c7b2cea` fix: CC payment not showing in calendar day modal
+- `6a32740` fix: dynamic currency symbols in account forms and CC dashboard link
+
+---
 
 ### Day 55: Import Recurring Entries + Income Frequency Expansion + Import Page UX Polish (February 3, 2026)
 

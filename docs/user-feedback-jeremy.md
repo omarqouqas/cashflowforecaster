@@ -452,7 +452,7 @@ Feb 15 ────────────────────────�
 
 **Action:** Added dedicated Credit Cards section to dashboard
 
-**Status:** ✅ Implemented (Day 55)
+**Status:** ✅ Implemented (Day 55) + Bug Fixes (Day 56)
 
 **Delivered Features:**
 - Credit Cards section with total debt display
@@ -462,6 +462,12 @@ Feb 15 ────────────────────────�
 - "Add Card" shortcut button
 - Next payment due date display
 - Accounts card renamed to "Cash" and excludes credit cards
+
+**Bug Fixes (Day 56):**
+- Fixed CC payment not showing in calendar day modal (frequency mismatch: 'once' vs 'one-time')
+- Fixed broken link when clicking CC name (was 404, now goes to edit page)
+- Fixed "Pay" button visibility when CC balance is zero (now hidden)
+- Fixed dynamic currency symbol in account forms (was hardcoded $)
 
 ---
 
@@ -482,7 +488,7 @@ Key insights:
 
 **Action:** Implement account-to-account transfers
 
-**Status:** ✅ Implemented (Day 55)
+**Status:** ✅ Implemented (Day 55) + Bug Fixes (Day 56)
 
 **Delivered Features:**
 - New `/dashboard/transfers` page to manage all transfers
@@ -493,12 +499,18 @@ Key insights:
 - Transfers integrated into calendar cash flow forecast
 - Smart cash flow impact: only affects balance when crossing spendable/non-spendable boundary
 - Transfer occurrences calculated same as bills (handles all frequencies)
+- **Edit transfers** - Added `/dashboard/transfers/[id]/edit` page for modifying existing transfers
+- **Cancel button navigation** - Cancel returns to previous page (not always transfers list)
 
 **Technical Implementation:**
 - New `transfers` table with RLS
 - `from_account_id` and `to_account_id` foreign keys to accounts
 - Calendar generation updated to include transfers
 - Transfer impact: from spendable to non-spendable = outflow, reverse = inflow
+
+**Bug Fixes (Day 56):**
+- Fixed `is_active=null` handling (transfers with null were hidden from calendar)
+- Added warning for unknown transfer frequencies to aid debugging
 
 ---
 
