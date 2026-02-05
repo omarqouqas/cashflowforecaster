@@ -39,14 +39,25 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
   // Find next payment due
   const today = new Date();
   const currentDay = today.getDate();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
 
   const cardsWithPaymentDue = creditCards
     .filter(cc => cc.payment_due_day && cc.current_balance > 0)
     .map(cc => {
       const dueDay = cc.payment_due_day!;
-      // Calculate days until due
-      let daysUntil = dueDay - currentDay;
-      if (daysUntil < 0) daysUntil += 30; // Approximate next month
+      // Calculate actual days until due date using proper date math
+      let dueDate: Date;
+      if (currentDay <= dueDay) {
+        // Due date is this month
+        dueDate = new Date(currentYear, currentMonth, dueDay);
+      } else {
+        // Due date is next month
+        dueDate = new Date(currentYear, currentMonth + 1, dueDay);
+      }
+      // Calculate difference in days
+      const diffTime = dueDate.getTime() - today.getTime();
+      const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return { ...cc, daysUntil };
     })
     .sort((a, b) => a.daysUntil - b.daysUntil);

@@ -468,6 +468,8 @@ Feb 15 ────────────────────────�
 - Fixed broken link when clicking CC name (was 404, now goes to edit page)
 - Fixed "Pay" button visibility when CC balance is zero (now hidden)
 - Fixed dynamic currency symbol in account forms (was hardcoded $)
+- Added missing `minimum_payment_percent` field to account forms (was in DB but not UI)
+- Fixed negative balance (credit) handling - overpayments now show as green credit instead of $0
 
 ---
 
@@ -511,6 +513,8 @@ Key insights:
 **Bug Fixes (Day 56):**
 - Fixed `is_active=null` handling (transfers with null were hidden from calendar)
 - Added warning for unknown transfer frequencies to aid debugging
+- Fixed orphaned transfers when deleting bank account (now deletes associated transfers first)
+- Fixed timezone-aware date handling in transfer form (was showing yesterday's date in western timezones)
 
 ---
 

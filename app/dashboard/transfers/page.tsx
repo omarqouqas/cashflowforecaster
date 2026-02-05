@@ -3,6 +3,18 @@ import { createClient } from '@/lib/supabase/server';
 import { TransfersContent } from '@/components/transfers/transfers-content';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import type { Tables } from '@/types/supabase';
+
+// Type for account data from the join query
+type AccountJoin = Pick<Tables<'accounts'>, 'id' | 'name' | 'account_type' | 'current_balance'> & {
+  credit_limit?: number | null;
+};
+
+// Type for transfer with joined account data
+type TransferWithAccounts = Tables<'transfers'> & {
+  from_account: AccountJoin;
+  to_account: AccountJoin;
+};
 
 export default async function TransfersPage() {
   const user = await requireAuth();
@@ -49,8 +61,8 @@ export default async function TransfersPage() {
       </div>
 
       <TransfersContent
-        transfers={(transfers || []) as any}
-        accounts={(accounts || []) as any}
+        transfers={(transfers || []) as TransferWithAccounts[]}
+        accounts={(accounts || []) as AccountJoin[]}
         currency={currency}
       />
     </div>

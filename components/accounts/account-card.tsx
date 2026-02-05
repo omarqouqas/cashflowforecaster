@@ -13,12 +13,8 @@ import { PaymentSimulator } from '@/components/accounts/payment-simulator'
 import { differenceInDays } from 'date-fns'
 import { calculateUtilization, getUtilizationStatus } from '@/lib/types/credit-card'
 
-type Account = Tables<'accounts'> & {
-  credit_limit?: number | null
-  apr?: number | null
-  statement_close_day?: number | null
-  payment_due_day?: number | null
-}
+// Tables<'accounts'> already includes all CC fields from DB schema
+type Account = Tables<'accounts'>
 
 function titleCase(s: string) {
   return s
@@ -234,9 +230,9 @@ export function AccountCard({ account }: { account: Account }) {
             current_balance: balance,
             currency,
             credit_limit: creditLimit,
-            apr: (account as any).apr ?? null,
-            minimum_payment_percent: (account as any).minimum_payment_percent ?? null,
-            payment_due_day: (account as any).payment_due_day ?? null,
+            apr: account.apr ?? null,
+            minimum_payment_percent: account.minimum_payment_percent ?? null,
+            payment_due_day: account.payment_due_day ?? null,
           }}
           isOpen={showSimulator}
           onClose={() => setShowSimulator(false)}

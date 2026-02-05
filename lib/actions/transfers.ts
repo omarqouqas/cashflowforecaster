@@ -180,6 +180,23 @@ export async function deleteTransfer(
     const user = await requireAuth();
     const supabase = await createClient();
 
+    // Verify the transfer exists and belongs to the user before deleting
+    const { data: existing, error: checkError } = await supabase
+      .from('transfers')
+      .select('id')
+      .eq('id', transferId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (checkError) {
+      console.error('Error checking transfer:', checkError);
+      return { success: false, error: 'Failed to delete transfer' };
+    }
+
+    if (!existing) {
+      return { success: false, error: 'Transfer not found' };
+    }
+
     const { error } = await supabase
       .from('transfers')
       .delete()

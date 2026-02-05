@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** February 4, 2026 (Day 56)
+**Last Updated:** February 5, 2026 (Day 56)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -31,9 +31,33 @@
 
 ## Recent Development (Days 40-56)
 
-### Day 56: Bug Fixes & Type Safety Improvements (February 4, 2026)
+### Day 56: Bug Fixes & Type Safety Improvements (February 4-5, 2026)
 
-**Comprehensive Bug Fix Session** - Fixed 8 bugs across calendar, accounts, transfers, and onboarding.
+**Evening Update: Credit Card & Transfer Bug Fixes** - Fixed 4 additional bugs in credit cards and transfers features.
+
+**Credit Card & Transfer Bug Fixes:**
+
+1. **Missing `minimum_payment_percent` field** - Database had the field but UI forms were missing it. Added to both new and edit account forms with 2% default. Used by payment simulator and debt payoff calculator.
+
+2. **Orphaned transfers on account deletion** - Deleting a bank account left associated transfers orphaned (or caused FK constraint failures). Now deletes transfers that reference the account before deleting the account itself.
+
+3. **Timezone-aware date handling** - Transfer form and export modal used `toISOString()` which converts to UTC, showing yesterday's date for users in western timezones. Changed to local date formatting.
+
+4. **Negative balance (credit) handling** - Credit cards with negative balances (overpayments) were treated as $0 owed. Now properly shows as green "credit" with 0% utilization.
+
+**Files Modified (Evening):**
+- `app/dashboard/accounts/new/page.tsx` - Added minimum_payment_percent field
+- `app/dashboard/accounts/[id]/edit/page.tsx` - Added minimum_payment_percent field
+- `components/accounts/delete-account-button.tsx` - Delete associated transfers
+- `app/dashboard/transfers/new/page.tsx` - Local timezone date handling
+- `components/reports/export-builder-modal.tsx` - Local timezone date handling
+- `components/dashboard/credit-cards-section.tsx` - Negative balance handling
+
+**Commit:** `f19e4ff` fix: credit card and transfer bug fixes
+
+---
+
+**Morning Session: Comprehensive Bug Fix Session** - Fixed 8 bugs across calendar, accounts, transfers, and onboarding.
 
 **Critical Bug Fixes:**
 
