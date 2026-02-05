@@ -200,10 +200,10 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
       {/* View All Link */}
       <div className="pt-4 mt-4 border-t border-zinc-700/50">
         <Link
-          href="/dashboard/accounts?type=credit_card"
+          href="/dashboard/accounts"
           className="inline-flex items-center text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
         >
-          View all credit cards →
+          Manage accounts →
         </Link>
       </div>
     </div>
