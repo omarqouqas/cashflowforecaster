@@ -140,12 +140,14 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
                 >
                   {card.name}
                 </Link>
-                <Link
-                  href={`/dashboard/transfers/new?to=${card.id}&amount=${balance > 0 ? balance : ''}`}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded text-xs font-medium text-amber-300 transition-colors flex-shrink-0"
-                >
-                  Pay
-                </Link>
+                {balance > 0 && (
+                  <Link
+                    href={`/dashboard/transfers/new?to=${card.id}&amount=${balance}`}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded text-xs font-medium text-amber-300 transition-colors flex-shrink-0"
+                  >
+                    Pay
+                  </Link>
+                )}
               </div>
 
               <div className="flex items-center justify-between text-xs mb-2">

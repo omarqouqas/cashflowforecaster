@@ -41,6 +41,11 @@ export async function createTransfer(
     const user = await requireAuth();
     const supabase = await createClient();
 
+    // Validate source and destination are different
+    if (input.from_account_id === input.to_account_id) {
+      return { success: false, error: 'Source and destination accounts must be different' };
+    }
+
     // Validate that accounts belong to the user
     const { data: accounts, error: accountsError } = await supabase
       .from('accounts')
@@ -105,6 +110,11 @@ export async function updateTransfer(
 
     if (existingError || !existing) {
       return { success: false, error: 'Transfer not found' };
+    }
+
+    // Validate source and destination are different if both are provided
+    if (input.from_account_id && input.to_account_id && input.from_account_id === input.to_account_id) {
+      return { success: false, error: 'Source and destination accounts must be different' };
     }
 
     // If accounts are being changed, validate they belong to the user
