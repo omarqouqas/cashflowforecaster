@@ -45,7 +45,19 @@
       "Bash(npx next lint --max-warnings 0)",
       "Bash(npx next lint:*)",
       "WebFetch(domain:neontra.com)",
-      "WebFetch(domain:cashflowforecaster.io)"
+      "WebFetch(domain:cashflowforecaster.io)",
+      "WebFetch(domain:www.cashflowcalendar.app)",
+      "WebFetch(domain:plaid.com)",
+      "WebFetch(domain:www.fintegrationfs.com)",
+      "WebFetch(domain:support.ynab.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:lightrun.com)",
+      "WebFetch(domain:wiki.gnucash.org)",
+      "WebFetch(domain:help.tiller.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git rev-list:*)",
+      "Bash(npm run lint)",
+      "Bash(xargs cat:*)"
     ],
     "deny": [],
     "ask": []

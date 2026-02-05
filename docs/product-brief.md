@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.11
-**Last Updated:** February 3, 2026
-**Status:** Live - Import Page UX Polish
+**Version:** 6.12
+**Last Updated:** February 4, 2026
+**Status:** Live - Account Transfers & CC Dashboard
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -377,7 +377,16 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
   - **Payoff Timeline Chart** showing balance decrease over time with milestones
 - **Credit Card filter** in Accounts page filter dropdown
 
-**18. Data Visualization Charts ✅**
+**18. Account Transfers ✅**
+- Transfer money between accounts with recurring or one-time schedules
+- All frequencies supported (weekly, bi-weekly, semi-monthly, monthly, quarterly, annually)
+- Transfers appear in calendar forecast on scheduled dates
+- Smart cash flow impact: only affects balance when crossing spendable/non-spendable boundary
+- "Pay Credit Card" quick action from credit card accounts
+- Pause/resume functionality for recurring transfers
+- Transfer form shows account balances for easy selection
+
+**19. Data Visualization Charts ✅**
 - Built with Recharts library for responsive, interactive charts
 - **Forecast Balance Chart** on Dashboard:
   - Area chart showing projected balance trend
@@ -514,7 +523,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - **Deployment:** Vercel
 - **Version Control:** Git + GitHub
 
-### Database Schema (16 tables + extended fields)
+### Database Schema (17 tables + extended fields)
 
 1. **accounts** - User bank accounts (extended with CC fields: credit_limit, apr, minimum_payment_percent, statement_close_day, payment_due_day)
 2. **income** - Income sources
@@ -532,6 +541,7 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 14. **feedback** - User feedback submissions (bug reports, suggestions, questions)
 15. **exports** - Export history (report type, format, config, file URL, status)
 16. **user_categories** - Custom bill categories (name, color, icon, sort_order)
+17. **transfers** - Account-to-account transfers (from_account_id, to_account_id, amount, frequency, transfer_date, is_active)
 
 ### Feature Gating Architecture
 
@@ -914,6 +924,34 @@ User Request
 ---
 
 ## Changelog
+
+### Version 6.12 (February 4, 2026)
+- **Account Transfers Feature:**
+  - New `/dashboard/transfers` page to manage all transfers
+  - Transfer form with source/destination account selection
+  - Support for recurring transfers (weekly, bi-weekly, semi-monthly, monthly, quarterly, annually)
+  - One-time transfer support with pause/resume functionality
+  - "Pay Credit Card" button on credit card account cards (pre-fills destination)
+  - Transfers integrated into calendar cash flow forecast
+  - Smart cash flow impact: only affects balance when crossing spendable/non-spendable boundary
+  - Account balance display in transfer form dropdowns
+  - Transfer occurrences calculated same as bills (handles all frequencies)
+  - Database table: `transfers` with RLS policies
+- **Credit Cards Dashboard Section:**
+  - Dedicated Credit Cards section on dashboard (separate from Cash accounts)
+  - Total debt display with overall utilization percentage
+  - Per-card breakdown: balance, limit, utilization progress bar
+  - Color-coded utilization warnings (green <30%, amber 30-50%, red >50%)
+  - Quick "Pay" button on each card linking to transfer form (pre-filled with amount)
+  - "Add Card" shortcut button for easy credit card creation
+  - Next payment due date reminder
+  - Accounts card renamed to "Cash" and excludes credit cards
+- **Bug Fixes:**
+  - Fixed transfer date timezone shift (Feb 4 showing as Feb 3) - use `formatDateOnly` instead of `formatDate`
+  - Fixed transfers not appearing in calendar day detail modal - added Transfers section with ArrowRightLeft icon
+  - Fixed transfers not counted in calendar day transaction count
+  - Fixed pause button hover visibility - added `hover:bg-zinc-700` class
+  - Fixed "View all credit cards" link to use valid "Manage accounts" route
 
 ### Version 6.11 (February 3, 2026)
 - **Import Page UX Polish** (10 improvements):
@@ -1485,7 +1523,7 @@ User Request
 
 ---
 
-**Document Version:** 6.11
-**Last Updated:** February 3, 2026
-**Status:** Live - Import Page UX Polish 🎉
+**Document Version:** 6.12
+**Last Updated:** February 4, 2026
+**Status:** Live - Account Transfers & CC Dashboard 🎉
 **Next Review:** March 2026

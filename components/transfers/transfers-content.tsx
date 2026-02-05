@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus, ArrowRight, CreditCard, Wallet, PiggyBank, Trash2, Pause, Play, Calendar } from 'lucide-react';
+import { Plus, ArrowRight, CreditCard, Wallet, PiggyBank, Trash2, Pause, Play, Calendar, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDateOnly } from '@/lib/utils/format';
 import { deleteTransfer, updateTransfer } from '@/lib/actions/transfers';
@@ -318,6 +318,16 @@ function TransferCard({
 
           {/* Actions */}
           <div className="flex items-center gap-2 mt-3">
+            <Link href={`/dashboard/transfers/${transfer.id}/edit`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-zinc-400 hover:text-teal-400 hover:bg-zinc-700"
+              >
+                <Pencil className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
@@ -342,7 +352,7 @@ function TransferCard({
               size="sm"
               onClick={() => onDelete(transfer.id)}
               disabled={isDeleting}
-              className="text-zinc-400 hover:text-rose-400"
+              className="text-zinc-400 hover:text-rose-400 hover:bg-zinc-700"
             >
               <Trash2 className="w-4 h-4 mr-1" />
               Delete
