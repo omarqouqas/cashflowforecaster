@@ -110,7 +110,7 @@ export function calculateCCPaymentOccurrences(
     name: `💳 ${account.name} Payment`,
     amount: balance,
     type: 'bill',
-    frequency: 'once', // Changed from 'monthly' - this is a one-time forecast
+    frequency: 'one-time', // Must match FrequencyType in calendar-filters.tsx
     date: new Date(paymentDate),
     status: 'pending',
   }]
