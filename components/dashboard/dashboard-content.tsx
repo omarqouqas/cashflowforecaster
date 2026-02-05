@@ -20,6 +20,7 @@ import { SuccessMessage } from '@/components/ui/success-message';
 import { ScenarioButton } from '@/components/scenarios/scenario-button';
 import { TaxSavingsWidget } from '@/components/dashboard/tax-savings-widget';
 import { EmergencyFundWidget } from '@/components/dashboard/emergency-fund-widget';
+import { CreditCardsSection } from '@/components/dashboard/credit-cards-section';
 import {
   DashboardFilterBar,
   useDashboardFilters,
@@ -37,6 +38,8 @@ interface Account {
   is_spendable?: boolean | null;
   currency?: string;
   updated_at?: string;
+  credit_limit?: number | null;
+  payment_due_day?: number | null;
 }
 
 interface Invoice {
@@ -144,13 +147,22 @@ export function DashboardContent({
     return accounts.filter((acc) => filters.selectedAccountIds.includes(acc.id));
   }, [accounts, filters.selectedAccountIds]);
 
-  // Recalculate total balance based on filtered accounts
+  // Split accounts into credit cards and spendable accounts
+  const creditCards = React.useMemo(() => {
+    return accounts.filter((acc) => acc.account_type === 'credit_card');
+  }, [accounts]);
+
+  const spendableAccounts = React.useMemo(() => {
+    return filteredAccounts.filter((acc) => acc.account_type !== 'credit_card');
+  }, [filteredAccounts]);
+
+  // Recalculate total balance based on spendable accounts only (not credit cards)
   const totalBalance = React.useMemo(() => {
-    return filteredAccounts.reduce(
+    return spendableAccounts.reduce(
       (sum, acc) => sum + (acc.current_balance || 0),
       0
     );
-  }, [filteredAccounts]);
+  }, [spendableAccounts]);
 
   // Filter calendar days based on horizon
   const filteredCalendarDays = React.useMemo(() => {
@@ -527,13 +539,13 @@ export function DashboardContent({
           </Link>
         </div>
 
-        {/* Accounts Card */}
+        {/* Accounts Card (Cash - excludes credit cards) */}
         <div className="flex flex-col gap-2 h-full">
           <Link href="/dashboard/accounts" className="flex-1">
             <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-4 sm:p-5 cursor-pointer h-full hover:bg-zinc-700/60 transition-colors">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">
-                  Accounts
+                  Cash
                 </p>
                 <div className="w-8 h-8 bg-zinc-700/50 rounded-lg flex items-center justify-center">
                   <Wallet className="w-4 h-4 text-zinc-400" />
@@ -544,9 +556,9 @@ export function DashboardContent({
                   {formatCurrency(totalBalance, currency)}
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                  {filteredAccounts.length > 0
-                    ? `Across ${filteredAccounts.length} ${
-                        filteredAccounts.length === 1 ? 'account' : 'accounts'
+                  {spendableAccounts.length > 0
+                    ? `Across ${spendableAccounts.length} ${
+                        spendableAccounts.length === 1 ? 'account' : 'accounts'
                       }`
                     : 'Add your bank accounts'}
                 </p>
@@ -634,6 +646,13 @@ export function DashboardContent({
           </Link>
         </div>
       </div>
+
+      {/* Credit Cards Section */}
+      {creditCards.length > 0 && (
+        <div className="mb-6">
+          <CreditCardsSection creditCards={creditCards} currency={currency} />
+        </div>
+      )}
 
       {/* Calendar Forecast Card */}
       {forecastMetrics && (
