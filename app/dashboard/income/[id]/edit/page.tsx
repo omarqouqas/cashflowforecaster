@@ -61,11 +61,20 @@ export default function EditIncomePage() {
     async function fetchData() {
       const supabase = createClient();
 
-      // Fetch income
+      // Get current user first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        showError('You must be logged in');
+        router.push('/auth/login');
+        return;
+      }
+
+      // Fetch income with user_id check for defense-in-depth (RLS also protects)
       const { data: incomeData, error: incomeError } = await supabase
         .from('income')
         .select('*')
         .eq('id', incomeId)
+        .eq('user_id', user.id)
         .single();
 
       if (incomeError || !incomeData) {
@@ -98,8 +107,9 @@ export default function EditIncomePage() {
 
       // Pre-fill form with existing data
       // Format date for HTML date input (YYYY-MM-DD)
+      // Use string split to avoid timezone shift from Date parsing
       const formattedDate = income.next_date
-        ? new Date(income.next_date).toISOString().split('T')[0]
+        ? income.next_date.split('T')[0]
         : '';
 
       reset({
