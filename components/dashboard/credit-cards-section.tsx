@@ -186,9 +186,15 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
             <span className="text-zinc-400">Next payment due:</span>
             <span className="text-zinc-100 font-medium">
               {nextPayment.name} on the {nextPayment.payment_due_day}
-              {nextPayment.payment_due_day === 1 ? 'st' :
-               nextPayment.payment_due_day === 2 ? 'nd' :
-               nextPayment.payment_due_day === 3 ? 'rd' : 'th'}
+              {(() => {
+                const day = nextPayment.payment_due_day!;
+                if (day >= 11 && day <= 13) return 'th';
+                const lastDigit = day % 10;
+                if (lastDigit === 1) return 'st';
+                if (lastDigit === 2) return 'nd';
+                if (lastDigit === 3) return 'rd';
+                return 'th';
+              })()}
               {nextPayment.daysUntil <= 7 && (
                 <span className="text-amber-400 ml-2">({nextPayment.daysUntil} days)</span>
               )}

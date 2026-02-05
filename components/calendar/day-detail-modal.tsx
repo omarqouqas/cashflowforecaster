@@ -324,7 +324,7 @@ export function DayDetailModal({ day, onClose, currency = 'USD' }: DayDetailModa
                         </p>
                       </div>
                       <p className="text-xs text-zinc-400 mt-0.5">
-                        {transfer.from_account_name} → {transfer.to_account_name}
+                        {transfer.from_account_name || 'Account'} → {transfer.to_account_name || 'Account'}
                       </p>
                     </div>
                     <p className="text-lg font-semibold text-blue-400 ml-4 tabular-nums">

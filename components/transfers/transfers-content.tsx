@@ -287,7 +287,7 @@ function TransferCard({
                 {transfer.description || (isCCPayment ? 'Credit Card Payment' : 'Transfer')}
               </p>
               <p className="text-sm text-zinc-400">
-                {transfer.from_account?.name} → {transfer.to_account?.name}
+                {transfer.from_account?.name || 'Unknown'} → {transfer.to_account?.name || 'Unknown'}
               </p>
             </div>
             <p className="text-lg font-bold text-zinc-100 tabular-nums">
