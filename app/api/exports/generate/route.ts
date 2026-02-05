@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import type { Json } from '@/types/supabase';
+import type { Json, Tables } from '@/types/supabase';
 import { canUseAdvancedExports, canAccessReport } from '@/lib/stripe/feature-gate';
 import { getForecastDaysLimit } from '@/lib/stripe/subscription';
 import generateCalendar from '@/lib/calendar/generate';
@@ -18,39 +18,11 @@ import {
 import { generateMultiSheetExcel } from '@/lib/export/generators/excel-generator';
 import type { ExportConfig, ExportHistoryItem } from '@/lib/export/types';
 
-// Local types for database records
-interface BillRecord {
-  id: string;
-  name: string;
-  amount: number;
-  frequency: string;
-  category: string | null;
-  due_date: string;
-  is_active: boolean | null;
-}
-
-interface IncomeRecord {
-  id: string;
-  name: string;
-  amount: number;
-  frequency: string;
-  next_date: string | null;
-  is_active: boolean | null;
-}
-
-interface AccountRecord {
-  id: string;
-  name: string;
-  account_type: string | null;
-  current_balance: number;
-  currency: string | null;
-  is_spendable: boolean | null;
-  // Credit card fields for generateCalendar
-  credit_limit?: number | null;
-  apr?: number | null;
-  payment_due_day?: number | null;
-  statement_close_day?: number | null;
-}
+// Use Supabase-generated types for type safety
+type BillRecord = Tables<'bills'>;
+type IncomeRecord = Tables<'income'>;
+type AccountRecord = Tables<'accounts'>;
+type InvoiceRecord = Tables<'invoices'>;
 
 // Type for forecast data stored during export generation
 interface ForecastExportData {
@@ -66,15 +38,6 @@ interface ForecastExportData {
     safeToSpend: number;
     forecastDays: number;
   };
-}
-
-interface InvoiceRecord {
-  id: string;
-  invoice_number: string;
-  client_name: string;
-  amount: number;
-  due_date: string;
-  status: string | null;
 }
 
 // Helper to get report name
@@ -371,12 +334,15 @@ export async function POST(request: Request) {
         const netChange = endingBalance - calendarData.startingBalance;
 
         // Store for use in Excel/JSON section
+        const lowestDateStr = lowestDayBalanceDate
+          ? lowestDayBalanceDate.toISOString().slice(0, 10)
+          : calendarData.lowestBalanceDay.toISOString().slice(0, 10);
         forecastExport = {
           forecastData: forecastExportData,
           forecastSummary: {
             startingBalance: calendarData.startingBalance,
             lowestBalance: lowestDayBalance,
-            lowestBalanceDate: lowestDayBalanceDate?.toISOString().split('T')[0] ?? calendarData.lowestBalanceDay.toISOString().split('T')[0],
+            lowestBalanceDate: lowestDateStr,
             totalIncome,
             totalBills,
             endingBalance,
