@@ -56,8 +56,9 @@ export default function NewTransferPage() {
   const prefillTo = searchParams.get('to');
   const prefillAmount = searchParams.get('amount');
 
-  // Default to today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0];
+  // Default to today's date in YYYY-MM-DD format (using local timezone)
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   const {
     register,

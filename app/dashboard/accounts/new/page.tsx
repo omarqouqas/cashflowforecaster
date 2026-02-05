@@ -44,6 +44,7 @@ const accountSchema = z.object({
   apr: z.coerce.number().min(0, 'APR cannot be negative').max(100, 'APR cannot exceed 100%').optional().nullable(),
   statement_close_day: z.coerce.number().int().min(1).max(31).optional().nullable(),
   payment_due_day: z.coerce.number().int().min(1).max(31).optional().nullable(),
+  minimum_payment_percent: z.coerce.number().min(0, 'Cannot be negative').max(100, 'Cannot exceed 100%').optional().nullable(),
 });
 
 type AccountFormData = z.infer<typeof accountSchema>;
@@ -76,6 +77,7 @@ export default function NewAccountPage() {
       apr: null,
       statement_close_day: null,
       payment_due_day: null,
+      minimum_payment_percent: 2, // Default 2%
     },
   });
 
@@ -119,6 +121,7 @@ export default function NewAccountPage() {
       accountData.apr = data.apr || null;
       accountData.statement_close_day = data.statement_close_day || null;
       accountData.payment_due_day = data.payment_due_day || null;
+      accountData.minimum_payment_percent = data.minimum_payment_percent ?? 2;
     }
 
     const { error: insertError } = await supabase.from('accounts').insert(accountData);
@@ -254,6 +257,29 @@ export default function NewAccountPage() {
                   </span>
                 </div>
                 <p className="text-xs text-zinc-500 mt-1">Used to calculate interest on carried balances</p>
+              </div>
+
+              {/* Minimum Payment Percent */}
+              <div>
+                <Label htmlFor="minimum_payment_percent" className="text-zinc-300 mb-1.5 block font-medium">
+                  Minimum Payment %
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="minimum_payment_percent"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    placeholder="2"
+                    {...register('minimum_payment_percent')}
+                    className="bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-teal-500 focus:ring-teal-500/20 pr-8"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">
+                    %
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-500 mt-1">Minimum payment as percentage of balance (typically 1-3%)</p>
               </div>
 
               {/* Statement Close Day & Payment Due Day */}

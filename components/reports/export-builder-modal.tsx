@@ -128,9 +128,10 @@ export function ExportBuilderModal({
     setIsExporting(true);
 
     try {
-      // Get date range
+      // Get date range (using local timezone)
       const preset = DATE_RANGE_PRESETS.find((p) => p.id === dateRangePreset);
-      const today = new Date().toISOString().split('T')[0] ?? '';
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       const dateRange = preset?.getRange() ?? {
         start: today,
         end: today,

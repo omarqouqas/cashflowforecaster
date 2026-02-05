@@ -21,6 +21,19 @@ export function DeleteAccountButton({ accountId, accountName }: DeleteAccountBut
 
     const supabase = createClient()
 
+    // First, delete any transfers that reference this account
+    // This prevents orphaned transfers and FK constraint failures
+    const { error: transfersError } = await supabase
+      .from('transfers')
+      .delete()
+      .or(`from_account_id.eq.${accountId},to_account_id.eq.${accountId}`)
+
+    if (transfersError) {
+      console.error('Error deleting transfers:', transfersError)
+      // Continue anyway - the account delete will fail if there are FK issues
+    }
+
+    // Now delete the account
     const { error } = await supabase
       .from('accounts')
       .delete()

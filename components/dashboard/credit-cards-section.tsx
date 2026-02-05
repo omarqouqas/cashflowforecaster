@@ -123,9 +123,12 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
       {/* Credit Card List */}
       <div className="space-y-3 mb-4">
         {creditCards.map((card) => {
-          const balance = Math.max(0, card.current_balance);
+          const rawBalance = card.current_balance;
+          const hasCredit = rawBalance < 0; // Negative means overpaid (credit to cardholder)
+          const balance = Math.abs(rawBalance);
           const limit = card.credit_limit || 0;
-          const utilization = limit > 0 ? (balance / limit) * 100 : 0;
+          // Utilization only applies to owed balances, not credits
+          const utilization = !hasCredit && limit > 0 ? (rawBalance / limit) * 100 : 0;
           const utilizationCapped = Math.min(utilization, 100);
 
           return (
@@ -140,9 +143,9 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
                 >
                   {card.name}
                 </Link>
-                {balance > 0 && (
+                {rawBalance > 0 && (
                   <Link
-                    href={`/dashboard/transfers/new?to=${card.id}&amount=${balance}`}
+                    href={`/dashboard/transfers/new?to=${card.id}&amount=${rawBalance}`}
                     className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded text-xs font-medium text-amber-300 transition-colors flex-shrink-0"
                   >
                     Pay
@@ -152,23 +155,32 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
 
               <div className="flex items-center justify-between text-xs mb-2">
                 <span className="text-zinc-400">
-                  {formatCurrency(balance, currency)} / {formatCurrency(limit, currency)}
+                  {hasCredit ? (
+                    <span className="text-emerald-400">{formatCurrency(balance, currency)} credit</span>
+                  ) : (
+                    <>{formatCurrency(balance, currency)} / {formatCurrency(limit, currency)}</>
+                  )}
                 </span>
-                <span className={cn("font-medium", getUtilizationColor(utilization))}>
-                  {utilization.toFixed(0)}% used
-                </span>
+                {!hasCredit && (
+                  <span className={cn("font-medium", getUtilizationColor(utilization))}>
+                    {utilization.toFixed(0)}% used
+                  </span>
+                )}
+                {hasCredit && (
+                  <span className="font-medium text-emerald-400">0% used</span>
+                )}
               </div>
 
               {/* Utilization Bar */}
               <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                 <div
-                  className={cn("h-full rounded-full transition-all", getUtilizationBgColor(utilization))}
-                  style={{ width: `${utilizationCapped}%` }}
+                  className={cn("h-full rounded-full transition-all", hasCredit ? 'bg-emerald-500' : getUtilizationBgColor(utilization))}
+                  style={{ width: hasCredit ? '0%' : `${utilizationCapped}%` }}
                 />
               </div>
 
               {/* High utilization warning */}
-              {utilization >= 30 && (
+              {!hasCredit && utilization >= 30 && (
                 <div className="flex items-center gap-1.5 mt-2">
                   <AlertTriangle className={cn("w-3 h-3", getUtilizationColor(utilization))} />
                   <span className={cn("text-xs", getUtilizationColor(utilization))}>
