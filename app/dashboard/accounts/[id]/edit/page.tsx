@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { ArrowLeft, ChevronDown, CreditCard, Info } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
+import { getCurrencySymbol } from '@/lib/utils/format';
 
 /**
  * Get ordinal suffix for a day number (1st, 2nd, 3rd, 4th, etc.)
@@ -69,8 +70,9 @@ export default function EditAccountPage() {
     resolver: zodResolver(accountSchema),
   });
 
-  // Watch account_type to show/hide credit card fields
+  // Watch account_type and currency to show/hide credit card fields and update symbol
   const accountType = useWatch({ control, name: 'account_type' });
+  const currency = useWatch({ control, name: 'currency' }) || 'USD';
   const isCreditCard = accountType === 'credit_card';
 
   useEffect(() => {
@@ -325,7 +327,7 @@ export default function EditAccountPage() {
                 </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">
-                    $
+                    {getCurrencySymbol(currency)}
                   </span>
                   <Controller
                     name="credit_limit"
@@ -426,7 +428,7 @@ export default function EditAccountPage() {
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                $
+                {getCurrencySymbol(currency)}
               </span>
               <Controller
                 name="current_balance"

@@ -135,7 +135,7 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
             >
               <div className="flex items-center justify-between mb-2">
                 <Link
-                  href={`/dashboard/accounts/${card.id}`}
+                  href={`/dashboard/accounts/${card.id}/edit`}
                   className="text-sm font-medium text-zinc-100 hover:text-amber-400 transition-colors truncate flex-1 mr-2"
                 >
                   {card.name}

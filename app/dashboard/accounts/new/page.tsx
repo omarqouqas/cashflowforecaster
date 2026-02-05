@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, ChevronDown, CreditCard, Info } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
+import { getCurrencySymbol } from '@/lib/utils/format';
 import { trackAccountCreated } from '@/lib/posthog/events';
 
 /**
@@ -80,6 +81,7 @@ export default function NewAccountPage() {
 
   // Watch account_type to show/hide credit card fields
   const accountType = useWatch({ control, name: 'account_type' });
+  const currency = useWatch({ control, name: 'currency' }) || 'USD';
   const isCreditCard = accountType === 'credit_card';
 
   const onSubmit = async (data: AccountFormData) => {
@@ -212,7 +214,7 @@ export default function NewAccountPage() {
                 </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">
-                    $
+                    {getCurrencySymbol(currency)}
                   </span>
                   <Controller
                     name="credit_limit"
@@ -313,7 +315,7 @@ export default function NewAccountPage() {
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 z-10">
-                $
+                {getCurrencySymbol(currency)}
               </span>
               <Controller
                 name="current_balance"
