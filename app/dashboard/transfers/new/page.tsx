@@ -471,7 +471,7 @@ export default function NewTransferPage() {
           <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-zinc-700/50">
             <button
               type="button"
-              onClick={() => router.push('/dashboard/transfers')}
+              onClick={() => router.back()}
               disabled={isLoading}
               className="w-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 font-medium rounded-md px-4 py-2.5 min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
