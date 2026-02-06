@@ -593,7 +593,7 @@ export function DashboardContent({
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                   {incomeCount > 0
-                    ? `From ${incomeCount} ${
+                    ? `Monthly avg • ${incomeCount} ${
                         incomeCount === 1 ? 'source' : 'sources'
                       }`
                     : 'Track income sources'}
@@ -629,7 +629,7 @@ export function DashboardContent({
                 </p>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                   {activeBillsCount > 0
-                    ? `${activeBillsCount} ${
+                    ? `Monthly avg • ${activeBillsCount} ${
                         activeBillsCount === 1 ? 'active bill' : 'active bills'
                       }`
                     : 'Track your bills'}

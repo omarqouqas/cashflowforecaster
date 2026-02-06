@@ -58,7 +58,8 @@
       "Bash(git rev-list:*)",
       "Bash(npm run lint)",
       "Bash(xargs cat:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "WebFetch(domain:www.modelwiz.com)"
     ],
     "deny": [],
     "ask": []
