@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Prevent 307 redirects for API routes (fixes Stripe webhook issues)
-  skipTrailingSlashRedirect: true,
+  // Explicitly disable trailing slashes for consistent URLs
+  // This ensures /blog redirects from /blog/ properly (good for SEO)
+  trailingSlash: false,
 
   eslint: {
     ignoreDuringBuilds: true,
