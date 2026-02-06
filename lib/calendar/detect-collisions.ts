@@ -35,7 +35,8 @@ export function detectBillCollisions(
   const collisions: BillCollision[] = [];
 
   for (const day of days) {
-    const bills = day.bills ?? [];
+    // Filter out zero-amount bills since they don't contribute to financial collisions
+    const bills = (day.bills ?? []).filter(b => (b.amount ?? 0) > 0);
     if (bills.length < minBillsForWarning) continue;
 
     const totalAmount = bills.reduce((sum, b) => sum + (b.amount ?? 0), 0);

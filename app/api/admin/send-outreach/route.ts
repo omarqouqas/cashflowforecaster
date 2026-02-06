@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resend } from '@/lib/email/resend';
+import crypto from 'crypto';
 
 // Simple admin protection - check for admin secret
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -11,11 +12,38 @@ interface OutreachEmail {
   recipientName?: string;
 }
 
+/**
+ * Escape HTML entities to prevent XSS
+ */
+function escapeHtml(text: string): string {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+}
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function secureCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // Still do the comparison to maintain constant time
+    crypto.timingSafeEqual(Buffer.from(a), Buffer.from(a));
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Check admin authorization
-    const authHeader = request.headers.get('authorization');
-    if (!ADMIN_SECRET || authHeader !== `Bearer ${ADMIN_SECRET}`) {
+    // Check admin authorization with timing-safe comparison
+    const authHeader = request.headers.get('authorization') || '';
+    const expectedAuth = `Bearer ${ADMIN_SECRET || ''}`;
+    if (!ADMIN_SECRET || !secureCompare(authHeader, expectedAuth)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -70,17 +98,18 @@ export async function POST(request: NextRequest) {
 }
 
 function generateEmailHtml(message: string): string {
-  // Convert line breaks to HTML
+  // Convert line breaks to HTML with XSS protection
   const formattedMessage = message
     .split('\n')
     .map(line => {
+      const escapedLine = escapeHtml(line);
       if (line.startsWith('•')) {
-        return `<li style="margin: 4px 0;">${line.substring(1).trim()}</li>`;
+        return `<li style="margin: 4px 0;">${escapeHtml(line.substring(1).trim())}</li>`;
       }
       if (line.trim() === '') {
         return '<br>';
       }
-      return `<p style="margin: 0 0 12px 0;">${line}</p>`;
+      return `<p style="margin: 0 0 12px 0;">${escapedLine}</p>`;
     })
     .join('');
 

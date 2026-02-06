@@ -12,11 +12,24 @@ function base64UrlDecodeToString(input: string): string {
 }
 
 function getTokenSecret(): string | null {
-  return (
-    process.env.EMAIL_TOKEN_SECRET?.trim() ||
-    process.env.CRON_SECRET?.trim() ||
-    null
-  );
+  const emailSecret = process.env.EMAIL_TOKEN_SECRET?.trim();
+  if (emailSecret) {
+    return emailSecret;
+  }
+
+  // Fallback to CRON_SECRET for backwards compatibility, but log warning
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (cronSecret) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[SECURITY] EMAIL_TOKEN_SECRET not set, falling back to CRON_SECRET. ' +
+        'Set a separate EMAIL_TOKEN_SECRET for better security isolation.'
+      );
+    }
+    return cronSecret;
+  }
+
+  return null;
 }
 
 function sign(input: string, secret: string): string {

@@ -506,8 +506,11 @@ export function calculateIncomeOccurrences(
     }
 
     default:
-      if (CALENDAR_VERBOSE) console.log('Processing', frequency, 'income');
-      // Unknown frequency, return empty array
+      // Log warning for unknown frequency (always, not just verbose mode)
+      console.warn(
+        `[Calendar] Unknown income frequency "${frequency}" for "${income.name}" (ID: ${income.id}). ` +
+        'This income will not appear in the forecast.'
+      );
       break;
   }
 

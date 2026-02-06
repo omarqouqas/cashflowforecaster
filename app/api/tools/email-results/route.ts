@@ -9,9 +9,24 @@ const requestSchema = z.object({
   payload: z.record(z.any()).optional(),
 });
 
+/**
+ * Escape HTML entities to prevent XSS
+ */
+function escapeHtml(text: string): string {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+}
+
 function safeText(v: unknown, max = 200): string {
   const s = typeof v === 'string' ? v : '';
-  return s.length > max ? s.slice(0, max) + '…' : s;
+  const truncated = s.length > max ? s.slice(0, max) + '…' : s;
+  return escapeHtml(truncated);
 }
 
 function formatDateOnly(dateOnly: unknown): string {

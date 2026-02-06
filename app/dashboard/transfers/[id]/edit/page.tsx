@@ -79,19 +79,30 @@ export default function EditTransferPage() {
     async function fetchData() {
       const supabase = createClient();
 
+      // First verify user is authenticated
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        showError('You must be logged in');
+        router.push('/auth/login');
+        return;
+      }
+
       const [transferResult, accountsResult, settingsResult] = await Promise.all([
         supabase
           .from('transfers')
           .select('*')
           .eq('id', transferId)
+          .eq('user_id', user.id) // Verify ownership
           .single(),
         supabase
           .from('accounts')
           .select('*')
+          .eq('user_id', user.id) // Only show user's accounts
           .order('name'),
         supabase
           .from('user_settings')
           .select('currency')
+          .eq('user_id', user.id)
           .single(),
       ]);
 

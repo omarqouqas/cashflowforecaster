@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { sendWeeklyDigest } from '@/lib/email/send-digest';
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function secureCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    crypto.timingSafeEqual(Buffer.from(a), Buffer.from(a));
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes
@@ -93,8 +105,9 @@ async function mapWithConcurrency<T, R>(
 }
 
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const authHeader = request.headers.get('authorization') || '';
+  const expectedAuth = `Bearer ${process.env.CRON_SECRET || ''}`;
+  if (!process.env.CRON_SECRET || !secureCompare(authHeader, expectedAuth)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

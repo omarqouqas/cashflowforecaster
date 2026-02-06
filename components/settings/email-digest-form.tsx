@@ -77,6 +77,7 @@ export function EmailDigestForm({ initialEnabled, initialDay }: Props) {
             type="button"
             role="switch"
             aria-checked={enabled}
+            aria-label="Enable weekly digest emails"
             onClick={() => setEnabled((v) => !v)}
             className={cn(
               'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
@@ -84,6 +85,7 @@ export function EmailDigestForm({ initialEnabled, initialDay }: Props) {
             )}
           >
             <span
+              aria-hidden="true"
               className={cn(
                 'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
                 enabled ? 'translate-x-6' : 'translate-x-1'

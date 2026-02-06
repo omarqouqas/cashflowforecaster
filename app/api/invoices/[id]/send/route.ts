@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resend } from '@/lib/email/resend';
 import { buildInvoiceEmail } from '@/lib/email/templates/invoice-email';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { InvoiceTemplate } from '@/lib/pdf/invoice-template';
 import { canUseInvoicing } from '@/lib/stripe/subscription';
+import { rateLimiters } from '@/lib/utils/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -24,7 +25,7 @@ function getSenderName(user: { email?: string | null; user_metadata?: any }) {
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   if (!process.env.RESEND_API_KEY) {
@@ -40,6 +41,14 @@ export async function POST(
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Rate limiting per user (5 emails per minute)
+  if (!rateLimiters.sendEmail.check(user.id)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait a moment before sending another email.' },
+      { status: 429 }
+    );
   }
 
   const hasAccess = await canUseInvoicing(user.id);

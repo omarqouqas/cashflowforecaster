@@ -10,18 +10,9 @@ import {
   type AccountType,
   type SpendableStatus,
 } from './accounts-filters';
+import type { Tables } from '@/types/supabase';
 
-interface Account {
-  id: string;
-  name: string;
-  account_type: string | null;
-  current_balance: number | null;
-  is_spendable: boolean | null;
-  currency: string | null;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
+type Account = Tables<'accounts'>;
 
 interface AccountsContentProps {
   accounts: Account[];
@@ -120,7 +111,7 @@ export function AccountsContent({ accounts }: AccountsContentProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {filteredAccounts.map((account) => (
-            <AccountCard key={account.id} account={account as any} />
+            <AccountCard key={account.id} account={account} />
           ))}
         </div>
       )}

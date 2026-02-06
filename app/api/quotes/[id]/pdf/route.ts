@@ -1,14 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { QuoteTemplate } from '@/lib/pdf/quote-template';
 import { canUseInvoicing } from '@/lib/stripe/subscription';
+import { rateLimiters } from '@/lib/utils/rate-limit';
 import type { Quote } from '@/lib/actions/quotes';
 
 export const runtime = 'nodejs';
 
 export async function GET(
-  _request: Request,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
@@ -20,6 +21,14 @@ export async function GET(
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Rate limiting per user
+  if (!rateLimiters.pdf.check(user.id)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait a moment.' },
+      { status: 429 }
+    );
   }
 
   const hasAccess = await canUseInvoicing(user.id);

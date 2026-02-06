@@ -307,7 +307,18 @@ export async function reorderCategories(orderedIds: string[]): Promise<{
         .eq('user_id', user.id)
     );
 
-    await Promise.all(updates);
+    // Use allSettled to handle partial failures gracefully
+    const results = await Promise.allSettled(updates);
+
+    // Check for any failures
+    const failures = results.filter(r => r.status === 'rejected');
+    if (failures.length > 0) {
+      console.error('Some category reorder updates failed:', failures);
+      return {
+        success: false,
+        error: `Failed to update ${failures.length} of ${orderedIds.length} categories. Please try again.`
+      };
+    }
 
     revalidatePath('/dashboard/settings');
     revalidatePath('/dashboard/bills');

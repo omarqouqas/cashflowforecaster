@@ -182,9 +182,15 @@ export default function generateCalendar(
       // Find transfers for this specific day
       const transfersToday = allTransferOccurrences.filter(occ => isSameDay(occ.date, date));
 
-      // Calculate totals
-      const incomeAmount = incomeToday.reduce((sum, i) => sum + i.amount, 0);
-      const billsAmount = billsToday.reduce((sum, b) => sum + b.amount, 0);
+      // Calculate totals (with NaN protection)
+      const incomeAmount = incomeToday.reduce((sum, i) => {
+        const amount = Number.isFinite(i.amount) ? i.amount : 0;
+        return sum + amount;
+      }, 0);
+      const billsAmount = billsToday.reduce((sum, b) => {
+        const amount = Number.isFinite(b.amount) ? b.amount : 0;
+        return sum + amount;
+      }, 0);
 
       // Calculate transfer impact on spendable cash
       // Transfer affects cash flow when crossing the spendable/non-spendable boundary:
@@ -196,13 +202,14 @@ export default function generateCalendar(
       for (const transfer of transfersToday) {
         const fromSpendable = accountSpendableMap.get(transfer.from_account_id) ?? false;
         const toSpendable = accountSpendableMap.get(transfer.to_account_id) ?? false;
+        const amount = Number.isFinite(transfer.amount) ? transfer.amount : 0;
 
         if (fromSpendable && !toSpendable) {
           // Money leaving spendable accounts (e.g., paying CC)
-          transferOutAmount += transfer.amount;
+          transferOutAmount += amount;
         } else if (!fromSpendable && toSpendable) {
           // Money entering spendable accounts (e.g., CC refund to checking)
-          transferInAmount += transfer.amount;
+          transferInAmount += amount;
         }
         // If both spendable or both non-spendable, no net effect on total cash
       }

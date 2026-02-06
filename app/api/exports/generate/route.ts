@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { rateLimiters } from '@/lib/utils/rate-limit';
 import type { Json, Tables } from '@/types/supabase';
 import { canUseAdvancedExports, canAccessReport } from '@/lib/stripe/feature-gate';
 import { getForecastDaysLimit } from '@/lib/stripe/subscription';
@@ -81,7 +82,7 @@ function calculateMonthlyEquivalent(amount: number, frequency: string): number {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -90,6 +91,14 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limiting per user
+    if (!rateLimiters.export.check(user.id)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment.' },
+        { status: 429 }
+      );
     }
 
     const body = await request.json();
