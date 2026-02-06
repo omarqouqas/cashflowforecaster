@@ -57,7 +57,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(git rev-list:*)",
       "Bash(npm run lint)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

@@ -31,7 +31,7 @@ export const defaultDashboardFilters: DashboardFilters = {
 interface Account {
   id: string;
   name: string;
-  account_type: string;
+  account_type: string | null;
   current_balance: number;
   is_spendable?: boolean | null;
 }

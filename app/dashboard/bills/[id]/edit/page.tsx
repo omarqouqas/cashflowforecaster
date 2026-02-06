@@ -122,10 +122,8 @@ export default function EditBillPage() {
         return;
       }
 
-      const bill = billData as any;
-
       // Verify bill belongs to current user
-      if (bill.user_id !== user.id) {
+      if (billData.user_id !== user.id) {
         setError('Unauthorized: This bill does not belong to you');
         setIsLoading(false);
         return;
@@ -135,17 +133,17 @@ export default function EditBillPage() {
 
       // Pre-fill form with existing data
       // Format date for HTML date input (YYYY-MM-DD)
-      const formattedDate = bill.due_date
-        ? bill.due_date.split('T')[0]
+      const formattedDate = billData.due_date
+        ? billData.due_date.split('T')[0]
         : '';
 
       reset({
-        name: bill.name,
-        amount: bill.amount,
+        name: billData.name,
+        amount: billData.amount,
         due_date: formattedDate,
-        frequency: bill.frequency as BillFormData['frequency'],
-        category: bill.category,
-        is_active: bill.is_active ?? true,
+        frequency: billData.frequency as BillFormData['frequency'],
+        category: billData.category ?? undefined,
+        is_active: billData.is_active ?? true,
       });
 
       setIsLoading(false);
@@ -186,9 +184,7 @@ export default function EditBillPage() {
       return;
     }
 
-    const verifyBill = billData as any;
-
-    if (verifyBill.user_id !== user.id) {
+    if (billData.user_id !== user.id) {
       const message = 'Unauthorized: This bill does not belong to you';
       showError(message);
       setError(message);

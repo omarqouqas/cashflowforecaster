@@ -33,11 +33,11 @@ import type { SubscriptionTier } from '@/lib/stripe/config';
 interface Account {
   id: string;
   name: string;
-  account_type: string;
+  account_type: string | null;
   current_balance: number;
   is_spendable?: boolean | null;
-  currency?: string;
-  updated_at?: string;
+  currency?: string | null;
+  updated_at?: string | null;
   credit_limit?: number | null;
   payment_due_day?: number | null;
 }

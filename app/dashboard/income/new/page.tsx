@@ -81,7 +81,7 @@ export default function NewIncomePage() {
           .single(),
       ]);
 
-      setAccounts((accountsResult.data || []) as any);
+      setAccounts((accountsResult.data || []) as Account[]);
 
       // Get currency from user settings
       if (settingsResult.data?.currency) {

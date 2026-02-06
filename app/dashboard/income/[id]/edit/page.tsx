@@ -84,8 +84,6 @@ export default function EditIncomePage() {
         return;
       }
 
-      const income = incomeData as any;
-
       // Fetch accounts for dropdown and user settings for currency in parallel
       const [accountsResult, settingsResult] = await Promise.all([
         supabase
@@ -99,7 +97,7 @@ export default function EditIncomePage() {
       ]);
 
       setIncome(incomeData);
-      setAccounts((accountsResult.data || []) as any[]);
+      setAccounts((accountsResult.data || []) as Account[]);
       // Get currency from user settings
       if (settingsResult.data?.currency) {
         setCurrency(settingsResult.data.currency);
@@ -108,17 +106,17 @@ export default function EditIncomePage() {
       // Pre-fill form with existing data
       // Format date for HTML date input (YYYY-MM-DD)
       // Use string split to avoid timezone shift from Date parsing
-      const formattedDate = income.next_date
-        ? income.next_date.split('T')[0]
+      const formattedDate = incomeData.next_date
+        ? incomeData.next_date.split('T')[0]
         : '';
 
       reset({
-        name: income.name,
-        amount: income.amount,
-        frequency: income.frequency as IncomeFormData['frequency'],
+        name: incomeData.name,
+        amount: incomeData.amount,
+        frequency: incomeData.frequency as IncomeFormData['frequency'],
         next_date: formattedDate,
-        account_id: income.account_id || '',
-        is_active: income.is_active ?? true,
+        account_id: incomeData.account_id || '',
+        is_active: incomeData.is_active ?? true,
       });
 
       setIsLoading(false);

@@ -11,20 +11,9 @@ import {
   type SourceType,
   type SortOption,
 } from './income-filters';
+import type { Tables } from '@/types/supabase';
 
-interface Income {
-  id: string;
-  name: string;
-  amount: number;
-  frequency: string | null;
-  next_date: string;
-  is_active: boolean | null;
-  invoice_id: string | null;
-  status: string | null;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
+type Income = Tables<'income'>;
 
 interface IncomeContentProps {
   incomes: Income[];
@@ -188,7 +177,7 @@ function sortIncomes(incomes: Income[], sortBy: SortOption): Income[] {
       case 'amount':
         return b.amount - a.amount; // Highest first
       case 'created_at':
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Newest first
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime(); // Newest first
       default:
         return 0;
     }
@@ -260,7 +249,7 @@ export function IncomeContent({ incomes, currency = 'USD' }: IncomeContentProps)
       ) : (
         <div className="space-y-3">
           {filteredIncomes.map((income) => (
-            <IncomeCard key={income.id} income={income as any} currency={currency} />
+            <IncomeCard key={income.id} income={income} currency={currency} />
           ))}
         </div>
       )}

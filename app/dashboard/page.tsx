@@ -5,6 +5,17 @@ import { getInvoiceSummary } from '@/lib/actions/invoices';
 import { getForecastDaysLimit, getUserSubscription } from '@/lib/stripe/subscription';
 import { getQuarterForDate } from '@/lib/tax/calculations';
 import { DashboardContent } from '@/components/dashboard/dashboard-content';
+import type { Tables } from '@/types/supabase';
+
+type AccountRecord = Tables<'accounts'>;
+type IncomeRecord = Tables<'income'>;
+type BillRecord = Tables<'bills'>;
+type TransferRecord = Tables<'transfers'> & {
+  from_account: { name: string } | null;
+  to_account: { name: string } | null;
+};
+type InvoiceRecord = Pick<Tables<'invoices'>, 'id' | 'invoice_number' | 'client_name' | 'amount' | 'due_date' | 'status'>;
+type UserSettings = Tables<'user_settings'>;
 
 interface DashboardPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -61,21 +72,21 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     getUserSubscription(user.id),
   ]);
 
-  const accounts = (accountsResult.data || []) as any;
-  const incomes = (incomeResult.data || []) as any;
-  const bills = (billsResult.data || []) as any;
+  const accounts = (accountsResult.data || []) as AccountRecord[];
+  const incomes = (incomeResult.data || []) as IncomeRecord[];
+  const bills = (billsResult.data || []) as BillRecord[];
   const invoiceSummary = invoiceSummaryResult;
-  const topInvoices = (topInvoicesResult.data || []) as any;
+  const topInvoices = (topInvoicesResult.data || []) as InvoiceRecord[];
 
   // Process transfers to add account names
-  const transfers = ((transfersResult.data || []) as any[]).map((t: any) => ({
+  const transfers = ((transfersResult.data || []) as TransferRecord[]).map((t) => ({
     ...t,
     from_account_name: t.from_account?.name,
     to_account_name: t.to_account?.name,
   }));
 
-  // Extract settings with type assertion
-  const settingsData = settingsResult.data as any;
+  // Extract settings with type
+  const settingsData = settingsResult.data as UserSettings | null;
 
   // Extract settings with fallbacks
   const currency = settingsData?.currency ?? 'USD';
@@ -97,7 +108,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   // Find account name if emergency fund has designated account
   const emergencyFundAccountName = emergencyFundAccountId
-    ? accounts.find((a: any) => a.id === emergencyFundAccountId)?.name
+    ? accounts.find((a) => a.id === emergencyFundAccountId)?.name
     : undefined;
 
   // Generate calendar data if user has accounts
@@ -113,10 +124,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   // Calculate monthly income equivalent
-  const calculateMonthlyIncome = (incomes: any[]) => {
+  const calculateMonthlyIncome = (incomes: IncomeRecord[]) => {
     if (!incomes) return 0;
 
-    return incomes.reduce((total: number, income: any) => {
+    return incomes.reduce((total, income) => {
       if (income.is_active === false) return total;
 
       switch (income.frequency) {
@@ -142,13 +153,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const monthlyIncome = calculateMonthlyIncome(incomes);
-  const incomeCount = incomes.filter((i: any) => i.is_active !== false).length;
+  const incomeCount = incomes.filter((i) => i.is_active !== false).length;
 
   // Calculate monthly bills equivalent
-  const calculateMonthlyBills = (bills: any[]) => {
+  const calculateMonthlyBills = (bills: BillRecord[]) => {
     if (!bills) return 0;
 
-    return bills.reduce((total: number, bill: any) => {
+    return bills.reduce((total, bill) => {
       if (!bill.is_active) return total;
 
       switch (bill.frequency) {
@@ -165,17 +176,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const monthlyBills = calculateMonthlyBills(bills);
-  const activeBillsCount = bills.filter((b: any) => b.is_active !== false).length;
+  const activeBillsCount = bills.filter((b) => b.is_active !== false).length;
 
   // Calculate quarterly income for tax tracking
-  const calculateQuarterlyIncome = (incomes: any[]): [number, number, number, number] => {
+  const calculateQuarterlyIncome = (incomes: IncomeRecord[]): [number, number, number, number] => {
     const currentYear = new Date().getFullYear();
     const quarterTotals: number[] = [0, 0, 0, 0];
 
-    incomes.forEach((income: any) => {
+    incomes.forEach((income) => {
       if (income.is_active === false) return;
 
-      const incomeDate = income.date ? new Date(income.date) : null;
+      const incomeDate = income.next_date ? new Date(income.next_date) : null;
 
       if (income.frequency === 'one-time' && incomeDate && incomeDate.getFullYear() === currentYear) {
         const quarter = getQuarterForDate(incomeDate) - 1;

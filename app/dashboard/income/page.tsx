@@ -78,7 +78,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
     }, 0);
   };
 
-  const incomesList = (incomes || []) as any[];
+  const incomesList = (incomes || []) as Income[];
   const monthlyTotal = calculateMonthlyIncome(incomesList);
   const activeIncomes = incomesList.filter((i) => i.is_active !== false);
 
@@ -338,12 +338,13 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
             }
 
             // Find the income with the earliest actual next date
+            // We know futureIncomes has at least one item due to the check above
+            const firstIncome = futureIncomes[0]!;
             const nextIncome = futureIncomes.reduce((earliest, current) => {
-              if (!earliest) return current
               const earliestDate = getActualNextDate(earliest.next_date, earliest.frequency)
               const currentDate = getActualNextDate(current.next_date, current.frequency)
               return currentDate < earliestDate ? current : earliest
-            }, futureIncomes[0])
+            }, firstIncome)
 
             const actualNextDate = getActualNextDate(nextIncome.next_date, nextIncome.frequency)
             const dateString = actualNextDate.toISOString().split('T')[0] ?? ''
