@@ -188,10 +188,30 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       const incomeDate = income.next_date ? new Date(income.next_date) : null;
 
+      // One-time income: assign to specific quarter based on date
       if (income.frequency === 'one-time' && incomeDate && incomeDate.getFullYear() === currentYear) {
         const quarter = getQuarterForDate(incomeDate) - 1;
         quarterTotals[quarter]! += income.amount;
       }
+      // Annually income: assign full amount to the specific quarter it occurs in
+      else if (income.frequency === 'annually' && incomeDate) {
+        // Find which quarter the annual payment falls into for current year
+        const paymentMonth = incomeDate.getMonth();
+        const paymentQuarter = Math.floor(paymentMonth / 3);
+        quarterTotals[paymentQuarter]! += income.amount;
+      }
+      // Quarterly income: assign full amount to each of the 4 quarters it occurs in
+      else if (income.frequency === 'quarterly' && incomeDate) {
+        // Quarterly payments occur 4 times per year
+        // Calculate which quarters based on the start date
+        const startMonth = incomeDate.getMonth();
+        for (let i = 0; i < 4; i++) {
+          const paymentMonth = (startMonth + i * 3) % 12;
+          const paymentQuarter = Math.floor(paymentMonth / 3);
+          quarterTotals[paymentQuarter]! += income.amount;
+        }
+      }
+      // Regular recurring income (weekly, biweekly, semi-monthly, monthly): spread across all quarters
       else if (income.frequency !== 'one-time' && income.frequency !== 'irregular') {
         const monthlyAmount = (() => {
           switch (income.frequency) {
@@ -199,8 +219,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             case 'biweekly': return (income.amount * 26) / 12;
             case 'semi-monthly': return income.amount * 2;
             case 'monthly': return income.amount;
-            case 'quarterly': return income.amount / 3;
-            case 'annually': return income.amount / 12;
             default: return 0;
           }
         })();
