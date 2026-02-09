@@ -42,8 +42,16 @@ const faqs: FAQItem[] = [
     answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, 90-day forecast, and CSV export. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), adds Excel and JSON export formats, and includes Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
   },
   {
+    question: "Do you offer a lifetime deal?",
+    answer: "Yes! For $99 one-time, you get permanent Pro access with no monthly fees ever. This includes all Pro features (365-day forecast, unlimited bills/income, Runway Collect invoicing, Excel/JSON exports) plus all future updates. It's perfect if you prefer to pay once rather than subscribe. You'll save 37% compared to paying for 2 years of Pro (yearly). The lifetime deal is available on our pricing page."
+  },
+  {
     question: "Can I connect my bank account?",
     answer: "Bank sync is coming soon! Currently, Cash Flow Forecaster works with manual entry, which many freelancers actually prefer—it gives you full control and awareness of your finances. You enter your starting balance once, then add your recurring income and bills. The calendar updates automatically. When bank sync launches, it will be optional, not required."
+  },
+  {
+    question: "Do you track credit card accounts?",
+    answer: "Yes! Cash Flow Forecaster offers credit card cash flow forecasting—a feature most competitors don't have. Add your credit cards with their limits, APR, and payment due dates. You'll see: credit utilization tracking with color-coded warnings (green under 30%, amber 30-50%, red over 50%), payment due dates appearing in your cash flow calendar, a payment simulator to compare minimum payment vs statement balance vs custom amounts, and interest cost projections. For users with multiple cards, our Debt Payoff Planner compares Snowball vs Avalanche strategies to help you become debt-free faster."
   },
   {
     question: "Who is Cash Flow Forecaster built for?",

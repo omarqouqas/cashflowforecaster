@@ -13,6 +13,7 @@ import {
   Calendar,
   CheckCircle2,
   Code2,
+  CreditCard,
   DollarSign,
   FileSpreadsheet,
   FileText,
@@ -24,6 +25,7 @@ import {
   PiggyBank,
   Shield,
   Sparkles,
+  TrendingDown,
   Wallet,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
@@ -731,12 +733,12 @@ export default async function Home({ searchParams }: HomeProps) {
                         <FileSpreadsheet className="h-5 w-5 text-teal-300" />
                       </div>
                       <span className="text-xs text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-full px-3 py-1">
-                        CSV Import
+                        CSV & Excel Import
                       </span>
                     </div>
                     <h4 className="mt-4 font-semibold text-white">Import from YNAB or your bank</h4>
                     <p className="mt-2 text-zinc-400">
-                      Dedicated YNAB importer auto-detects your export format. Or upload any bank CSV—no manual column mapping required.
+                      Upload CSV or Excel files (.xlsx, .xls). Dedicated YNAB importer auto-detects your format—no manual column mapping required.
                     </p>
                     <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
                       <Image
@@ -776,6 +778,67 @@ export default async function Home({ searchParams }: HomeProps) {
                         3.2 months of runway at current spending
                       </p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Credit Card & Debt Features Row */}
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-zinc-900/50 p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/25 flex items-center justify-center">
+                        <CreditCard className="h-5 w-5 text-amber-300" />
+                      </div>
+                      <span className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1">
+                        Unique Feature
+                      </span>
+                    </div>
+                    <h4 className="mt-4 font-semibold text-white">Credit Card Cash Flow Forecasting</h4>
+                    <p className="mt-2 text-zinc-400">
+                      See credit card payments in your cash flow calendar. Track utilization, simulate payment scenarios, and know exactly how charges today affect your balance tomorrow.
+                    </p>
+                    <ul className="mt-4 space-y-2 text-sm text-zinc-300">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-amber-300 mt-0.5 flex-shrink-0" />
+                        <span>Credit utilization tracking with color-coded warnings</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-amber-300 mt-0.5 flex-shrink-0" />
+                        <span>Payment due dates appear in your forecast</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-amber-300 mt-0.5 flex-shrink-0" />
+                        <span>Payment simulator: compare min, statement, or custom amounts</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-2xl border border-teal-500/30 bg-gradient-to-br from-teal-500/5 to-zinc-900/50 p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-lg bg-teal-500/10 ring-1 ring-teal-500/25 flex items-center justify-center">
+                        <TrendingDown className="h-5 w-5 text-teal-300" />
+                      </div>
+                      <span className="text-xs text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-full px-3 py-1">
+                        Debt Planner
+                      </span>
+                    </div>
+                    <h4 className="mt-4 font-semibold text-white">Debt Payoff Planner</h4>
+                    <p className="mt-2 text-zinc-400">
+                      Compare Snowball vs Avalanche payoff strategies. See exactly when you&apos;ll be debt-free and how much interest you&apos;ll save with extra payments.
+                    </p>
+                    <ul className="mt-4 space-y-2 text-sm text-zinc-300">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5 flex-shrink-0" />
+                        <span>Side-by-side strategy comparison</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5 flex-shrink-0" />
+                        <span>Extra payment impact calculator</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-teal-300 mt-0.5 flex-shrink-0" />
+                        <span>Visual payoff timeline with milestones</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>

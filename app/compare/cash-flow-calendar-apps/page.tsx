@@ -63,6 +63,8 @@ const comparisonRows = [
   { feature: 'Low balance alerts', cff: '✅ Proactive email warnings', typical: '❌ No' },
   { feature: 'Free tier', cff: '✅ Yes (10 bills, 10 income)', typical: '❌ Trial only (14 days)' },
   { feature: 'Forecast length', cff: '90 days (Free) / 365 days (Pro)', typical: '~30 days' },
+  { feature: 'Credit card forecasting', cff: '✅ Utilization tracking + payment simulator', typical: '❌ No' },
+  { feature: 'Debt payoff planner', cff: '✅ Snowball vs Avalanche comparison', typical: '❌ No' },
   { feature: 'Invoicing built-in', cff: '✅ Runway Collect', typical: '❌ No' },
   { feature: 'One-click invoice payments', cff: '✅ Clients pay via Stripe', typical: '❌ No' },
   { feature: 'Custom invoice branding', cff: '✅ Logo + business name', typical: '❌ No' },
@@ -70,11 +72,12 @@ const comparisonRows = [
   { feature: 'Payment reminders', cff: '✅ 3 escalating templates', typical: '❌ No' },
   { feature: 'Emergency fund tracker', cff: '✅ Track savings + runway', typical: '❌ No' },
   { feature: 'Tax savings tracker', cff: '✅ Quarterly estimates', typical: '❌ No' },
+  { feature: 'Excel import', cff: '✅ CSV & Excel (.xlsx, .xls)', typical: '⚠️ CSV only' },
   { feature: 'Data export', cff: '✅ CSV, Excel, JSON', typical: '⚠️ CSV only' },
   { feature: 'Weekly email digest', cff: '✅ Yes', typical: '❌ No' },
   { feature: 'Freelancer-focused', cff: '✅ Built for irregular income', typical: '⚠️ Generic' },
   { feature: 'Bank connection required', cff: '❌ Optional', typical: '⚠️ Often required' },
-  { feature: 'Price', cff: '$7.99/mo or $99 lifetime', typical: '$8/mo or $72 lifetime' },
+  { feature: 'Price', cff: '$7.99/mo or $99 lifetime', typical: '$8-15/mo' },
 ] as const;
 
 const faqStructuredData = {
