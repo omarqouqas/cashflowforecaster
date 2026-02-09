@@ -41,6 +41,11 @@ export async function createTransfer(
     const user = await requireAuth();
     const supabase = await createClient();
 
+    // Validate amount is positive
+    if (!input.amount || input.amount <= 0) {
+      return { success: false, error: 'Transfer amount must be greater than zero' };
+    }
+
     // Validate source and destination are different
     if (input.from_account_id === input.to_account_id) {
       return { success: false, error: 'Source and destination accounts must be different' };
@@ -110,6 +115,11 @@ export async function updateTransfer(
 
     if (existingError || !existing) {
       return { success: false, error: 'Transfer not found' };
+    }
+
+    // Validate amount is positive if provided
+    if (input.amount !== undefined && input.amount <= 0) {
+      return { success: false, error: 'Transfer amount must be greater than zero' };
     }
 
     // Validate source and destination are different if both are provided

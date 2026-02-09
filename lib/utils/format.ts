@@ -36,7 +36,7 @@ export function formatCurrency(amount: number, currency: string = 'USD', compact
     if (absAmount >= 1000000) {
       return `${sign}${currencySymbol}${(absAmount / 1000000).toFixed(absAmount % 1000000 === 0 ? 0 : 1)}M`;
     } else if (absAmount >= 1000) {
-      return `${sign}${currencySymbol}${(absAmount / 1000).toFixed(absAmount % 1000 === 0 ? 0 : 0)}K`;
+      return `${sign}${currencySymbol}${(absAmount / 1000).toFixed(absAmount % 1000 === 0 ? 0 : 1)}K`;
     } else {
       return `${sign}${currencySymbol}${absAmount.toFixed(0)}`;
     }
