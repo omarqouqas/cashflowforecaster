@@ -380,7 +380,7 @@ export default function ImportBankTransactionsExcelPage() {
               Migrate from YNAB
             </Link>
             <Link
-              href="/import/ynab"
+              href="/dashboard/import/ynab"
               className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-white transition-colors"
             >
               <Upload className="w-4 h-4" />

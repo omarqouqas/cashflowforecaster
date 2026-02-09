@@ -269,7 +269,7 @@ export default function MigrateFromYnabPage() {
             <ol className="space-y-4 text-zinc-300">
               <li className="flex items-start gap-3">
                 <span className="w-6 h-6 bg-teal-500/20 rounded-full flex items-center justify-center text-teal-400 text-sm font-bold shrink-0">1</span>
-                <span>Go to the <Link href="/import/ynab" className="text-teal-400 hover:underline">YNAB Import page</Link></span>
+                <span>Go to the <Link href="/dashboard/import/ynab" className="text-teal-400 hover:underline">YNAB Import page</Link></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-6 h-6 bg-teal-500/20 rounded-full flex items-center justify-center text-teal-400 text-sm font-bold shrink-0">2</span>
@@ -491,7 +491,7 @@ export default function MigrateFromYnabPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/import/ynab"
+                href="/dashboard/import/ynab"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-lg transition-colors"
               >
                 <Upload className="w-5 h-5" />
