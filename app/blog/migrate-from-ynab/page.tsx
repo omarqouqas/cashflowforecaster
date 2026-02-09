@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft, Download, Upload, Check, ArrowRight, AlertCircle, Zap, RefreshCw } from 'lucide-react';
+import { ChevronLeft, Upload, Check, ArrowRight, AlertCircle, Zap, RefreshCw } from 'lucide-react';
 import { getPostBySlug } from '@/lib/blog/posts';
 
 const post = getPostBySlug('migrate-from-ynab')!;

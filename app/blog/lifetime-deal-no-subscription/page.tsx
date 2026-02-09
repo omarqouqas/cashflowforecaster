@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft, Check, X, DollarSign, Infinity, Calculator, Heart, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Check, X, DollarSign, Infinity, Heart } from 'lucide-react';
 import { getPostBySlug } from '@/lib/blog/posts';
 
 const post = getPostBySlug('lifetime-deal-no-subscription')!;

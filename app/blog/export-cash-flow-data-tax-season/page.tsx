@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft, Download, FileSpreadsheet, Calendar, Check, ArrowRight, Calculator, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Download, FileSpreadsheet, Check, ArrowRight, Calculator, AlertCircle } from 'lucide-react';
 import { getPostBySlug } from '@/lib/blog/posts';
 
 const post = getPostBySlug('export-cash-flow-data-tax-season')!;

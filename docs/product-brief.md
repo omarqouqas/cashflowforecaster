@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.13
+**Version:** 6.14
 **Last Updated:** February 8, 2026
-**Status:** Live - Excel Import & Bug Fixes
+**Status:** Live - SEO Blog Content Expansion
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -927,6 +927,20 @@ User Request
 
 ## Changelog
 
+### Version 6.14 (February 8, 2026)
+- **SEO Blog Content Expansion:**
+  - 6 new SEO-optimized blog posts targeting key content gaps
+  - **Credit Card Cash Flow Forecasting** - Utilization tracking & payment planning guide
+  - **Debt Payoff: Snowball vs Avalanche** - Strategy comparison for irregular income
+  - **Import Bank Transactions from Excel** - Step-by-step import guide with HowTo schema
+  - **Why We Offer a $99 Lifetime Deal** - Subscription fatigue messaging, YNAB comparison
+  - **Export Cash Flow Data for Tax Season** - 1099 contractor guide with HowTo schema
+  - **How to Migrate from YNAB** - Complete migration walkthrough
+  - Each post includes: OpenGraph image generation, JSON-LD schemas (Article, HowTo, FAQ), internal cross-linking
+  - Blog count increased from 10 to 16 total posts
+  - Updated `lib/blog/posts.ts` with metadata for all 6 new posts
+  - Updated `docs/content-update-roadmap.md` marking all blog posts complete
+
 ### Version 6.13 (February 8, 2026)
 - **Excel File Import Support:**
   - Added .xlsx and .xls file support to both generic and YNAB import pages
@@ -1265,7 +1279,7 @@ User Request
     - DefinedTermSet schema for AEO/AI search optimization
     - Alphabetical navigation with quick-jump links
     - Internal links to related blog posts and tools
-  - Blog count: 10 total posts for organic SEO
+  - Blog count: 16 total posts for organic SEO
 - Core Web Vitals Fixes:
   - Added `font-display: swap` for faster text rendering
   - Added `loading="lazy"` to below-fold images
@@ -1544,7 +1558,7 @@ User Request
 
 ---
 
-**Document Version:** 6.13
+**Document Version:** 6.14
 **Last Updated:** February 8, 2026
-**Status:** Live - Excel Import & Bug Fixes 🎉
+**Status:** Live - SEO Blog Content Expansion 🎉
 **Next Review:** March 2026
