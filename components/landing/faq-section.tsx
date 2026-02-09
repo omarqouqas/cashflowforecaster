@@ -31,7 +31,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Can I import my data from YNAB or Mint?",
-    answer: "Yes! We have a dedicated YNAB importer that auto-detects your export format—just upload your CSV and we'll handle the rest. The importer recognizes both YNAB's basic export and register export formats, automatically converting transactions into bills and income sources. No manual column mapping required. For Mint users, our generic CSV importer works great with Mint exports. Either way, you can be up and running with your historical data in minutes. Find the import tools in your dashboard under Import Transactions."
+    answer: "Yes! We have a dedicated YNAB importer that auto-detects your export format—just upload your CSV or Excel file and we'll handle the rest. The importer recognizes both YNAB's basic export and register export formats. Our smart import feature detects recurring patterns in your transactions and can automatically create recurring bills and income sources—so you don't have to manually enter each one. For Mint users, our generic importer works great with Mint exports. Either way, you can be up and running with your recurring entries set up in minutes. Find the import tools in your dashboard under Import Transactions."
   },
   {
     question: "Is my financial data secure?",
@@ -39,7 +39,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between Free and Pro?",
-    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, 90-day forecast, and CSV export. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), adds Excel and JSON export formats, and includes Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
+    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, 90-day forecast, CSV & Excel import, and CSV export. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), adds full Reports & Export with Excel and JSON formats (Monthly Summary, Category Spending, Cash Forecast reports), credit card tracking with debt payoff planner, and includes Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
   },
   {
     question: "Do you offer a lifetime deal?",

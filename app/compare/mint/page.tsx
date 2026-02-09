@@ -61,6 +61,8 @@ const comparisonRows = [
   { feature: 'Built-in invoicing', cff: '✅ Runway Collect', mint: '❌ No' },
   { feature: 'Invoice → forecast sync', cff: '✅ Automatic', mint: '❌ Not applicable' },
   { feature: 'Excel import', cff: '✅ CSV & Excel (.xlsx, .xls)', mint: '⚠️ Export only' },
+  { feature: 'Reports & Export', cff: '✅ Monthly Summary, Category, Excel/JSON', mint: '⚠️ Basic spending breakdown' },
+  { feature: 'Auto-detect recurring', cff: '✅ Import creates recurring entries', mint: '⚠️ Basic detection' },
   { feature: 'Bank sync', cff: '❌ Optional (coming soon)', mint: '✅ Yes (Plaid)' },
   { feature: 'Bill reminders', cff: '✅ Email alerts + collision warnings', mint: '✅ Yes' },
   { feature: 'Data privacy', cff: '✅ We don\'t sell your data', mint: '⚠️ Data used for ads' },

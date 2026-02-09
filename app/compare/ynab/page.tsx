@@ -61,6 +61,8 @@ const comparisonRows = [
   { feature: 'Built-in invoicing', cff: '✅ Runway Collect', ynab: '❌ No' },
   { feature: 'Invoice → forecast sync', cff: '✅ Automatic', ynab: '❌ Not applicable' },
   { feature: 'Excel import', cff: '✅ CSV & Excel (.xlsx, .xls)', ynab: '⚠️ CSV only' },
+  { feature: 'Reports & Export', cff: '✅ Monthly Summary, Category, Excel/JSON', ynab: '⚠️ Basic reports' },
+  { feature: 'Auto-detect recurring', cff: '✅ Import creates recurring entries', ynab: '❌ Manual only' },
   { feature: 'Bank sync', cff: '❌ Optional (coming soon)', ynab: '✅ Yes (Plaid)' },
   { feature: 'Learning curve', cff: '✅ Simple calendar view', ynab: '⚠️ Steep (envelope method)' },
   { feature: 'YNAB data migration', cff: '✅ Dedicated importer (auto-detects format)', ynab: '❌ Export only' },

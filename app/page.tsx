@@ -738,7 +738,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     </div>
                     <h4 className="mt-4 font-semibold text-white">Import from YNAB or your bank</h4>
                     <p className="mt-2 text-zinc-400">
-                      Upload CSV or Excel files (.xlsx, .xls). Dedicated YNAB importer auto-detects your format—no manual column mapping required.
+                      Upload CSV or Excel files (.xlsx, .xls). Smart import detects recurring patterns and creates recurring bills automatically—no manual setup required.
                     </p>
                     <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
                       <Image

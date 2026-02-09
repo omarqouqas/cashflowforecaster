@@ -105,9 +105,9 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 **Current Status:** Mentioned but buried in FAQ, not prominent
 
 **Implementation Checklist:**
-- [ ] Make export/reports more prominent in FAQ (move earlier)
-- [ ] Add to Pro tier feature highlights on pricing
-- [ ] Add to comparison tables as Pro advantage
+- [x] Make export/reports more prominent in FAQ (move earlier) ✅ Enhanced Free vs Pro FAQ Feb 8, 2026
+- [x] Add to Pro tier feature highlights on pricing ✅ Added Feb 8, 2026
+- [x] Add to comparison tables as Pro advantage ✅ Added Feb 8, 2026
 - [ ] Blog post: "How to Export Your Cash Flow Data for Tax Season"
 
 ---
@@ -119,8 +119,9 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 **Current Status:** Not explained in FAQ or landing page
 
 **Implementation Checklist:**
-- [ ] Update FAQ answer about importing
-- [ ] Mention in landing page import feature
+- [x] Update FAQ answer about importing ✅ Added Feb 8, 2026
+- [x] Mention in landing page import feature ✅ Added Feb 8, 2026
+- [x] Add to comparison tables ✅ Added Feb 8, 2026
 - [ ] Blog mention in import guide
 
 **Recommended Messaging:**
@@ -190,13 +191,17 @@ For all comparison pages (/compare/ynab, /compare/mint, /compare/cash-flow-calen
 - [x] Priority 3: Debt Payoff Planner - FAQ question (February 8, 2026)
 - [x] Priority 4: Excel Import - Landing page + comparison tables (February 8, 2026)
 - [x] Priority 4: Excel Import - FAQ question (February 8, 2026)
+- [x] Priority 5: Reports & Export - Pricing tier highlights (February 8, 2026)
+- [x] Priority 5: Reports & Export - Enhanced FAQ (February 8, 2026)
+- [x] Priority 5: Reports & Export - Comparison tables (February 8, 2026)
+- [x] Priority 6: Import Recurring - FAQ update (February 8, 2026)
+- [x] Priority 6: Import Recurring - Landing page (February 8, 2026)
+- [x] Priority 6: Import Recurring - Comparison tables (February 8, 2026)
 
 ### In Progress
 - None
 
 ### Not Started
-- Priority 5: Reports prominence
-- Priority 6: Import recurring entries
 - Priority 7: YNAB cross-linking
 - Priority 8: Custom categories
 - Blog posts (all)
