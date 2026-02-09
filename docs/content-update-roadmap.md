@@ -25,7 +25,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 - [x] Add row to /compare/ynab comparison table ✅ Added Feb 8, 2026
 - [x] Add row to /compare/mint comparison table ✅ Added Feb 8, 2026
 - [x] Add row to /compare/cash-flow-calendar-apps comparison table ✅ Added Feb 8, 2026
-- [ ] Blog post: "Credit Card Cash Flow Forecasting for Freelancers"
+- [x] Blog post: "Credit Card Cash Flow Forecasting for Freelancers" ✅ Added Feb 8, 2026
 
 **Recommended Messaging:**
 > "Track credit card accounts and see your utilization projected 365 days ahead. Know exactly how that equipment purchase impacts your credit score timeline."
@@ -47,7 +47,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 - [x] Add Lifetime tier to main pricing section (3rd option) ✅ Already exists in pricing-section.tsx
 - [x] Add FAQ: "Do you offer a lifetime deal?" ✅ Added Feb 8, 2026
 - [ ] Ensure landing page CTA mentions lifetime option
-- [ ] Blog post: "Why We Offer a $99 Lifetime Deal"
+- [x] Blog post: "Why We Offer a $99 Lifetime Deal" ✅ Added Feb 8, 2026
 
 **Recommended Messaging:**
 > "Tired of subscription fatigue? Get lifetime access for $99 one-time. No monthly fees, ever. All Pro features plus future updates."
@@ -69,7 +69,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 - [x] Add to landing page features (secondary feature section) ✅ Added Feb 8, 2026
 - [x] Add FAQ: "How does the debt payoff planner work?" ✅ Added Feb 8, 2026
 - [x] Add to comparison tables ✅ Added Feb 8, 2026
-- [ ] Blog post: "Debt Payoff Strategies: Snowball vs Avalanche for Irregular Income"
+- [x] Blog post: "Debt Payoff Strategies: Snowball vs Avalanche for Irregular Income" ✅ Added Feb 8, 2026
 
 **Recommended Messaging:**
 > "Plan your debt payoff using Snowball or Avalanche methods. See exactly when you'll be debt-free based on your irregular income patterns."
@@ -91,7 +91,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 - [x] Update landing page: "CSV" → "CSV & Excel (.xlsx, .xls)" ✅ Added Feb 8, 2026
 - [x] Add FAQ: "Can I import from Excel?" ✅ Added Feb 8, 2026
 - [x] Update comparison pages to mention Excel import ✅ Added Feb 8, 2026
-- [ ] Blog post: "How to Import Your Bank Transactions from Excel"
+- [x] Blog post: "How to Import Your Bank Transactions from Excel" ✅ Added Feb 8, 2026
 
 **Recommended Messaging:**
 > "Import transactions from Excel, CSV, or your YNAB export. Just upload your .xlsx or .xls file—we'll auto-detect columns and categories."
@@ -108,7 +108,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 - [x] Make export/reports more prominent in FAQ (move earlier) ✅ Enhanced Free vs Pro FAQ Feb 8, 2026
 - [x] Add to Pro tier feature highlights on pricing ✅ Added Feb 8, 2026
 - [x] Add to comparison tables as Pro advantage ✅ Added Feb 8, 2026
-- [ ] Blog post: "How to Export Your Cash Flow Data for Tax Season"
+- [x] Blog post: "How to Export Your Cash Flow Data for Tax Season" ✅ Added Feb 8, 2026
 
 ---
 
@@ -122,7 +122,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 - [x] Update FAQ answer about importing ✅ Added Feb 8, 2026
 - [x] Mention in landing page import feature ✅ Added Feb 8, 2026
 - [x] Add to comparison tables ✅ Added Feb 8, 2026
-- [ ] Blog mention in import guide
+- [x] Blog mention in import guide ✅ Added Feb 8, 2026
 
 **Recommended Messaging:**
 > "Our smart importer recognizes recurring patterns and automatically creates repeating entries. Import your bank data once, we'll set up your recurring bills and income for you."
@@ -138,7 +138,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 **Implementation Checklist:**
 - [x] Add link from landing page import feature ✅ Added Feb 8, 2026
 - [x] Add prominent CTA on /compare/ynab page ✅ Added Feb 8, 2026
-- [ ] Blog post: "How to Migrate from YNAB to Cash Flow Forecaster"
+- [x] Blog post: "How to Migrate from YNAB to Cash Flow Forecaster" ✅ Added Feb 8, 2026
 
 ---
 
@@ -199,13 +199,18 @@ For all comparison pages (/compare/ynab, /compare/mint, /compare/cash-flow-calen
 - [x] Priority 6: Import Recurring - Comparison tables (February 8, 2026)
 - [x] Priority 7: YNAB Cross-Linking - Landing page link (February 8, 2026)
 - [x] Priority 7: YNAB Cross-Linking - /compare/ynab CTA (February 8, 2026)
+- [x] Blog: Credit Card Cash Flow Forecasting (February 8, 2026)
+- [x] Blog: Debt Payoff Snowball vs Avalanche (February 8, 2026)
+- [x] Blog: Import Bank Transactions from Excel (February 8, 2026)
+- [x] Blog: Why We Offer a $99 Lifetime Deal (February 8, 2026)
+- [x] Blog: Export Cash Flow Data for Tax Season (February 8, 2026)
+- [x] Blog: How to Migrate from YNAB (February 8, 2026)
 
 ### In Progress
 - None
 
 ### Not Started
 - Priority 8: Custom categories
-- Blog posts (all)
 
 ---
 
