@@ -740,7 +740,16 @@ export default async function Home({ searchParams }: HomeProps) {
                     <p className="mt-2 text-zinc-400">
                       Upload CSV or Excel files (.xlsx, .xls). Smart import detects recurring patterns and creates recurring bills automatically—no manual setup required.
                     </p>
-                    <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
+                    <div className="mt-4">
+                      <Link
+                        href="/compare/ynab"
+                        className="inline-flex items-center gap-1 text-sm text-teal-400 hover:text-teal-300 transition-colors"
+                      >
+                        Switching from YNAB? See our dedicated importer
+                        <span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                    <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
                       <Image
                         src="/screenshot-import.png"
                         alt="CSV import wizard with 3-step process"

@@ -303,6 +303,32 @@ export default function YNABComparisonPage() {
             </div>
           </section>
 
+          {/* YNAB Import CTA */}
+          <section className="mt-14">
+            <div className="rounded-2xl border border-teal-500/30 bg-gradient-to-r from-teal-500/10 to-zinc-900/40 px-6 py-8">
+              <div className="flex flex-col md:flex-row md:items-center gap-6">
+                <div className="flex-1">
+                  <h2 className="text-xl md:text-2xl font-semibold text-white">
+                    Already have YNAB data? Import it in minutes.
+                  </h2>
+                  <p className="mt-2 text-zinc-300">
+                    Our dedicated YNAB importer auto-detects your export format (basic or register).
+                    Just upload your CSV or Excel file—we&apos;ll convert your transactions into bills and income sources automatically.
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <Link
+                    href="/auth/signup?redirect=/dashboard/import/ynab"
+                    className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-zinc-950 font-semibold px-6 py-3 rounded-lg transition-colors"
+                  >
+                    Import Your YNAB Data
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* CTA */}
           <section className="mt-14">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-10 text-center">

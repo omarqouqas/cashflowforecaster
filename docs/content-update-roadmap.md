@@ -136,8 +136,8 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 **Current Status:** Exists but not well-linked from marketing pages
 
 **Implementation Checklist:**
-- [ ] Add link from landing page import feature
-- [ ] Add prominent CTA on /compare/ynab page
+- [x] Add link from landing page import feature ✅ Added Feb 8, 2026
+- [x] Add prominent CTA on /compare/ynab page ✅ Added Feb 8, 2026
 - [ ] Blog post: "How to Migrate from YNAB to Cash Flow Forecaster"
 
 ---
@@ -197,12 +197,13 @@ For all comparison pages (/compare/ynab, /compare/mint, /compare/cash-flow-calen
 - [x] Priority 6: Import Recurring - FAQ update (February 8, 2026)
 - [x] Priority 6: Import Recurring - Landing page (February 8, 2026)
 - [x] Priority 6: Import Recurring - Comparison tables (February 8, 2026)
+- [x] Priority 7: YNAB Cross-Linking - Landing page link (February 8, 2026)
+- [x] Priority 7: YNAB Cross-Linking - /compare/ynab CTA (February 8, 2026)
 
 ### In Progress
 - None
 
 ### Not Started
-- Priority 7: YNAB cross-linking
 - Priority 8: Custom categories
 - Blog posts (all)
 
