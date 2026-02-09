@@ -1,6 +1,6 @@
 # Cash Flow Forecaster - Development Progress
 
-**Last Updated:** February 5, 2026 (Day 56)
+**Last Updated:** February 8, 2026 (Day 57)
 
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -10,7 +10,7 @@
 
 ## Quick Stats
 
-- **Days in Development:** 56
+- **Days in Development:** 57
 - **Commits:** 405+
 - **Database Tables:** 15
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
@@ -29,7 +29,51 @@
 
 ---
 
-## Recent Development (Days 40-56)
+## Recent Development (Days 40-57)
+
+### Day 57: Excel Import Support & Bug Fixes (February 8, 2026)
+
+**Excel File Import Feature** - Users can now import transactions from Excel files (.xlsx, .xls) in addition to CSV.
+
+**New Feature:**
+- Added Excel file support to both generic import and YNAB import pages
+- Uses existing `xlsx` package (already installed for exports)
+- Parses first sheet of Excel workbooks
+- Handles Excel date serial numbers (converted to YYYY-MM-DD format)
+- Handles formatted numbers and currency values
+- Detailed error messages for password-protected, corrupted, or unsupported files
+
+**Import Feature Bug Fixes (4 fixes):**
+1. **Browser compatibility** - Added `generateId()` utility function with `crypto.randomUUID()` fallback for older browsers
+2. **Excel error handling** - Added try-catch with specific error messages for common Excel parsing issues
+3. **Operator precedence** - Fixed `hasDupes` logic in column-mapper.tsx (confusing `&&`/`||` precedence)
+4. **Stale error clearing** - Transaction selector now clears error messages when filters change
+
+**Additional Bug Fixes (2 fixes):**
+5. **Compact currency formatting** - Fixed ternary bug showing "$1K" instead of "$1.2K" for non-round thousands
+6. **Transfer amount validation** - Added validation to prevent zero/negative amounts in create/update transfer actions
+
+**New Files:**
+- `lib/import/parse-xlsx.ts` - Excel parsing utility with `parseExcel()`, `isExcelFile()`, `isSupportedSpreadsheet()`
+
+**Modified Files:**
+- `lib/utils.ts` - Added `generateId()` with crypto.randomUUID fallback
+- `lib/utils/format.ts` - Fixed compact currency formatting ternary bug
+- `lib/actions/transfers.ts` - Added amount > 0 validation
+- `components/import/csv-upload.tsx` - Accept .xlsx/.xls files
+- `components/import/ynab-csv-upload.tsx` - Accept .xlsx/.xls files
+- `components/import/column-mapper.tsx` - Fixed hasDupes operator precedence
+- `components/import/transaction-selector.tsx` - Clear errors on filter change
+- `components/import/import-page-client.tsx` - Use generateId(), handle Excel files
+- `components/import/ynab-import-page-client.tsx` - Use generateId(), handle Excel files
+- `lib/import/parse-ynab-csv.ts` - Added `parseYnabData()` for pre-parsed data
+
+**Commits:**
+- `87a38e4` feat: add Excel file import support (.xlsx, .xls)
+- `058bf84` fix: import feature bug fixes
+- `06b7967` fix: compact currency formatting and transfer validation
+
+---
 
 ### Day 56: Bug Fixes & Type Safety Improvements (February 4-5, 2026)
 

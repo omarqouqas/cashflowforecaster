@@ -1,8 +1,8 @@
 # Cash Flow Forecaster - Complete Product Brief
 
-**Version:** 6.12
-**Last Updated:** February 4, 2026
-**Status:** Live - Account Transfers & CC Dashboard
+**Version:** 6.13
+**Last Updated:** February 8, 2026
+**Status:** Live - Excel Import & Bug Fixes
 **Product URL:** https://cashflowforecaster.io
 **Repository:** https://github.com/omarqouqas/cashflowforecaster
 
@@ -274,14 +274,16 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - All frequencies supported (weekly through yearly)
 - **Gated:** 10 limit for Free tier
 
-**6. CSV Transaction Import ✅**
+**6. CSV & Excel Transaction Import ✅**
 - **YNAB-inspired dark theme UI** with step progress indicator
-- **Column auto-detection** for common CSV formats (date, description, amount patterns)
+- **Excel file support** (.xlsx, .xls) - parses first sheet, handles dates and formatted numbers
+- **Column auto-detection** for common CSV/Excel formats (date, description, amount patterns)
 - **Duplicate detection** - compares against last 500 transactions with visual warnings
 - **Enhanced drag-and-drop upload** with visual feedback
 - Review table with search + filters
 - Date cutoff filter (defaults to first day of current month)
 - Select-all checkbox with indeterminate state
+- Error handling for password-protected, corrupted, or unsupported Excel files
 
 **6b. Comprehensive Filtering System ✅**
 - **Reusable filter components** with dark theme styling
@@ -925,6 +927,25 @@ User Request
 
 ## Changelog
 
+### Version 6.13 (February 8, 2026)
+- **Excel File Import Support:**
+  - Added .xlsx and .xls file support to both generic and YNAB import pages
+  - Uses existing `xlsx` package (already installed for exports)
+  - Parses first sheet of Excel workbooks automatically
+  - Handles Excel date serial numbers (converted to YYYY-MM-DD format)
+  - Handles formatted numbers and currency values correctly
+  - Detailed error messages for password-protected, corrupted, or unsupported files
+- **New Files:**
+  - `lib/import/parse-xlsx.ts` - Excel parsing utility with `parseExcel()`, `isExcelFile()`, `isSupportedSpreadsheet()`
+- **Import Feature Bug Fixes:**
+  - Added `generateId()` utility with `crypto.randomUUID()` fallback for older browsers
+  - Fixed Excel error handling with specific messages for common issues
+  - Fixed operator precedence bug in column-mapper.tsx (`hasDupes` logic)
+  - Transaction selector now clears error messages when filters change
+- **Additional Bug Fixes:**
+  - Fixed compact currency formatting showing "$1K" instead of "$1.2K" for non-round thousands
+  - Added validation to prevent zero/negative amounts in transfer create/update actions
+
 ### Version 6.12 (February 4, 2026)
 - **Account Transfers Feature:**
   - New `/dashboard/transfers` page to manage all transfers
@@ -1523,7 +1544,7 @@ User Request
 
 ---
 
-**Document Version:** 6.12
-**Last Updated:** February 4, 2026
-**Status:** Live - Account Transfers & CC Dashboard 🎉
+**Document Version:** 6.13
+**Last Updated:** February 8, 2026
+**Status:** Live - Excel Import & Bug Fixes 🎉
 **Next Review:** March 2026
