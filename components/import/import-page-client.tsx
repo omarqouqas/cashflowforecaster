@@ -11,6 +11,7 @@ import { StepIndicator } from '@/components/import/step-indicator';
 import { type ColumnMapping, parseUsAmount, parseUsDateToIsoDate } from '@/lib/import/parse-csv';
 import { createClient } from '@/lib/supabase/client';
 import { showError, showSuccess } from '@/lib/toast';
+import { generateId } from '@/lib/utils';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import type { SubscriptionTier } from '@/lib/stripe/config';
 
@@ -210,7 +211,7 @@ export function ImportPageClient({ userId, usage }: Props) {
     for (let i = 0; i < loaded.rows.length; i++) {
       const normalized = normalizeRow(loaded.rows[i] ?? [], mapping, i + 2);
       if (normalized) {
-        ids.set(i, crypto.randomUUID());
+        ids.set(i, generateId());
       }
     }
     return ids;

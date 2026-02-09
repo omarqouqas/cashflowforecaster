@@ -55,9 +55,10 @@ export function ColumnMapper({ headers, mapping, onChange }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detected]);
 
+  // Check if any two selected columns are the same (duplicate mapping)
   const hasDupes =
-    mapping.dateIndex !== null &&
-    (mapping.dateIndex === mapping.descriptionIndex || mapping.dateIndex === mapping.amountIndex) ||
+    (mapping.dateIndex !== null && mapping.dateIndex === mapping.descriptionIndex) ||
+    (mapping.dateIndex !== null && mapping.dateIndex === mapping.amountIndex) ||
     (mapping.descriptionIndex !== null && mapping.descriptionIndex === mapping.amountIndex);
 
   const isComplete = mapping.dateIndex !== null && mapping.descriptionIndex !== null && mapping.amountIndex !== null && !hasDupes;

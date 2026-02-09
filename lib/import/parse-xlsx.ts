@@ -13,46 +13,64 @@ import type { CsvParseResult } from './parse-csv';
  * All values are converted to strings to match CSV behavior.
  */
 export function parseExcel(buffer: ArrayBuffer): CsvParseResult {
-  // Read the workbook from the buffer
-  // Use cellDates: true to get Date objects for date cells
-  const workbook = XLSX.read(buffer, {
-    type: 'array',
-    cellDates: true,  // Parse dates as JS Date objects
-  });
+  try {
+    // Read the workbook from the buffer
+    // Use cellDates: true to get Date objects for date cells
+    const workbook = XLSX.read(buffer, {
+      type: 'array',
+      cellDates: true,  // Parse dates as JS Date objects
+    });
 
-  // Get the first sheet
-  const sheetName = workbook.SheetNames[0];
-  if (!sheetName) {
-    return { headers: [], rows: [] };
+    // Get the first sheet
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) {
+      return { headers: [], rows: [] };
+    }
+
+    const worksheet = workbook.Sheets[sheetName];
+    if (!worksheet) {
+      return { headers: [], rows: [] };
+    }
+
+    // Convert sheet to array of arrays (preserves order, handles empty cells)
+    // Use raw: true to get actual values (Date objects, numbers) instead of formatted strings
+    const rawData: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,        // Return array of arrays instead of objects
+      raw: true,        // Return raw values (Date objects, numbers) for proper handling
+      defval: '',       // Default value for empty cells
+      blankrows: false, // Skip blank rows
+    });
+
+    if (rawData.length === 0) {
+      return { headers: [], rows: [] };
+    }
+
+    // First row is headers
+    const headers = (rawData[0] ?? []).map((cell) => cellToString(cell).trim());
+
+    // Rest are data rows
+    const rows = rawData.slice(1).map((row) =>
+      (row as unknown[]).map((cell) => cellToString(cell))
+    );
+
+    return { headers, rows };
+  } catch (error) {
+    // Provide more specific error messages for common issues
+    const message = error instanceof Error ? error.message : 'Unknown error';
+
+    if (message.includes('password')) {
+      throw new Error('This Excel file is password-protected. Please remove the password and try again.');
+    }
+    if (message.includes('Unsupported') || message.includes('format')) {
+      throw new Error('Unsupported Excel format. Please save the file as .xlsx and try again.');
+    }
+    if (message.includes('corrupted') || message.includes('invalid')) {
+      throw new Error('This Excel file appears to be corrupted. Please try exporting it again.');
+    }
+
+    // Re-throw with a user-friendly prefix
+    throw new Error(`Failed to read Excel file: ${message}`);
   }
-
-  const worksheet = workbook.Sheets[sheetName];
-  if (!worksheet) {
-    return { headers: [], rows: [] };
-  }
-
-  // Convert sheet to array of arrays (preserves order, handles empty cells)
-  // Use raw: true to get actual values (Date objects, numbers) instead of formatted strings
-  const rawData: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
-    header: 1,        // Return array of arrays instead of objects
-    raw: true,        // Return raw values (Date objects, numbers) for proper handling
-    defval: '',       // Default value for empty cells
-    blankrows: false, // Skip blank rows
-  });
-
-  if (rawData.length === 0) {
-    return { headers: [], rows: [] };
-  }
-
-  // First row is headers
-  const headers = (rawData[0] ?? []).map((cell) => cellToString(cell).trim());
-
-  // Rest are data rows
-  const rows = rawData.slice(1).map((row) =>
-    (row as unknown[]).map((cell) => cellToString(cell))
-  );
-
-  return { headers, rows };
 }
 
 /**

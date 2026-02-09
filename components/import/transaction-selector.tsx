@@ -444,14 +444,14 @@ export function TransactionSelector({
         <div className="sm:col-span-2">
           <Input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => { setError(null); setQuery(e.target.value); }}
             placeholder="Search description…"
           />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <select
             value={direction}
-            onChange={(e) => setDirection(e.target.value as any)}
+            onChange={(e) => { setError(null); setDirection(e.target.value as 'all' | 'in' | 'out'); }}
             className={[
               'w-full bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-zinc-100 min-h-[44px]',
               'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent',
@@ -465,7 +465,7 @@ export function TransactionSelector({
             <input
               type="checkbox"
               checked={showSelectedOnly}
-              onChange={(e) => setShowSelectedOnly(e.target.checked)}
+              onChange={(e) => { setError(null); setShowSelectedOnly(e.target.checked); }}
               className="h-4 w-4 rounded border-zinc-600 text-teal-500 focus:ring-2 focus:ring-teal-500 bg-zinc-800"
             />
             Selected only

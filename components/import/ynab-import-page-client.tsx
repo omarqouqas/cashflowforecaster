@@ -9,6 +9,7 @@ import { TransactionSelector, type NormalizedTransaction, type ImportRow } from 
 import { StepIndicator } from '@/components/import/step-indicator';
 import { createClient } from '@/lib/supabase/client';
 import { showError, showSuccess } from '@/lib/toast';
+import { generateId } from '@/lib/utils';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import type { SubscriptionTier } from '@/lib/stripe/config';
 import type { YnabParseResult, YnabCsvFormat } from '@/lib/import/parse-ynab-csv';
@@ -81,7 +82,7 @@ export function YnabImportPageClient({ userId, usage }: Props) {
     if (!parsed) return new Map<number, string>();
     const ids = new Map<number, string>();
     for (let i = 0; i < parsed.result.transactions.length; i++) {
-      ids.set(i, crypto.randomUUID());
+      ids.set(i, generateId());
     }
     return ids;
   }, [parsed]); // Only regenerate when a new file is parsed
