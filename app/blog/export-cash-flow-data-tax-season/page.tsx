@@ -478,7 +478,7 @@ export default function ExportCashFlowDataTaxSeasonPage() {
               everything you need in a few clicks.
             </p>
             <Link
-              href="/signup"
+              href="/auth/signup"
               className="inline-flex items-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-lg transition-colors"
             >
               <Download className="w-5 h-5" />

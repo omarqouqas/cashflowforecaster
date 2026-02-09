@@ -248,7 +248,7 @@ export default function MigrateFromYnabPage() {
           </p>
           <div className="flex gap-4 my-6">
             <Link
-              href="/signup"
+              href="/auth/signup"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-zinc-900 font-semibold rounded-lg transition-colors"
             >
               Create Free Account
