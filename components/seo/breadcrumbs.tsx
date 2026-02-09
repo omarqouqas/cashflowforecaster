@@ -35,7 +35,7 @@ export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
                   </span>
                 ) : (
                   <Link
-                    href={item.url.replace('https://cashflowforecaster.io', '')}
+                    href={item.url.replace('https://www.cashflowforecaster.io', '')}
                     className="text-zinc-500 hover:text-zinc-300 transition-colors inline-flex items-center gap-1"
                   >
                     {isFirst && <Home className="h-3.5 w-3.5" aria-hidden="true" />}

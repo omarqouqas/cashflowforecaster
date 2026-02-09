@@ -40,13 +40,13 @@ export const metadata: Metadata = {
     'emergency fund tracker freelancer',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps',
+    canonical: 'https://www.cashflowforecaster.io/compare/cash-flow-calendar-apps',
   },
   openGraph: {
     title: 'Best Cash Flow Calendar Apps for Freelancers (2026)',
     description:
       "Compare cash flow calendar apps for freelancers. See why Cash Flow Forecaster's invoicing integration and free tier beats the competition.",
-    url: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps',
+    url: 'https://www.cashflowforecaster.io/compare/cash-flow-calendar-apps',
     siteName: 'Cash Flow Forecaster',
     type: 'article',
   },
@@ -162,7 +162,7 @@ export default function CashFlowCalendarAppsComparePage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.compare,
-              { name: 'Cash Flow Calendar Apps', url: 'https://cashflowforecaster.io/compare/cash-flow-calendar-apps' },
+              { name: 'Cash Flow Calendar Apps', url: 'https://www.cashflowforecaster.io/compare/cash-flow-calendar-apps' },
             ]}
             className="mb-8"
           />

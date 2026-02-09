@@ -93,18 +93,18 @@ export const metadata: Metadata = {
     'mint replacement',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io',
+    canonical: 'https://www.cashflowforecaster.io',
   },
   openGraph: {
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
       'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your forecast automatically.',
-    url: 'https://cashflowforecaster.io',
+    url: 'https://www.cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
     images: [
       {
-        url: 'https://cashflowforecaster.io/hero-dashboard.png',
+        url: 'https://www.cashflowforecaster.io/hero-dashboard.png',
         width: 1200,
         height: 630,
         alt: 'Cash Flow Forecaster dashboard showing balance forecast chart and calendar',
@@ -116,7 +116,7 @@ export const metadata: Metadata = {
     title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
     description:
       'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your forecast automatically.',
-    images: ['https://cashflowforecaster.io/hero-dashboard.png'],
+    images: ['https://www.cashflowforecaster.io/hero-dashboard.png'],
   },
 };
 

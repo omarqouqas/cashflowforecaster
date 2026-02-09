@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     'calculate freelance rate',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/tools/freelance-rate-calculator',
+    canonical: 'https://www.cashflowforecaster.io/tools/freelance-rate-calculator',
   },
   openGraph: {
     title: 'Freelance Rate Calculator - Find Your Ideal Hourly Rate',
     description: 'Stop guessing what to charge. Calculate your minimum hourly rate based on your income goals and actual expenses.',
-    url: 'https://cashflowforecaster.io/tools/freelance-rate-calculator',
+    url: 'https://www.cashflowforecaster.io/tools/freelance-rate-calculator',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },
@@ -50,7 +50,7 @@ const structuredData = {
     priceCurrency: 'USD',
   },
   isAccessibleForFree: true,
-  url: 'https://cashflowforecaster.io/tools/freelance-rate-calculator',
+  url: 'https://www.cashflowforecaster.io/tools/freelance-rate-calculator',
 } as const;
 
 const faqSchema = {
@@ -136,7 +136,7 @@ export default function FreelanceRateCalculatorPage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.tools,
-              { name: 'Rate Calculator', url: 'https://cashflowforecaster.io/tools/freelance-rate-calculator' },
+              { name: 'Rate Calculator', url: 'https://www.cashflowforecaster.io/tools/freelance-rate-calculator' },
             ]}
             className="mb-8"
           />

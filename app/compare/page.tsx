@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   description:
     'Comparison guides for freelancers evaluating cash flow calendar apps. See how Cash Flow Forecaster stacks up on invoicing, free tier, and forecasting.',
   alternates: {
-    canonical: 'https://cashflowforecaster.io/compare',
+    canonical: 'https://www.cashflowforecaster.io/compare',
   },
   openGraph: {
     title: 'Compare Cash Flow Calendar Apps',
     description:
       'Comparison guides for freelancers evaluating cash flow calendar apps.',
-    url: 'https://cashflowforecaster.io/compare',
+    url: 'https://www.cashflowforecaster.io/compare',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },

@@ -168,7 +168,7 @@ export function buildLowBalanceAlertEmail(data: LowBalanceAlertData): { subject:
                 <table role="presentation" cellpadding="0" cellspacing="0">
                   <tr>
                     <td bgcolor="#18181b" style="border-radius:10px;">
-                      <a href="https://cashflowforecaster.io/dashboard/calendar?utm_source=low_balance_alert&utm_medium=email" target="_blank" rel="noreferrer"
+                      <a href="https://www.cashflowforecaster.io/dashboard/calendar?utm_source=low_balance_alert&utm_medium=email" target="_blank" rel="noreferrer"
                         style="display:inline-block;padding:14px 24px;font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px;">
                         View Your Forecast
                       </a>
@@ -187,7 +187,7 @@ export function buildLowBalanceAlertEmail(data: LowBalanceAlertData): { subject:
                     <a href="${escapeHtml(data.unsubscribeUrl)}" style="color:#0f766e;text-decoration:underline;">Manage alert settings</a>
                   </p>
                   <p style="margin:0;">
-                    <a href="https://cashflowforecaster.io" style="color:#0f766e;text-decoration:none;">Cash Flow Forecaster</a> — See your money ahead of time
+                    <a href="https://www.cashflowforecaster.io" style="color:#0f766e;text-decoration:none;">Cash Flow Forecaster</a> — See your money ahead of time
                   </p>
                 </div>
               </td>

@@ -22,13 +22,13 @@ export const metadata: Metadata = {
     'freelance invoice calculator',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/tools/invoice-payment-predictor',
+    canonical: 'https://www.cashflowforecaster.io/tools/invoice-payment-predictor',
   },
   openGraph: {
     title: 'Invoice Payment Date Predictor - When Will You Get Paid?',
     description:
       'Stop guessing when invoices will be paid. Calculate expected payment dates based on terms, weekends, and client history.',
-    url: 'https://cashflowforecaster.io/tools/invoice-payment-predictor',
+    url: 'https://www.cashflowforecaster.io/tools/invoice-payment-predictor',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },
@@ -52,7 +52,7 @@ const structuredData = {
     priceCurrency: 'USD',
   },
   isAccessibleForFree: true,
-  url: 'https://cashflowforecaster.io/tools/invoice-payment-predictor',
+  url: 'https://www.cashflowforecaster.io/tools/invoice-payment-predictor',
 } as const;
 
 const faqSchema = {
@@ -138,7 +138,7 @@ export default function InvoicePaymentPredictorPage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.tools,
-              { name: 'Payment Predictor', url: 'https://cashflowforecaster.io/tools/invoice-payment-predictor' },
+              { name: 'Payment Predictor', url: 'https://www.cashflowforecaster.io/tools/invoice-payment-predictor' },
             ]}
             className="mb-8"
           />

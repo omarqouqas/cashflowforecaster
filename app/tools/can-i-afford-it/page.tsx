@@ -27,13 +27,13 @@ export const metadata: Metadata = {
     'side hustle budget calculator',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/tools/can-i-afford-it',
+    canonical: 'https://www.cashflowforecaster.io/tools/can-i-afford-it',
   },
   openGraph: {
     title: 'Can I Afford It? Free Cash Flow Calculator (Day-by-Day)',
     description:
       'Try a purchase and see your projected bank balance day-by-day. Built on the same forward-looking cash flow logic as Cash Flow Forecaster.',
-    url: 'https://cashflowforecaster.io/tools/can-i-afford-it',
+    url: 'https://www.cashflowforecaster.io/tools/can-i-afford-it',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },
@@ -57,7 +57,7 @@ const structuredData = {
     priceCurrency: 'USD',
   },
   isAccessibleForFree: true,
-  url: 'https://cashflowforecaster.io/tools/can-i-afford-it',
+  url: 'https://www.cashflowforecaster.io/tools/can-i-afford-it',
 } as const;
 
 const faqSchema = {
@@ -149,7 +149,7 @@ export default function CanIAffordItToolPage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.tools,
-              { name: 'Can I Afford It?', url: 'https://cashflowforecaster.io/tools/can-i-afford-it' },
+              { name: 'Can I Afford It?', url: 'https://www.cashflowforecaster.io/tools/can-i-afford-it' },
             ]}
             className="mb-8"
           />

@@ -27,13 +27,13 @@ export const metadata: Metadata = {
     'you need a budget alternative',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/compare/ynab',
+    canonical: 'https://www.cashflowforecaster.io/compare/ynab',
   },
   openGraph: {
     title: 'YNAB Alternative for Freelancers | 47% Cheaper',
     description:
       'Looking for a YNAB alternative? Cash Flow Forecaster is 47% cheaper, forward-looking, and built for irregular income.',
-    url: 'https://cashflowforecaster.io/compare/ynab',
+    url: 'https://www.cashflowforecaster.io/compare/ynab',
     siteName: 'Cash Flow Forecaster',
     type: 'article',
   },
@@ -164,7 +164,7 @@ export default function YNABComparisonPage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.compare,
-              { name: 'YNAB Alternative', url: 'https://cashflowforecaster.io/compare/ynab' },
+              { name: 'YNAB Alternative', url: 'https://www.cashflowforecaster.io/compare/ynab' },
             ]}
             className="mb-8"
           />

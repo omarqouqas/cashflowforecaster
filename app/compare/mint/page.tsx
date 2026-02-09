@@ -28,13 +28,13 @@ export const metadata: Metadata = {
     'credit karma alternative',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/compare/mint',
+    canonical: 'https://www.cashflowforecaster.io/compare/mint',
   },
   openGraph: {
     title: 'Mint Alternative for Freelancers | Free & No Ads',
     description:
       'Mint is shutting down. Cash Flow Forecaster is a free, forward-looking alternative with no ads—built for freelancers.',
-    url: 'https://cashflowforecaster.io/compare/mint',
+    url: 'https://www.cashflowforecaster.io/compare/mint',
     siteName: 'Cash Flow Forecaster',
     type: 'article',
   },
@@ -164,7 +164,7 @@ export default function MintComparisonPage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.compare,
-              { name: 'Mint Alternative', url: 'https://cashflowforecaster.io/compare/mint' },
+              { name: 'Mint Alternative', url: 'https://www.cashflowforecaster.io/compare/mint' },
             ]}
             className="mb-8"
           />

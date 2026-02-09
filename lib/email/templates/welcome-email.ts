@@ -111,7 +111,7 @@ export function buildWelcomeEmail(data: WelcomeEmailData): { subject: string; ht
                 <table role="presentation" cellpadding="0" cellspacing="0">
                   <tr>
                     <td bgcolor="#0f766e" style="border-radius:10px;">
-                      <a href="https://cashflowforecaster.io/dashboard" target="_blank" rel="noreferrer"
+                      <a href="https://www.cashflowforecaster.io/dashboard" target="_blank" rel="noreferrer"
                         style="display:inline-block;padding:14px 24px;font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px;">
                         Go to your dashboard
                       </a>
@@ -144,7 +144,7 @@ export function buildWelcomeEmail(data: WelcomeEmailData): { subject: string; ht
             <tr>
               <td style="padding:16px 24px;border-top:1px solid #f4f4f5;background-color:#fafafa;">
                 <div style="font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#71717a;">
-                  <a href="https://cashflowforecaster.io" style="color:#0f766e;text-decoration:none;">Cash Flow Forecaster</a> — See your money ahead of time
+                  <a href="https://www.cashflowforecaster.io" style="color:#0f766e;text-decoration:none;">Cash Flow Forecaster</a> — See your money ahead of time
                 </div>
               </td>
             </tr>

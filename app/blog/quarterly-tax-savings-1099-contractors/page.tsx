@@ -19,12 +19,12 @@ export const metadata: Metadata = {
   description: post.description,
   keywords: post.keywords,
   alternates: {
-    canonical: `https://cashflowforecaster.io/blog/${post.slug}`,
+    canonical: `https://www.cashflowforecaster.io/blog/${post.slug}`,
   },
   openGraph: {
     title: post.title,
     description: post.description,
-    url: `https://cashflowforecaster.io/blog/${post.slug}`,
+    url: `https://www.cashflowforecaster.io/blog/${post.slug}`,
     siteName: 'Cash Flow Forecaster',
     type: 'article',
     publishedTime: post.publishedAt,
@@ -50,11 +50,11 @@ const articleSchema = {
   publisher: {
     '@type': 'Organization',
     name: 'Cash Flow Forecaster',
-    url: 'https://cashflowforecaster.io',
+    url: 'https://www.cashflowforecaster.io',
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': `https://cashflowforecaster.io/blog/${post.slug}`,
+    '@id': `https://www.cashflowforecaster.io/blog/${post.slug}`,
   },
 };
 
@@ -105,7 +105,7 @@ export default function QuarterlyTaxSavingsPage() {
         items={[
           breadcrumbs.home,
           breadcrumbs.blog,
-          { name: 'Quarterly Tax Savings', url: `https://cashflowforecaster.io/blog/${post.slug}` },
+          { name: 'Quarterly Tax Savings', url: `https://www.cashflowforecaster.io/blog/${post.slug}` },
         ]}
         className="mb-8"
       />

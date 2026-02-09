@@ -22,13 +22,13 @@ export const metadata: Metadata = {
     'gig economy income stability',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/tools/income-variability-calculator',
+    canonical: 'https://www.cashflowforecaster.io/tools/income-variability-calculator',
   },
   openGraph: {
     title: 'Income Variability Calculator | Cash Flow Forecaster',
     description:
       'Measure your income stability. See your variability score, identify danger zones, and get emergency fund recommendations.',
-    url: 'https://cashflowforecaster.io/tools/income-variability-calculator',
+    url: 'https://www.cashflowforecaster.io/tools/income-variability-calculator',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },
@@ -51,7 +51,7 @@ const structuredData = {
     priceCurrency: 'USD',
   },
   isAccessibleForFree: true,
-  url: 'https://cashflowforecaster.io/tools/income-variability-calculator',
+  url: 'https://www.cashflowforecaster.io/tools/income-variability-calculator',
 } as const;
 
 const faqSchema = {
@@ -137,7 +137,7 @@ export default function IncomeVariabilityCalculatorPage() {
             items={[
               breadcrumbs.home,
               breadcrumbs.tools,
-              { name: 'Income Variability', url: 'https://cashflowforecaster.io/tools/income-variability-calculator' },
+              { name: 'Income Variability', url: 'https://www.cashflowforecaster.io/tools/income-variability-calculator' },
             ]}
             className="mb-8"
           />

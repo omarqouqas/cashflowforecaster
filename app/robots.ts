@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard/', '/api/', '/onboarding/'],
     },
-    sitemap: 'https://cashflowforecaster.io/sitemap.xml',
+    sitemap: 'https://www.cashflowforecaster.io/sitemap.xml',
   };
 }
 

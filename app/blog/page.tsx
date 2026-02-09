@@ -17,12 +17,12 @@ export const metadata: Metadata = {
     'financial planning freelancers',
   ],
   alternates: {
-    canonical: 'https://cashflowforecaster.io/blog',
+    canonical: 'https://www.cashflowforecaster.io/blog',
   },
   openGraph: {
     title: 'Freelancer Finance Blog | Cash Flow Forecaster',
     description: 'Expert guides on managing irregular income and cash flow forecasting for freelancers.',
-    url: 'https://cashflowforecaster.io/blog',
+    url: 'https://www.cashflowforecaster.io/blog',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
   },
@@ -38,11 +38,11 @@ const blogSchema = {
   '@type': 'Blog',
   name: 'Cash Flow Forecaster Blog',
   description: 'Expert guides on managing irregular income and cash flow forecasting for freelancers.',
-  url: 'https://cashflowforecaster.io/blog',
+  url: 'https://www.cashflowforecaster.io/blog',
   publisher: {
     '@type': 'Organization',
     name: 'Cash Flow Forecaster',
-    url: 'https://cashflowforecaster.io',
+    url: 'https://www.cashflowforecaster.io',
   },
 };
 

@@ -8,8 +8,8 @@ export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Cash Flow Forecaster',
-  url: 'https://cashflowforecaster.io',
-  logo: 'https://cashflowforecaster.io/logo.png',
+  url: 'https://www.cashflowforecaster.io',
+  logo: 'https://www.cashflowforecaster.io/logo.png',
   description: 'Cash flow calendar app for freelancers with irregular income. See your bank balance up to 365 days ahead.',
   foundingDate: '2024',
   sameAs: [
@@ -36,13 +36,13 @@ export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Cash Flow Forecaster',
-  url: 'https://cashflowforecaster.io',
+  url: 'https://www.cashflowforecaster.io',
   description: 'Cash flow calendar app for freelancers with irregular income',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://cashflowforecaster.io/search?q={search_term_string}',
+      urlTemplate: 'https://www.cashflowforecaster.io/search?q={search_term_string}',
     },
     'query-input': 'required name=search_term_string',
   },
@@ -69,11 +69,11 @@ export function generateBreadcrumbSchema(items: BreadcrumbItem[]) {
 
 // Predefined breadcrumb paths
 export const breadcrumbs = {
-  home: { name: 'Home', url: 'https://cashflowforecaster.io' },
-  tools: { name: 'Free Tools', url: 'https://cashflowforecaster.io/tools' },
-  compare: { name: 'Compare', url: 'https://cashflowforecaster.io/compare' },
-  pricing: { name: 'Pricing', url: 'https://cashflowforecaster.io/pricing' },
-  blog: { name: 'Blog', url: 'https://cashflowforecaster.io/blog' },
+  home: { name: 'Home', url: 'https://www.cashflowforecaster.io' },
+  tools: { name: 'Free Tools', url: 'https://www.cashflowforecaster.io/tools' },
+  compare: { name: 'Compare', url: 'https://www.cashflowforecaster.io/compare' },
+  pricing: { name: 'Pricing', url: 'https://www.cashflowforecaster.io/pricing' },
+  blog: { name: 'Blog', url: 'https://www.cashflowforecaster.io/blog' },
 } as const;
 
 // AEO-optimized definitional content for common questions

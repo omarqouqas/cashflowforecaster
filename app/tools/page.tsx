@@ -12,13 +12,13 @@ export const metadata: Metadata = {
   description:
     'Free cash flow tools to help freelancers forecast balances, avoid overdrafts, and make smarter spending decisions.',
   alternates: {
-    canonical: 'https://cashflowforecaster.io/tools',
+    canonical: 'https://www.cashflowforecaster.io/tools',
   },
   openGraph: {
     title: 'Free Cash Flow Tools',
     description:
       'Try free cash flow tools to forecast your balance and avoid getting blindsided.',
-    url: 'https://cashflowforecaster.io/tools',
+    url: 'https://www.cashflowforecaster.io/tools',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
     images: [{ url: '/hero-dashboard.png' }],
