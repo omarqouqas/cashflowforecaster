@@ -67,7 +67,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 
 **Implementation Checklist:**
 - [x] Add to landing page features (secondary feature section) ✅ Added Feb 8, 2026
-- [ ] Add FAQ: "How does the debt payoff planner work?"
+- [x] Add FAQ: "How does the debt payoff planner work?" ✅ Added Feb 8, 2026
 - [x] Add to comparison tables ✅ Added Feb 8, 2026
 - [ ] Blog post: "Debt Payoff Strategies: Snowball vs Avalanche for Irregular Income"
 
@@ -89,7 +89,7 @@ This document tracks content gaps identified in landing pages, FAQs, and blog ba
 
 **Implementation Checklist:**
 - [x] Update landing page: "CSV" → "CSV & Excel (.xlsx, .xls)" ✅ Added Feb 8, 2026
-- [ ] Add FAQ: "Can I import from Excel?"
+- [x] Add FAQ: "Can I import from Excel?" ✅ Added Feb 8, 2026
 - [x] Update comparison pages to mention Excel import ✅ Added Feb 8, 2026
 - [ ] Blog post: "How to Import Your Bank Transactions from Excel"
 
@@ -187,14 +187,14 @@ For all comparison pages (/compare/ynab, /compare/mint, /compare/cash-flow-calen
 - [x] Priority 1: Credit Card Forecasting - FAQ (February 8, 2026)
 - [x] Priority 2: Lifetime Deal FAQ added (February 8, 2026)
 - [x] Priority 3: Debt Payoff Planner - Landing page + comparison tables (February 8, 2026)
+- [x] Priority 3: Debt Payoff Planner - FAQ question (February 8, 2026)
 - [x] Priority 4: Excel Import - Landing page + comparison tables (February 8, 2026)
+- [x] Priority 4: Excel Import - FAQ question (February 8, 2026)
 
 ### In Progress
 - None
 
 ### Not Started
-- Priority 3: Debt Payoff Planner - FAQ question
-- Priority 4: Excel Import - FAQ question
 - Priority 5: Reports prominence
 - Priority 6: Import recurring entries
 - Priority 7: YNAB cross-linking

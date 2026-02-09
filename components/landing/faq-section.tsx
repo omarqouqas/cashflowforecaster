@@ -54,6 +54,14 @@ const faqs: FAQItem[] = [
     answer: "Yes! Cash Flow Forecaster offers credit card cash flow forecasting—a feature most competitors don't have. Add your credit cards with their limits, APR, and payment due dates. You'll see: credit utilization tracking with color-coded warnings (green under 30%, amber 30-50%, red over 50%), payment due dates appearing in your cash flow calendar, a payment simulator to compare minimum payment vs statement balance vs custom amounts, and interest cost projections. For users with multiple cards, our Debt Payoff Planner compares Snowball vs Avalanche strategies to help you become debt-free faster."
   },
   {
+    question: "How does the debt payoff planner work?",
+    answer: "The Debt Payoff Planner helps you create a strategy to become debt-free. Add your credit cards or loans with their balances, interest rates (APR), and minimum payments. The planner then compares two proven strategies: Snowball (pay off smallest balances first for quick wins) vs Avalanche (pay off highest interest rates first to save money). You'll see a side-by-side comparison showing total interest paid, payoff timeline, and monthly payment schedules. You can also simulate extra payments to see how paying an extra $50 or $100 per month accelerates your debt-free date and reduces total interest."
+  },
+  {
+    question: "Can I import from Excel?",
+    answer: "Yes! Cash Flow Forecaster supports both CSV and Excel file imports (.xlsx, .xls). Just drag and drop your bank statement or transaction export into the import page. Our smart column detection automatically identifies date, description, and amount columns—no manual mapping required. The importer also detects recurring transactions and can create recurring bills or income sources from your import. This works great for bank exports, credit card statements, or even your own Excel budget spreadsheets."
+  },
+  {
     question: "Who is Cash Flow Forecaster built for?",
     answer: "We built this for freelancers, gig workers, and anyone with irregular income. If you've ever wondered 'Can I pay rent on the 1st?' or 'Am I safe until my next invoice pays?', this is for you. Traditional budgeting apps assume you get a steady paycheck on the 1st and 15th—we don't. Great fit for graphic designers, freelance writers, marketing consultants, web developers, and side-gig hustlers. Not built for complex accounting or businesses with full-time bookkeepers—we keep it simple on purpose."
   },
