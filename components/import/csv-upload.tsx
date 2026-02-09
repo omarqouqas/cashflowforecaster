@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Upload, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { parseCsv, type CsvParseResult } from '@/lib/import/parse-csv';
+import { parseExcel, isExcelFile, isSupportedSpreadsheet } from '@/lib/import/parse-xlsx';
 
 type Props = {
   onLoaded: (payload: { fileName: string; parsed: CsvParseResult }) => void;
@@ -19,8 +20,8 @@ export function CsvUpload({ onLoaded }: Props) {
     setError(null);
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      setError('Please upload a .csv file.');
+    if (!isSupportedSpreadsheet(file.name)) {
+      setError('Please upload a .csv, .xlsx, or .xls file.');
       return;
     }
 
@@ -33,15 +34,25 @@ export function CsvUpload({ onLoaded }: Props) {
 
     setIsLoading(true);
     try {
-      const text = await file.text();
-      const parsed = parseCsv(text);
+      let parsed: CsvParseResult;
+
+      if (isExcelFile(file.name)) {
+        // Parse Excel file
+        const buffer = await file.arrayBuffer();
+        parsed = parseExcel(buffer);
+      } else {
+        // Parse CSV file
+        const text = await file.text();
+        parsed = parseCsv(text);
+      }
+
       if (parsed.headers.length === 0) {
-        setError('Could not find a header row. Make sure this is a valid CSV export.');
+        setError('Could not find a header row. Make sure this is a valid spreadsheet export.');
         return;
       }
       onLoaded({ fileName: file.name, parsed });
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to read CSV.');
+      setError(e instanceof Error ? e.message : 'Failed to read file.');
     } finally {
       setIsLoading(false);
     }
@@ -79,9 +90,9 @@ export function CsvUpload({ onLoaded }: Props) {
           <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-4">
             <Upload className="w-8 h-8 text-teal-400" />
           </div>
-          <p className="text-base font-semibold text-zinc-100 mb-2">Upload your bank CSV</p>
+          <p className="text-base font-semibold text-zinc-100 mb-2">Upload your bank export</p>
           <p className="text-sm text-zinc-300 mb-4 max-w-md">
-            Drag and drop your CSV file here, or click the button below to browse
+            Drag and drop your CSV or Excel file here, or click the button below to browse
           </p>
           <Button
             type="button"
@@ -92,7 +103,7 @@ export function CsvUpload({ onLoaded }: Props) {
             Choose file
           </Button>
           <p className="text-xs text-zinc-400 mt-3">
-            Accepts .csv files only (max 5MB)
+            Accepts .csv, .xlsx, and .xls files (max 5MB)
           </p>
         </div>
       </div>
@@ -100,7 +111,7 @@ export function CsvUpload({ onLoaded }: Props) {
       <input
         id="csv-file-input"
         type="file"
-        accept=".csv,text/csv"
+        accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
         className="hidden"
         onChange={(e) => {
           void handleFile(e.target.files?.[0] ?? null);
@@ -121,17 +132,24 @@ export function CsvUpload({ onLoaded }: Props) {
           className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
         >
           <HelpCircle className="w-4 h-4" />
-          <span>What format should my CSV be in?</span>
+          <span>What format should my file be in?</span>
           {showHelp ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
 
         {showHelp && (
           <div className="mt-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg text-sm">
             <p className="text-zinc-200 mb-3">
-              Export a CSV file from your bank&apos;s website. Most banks support CSV export from the transaction history page.
+              Export a CSV or Excel file from your bank&apos;s website. Most banks support CSV or Excel export from the transaction history page.
             </p>
 
-            <p className="text-zinc-300 font-medium mb-2">Your CSV should include columns for:</p>
+            <p className="text-zinc-300 font-medium mb-2">Supported file types:</p>
+            <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
+              <li><span className="text-zinc-200">.csv</span> - Comma-separated values</li>
+              <li><span className="text-zinc-200">.xlsx</span> - Excel workbook (uses first sheet)</li>
+              <li><span className="text-zinc-200">.xls</span> - Legacy Excel format</li>
+            </ul>
+
+            <p className="text-zinc-300 font-medium mb-2">Your file should include columns for:</p>
             <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
               <li><span className="text-zinc-200">Date</span> - when the transaction occurred</li>
               <li><span className="text-zinc-200">Description</span> - merchant name or memo</li>
@@ -142,7 +160,7 @@ export function CsvUpload({ onLoaded }: Props) {
             <ul className="list-disc list-inside text-zinc-400 space-y-1 mb-3">
               <li>Date formats: MM/DD/YYYY, YYYY-MM-DD, MM/DD/YY</li>
               <li>Amount formats: $1,234.56, -100.00, (100.00) for negatives</li>
-              <li>Delimiters: comma, tab, or semicolon separated</li>
+              <li>CSV delimiters: comma, tab, or semicolon separated</li>
             </ul>
 
             <p className="text-zinc-400 text-xs">

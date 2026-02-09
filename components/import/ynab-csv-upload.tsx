@@ -4,7 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Upload, HelpCircle, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { parseYnabCsv, type YnabParseResult } from '@/lib/import/parse-ynab-csv';
+import { parseCsv } from '@/lib/import/parse-csv';
+import { parseYnabData, type YnabParseResult } from '@/lib/import/parse-ynab-csv';
+import { parseExcel, isExcelFile, isSupportedSpreadsheet } from '@/lib/import/parse-xlsx';
 
 type Props = {
   onLoaded: (payload: { fileName: string; result: YnabParseResult }) => void;
@@ -20,8 +22,8 @@ export function YnabCsvUpload({ onLoaded }: Props) {
     setError(null);
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      setError('Please upload a .csv file.');
+    if (!isSupportedSpreadsheet(file.name)) {
+      setError('Please upload a .csv, .xlsx, or .xls file.');
       return;
     }
 
@@ -34,20 +36,29 @@ export function YnabCsvUpload({ onLoaded }: Props) {
 
     setIsLoading(true);
     try {
-      const text = await file.text();
-      const result = parseYnabCsv(text);
+      // Parse file based on type
+      let parsed;
+      if (isExcelFile(file.name)) {
+        const buffer = await file.arrayBuffer();
+        parsed = parseExcel(buffer);
+      } else {
+        const text = await file.text();
+        parsed = parseCsv(text);
+      }
+
+      const result = parseYnabData(parsed);
 
       // Check if format was detected
       if (result.format === 'unknown') {
         setError(
-          'This doesn\'t look like a YNAB export. Expected columns: Date, Payee, Category, Memo, Outflow, Inflow. Try the generic CSV import instead.'
+          'This doesn\'t look like a YNAB export. Expected columns: Date, Payee, Category, Memo, Outflow, Inflow. Try the generic import instead.'
         );
         return;
       }
 
       onLoaded({ fileName: file.name, result });
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to read CSV.');
+      setError(e instanceof Error ? e.message : 'Failed to read file.');
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +98,7 @@ export function YnabCsvUpload({ onLoaded }: Props) {
           </div>
           <p className="text-base font-semibold text-zinc-100 mb-2">Upload your YNAB export</p>
           <p className="text-sm text-zinc-400 mb-4 max-w-md">
-            Drag and drop your YNAB CSV file here, or click the button below to browse
+            Drag and drop your YNAB export file here, or click the button below to browse
           </p>
           <Button
             type="button"
@@ -98,7 +109,7 @@ export function YnabCsvUpload({ onLoaded }: Props) {
             Choose file
           </Button>
           <p className="text-xs text-zinc-500 mt-3">
-            Accepts .csv files only (max 5MB)
+            Accepts .csv, .xlsx, and .xls files (max 5MB)
           </p>
         </div>
       </div>
@@ -106,7 +117,7 @@ export function YnabCsvUpload({ onLoaded }: Props) {
       <input
         id="ynab-csv-file-input"
         type="file"
-        accept=".csv,text/csv"
+        accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
         className="hidden"
         onChange={(e) => {
           void handleFile(e.target.files?.[0] ?? null);
@@ -121,7 +132,7 @@ export function YnabCsvUpload({ onLoaded }: Props) {
             href="/dashboard/import"
             className="inline-flex items-center gap-1 text-sm text-teal-400 hover:text-teal-300 mt-2"
           >
-            Try generic CSV import
+            Try generic import
             <ExternalLink className="w-3 h-3" />
           </Link>
         </div>

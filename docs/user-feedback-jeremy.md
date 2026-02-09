@@ -424,18 +424,20 @@ Feb 15 ────────────────────────�
 **Feedback:** "Is it possible to allow excel file imports (maybe not that important)"
 
 **Current State:**
-- CSV import only
-
-**Analysis:** Many users export from accounting software as Excel. Low priority per Jeremy but would reduce friction.
+- Full Excel import support (.xlsx and .xls files)
+- Works in both generic import and YNAB import
+- Uses first sheet of workbook
 
 **Action:** Add .xlsx import support
 
-**Status:** 🔲 Not Started (Low Priority)
+**Status:** ✅ Implemented
 
-**Implementation Ideas:**
-- Use existing `xlsx` package (already installed for exports)
-- Parse first sheet, convert to same format as CSV handler
-- Minimal effort since infrastructure exists
+**Technical Implementation:**
+- Created `lib/import/parse-xlsx.ts` using existing `xlsx` package
+- Updated `csv-upload.tsx` to accept .csv, .xlsx, and .xls files
+- Updated `ynab-csv-upload.tsx` for Excel support
+- Excel dates automatically converted to ISO format
+- All existing column mapping and validation works with Excel files
 
 ---
 
@@ -620,8 +622,8 @@ Jeremy's key points:
    - Decision: Cash Flow First, Light Invoicing
    - Future cleanup: Rename invoices, simplify creation, emphasize cash flow connection
 
-### Lower Priority
-5. 🔲 **Excel imports** - Nice to have (#7)
+### Lower Priority (Completed)
+5. ✅ **Excel imports** - Nice to have (#7) - Implemented!
 
 ### Validated/No Change
 6. ✅ Bank sync approach validated (#12)

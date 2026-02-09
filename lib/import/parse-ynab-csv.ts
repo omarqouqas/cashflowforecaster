@@ -6,7 +6,7 @@
  * - Register: Account,Flag,Date,Payee,Category,Memo,Outflow,Inflow,Cleared
  */
 
-import { parseCsv, parseUsAmount, parseUsDateToIsoDate } from './parse-csv';
+import { parseCsv, parseUsAmount, parseUsDateToIsoDate, type CsvParseResult } from './parse-csv';
 
 export type YnabCsvFormat = 'basic' | 'register' | 'unknown';
 
@@ -208,16 +208,17 @@ export function suggestActionFromCategory(category: string | null, amount: numbe
 }
 
 /**
- * Parse YNAB CSV export into transactions
+ * Parse YNAB data from already-parsed headers and rows
+ * (works with both CSV and Excel parsed data)
  */
-export function parseYnabCsv(text: string): YnabParseResult {
-  const { headers, rows } = parseCsv(text);
+export function parseYnabData(parsed: CsvParseResult): YnabParseResult {
+  const { headers, rows } = parsed;
 
   if (headers.length === 0) {
     return {
       format: 'unknown',
       transactions: [],
-      errors: [{ row: 0, message: 'No headers found in CSV' }],
+      errors: [{ row: 0, message: 'No headers found in file' }],
     };
   }
 
@@ -227,7 +228,7 @@ export function parseYnabCsv(text: string): YnabParseResult {
     return {
       format: 'unknown',
       transactions: [],
-      errors: [{ row: 0, message: 'CSV does not match YNAB export format. Expected columns: Date, Payee, Category, Memo, Outflow, Inflow' }],
+      errors: [{ row: 0, message: 'File does not match YNAB export format. Expected columns: Date, Payee, Category, Memo, Outflow, Inflow' }],
     };
   }
 
@@ -302,4 +303,12 @@ export function parseYnabCsv(text: string): YnabParseResult {
     transactions,
     errors,
   };
+}
+
+/**
+ * Parse YNAB CSV export into transactions
+ */
+export function parseYnabCsv(text: string): YnabParseResult {
+  const parsed = parseCsv(text);
+  return parseYnabData(parsed);
 }
