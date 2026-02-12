@@ -32,9 +32,9 @@ import { createClient } from '@/lib/supabase/server';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 
 export const metadata: Metadata = {
-  title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
+  title: 'Stop Guessing If You Can Afford It | Cash Flow Forecaster',
   description:
-    'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your 365-day forecast automatically.',
+    'See your real bank balance 90 days out — no bank connection required. One number tells you what\'s safe to spend today without overdrafting later. Built for freelancers with irregular income.',
   keywords: [
     // Core product terms
     'cash flow calendar',
@@ -98,9 +98,9 @@ export const metadata: Metadata = {
     canonical: 'https://www.cashflowforecaster.io',
   },
   openGraph: {
-    title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
+    title: 'Stop Guessing If You Can Afford It | Cash Flow Forecaster',
     description:
-      'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your forecast automatically.',
+      'See your real bank balance 90 days out — no bank connection required. One number tells you what\'s safe to spend today without overdrafting later.',
     url: 'https://www.cashflowforecaster.io',
     siteName: 'Cash Flow Forecaster',
     type: 'website',
@@ -115,9 +115,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cash Flow Calendar for Freelancers | Cash Flow Forecaster',
+    title: 'Stop Guessing If You Can Afford It | Cash Flow Forecaster',
     description:
-      'Forecast your cash flow and get paid faster. The only cash flow calendar with built-in invoicing—send invoices, collect payments, and watch income appear in your forecast automatically.',
+      'See your real bank balance 90 days out — no bank connection required. One number tells you what\'s safe to spend today without overdrafting later.',
     images: ['https://www.cashflowforecaster.io/hero-dashboard.png'],
   },
 };
@@ -254,18 +254,22 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
 
             <h1 className="mt-6 text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Forecast Your Cash Flow. Get Paid Faster.
+              Stop guessing if you can afford it.
             </h1>
 
             <p className="mt-5 text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-              Know exactly what&apos;s <span className="text-teal-300 font-semibold">safe to spend</span> — today and for the next <span className="text-teal-300 font-semibold">365 days</span>.
-              The only cash flow calendar with built-in invoicing: send invoices, collect payments, and watch expected income appear in your forecast automatically.
+              See your real bank balance <span className="text-teal-300 font-semibold">90 days out</span> — no bank connection required.
+              One number tells you what&apos;s <span className="text-teal-300 font-semibold">safe to spend</span> today without overdrafting later.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
 
               <p className="text-sm text-zinc-400">Set up in <span className="text-teal-300 font-medium">3 minutes</span> • No credit card • <span className="text-teal-300 font-medium">Free forever</span> plan</p>
+
+              <p className="text-sm text-teal-300/80 font-medium">
+                Join 50+ freelancers testing the beta
+              </p>
 
               <p className="text-sm text-zinc-300">
                 Already have an account?{' '}
@@ -859,10 +863,10 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-                Built for freelancers who are tired of guessing
+                For freelancers tired of the &quot;will I make rent?&quot; anxiety
               </h2>
               <p className="mt-3 text-zinc-400 max-w-3xl mx-auto">
-                Cash Flow Forecaster is the most reliable cash flow forecasting system for anyone whose income doesn&apos;t arrive on the 1st and 15th like clockwork.
+                If your income doesn&apos;t arrive on the 1st and 15th like clockwork, you need a tool that understands irregular cash flow.
               </p>
             </div>
 
@@ -910,9 +914,9 @@ export default async function Home({ searchParams }: HomeProps) {
         <section className="px-6 pb-16">
           <div className="mx-auto max-w-4xl">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-10 text-center">
-              <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">Ready to forecast your cash flow and get paid faster?</h3>
+              <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight">Know if you&apos;ll make rent — 90 days before it&apos;s due</h3>
               <p className="mt-3 text-zinc-400 max-w-lg mx-auto">
-                See your cash flow calendar in minutes. Send your first invoice today. No credit card, no commitment.
+                See your future bank balance in minutes. No bank connection. No credit card. No commitment.
               </p>
               <div className="mt-6 flex justify-center">
                 <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
@@ -933,10 +937,10 @@ export default async function Home({ searchParams }: HomeProps) {
         <section className="px-6 py-16">
           <div className="mx-auto max-w-6xl text-center">
             <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-              Ready to forecast and get paid — in one place?
+              Stop the &quot;can I afford this?&quot; anxiety
             </h2>
             <p className="mt-3 text-zinc-400">
-              Join freelancers who see their future cash flow, send invoices, and collect payments — all without switching apps.
+              Join 50+ freelancers who finally know what&apos;s safe to spend — without connecting their bank or building spreadsheets.
             </p>
             <div className="mt-6 flex justify-center">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />
