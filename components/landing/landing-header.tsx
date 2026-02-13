@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { GetStartedCTA } from '@/components/landing/get-started-cta';
 
@@ -20,9 +21,13 @@ export default function LandingHeader() {
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
       <nav className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-white font-semibold">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500/15 ring-1 ring-teal-500/30">
-            <span className="h-3 w-3 rounded-sm bg-teal-500" aria-hidden="true" />
-          </span>
+          <Image
+            src="/logo.png"
+            alt="Cash Flow Forecaster"
+            width={32}
+            height={32}
+            className="rounded-lg"
+          />
           <span>Cash Flow Forecaster</span>
         </Link>
 

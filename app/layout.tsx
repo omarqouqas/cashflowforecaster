@@ -92,8 +92,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-        {/* Favicon - SVG for modern browsers */}
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        {/* Favicon */}
+        <link rel="icon" type="image/png" href="/logo.png" />
 
         {/* Organization and Website structured data for SEO/AEO */}
         <script
