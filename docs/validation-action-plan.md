@@ -33,10 +33,12 @@ Contact your 3 beta testers directly. Use this template:
 
 ### Day 3-4: Public Launch
 
-1. **Indie Hackers** — Post in product section
+1. **Indie Hackers** — Comment on relevant posts to build account credibility (new accounts can't post products immediately)
 2. **Twitter/X** — Launch thread
 3. **LinkedIn** — Personal post + targeted outreach
 4. **Hacker News** — Show HN
+
+**Note:** Reddit is off-limits due to ban history. Do not attempt Reddit until free channels are exhausted and you have paying customers.
 
 ### Day 5-7: Outreach & Iteration
 
@@ -186,6 +188,73 @@ The goal is to start conversations, not close sales. You're looking for:
 > **No new features until you have 50 active users, 5 paying customers, and 3 testimonials.**
 
 Every hour spent coding is an hour not spent validating. The product is good enough. Now prove people want it.
+
+---
+
+## When to Spend Money on Distribution Tools
+
+### The Principle
+
+> **Your first dollar of revenue should come before your next dollar of spend.**
+
+You're trying to validate if people will pay for your product. Spending money to reach more people is optimizing distribution before validating demand.
+
+### Specific Case: MediaFast ($129) for Reddit Strategy
+
+**Current situation:**
+- 6 Reddit bans
+- $0 revenue
+- Free channels (LinkedIn, Twitter, IH) untested
+
+**Decision: NOT YET**
+
+| Factor | Reality |
+|--------|---------|
+| Current revenue | $0 |
+| Free channels untested | LinkedIn, Twitter, IH comments |
+| Reddit track record | 6 bans — platform actively rejected you |
+| $129 | Real money with no validated product-market fit |
+
+**The question isn't "how do I reach more people?"**
+**It's "will anyone pay for this?"**
+
+You can answer that with free channels first.
+
+### When Paid Tools Make Sense
+
+Buy distribution tools like MediaFast **AFTER** you've:
+
+1. Gotten 3 testimonials ✗
+2. Hit 25+ users from free channels ✗
+3. Converted at least 1-2 paying customers ✗
+
+At that point, $129 to scale a validated product is a no-brainer. Before that, it's $129 to maybe reach people who might not pay anyway.
+
+### The Exception
+
+If you try LinkedIn/Twitter hard for 2 weeks (100+ conversations) and get zero traction, then Reddit might be worth the gamble. But exhaust the free options first.
+
+### Spending Rules
+
+| Milestone | Then You Can Spend On |
+|-----------|----------------------|
+| 0 paying customers | Nothing. Use free channels only. |
+| 1-2 paying customers | Small tools (<$50) to improve efficiency |
+| 5+ paying customers | Distribution tools like MediaFast ($129) |
+| $500+ MRR | Ads, premium tools, contractors |
+
+---
+
+## Channel Status
+
+| Channel | Status | Notes |
+|---------|--------|-------|
+| Reddit | Blocked | 6 bans. Do not attempt until validated elsewhere. |
+| Indie Hackers | Limited | New account. Build credibility via comments first. |
+| LinkedIn | Available | Primary channel. Start here. |
+| Twitter/X | Available | Secondary channel. Launch thread ready. |
+| Hacker News | Available | Show HN post ready. |
+| Apollo/Cold Email | Failed | Generated zero interest. Deprioritize. |
 
 ---
 
