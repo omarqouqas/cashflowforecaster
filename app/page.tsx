@@ -911,6 +911,27 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         </section>
 
+        {/* Testimonial */}
+        <section className="px-6 py-12">
+          <div className="mx-auto max-w-3xl">
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 md:p-10">
+              <blockquote className="text-lg md:text-xl text-zinc-200 leading-relaxed">
+                &quot;I could never see what was coming financially. Bills would sneak up on me, and I&apos;d only find out after getting charged.
+                The Cash Flow Calendar gives me a clear 90-day view of what&apos;s coming in and going out, so nothing catches me off guard.&quot;
+              </blockquote>
+              <div className="mt-6 flex items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+                  <span className="text-teal-300 font-semibold text-lg">D</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Daniel</p>
+                  <p className="text-sm text-zinc-400">Customer Success Manager</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="px-6 pb-16">
           <div className="mx-auto max-w-4xl">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-10 text-center">
