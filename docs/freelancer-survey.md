@@ -119,7 +119,7 @@
 >
 > I'm researching how freelancers handle the "feast or famine" income cycle. If you've got 2 minutes, I'd really appreciate your honest answers:
 >
-> [SURVEY LINK]
+> https://forms.gle/g4A9kdYvGAEdH27m6
 >
 > No product pitch — just trying to understand if this is a universal struggle or just my own experience. Thanks!
 
@@ -131,7 +131,7 @@
 >
 > Put together a quick 2-min survey to find out:
 >
-> [SURVEY LINK]
+> https://forms.gle/g4A9kdYvGAEdH27m6
 >
 > Would really appreciate your input — even if you've got it all figured out.
 
@@ -143,9 +143,29 @@
 >
 > 2-minute survey, no BS:
 >
-> [SURVEY LINK]
+> https://forms.gle/g4A9kdYvGAEdH27m6
 >
 > Appreciate anyone who takes the time.
+
+---
+
+## X (Twitter) Post
+
+> Freelancers: quick 2-min survey 🙏
+>
+> Researching how people handle the "feast or famine" income cycle. No sales pitch, just trying to understand if cash flow anxiety is universal or just me.
+>
+> https://forms.gle/g4A9kdYvGAEdH27m6
+>
+> Would really appreciate your input.
+
+**Follow-up reply to your own tweet:**
+> RT appreciated if you know any freelancers 🙌
+
+**Hashtags (add in a separate reply, not main post):**
+> #freelance #solopreneur #freelancerlife
+
+**Timing:** Post 30–60 min after LinkedIn to track which platform performs better.
 
 ---
 
