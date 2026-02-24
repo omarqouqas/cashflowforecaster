@@ -9,7 +9,7 @@
 ### Daniel — Customer Success Manager
 
 **Date Collected:** February 2026
-**Permission:** Pending
+**Permission:** Granted
 **Persona:** Professional with side income / freelance background
 **Source:** Direct ask via message
 
