@@ -206,6 +206,14 @@ export default function BestCashFlowAppsPage() {
           paycheck every two weeks. When your income varies wildly month to month, those tools fall short.
         </p>
 
+        <div className="not-prose my-6 rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
+          <p className="text-zinc-300 text-sm">
+            This matters: <strong className="text-white">82% of freelance failures are due to poor cash flow
+            management</strong>, and <strong className="text-white">47% of freelancers cite income instability
+            as their #1 worry</strong>. The right tool can make the difference.
+          </p>
+        </div>
+
         <p>
           We tested the most popular options to find which ones actually work for irregular income. Here&apos;s what we
           found.

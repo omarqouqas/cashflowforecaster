@@ -195,6 +195,14 @@ export default function YNABComparisonPage() {
               For freelancers with irregular income, that forward-looking view is often more valuable.
             </p>
 
+            <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+              <p className="text-zinc-300 text-sm">
+                Why does this matter? <strong className="text-white">82% of freelance failures are due to poor cash flow
+                management</strong>. And with <strong className="text-white">47% of freelancers citing income instability
+                as their #1 worry</strong>, backward-looking budgets often miss the real problem: timing.
+              </p>
+            </div>
+
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950" />
               <Link

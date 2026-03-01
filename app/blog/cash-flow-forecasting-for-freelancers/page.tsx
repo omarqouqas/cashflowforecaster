@@ -250,7 +250,9 @@ export default function CashFlowForecastingPage() {
             </h2>
 
             <p className="text-zinc-300 leading-relaxed mb-6">
-              Cash flow forecasting is harder for freelancers than employees because of three factors:
+              Cash flow forecasting is harder for freelancers than employees because of three factors.
+              And the stakes are high: <strong className="text-white">82% of freelance and small business
+              failures are directly due to poor cash flow management</strong>—not lack of skill or clients.
             </p>
 
             <div className="not-prose space-y-4 mb-6">
@@ -258,7 +260,8 @@ export default function CashFlowForecastingPage() {
                 <h4 className="font-semibold text-white mb-2">1. Income timing uncertainty</h4>
                 <p className="text-zinc-400 text-sm">
                   You invoice on Net-30, but will the client actually pay in 30 days? Maybe it&apos;s 45. Maybe 60.
-                  Some clients pay early. Forecasting requires educated guesses about when money actually arrives.
+                  Research shows <strong className="text-white">47-50% of freelancers experience late payments
+                  in their first 6 months</strong>. Forecasting requires educated guesses about when money actually arrives.
                 </p>
               </div>
 
@@ -274,7 +277,8 @@ export default function CashFlowForecastingPage() {
                 <h4 className="font-semibold text-white mb-2">3. Irregular expenses</h4>
                 <p className="text-zinc-400 text-sm">
                   Quarterly taxes, annual insurance, software renewals—these large irregular expenses are easy to
-                  forget until they blindside you.
+                  forget until they blindside you. <strong className="text-white">80% of freelancers can&apos;t
+                  comfortably handle an unexpected $1,000 expense</strong>—largely because they didn&apos;t see it coming.
                 </p>
               </div>
             </div>
@@ -467,7 +471,10 @@ export default function CashFlowForecastingPage() {
 
             <p className="text-zinc-300 leading-relaxed mb-6">
               You can absolutely build a cash flow forecast in Excel or Google Sheets. Many freelancers start
-              there. But spreadsheets have limitations:
+              there—in fact, <strong className="text-white">43% of organizations still use spreadsheets for
+              cash flow forecasting</strong>. But research shows that automated tools are <strong className="text-white">30-50%
+              more accurate</strong> and save <strong className="text-white">2-5 hours per week</strong> on
+              manual data entry and updates. Here&apos;s how they compare:
             </p>
 
             <div className="not-prose rounded-2xl border border-zinc-800 bg-zinc-900/40 overflow-hidden mb-6">
@@ -510,13 +517,24 @@ export default function CashFlowForecastingPage() {
                     <td className="px-4 py-3 text-center text-zinc-300">Hours</td>
                     <td className="px-4 py-3 text-center text-teal-300">Minutes</td>
                   </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-zinc-300">Forecast accuracy</td>
+                    <td className="px-4 py-3 text-center text-amber-400">Baseline</td>
+                    <td className="px-4 py-3 text-center text-teal-400">30-50% more accurate</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-zinc-300">Weekly maintenance</td>
+                    <td className="px-4 py-3 text-center text-zinc-300">2-5 hours</td>
+                    <td className="px-4 py-3 text-center text-teal-300">Minutes</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
 
             <p className="text-zinc-300 leading-relaxed">
               If you enjoy spreadsheets and have time to maintain them, they work fine. If you want something
-              that &quot;just works&quot; and saves time, a dedicated tool pays for itself quickly.
+              that &quot;just works&quot; and saves 2-5 hours weekly—time you could spend on billable work—a
+              dedicated tool pays for itself quickly.
             </p>
           </section>
         </div>

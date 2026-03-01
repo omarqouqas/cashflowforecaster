@@ -172,6 +172,15 @@ export default function EmergencyFundPage() {
               a steady paycheck and unemployment benefits as a backstop. Freelancers have neither.
             </p>
 
+            <div className="not-prose rounded-2xl border border-rose-500/20 bg-rose-500/5 p-6 mb-6">
+              <p className="text-zinc-300">
+                Research shows <strong className="text-white">80% of freelancers can&apos;t comfortably handle
+                an unexpected $1,000 expense</strong>. And <strong className="text-white">82% of freelance and
+                small business failures are directly due to poor cash flow management</strong>—not lack of skill
+                or clients.
+              </p>
+            </div>
+
             <div className="not-prose rounded-2xl border border-zinc-800 bg-zinc-900/40 overflow-hidden mb-6">
               <table className="w-full text-sm">
                 <thead className="bg-zinc-950/40 border-b border-zinc-800">

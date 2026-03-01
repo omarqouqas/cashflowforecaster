@@ -206,6 +206,15 @@ export default function MintComparisonPage() {
               answer: &quot;Can I afford this before my next invoice pays?&quot;
             </p>
 
+            <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+              <p className="text-zinc-300 text-sm">
+                Research shows <strong className="text-white">82% of freelance failures are due to poor cash flow
+                management</strong>—not lack of clients. And <strong className="text-white">80% of freelancers
+                can&apos;t comfortably handle a $1,000 unexpected expense</strong>. A forward-looking tool helps
+                you see problems before they hit.
+              </p>
+            </div>
+
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 focus:ring-teal-400 focus:ring-offset-zinc-950" />
               <Link

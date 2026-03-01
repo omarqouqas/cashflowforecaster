@@ -223,11 +223,19 @@ export default function IrregularIncomeGuidePage() {
               If you&apos;re a freelancer, consultant, or gig worker, you likely know this reality well: one month
               you might earn $8,000, the next month $3,000, and the month after that $12,000.
             </p>
-            <p className="text-zinc-300 leading-relaxed">
+            <p className="text-zinc-300 leading-relaxed mb-6">
               According to the Freelancers Union, <strong className="text-white">47% of freelancers</strong> cite
               income instability as their #1 financial concern. It&apos;s not that freelancers earn less—many earn
               more than their salaried counterparts—it&apos;s that the timing and amount of payments is unpredictable.
             </p>
+
+            <div className="not-prose rounded-2xl border border-rose-500/20 bg-rose-500/5 p-6">
+              <p className="text-zinc-300">
+                The stakes are high: <strong className="text-white">82% of freelance and small business failures
+                are directly due to poor cash flow management</strong>—not lack of skill or clients. And <strong className="text-white">80%
+                of freelancers can&apos;t comfortably handle an unexpected $1,000 expense</strong>.
+              </p>
+            </div>
           </section>
 
           <section id="why-monthly-budgets-fail" className="mb-12">

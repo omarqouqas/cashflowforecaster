@@ -294,11 +294,19 @@ export default async function Home({ searchParams }: HomeProps) {
 
         <section className="px-6 pb-4">
           <div className="mx-auto max-w-5xl">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-5 text-center">
-              <p className="text-zinc-200">
-                Built for the <span className="font-semibold text-white">47%</span> of freelancers who say income instability is
-                their #1 financial worry.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-5 text-center">
+                <p className="text-3xl font-bold text-rose-400">82%</p>
+                <p className="mt-1 text-sm text-zinc-400">of freelance failures are due to poor cash flow management</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-5 text-center">
+                <p className="text-3xl font-bold text-amber-400">47%</p>
+                <p className="mt-1 text-sm text-zinc-400">of freelancers cite income instability as their #1 worry</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 px-6 py-5 text-center">
+                <p className="text-3xl font-bold text-teal-400">80%</p>
+                <p className="mt-1 text-sm text-zinc-400">can&apos;t handle an unexpected $1,000 expense</p>
+              </div>
             </div>
           </div>
         </section>
@@ -564,7 +572,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
                     Monday morning clarity. See your week&apos;s cash flow, get warned about bill pile-ups, and start the
-                    week knowing exactly where you stand.
+                    week knowing exactly where you stand. <span className="text-teal-300">Freelancers spend 36% of their time on non-billable admin</span> — we help you reclaim it.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">
@@ -628,7 +636,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
                   <p className="mt-4 text-zinc-300 leading-relaxed">
                     Set your tax rate, track quarterly estimated payments, and see your after-tax &quot;safe to spend&quot; amount.
-                    Never get surprised by tax season again.
+                    Never get surprised by tax season again. <span className="text-teal-300">Experts recommend setting aside 25-30% of freelance income for taxes</span> — we help you track it.
                   </p>
 
                   <ul className="mt-6 space-y-3 text-sm text-zinc-300">
@@ -867,6 +875,7 @@ export default async function Home({ searchParams }: HomeProps) {
               </h2>
               <p className="mt-3 text-zinc-400 max-w-3xl mx-auto">
                 If your income doesn&apos;t arrive on the 1st and 15th like clockwork, you need a tool that understands irregular cash flow.
+                <span className="block mt-2 text-zinc-300">Join 1.57 billion freelancers worldwide — 66% of whom struggle to find consistent work.</span>
               </p>
             </div>
 
@@ -962,6 +971,9 @@ export default async function Home({ searchParams }: HomeProps) {
             </h2>
             <p className="mt-3 text-zinc-400">
               Join 50+ freelancers who finally know what&apos;s safe to spend — without connecting their bank or building spreadsheets.
+            </p>
+            <p className="mt-2 text-sm text-zinc-500">
+              43% still use spreadsheets for forecasting. Save 2-5 hours per week with automated cash flow tracking.
             </p>
             <div className="mt-6 flex justify-center">
               <GetStartedCTA className="bg-teal-500 hover:bg-teal-400 text-zinc-950 px-8 py-3 rounded-lg text-lg font-semibold h-auto focus:ring-teal-400 focus:ring-offset-zinc-950" />

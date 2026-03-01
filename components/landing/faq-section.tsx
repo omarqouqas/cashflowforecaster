@@ -63,7 +63,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Who is Cash Flow Forecaster built for?",
-    answer: "We built this for freelancers, gig workers, and anyone with irregular income. If you've ever wondered 'Can I pay rent on the 1st?' or 'Am I safe until my next invoice pays?', this is for you. Traditional budgeting apps assume you get a steady paycheck on the 1st and 15th—we don't. Great fit for graphic designers, freelance writers, marketing consultants, web developers, and side-gig hustlers. Not built for complex accounting or businesses with full-time bookkeepers—we keep it simple on purpose."
+    answer: "We built this for freelancers, gig workers, and anyone with irregular income. If you've ever wondered 'Can I pay rent on the 1st?' or 'Am I safe until my next invoice pays?', this is for you. There are 1.57 billion freelancers globally, and 66% struggle with finding consistent work. Traditional budgeting apps assume you get a steady paycheck on the 1st and 15th—we don't. Great fit for graphic designers, freelance writers, marketing consultants, web developers, AI specialists, and side-gig hustlers. Not built for complex accounting or businesses with full-time bookkeepers—we keep it simple on purpose."
   },
   {
     question: "What is Runway Collect?",
@@ -79,7 +79,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "How do I budget with irregular income?",
-    answer: "Budgeting with irregular income requires a different approach than traditional monthly budgets. First, calculate your baseline expenses—the minimum you need each month for rent, utilities, insurance, and essentials. Second, build a buffer fund of 2-3 months of expenses to smooth out income fluctuations. Third, use a cash flow calendar (not a monthly budget) to see your projected balance day-by-day. Finally, pay yourself a consistent 'salary' from your business income rather than spending whatever comes in. Cash Flow Forecaster automates the cash flow calendar part, showing you exactly when you'll run low and what's safe to spend."
+    answer: "Budgeting with irregular income requires a different approach than traditional monthly budgets. Research shows 47% of freelancers cite income instability as their #1 financial worry, and 80% can't comfortably handle an unexpected expense. Here's what works: First, calculate your baseline expenses—the minimum you need each month for rent, utilities, insurance, and essentials. Second, build a buffer fund of 3-6 months of expenses (financial advisors recommend this range for irregular earners). Third, use a cash flow calendar (not a monthly budget) to see your projected balance day-by-day. Fourth, reserve 25-30% for taxes. Finally, pay yourself a consistent 'salary' from your business income rather than spending whatever comes in. Cash Flow Forecaster automates the cash flow calendar and tax tracking, showing you exactly when you'll run low and what's truly safe to spend."
   },
   {
     question: "Can I export my data?",
@@ -92,6 +92,14 @@ const faqs: FAQItem[] = [
   {
     question: "What is cash flow forecasting?",
     answer: "Cash flow forecasting is predicting your future bank balance based on known income and expenses. For freelancers, this means projecting when invoices will be paid, when bills are due, and what your balance will be on any given day. A good cash flow forecast helps you avoid overdrafts, plan large purchases, and manage irregular income. Unlike monthly budgets that hide timing problems, a day-by-day cash flow forecast reveals exactly when you'll run low—before it happens. Also known as: balance projection, cash projection, liquidity forecast."
+  },
+  {
+    question: "Why do so many freelancers struggle with cash flow?",
+    answer: "Research shows that 82% of freelance and small business failures are directly due to poor cash flow management—not lack of skill or clients. The problem is the gap between 'profit on paper' and 'cash in the bank.' For example, a freelancer might have $10,000 in outstanding invoices but only $500 available today. Add to this: 47-50% experience late payments in their first 6 months, 80% can't handle an unexpected $1,000 expense, and 36% of time goes to non-billable admin work. Traditional budgeting tools show where money went, not where it will be—which is why forward-looking cash flow forecasting is essential for freelancers."
+  },
+  {
+    question: "How accurate is automated cash flow forecasting vs spreadsheets?",
+    answer: "Research shows that automated cash flow forecasting is 30-50% more accurate than manual spreadsheet tracking. This is because automated tools eliminate human error in data entry, automatically track recurring transactions, and update projections in real-time. Beyond accuracy, there's a time savings of 2-5 hours per week—time you could spend on billable work instead of manual spreadsheet updates. Despite this, 43% of organizations still use spreadsheets for forecasting, often because specialized tools cost $29-199/month. At $7.99/month, Cash Flow Forecaster makes automated accuracy accessible to individual freelancers."
   }
 ]
 

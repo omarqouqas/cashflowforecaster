@@ -98,7 +98,7 @@ const faqStructuredData = {
       name: 'Why do freelancers need a cash flow calendar?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Freelancers often have irregular income. A cash flow calendar helps you spot low-balance days early, plan spending, and avoid overdrafts between payments.',
+        text: 'Freelancers often have irregular income, with 47% citing income instability as their #1 worry and 80% unable to handle an unexpected $1,000 expense. A cash flow calendar helps you spot low-balance days early, plan spending, and avoid overdrafts between payments.',
       },
     },
     {
@@ -186,6 +186,14 @@ export default function CashFlowCalendarAppsComparePage() {
               never do: date-level clarity. With the right cash flow forecasting software, you can see when invoices land, when bills collide, and what your bank balance is
               likely to be—before you spend.
             </p>
+
+            <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+              <p className="text-zinc-300 text-sm">
+                <strong className="text-white">82% of freelance failures are due to poor cash flow management</strong>—not
+                lack of clients. Research shows automated forecasting tools are <strong className="text-white">30-50% more
+                accurate</strong> than spreadsheets and save <strong className="text-white">2-5 hours weekly</strong>.
+              </p>
+            </div>
 
             <p className="mt-4 text-zinc-400 leading-relaxed">
               People often compare tools like <span className="text-zinc-200">Cash Flow Forecaster</span> vs{' '}
