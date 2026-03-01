@@ -1,7 +1,7 @@
 # Competitive Analysis
 
 **Created:** January 2026
-**Last Updated:** January 30, 2026
+**Last Updated:** March 1, 2026
 **Status:** Living Document
 
 ---
@@ -27,6 +27,15 @@ This document tracks competitors in the personal finance and cash flow managemen
 | **Flow (Acertine)** | $15-20/mo | Invoicing + basic cashflow | No | UK freelancers |
 | **QuickBooks** | $15+/mo | Accounting | Yes | Small businesses |
 | **Spreadsheets** | Free | Manual tracking | No | DIY users |
+
+### Specialized Cash Flow Forecasting Tools (from Gemini Research)
+
+| Competitor | Price | Data Method | Target User | Our Advantage |
+|------------|-------|-------------|-------------|---------------|
+| **Pulse** | $29-$89/mo | Enhanced spreadsheet (manual) | Small agencies/freelancers | 73-91% cheaper, calendar UX |
+| **Float** | $59-$199/mo | Automated sync (Xero/QBO) | Growing SMBs | 87-96% cheaper, built for individuals |
+
+**Key Market Insight:** 43% of organizations still use spreadsheets for cash forecasting. This represents a massive opportunity — users want automation but specialized tools are too expensive ($29-199/mo). Our $7.99/mo pricing captures this gap.
 
 ---
 
@@ -291,20 +300,32 @@ The market gap has narrowed, but we still have unique value in the **"get paid A
 
 ## Target Audience Pain Points (Research)
 
-Based on Reddit and industry research:
+Based on Reddit, industry research, and Gemini Market Research (March 2026):
 
-| Pain Point | Prevalence | We Solve It? |
-|------------|------------|--------------|
-| Income unpredictability | 68% report as main challenge | ✅ 60-365 day forward forecast |
-| "Can I afford rent?" anxiety | #1 financial worry | ✅ "Safe to Spend" + alerts |
-| Feast and famine cycle | 82% of failures due to poor cash flow | ✅ Calendar shows income gaps |
-| Late/unpaid invoices | Recurring complaint | ✅ Runway Collect + reminders |
-| Can't use traditional budgets | Backward tools don't work | ✅ Forward-looking approach |
-| Bill timing mismatch | Bills due when income hasn't arrived | ✅ Calendar shows timing |
-| Tax surprises | Quarterly payments blindside freelancers | ✅ Tax savings tracker |
-| Need 6-12 month visibility | Experts recommend larger buffer | ✅ Pro: 365-day forecast |
+| Pain Point | Statistic | Source | We Solve It? |
+|------------|-----------|--------|--------------|
+| Cash flow as failure cause | **82%** of freelance failures | Gemini Research | ✅ Forward-looking visibility |
+| Income unpredictability | **47%** cite as #1 worry | Industry surveys | ✅ 90-365 day forecast |
+| Can't handle emergencies | **80%** can't cover $1,000 surprise | Gemini Research | ✅ "Safe to Spend" + alerts |
+| Late/missing payments | **47-50%** in first 6 months | Freelancers Union | ✅ Runway Collect + reminders |
+| Consistent work struggles | **66%** struggle finding work | Gemini Research | ✅ Calendar shows income gaps |
+| Non-billable admin time | **36%** of working hours | Gemini Research | ✅ Automated tracking saves 2-5hrs/wk |
+| Overdraft fees | **$15 billion** paid annually | Industry research | ✅ Low balance alerts |
+| Bill timing mismatch | 90-120 day payment cycles | Gemini Research | ✅ Calendar shows timing |
+| Tax surprises | 25-30% recommended reserve | Gemini Research | ✅ Tax savings tracker |
 
-**Verdict:** Strong product-market fit with freelancer pain points.
+### Outcome Comparison: Manual vs. Automated Forecasting
+
+| Metric | Spreadsheet Method | Automated AI Forecasting |
+|--------|-------------------|--------------------------|
+| **Forecast Accuracy** | Low (human error) | **30-50% higher** |
+| **Time Spent Weekly** | 2-5 hours | **<15 minutes** |
+| **Liquidity Awareness** | Monthly/Quarterly | **Real-time** |
+| **Tax Readiness** | Reactive | **Proactive (automated)** |
+
+*Source: Gemini Market Research (2026)*
+
+**Verdict:** Strong product-market fit with freelancer pain points. Our automation at $7.99/mo provides 30-50% accuracy improvement while saving 2-5 hours weekly — a compelling value proposition vs. both spreadsheets (free but time-consuming) and enterprise tools (accurate but $29-199/mo).
 
 ---
 
@@ -562,8 +583,12 @@ Track key competitive decisions here:
 | Jan 2026 | Added Quotes feature | Differentiator vs Cash Flow Calendar (no invoicing). Strengthens "forecast + get paid" positioning. |
 | Feb 2026 | Created YNAB comparison page | `/compare/ynab` - Target $14.99/mo users frustrated with pricing. 47% savings messaging. |
 | Feb 2026 | Created Mint migration page | `/compare/mint` - Capture Mint exodus. Forward-looking vs backward-looking positioning. |
+| Mar 2026 | Added Pulse/Float to competitor analysis | Gemini research identified specialized forecasting tools at $29-199/mo. Our $7.99 is 73-96% cheaper. |
+| Mar 2026 | Updated pain point statistics | Gemini research provided validated stats (82% failure rate, 80% emergency fund gap, 36% admin time). |
+| Mar 2026 | Documented automation value prop | 30-50% accuracy improvement, 2-5 hours/week saved vs spreadsheets — key differentiator. |
 
 ---
 
-**Document Version:** 2.5
-**Next Review:** March 2026
+**Document Version:** 2.6
+**Last Updated:** March 1, 2026
+**Next Review:** April 2026

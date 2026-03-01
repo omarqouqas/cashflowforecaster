@@ -137,6 +137,17 @@ Features that set Cash Flow Forecaster apart from competitors:
 
 **Forward-looking vs backward-looking:** YNAB and Mint track where money went; we show where it will be. This is the fundamental difference that resonates with freelancers.
 
+### Specialized Forecasting Tools Comparison
+
+| Tool | Pricing | Data Method | Our Advantage |
+|------|---------|-------------|---------------|
+| **Pulse** | $29-$89/mo | Enhanced spreadsheet (manual) | We're 73-91% cheaper, calendar-based UX |
+| **Float** | $59-$199/mo | Automated sync (Xero/QBO) | We're 87-96% cheaper, built for individuals not SMBs |
+| **QuickBooks Solopreneur** | ~$20/mo | Auto expense tracking | We're 60% cheaper, forward-looking not backward-looking |
+| **Spreadsheets** | Free | 100% manual | We save 2-5 hours/week, 30-50% more accurate |
+
+**Key Market Insight:** 43% of organizations still use spreadsheets for forecasting. Our opportunity: provide automation at a price point freelancers can afford.
+
 ### Potential New Differentiators
 
 | Feature | Impact | Effort | Description |
@@ -160,6 +171,73 @@ Freelancers' #1 pain point is **late-paying clients**. No competitor addresses t
 - Alert: "Based on history, this invoice will likely be paid Feb 15, not Feb 1"
 
 This would be a **killer feature** that directly addresses the core anxiety of freelancers.
+
+---
+
+## 4b. Vertical Niche Strategy ("Beachhead" Approach)
+
+### Why Niching Down Matters
+
+The Gemini research recommends against targeting "freelancers" as a monolithic group. Instead, focusing on specific verticals enables:
+- Higher retention through industry-specific features
+- Lower acquisition costs via targeted messaging
+- Stronger pricing power through specialized value
+- Word-of-mouth within professional communities
+
+### High-Value Vertical Niches (Ranked)
+
+| Niche | Revenue Volatility | Key Cash Flow Driver | Software Sensitivity | Priority |
+|-------|-------------------|---------------------|---------------------|----------|
+| **Project-Based Knowledge Professionals** (UX, AI, Marketing) | Medium | Net-30/60/90 terms | High | **#1 Beachhead** |
+| **AI Specialists** | Low-Medium | Hardware/API costs, tax optimization | Very High | #2 |
+| **Real Estate Agents** | Very High | Commission dependency, seasonality | High | #3 |
+| **E-commerce Sellers** | High | Inventory, ad spend | Very High | #4 |
+| **Machinists/Skilled Trades** | Medium | Upfront material costs | Low | #5 |
+
+### Recommended Beachhead: Project-Based Knowledge Professionals
+
+**Who they are:** UX Designers, AI Consultants, Marketing Strategists, Freelance Developers
+
+**Why they're ideal:**
+- High hourly rates ($47.71 - $100+)
+- Already use multiple digital tools (tech-savvy)
+- Face the "Net-60" payment cycle risk
+- Average contract length ~11 weeks (matches our 13-week rolling forecast)
+- Speak a specific language: "milestone payment," "retainer," "SaaS overhead"
+
+**Niche-Specific Features to Consider:**
+- **Milestone payment tracking** (for developers/designers)
+- **Retainer vs. project income split** (for consultants)
+- **Client payment scoring** (who pays late?)
+- **Quarterly tax vault** (automatic 25-30% set-aside)
+
+### Real Estate Agent Opportunity
+
+**Key Stats:**
+- 71% of real estate agents close zero transactions in a given year
+- Double-digit income swings correlated with interest rates and seasonality
+- Must maintain fixed costs (MLS access, license, marketing) regardless of closings
+
+**Potential Features:**
+- **Commission diversification tracking** (rental vs. sale vs. referral income)
+- **Market cycle visualization** (how rate changes affect projected income)
+- **Fixed cost runway** (how long until license fees are due?)
+
+### Implementation Approach
+
+**Phase 1: Current (Horizontal)**
+- Continue targeting "freelancers" broadly
+- Collect data on which professions convert best
+
+**Phase 2: Soft Niche (Month 3-6)**
+- Create profession-specific landing pages (`/for/ux-designers`, `/for/marketing-consultants`)
+- Tailor onboarding questions to identify profession
+- Show profession-specific examples in onboarding
+
+**Phase 3: True Vertical (Month 6+)**
+- Build profession-specific features based on usage data
+- Industry-specific templates and categories
+- Partner with profession-specific communities/influencers
 
 ---
 
@@ -638,9 +716,13 @@ One-time "Lifetime" tier is now live:
 | Feb 2026 | Fixed Pro→Lifetime refund logic | Prorated amounts now refund to payment method, not just Stripe credit |
 | Feb 2026 | Built dedicated YNAB CSV importer | Part of competitor migration strategy; auto-detects format, handles Outflow/Inflow |
 | Feb 2026 | Fixed 11 bugs across codebase | Date serialization, async handling, React patterns, UTC parsing issues |
+| Mar 2026 | Incorporated Gemini market research | Updated market stats, competitor pricing, vertical niche strategy |
+| Mar 2026 | Defined vertical niche strategy | Project-Based Knowledge Professionals as "beachhead" target |
+| Mar 2026 | Added Canadian market opportunity | Tax compliance features (GST/HST vault, CPP planning) for future expansion |
+| Mar 2026 | Updated competitor pricing analysis | Added Pulse/Float/QBO comparison showing 60-96% price advantage |
 
 ---
 
-**Document Version:** 1.7
-**Last Updated:** February 2, 2026
-**Next Review:** March 2026
+**Document Version:** 1.8
+**Last Updated:** March 1, 2026
+**Next Review:** April 2026

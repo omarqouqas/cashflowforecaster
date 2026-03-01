@@ -95,21 +95,49 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 
 ### Market Size
 
-- **76.4 million** freelancers in the US (2025)
-- **70+ million** Americans in the gig economy (36% of workforce)
-- **70%** of freelancers are under age 35
-- Freelance platforms market: **$5.6 billion** (2024), projected **$13.8 billion** by 2030
-- Projected: Over **50%** of US workforce will freelance by 2027
+**Global Freelance Economy:**
+- **1.57 billion** freelancers globally (2025), projected **1.8 billion+** by 2030
+- **$8.50 trillion** online freelance market value (2025), projected **$28.88 trillion** by 2033
+
+**United States:**
+- **76.4 million** freelancers in the US (2025), projected **90.1 million** by 2028
+- Over **50%** of US workforce projected to freelance by 2027
+- **48%** of Fortune 500 firms now use freelance platforms
+
+**Platform Market:**
+- **$7.65-8.39 billion** freelance platform market (2025)
+- Projected **$16.54-16.89 billion** by 2030
+- CAGR: **16.66-17.0%**
 
 ### Demographics
 
-- **Age Distribution:** 70% between 18-34, only 10% over 45
+- **Age Distribution:** Millennials (28-43) comprise 34%, Gen Z (18-27) comprise 28% — combined 62% under age 43
+- **Gen Z Growth:** By 2030, Gen Z will make up 30% of US labor force, significantly more likely to choose freelancing
 - **Gender:** 60% male, 40% female in US freelance market
 - **Education:** 80% have bachelor's degree or higher
+- **Median Income:** Full-time independents report ~$85,000 median income
+
+### Pain Point Statistics (Research-Backed)
+
+| Challenge | Statistic | Source |
+|-----------|-----------|--------|
+| **Cash flow as failure cause** | 82% of freelance/small business failures due to poor cash flow management | Gemini Research |
+| **Income instability** | 47% cite income instability as #1 financial worry | Industry surveys |
+| **Can't handle emergencies** | 80% of self-employed can't comfortably face unexpected $1,000 expense | Gemini Research |
+| **Late payments** | 47-50% experience late/missing payments in first 6 months | Freelancers Union |
+| **Finding consistent work** | 66% struggle with securing consistent work | Industry surveys |
+| **Non-billable admin time** | 36% of working hours spent on admin tasks | Gemini Research |
+| **Overdraft fees** | Gig workers collectively pay $15 billion in overdraft fees annually | Industry research |
 
 ---
 
 ## Value Proposition
+
+### North Star Metric: "Safe to Spend"
+
+The most significant unmet need in the freelancer market is the answer to a single question: **"How much of the money in my bank account is actually mine to spend?"**
+
+By automatically subtracting tax reserves, upcoming bills, and debt payments from the projected bank balance, Cash Flow Forecaster differentiates itself from QuickBooks (which shows history) and Float (which shows enterprise liquidity).
 
 ### Three Pillars of Cash Flow Clarity
 
@@ -118,18 +146,32 @@ The app calculates and displays a 90-day calendar showing projected daily balanc
 - Daily "safe to spend" visibility
 - Color-coded low-balance warnings (amber/rose)
 - Overdraft prevention before it happens
+- **Value:** Eliminates the 36% of time freelancers spend on non-billable admin work
 
 **Pillar 2: Get Paid Faster (Pro)**
 - Runway Collect professional invoicing
 - Automated payment reminders (friendly/firm/final)
 - Invoice-to-forecast sync — see expected income immediately
 - PDF generation and direct email delivery
+- **Value:** Addresses the 47-50% of freelancers who experience late payments
 
 **Pillar 3: Never Get Blindsided**
 - Weekly email digest with cash flow summary
 - Bill collision alerts (multiple bills same day)
 - Upcoming expense warnings
 - Monday morning financial clarity
+- **Value:** Helps prevent the 82% of freelance failures caused by poor cash flow visibility
+
+### Outcome Comparison: Spreadsheets vs. Automated Forecasting
+
+| Metric | Spreadsheet Method | Automated AI Forecasting |
+|--------|-------------------|--------------------------|
+| **Forecast Accuracy** | Low (human error) | 30-50% higher |
+| **Time Spent Weekly** | 2-5 hours | <15 minutes |
+| **Liquidity Awareness** | Monthly/Quarterly | Real-time |
+| **Tax Readiness** | Reactive | Proactive (automated buckets) |
+
+*Source: Gemini Market Research (2026)*
 
 ### Landing Page Messaging
 
@@ -813,6 +855,18 @@ User Request
 4. **Price Point:** $7.99 vs. $14.99 for YNAB/Monarch — 47% cheaper
 5. **Simplicity:** No complex accounting features — just cash flow clarity
 
+### Specialized Forecasting Competitor Analysis
+
+| Feature | Pulse | Float | QuickBooks Solopreneur | Cash Flow Forecaster |
+|---------|-------|-------|------------------------|---------------------|
+| **Primary Value** | Cash Flow Management | Liquidity Visibility | Core Accounting | Forward Cash Flow Calendar |
+| **Data Method** | Enhanced Spreadsheet (Manual) | Automated Sync (Xero/QBO) | Automated Expense Tracking | Manual + CSV Import |
+| **Scenario Planning** | Basic (Toggle entries) | Advanced (Multiple scenarios) | Limited/None | "Can I Afford It?" Calculator |
+| **Pricing** | $29-$89/month | $59-$199/month | ~$20/month | $7.99/month or $99 lifetime |
+| **Target User** | Small Agencies/Freelancers | Growing SMBs | Solo Proprietors | Freelancers with irregular income |
+
+**Key Insight:** 43% of organizations still use spreadsheets for cash forecasting due to infinite customizability and zero cost. Our opportunity: provide the automation of specialized tools at a price point freelancers can afford ($7.99 vs $59+).
+
 ### Market Gap Confirmed
 
 - No competitor focuses specifically on forward-looking cash flow for freelancers
@@ -921,6 +975,36 @@ User Request
 - White-label solution
 - International expansion (UK, Canada first)
 - Partnerships with freelancer platforms (Upwork, Fiverr)
+
+---
+
+## Canadian Market Opportunity (Ontario Focus)
+
+### Why Canada Matters
+
+Canada represents a strategic expansion opportunity due to:
+- Clear regulatory framework (Consumer-Driven Banking Act launching 2026)
+- Strong freelance ecosystem in major metros (Toronto, Vancouver, Montreal)
+- Specific tax compliance requirements that create cash flow challenges
+
+### Canadian Tax Compliance Pain Points
+
+| Tax Type | Threshold | Cash Flow Impact |
+|----------|-----------|------------------|
+| **GST/HST Registration** | $30,000 gross revenue (4 consecutive quarters) | 13% of every invoice must be "set aside" for remittance |
+| **Income Tax Installments** | $3,000 net tax owing | Quarterly outflows (March 15, June 15, Sept 15, Dec 15) |
+| **CPP Contributions** | >$3,500 earnings | Up to $8,068.20 annually (self-employed pay both portions) |
+| **Corporate Tax (CCPC)** | $500,000 active income | Access to Small Business Deduction rates |
+
+### Product Implications for Canada
+
+**Potential Canadian-Specific Features:**
+- **HST Vault:** Automatically "slice" 13% off incoming payments in Ontario to show true liquidity
+- **Quarterly Installment Reminders:** Deadlines specific to Canadian tax calendar
+- **CPP Planning:** Help freelancers budget for the "double-whammy" of paying both employee and employer CPP portions
+- **GST/HST Threshold Tracking:** Alert when approaching $30,000 registration threshold
+
+**Note:** These features would differentiate us from US-focused competitors and establish a beachhead in the Canadian market before international expansion.
 
 ---
 
