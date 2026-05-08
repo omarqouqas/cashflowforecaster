@@ -1,6 +1,6 @@
 # Cashcast - Development Progress
 
-**Last Updated:** May 4, 2026 (Day 75)
+**Last Updated:** May 8, 2026 (Day 76)
 
 **Repository:** https://github.com/omarqouqas/cashcast
 
@@ -10,14 +10,14 @@
 
 ## Quick Stats
 
-- **Days in Development:** 75
+- **Days in Development:** 76
 - **Commits:** 410+
 - **Database Tables:** 18
 - **Test Coverage:** Manual testing (automated tests planned post-launch)
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + **SMS/Push Low Balance Alerts**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + **PocketSmith Comparison Page + Competitive Analysis Update**
 
 **Current Focus:**
 
@@ -28,7 +28,89 @@
 
 ---
 
-## Recent Development (Days 60-75)
+## Recent Development (Days 60-76)
+
+### Day 76: PocketSmith Comparison Page + Competitive Analysis Update (May 8, 2026)
+
+**Major Update: Competitive Positioning Overhaul** - Added PocketSmith comparison page and updated all competitive analysis docs to reflect that forward-looking forecasting is no longer a unique differentiator.
+
+**Context:**
+- PocketSmith (founded 2008) offers calendar-based forecasting up to 30 years, with 12,000+ bank connections
+- Quicken Simplifi entered at $5.99/mo with 12-month forecasting (April 2026)
+- "Forward-looking" is now commoditized — must differentiate on freelancer-specific features
+
+**PocketSmith Comparison Page:**
+
+New page at `/compare/pocketsmith` targeting freelancers evaluating PocketSmith alternatives.
+
+**Key Differentiators vs PocketSmith:**
+
+| Feature | Cashcast | PocketSmith |
+|---------|----------|-------------|
+| Price (entry) | $7.99/mo (20% cheaper) | $9.95/mo |
+| Built for freelancers | ✅ Core focus | ❌ Generic budgeting |
+| Invoicing → forecast sync | ✅ Runway Collect | ❌ No |
+| Tax bucketing (US + CA) | ✅ GST/HST, CPP, quarterly | ❌ No |
+| "Safe to Spend" metric | ✅ Core feature | ❌ No |
+| Setup time | 5 minutes | 30+ minutes (steep curve) |
+| Lifetime deal | $99 one-time | ❌ Not available |
+
+**SEO:**
+- Target keywords: `pocketsmith alternative`, `pocketsmith for freelancers`, `cheaper than pocketsmith`, `pocketsmith vs cashcast`, `pocketsmith canadian tax`
+- FAQ schema with 5 questions
+- Dynamic OG image (1200×630, two-column comparison layout)
+
+**Files Created:**
+```
+app/compare/pocketsmith/
+├── page.tsx                    # Full comparison page
+└── opengraph-image.tsx         # Dynamic OG image
+```
+
+**Files Modified:**
+- `components/landing/footer.tsx` - Added "vs PocketSmith" link to Compare section
+- `app/compare/page.tsx` - Added PocketSmith card to compare index
+- `app/sitemap.ts` - Added `/compare/pocketsmith` URL
+
+**Competitive Analysis Updates:**
+
+Updated all strategy docs to reflect that "forward-looking" is no longer a unique wedge.
+
+**docs/competitors.md changes:**
+- Added PocketSmith and Quicken Simplifi to main competitors table
+- Added detailed profiles for both competitors
+- Updated feature comparison matrix (now includes PocketSmith, Simplifi)
+- Rewrote "Our Positioning" section — removed "forward-looking" as primary differentiator
+- Added "Recent Market Shifts (Q1-Q2 2026)" section documenting competitive changes
+- Updated decision log with May 2026 entries
+
+**docs/product-brief.md changes:**
+- Updated competitive comparison table (added PocketSmith, Simplifi columns)
+- Rewrote "Why We Win" section — lead with freelancer-specific features
+- Added "Recent Market Shifts" section
+- Added "Competitive Response Priorities" to Future Roadmap
+
+**New Positioning Strategy:**
+
+**OLD:** "Forward-looking instead of backward-looking"
+**NEW:** "Cash flow forecasting built for freelancers — with invoicing and tax tooling that general budgeting apps lack"
+
+**What's Still Unique:**
+1. Invoice-to-forecast sync (no competitor at <$15/mo)
+2. Country-specific tax bucketing (US + Canada)
+3. Freelancer-first irregular income handling
+4. "Safe to Spend" after tax reserves
+
+**What's No Longer Unique:**
+- Forward-looking forecasting (PocketSmith, Simplifi, CFF all have it)
+- Calendar view (PocketSmith has this too)
+- Scenario planning (PocketSmith has what-if)
+
+**Suggested Commits:**
+- `feat: add PocketSmith comparison page with OG image`
+- `docs: update competitive analysis with PocketSmith and Quicken Simplifi`
+
+---
 
 ### Day 75: SMS/Push Low Balance Alerts (May 4-5, 2026)
 

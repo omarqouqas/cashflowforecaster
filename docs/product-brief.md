@@ -1,8 +1,8 @@
 # Cashcast - Complete Product Brief
 
-**Version:** 6.28
-**Last Updated:** May 4, 2026
-**Status:** Live - SMS/Push Alerts + Referral Program Complete
+**Version:** 6.29
+**Last Updated:** May 8, 2026
+**Status:** Live - PocketSmith Comparison + Competitive Analysis Update
 **Product URL:** https://cashcast.money
 **Repository:** https://github.com/omarqouqas/cashcast
 
@@ -1014,45 +1014,68 @@ User Request
 ## Competitive Positioning
 
 **Positioning Statement:**
-"The YNAB alternative for irregular income — forward-looking instead of backward-looking."
+"Cash flow forecasting built for freelancers — with invoicing and tax tooling that general budgeting apps lack."
 
-### Competitive Comparison
+**Note (May 2026):** Forward-looking forecasting is no longer a unique differentiator. PocketSmith, Quicken Simplifi, and Cash Flow Calendar all forecast forward. Our moat is freelancer specificity + invoicing + tax tooling.
 
-| Aspect | Cashcast | YNAB | Monarch Money | Mint |
-|--------|---------------------|------|---------------|------|
-| **Focus** | Future balance prediction | Past spending tracking | Wealth optimization | Expense categorization |
-| **UI** | Calendar (90-day view) | Category budgets | Dashboard/graphs | Transaction feed |
-| **Target User** | $45-90k freelancers | $80k+ households | $100k+ households | General consumers |
-| **Price** | $7.99/mo | $14.99/mo | $14.99/mo | Free (ads) |
-| **Unique Value** | Runway Collect invoicing | Envelope budgeting | AI insights | Bank sync |
-| **Time Orientation** | Forward-looking | Backward-looking | Current state | Backward-looking |
+### Competitive Comparison (Updated May 2026)
 
-### Why We Win
+| Aspect | Cashcast | PocketSmith | Simplifi | YNAB | Monarch |
+|--------|----------|-------------|----------|------|---------|
+| **Focus** | Freelancer cash flow + invoicing | General forecasting | Household finances | Past spending | Wealth optimization |
+| **Target User** | $45-90k freelancers | General consumers | Households | Households | Households |
+| **Forward-Looking** | ✅ 90-365 days | ✅ Up to 30 years | ✅ 12 months | ❌ No | ⚠️ Partial |
+| **Built-in Invoicing** | ✅ Runway Collect | ❌ | ❌ | ❌ | ❌ |
+| **Tax Bucketing (US/CA)** | ✅ Full | ❌ | ❌ | ❌ | ❌ |
+| **Price** | $7.99/mo | $9.95-26.63/mo | $5.99/mo | $14.99/mo | $8.33/mo |
+| **Bank Sync** | ❌ (Coming) | ✅ 12,000+ | ✅ 14,000+ | ✅ | ✅ |
 
-1. **Forward-Looking vs. Backward-Looking:** YNAB and Mint track where money went; we show where it will be
-2. **Calendar Mental Model:** Freelancers think in dates ("Can I pay rent on the 1st?"), not categories
-3. **Invoice-to-Forecast Sync:** Unique feature — invoices automatically appear as expected income
-4. **Price Point:** $7.99 vs. $14.99 for YNAB/Monarch — 47% cheaper
-5. **Simplicity:** No complex accounting features — just cash flow clarity
+### Why We Win (Updated May 2026)
+
+**Note:** "Forward-looking" is no longer a differentiator — PocketSmith, Simplifi, and CFF all forecast forward.
+
+1. **Built for freelancers, not households** — Irregular income, project-based revenue, late client payments are first-class concerns
+2. **Invoice-to-Forecast Sync:** Genuinely unique at our price point — invoices automatically appear as expected income
+3. **Country-specific tax bucketing** — US quarterly estimates, Canadian GST/HST, CPP, installments. No competitor offers this.
+4. **Calendar Mental Model:** "Can I pay rent on the 1st?" framing, not category budgets
+5. **Price-to-Feature Ratio for Freelancers:** Cheaper than PocketSmith ($9.95), with freelancer features Simplifi ($5.99) lacks
+6. **Simpler Setup:** 5 minutes vs PocketSmith's 30+ minute learning curve
+
+### Recent Market Shifts (Q1-Q2 2026)
+
+| Shift | Impact |
+|-------|--------|
+| Quicken Simplifi at $5.99/mo with 12-month forecasting | Undercuts our price; "forward-looking" no longer unique |
+| Monarch added cash flow visualization at $8.33/mo | Partial forecasting in mainstream apps |
+| PocketSmith actively positioning toward freelancers | Direct competitor with 16-year head start |
+
+**Implication:** Forward-looking forecasting is now table stakes. Differentiation must come from:
+- Freelancer specificity (irregular income handling)
+- Invoice-to-forecast sync (unique)
+- Country-specific tax tooling (unique)
 
 ### Specialized Forecasting Competitor Analysis
 
-| Feature | Pulse | Float | QuickBooks Solopreneur | Cashcast |
-|---------|-------|-------|------------------------|---------------------|
-| **Primary Value** | Cash Flow Management | Liquidity Visibility | Core Accounting | Forward Cash Flow Calendar |
-| **Data Method** | Enhanced Spreadsheet (Manual) | Automated Sync (Xero/QBO) | Automated Expense Tracking | Manual + CSV Import |
-| **Scenario Planning** | Basic (Toggle entries) | Advanced (Multiple scenarios) | Limited/None | "Can I Afford It?" Calculator |
-| **Pricing** | $29-$89/month | $59-$199/month | ~$20/month | $7.99/month or $99 lifetime |
-| **Target User** | Small Agencies/Freelancers | Growing SMBs | Solo Proprietors | Freelancers with irregular income |
+| Feature | Pulse | Float | PocketSmith | Cashcast |
+|---------|-------|-------|-------------|----------|
+| **Primary Value** | Cash Flow Management | Liquidity Visibility | Long-range forecasting | Freelancer cash flow + invoicing |
+| **Data Method** | Enhanced Spreadsheet | Automated Sync (Xero/QBO) | Bank sync (12k+) | Manual + CSV Import |
+| **Invoicing** | ❌ | ❌ | ❌ | ✅ Runway Collect |
+| **Tax Tooling** | ❌ | ❌ | ❌ | ✅ US + Canada |
+| **Pricing** | $29-$89/month | $59-$199/month | $9.95-$26.63/month | $7.99/month or $99 lifetime |
+| **Target User** | Small Agencies | Growing SMBs | General consumers | Freelancers with irregular income |
 
-**Key Insight:** 43% of organizations still use spreadsheets for cash forecasting due to infinite customizability and zero cost. Our opportunity: provide the automation of specialized tools at a price point freelancers can afford ($7.99 vs $59+).
+### Market Gap (Updated May 2026)
 
-### Market Gap Confirmed
+The gap has shifted. Forward-looking is no longer unique. The remaining gap:
 
-- No competitor focuses specifically on forward-looking cash flow for freelancers
-- Calendar interface is unique and matches how freelancers think about money
-- Invoice-to-forecast sync is a unique differentiator
-- Underserved market: successful freelancers ($45-90k) who are "too busy to track, but too big to fail"
+| Gap | Competitors | Our Position |
+|-----|-------------|--------------|
+| Invoicing + forecasting in one tool | None at <$15/mo | ✅ Runway Collect included |
+| Self-employment tax planning | None | ✅ US + Canada specific |
+| Freelancer-first design | CFF is similar | ✅ Core focus |
+
+**Opportunity:** "Freelancer financial hub" — invoicing, forecasting, and tax tracking in one place.
 
 ---
 
@@ -1126,10 +1149,20 @@ User Request
 
 ## Future Roadmap
 
+### Competitive Response Priorities (May 2026)
+
+| Priority | Item | Rationale |
+|----------|------|-----------|
+| P1 | Update homepage hero messaging | Lead with freelancer-specific + tax + invoicing, not "forward-looking" alone |
+| P2 | Create Quicken Simplifi comparison page | `/compare/simplifi` — address $5.99/mo price competitor |
+| P2 | Strengthen "Safe to Spend" positioning | This metric is unique and addresses core anxiety |
+| P3 | Canadian bank sync (Flinks) | Neutralize PocketSmith/Simplifi advantage in Canada |
+
 ### Phase 2 Features (Months 2-4)
 
 - [x] Bill collision warnings (calendar banner + day detail + email digest)
 - [x] Export to CSV/Excel/JSON (Reports & Export feature)
+- [x] PocketSmith comparison page (`/compare/pocketsmith`)
 - [ ] Sentry error monitoring
 - [ ] Multi-currency support
 - [ ] Email notifications (beyond digest)
