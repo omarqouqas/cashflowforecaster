@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + **PocketSmith Comparison Page + Competitive Analysis Update**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + **CurrencyInput Bug Fix**
 
 **Current Focus:**
 
@@ -30,7 +30,32 @@
 
 ## Recent Development (Days 60-76)
 
-### Day 76: PocketSmith Comparison Page + Competitive Analysis Update (May 8, 2026)
+### Day 76: PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix (May 8, 2026)
+
+**Bug Fix: CurrencyInput "Cannot Delete First Digit"** - Fixed a critical UX bug where users couldn't delete the first/last digit in currency input fields across all edit forms.
+
+**Problem:**
+- In edit forms (Edit Bill, Edit Income, Edit Account, Edit Transfer, etc.), users could delete trailing digits but not the first digit
+- Example: If value was "100", user could delete to "10" then "1", but couldn't clear the "1"
+- Root cause: The `useEffect` that synced display value from parent's `value` prop was overwriting user input while editing
+
+**Solution:**
+- Added `isFocused` state to track when user is actively editing
+- Modified `useEffect` to skip syncing from parent when input is focused
+- Added `onFocus`/`onBlur` handlers to toggle focus state
+- Properly destructured handlers from props to preserve any existing callbacks
+
+**Files Modified:**
+- `components/ui/currency-input.tsx` - Added focus tracking to prevent prop sync during editing
+
+**Forms Fixed (20+ files):**
+- Edit Bill, Edit Income, Edit Account, Edit Transfer
+- New Bill, New Income, New Account, New Transfer
+- Edit/New Invoice, Edit/New Quote
+- Safety Buffer form, Payment Simulator, Debt Payoff Planner
+- Onboarding forms, and all other CurrencyInput usages
+
+---
 
 **Major Update: Competitive Positioning Overhaul** - Added PocketSmith comparison page and updated all competitive analysis docs to reflect that forward-looking forecasting is no longer a unique differentiator.
 

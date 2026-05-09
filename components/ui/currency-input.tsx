@@ -16,8 +16,9 @@ export interface CurrencyInputProps
  * Returns: 1234.56 (number)
  */
 const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
-  ({ className, value, onChange, allowNegative = false, ...props }, ref) => {
+  ({ className, value, onChange, allowNegative = false, onFocus, onBlur, ...props }, ref) => {
     const [displayValue, setDisplayValue] = React.useState('');
+    const [isFocused, setIsFocused] = React.useState(false);
 
     // Format number to display string with commas
     const formatForDisplay = (num: number | undefined): string => {
@@ -51,15 +52,17 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
       return isNaN(num) ? undefined : num;
     };
 
-    // Initialize display value from prop
+    // Sync display value from prop only when NOT focused (prevents overwriting user input)
     React.useEffect(() => {
+      if (isFocused) return; // Don't overwrite user input while editing
+
       const numValue = typeof value === 'string' ? parseFloat(value) : value;
       if (numValue !== undefined && !isNaN(numValue)) {
         setDisplayValue(formatForDisplay(numValue));
       } else if (value === '' || value === undefined) {
         setDisplayValue('');
       }
-    }, [value]);
+    }, [value, isFocused]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       let inputValue = e.target.value;
@@ -141,6 +144,14 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
         ref={ref}
         value={displayValue}
         onChange={handleChange}
+        onFocus={(e) => {
+          setIsFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setIsFocused(false);
+          onBlur?.(e);
+        }}
         {...props}
       />
     );
