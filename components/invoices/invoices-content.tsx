@@ -49,7 +49,7 @@ function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
   switch (s) {
     case 'draft':
-      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+      return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700';
     case 'sent':
       return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
     case 'viewed':
@@ -57,7 +57,7 @@ function statusBadge(status: string | null | undefined) {
     case 'paid':
       return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
     default:
-      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+      return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700';
   }
 }
 
@@ -258,10 +258,10 @@ export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentP
       )}
 
       {showEmptyState ? (
-        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
+        <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-zinc-500"
+              className="w-8 h-8 text-zinc-600 dark:text-zinc-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -274,10 +274,10 @@ export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentP
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-zinc-300 mb-2">
+          <h3 className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">
             No invoices match your filters
           </h3>
-          <p className="text-sm text-zinc-500 mb-4">
+          <p className="text-sm text-zinc-600 dark:text-zinc-500 mb-4">
             Try adjusting your filters to see more results.
           </p>
           <button
@@ -288,27 +288,27 @@ export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentP
           </button>
         </div>
       ) : (
-        <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+        <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-zinc-800 border-b border-zinc-700">
+              <thead className="bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
                 <tr>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Invoice</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Client</th>
-                  <th className="text-right font-medium text-zinc-300 px-4 py-4">Amount</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Due date</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Status</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Risk</th>
-                  <th className="text-right font-medium text-zinc-300 px-4 py-4">Actions</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Invoice</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Client</th>
+                  <th className="text-right font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Amount</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Due date</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Status</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Risk</th>
+                  <th className="text-right font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800">
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                 {filteredInvoices.map((invoice) => {
                   const showFollowUpIndicator = needsFollowUp(invoice, now);
                   const overdue = isOverdue(invoice.due_date, invoice.status);
 
                   return (
-                    <tr key={invoice.id} className="hover:bg-zinc-800/50 transition-colors">
+                    <tr key={invoice.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           {showFollowUpIndicator && (
@@ -320,17 +320,17 @@ export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentP
                           )}
                           <Link
                             href={`/dashboard/invoices/${invoice.id}`}
-                            className="text-zinc-100 font-medium hover:text-teal-400 transition-colors"
+                            className="text-zinc-900 dark:text-zinc-100 font-medium hover:text-teal-400 transition-colors"
                           >
                             {invoice.invoice_number}
                           </Link>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-zinc-300">{invoice.client_name}</td>
-                      <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-100 text-base">
+                      <td className="px-4 py-4 text-zinc-700 dark:text-zinc-300">{invoice.client_name}</td>
+                      <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-900 dark:text-zinc-100 text-base">
                         {formatCurrency(invoice.amount, currency)}
                       </td>
-                      <td className="px-4 py-4 text-zinc-300">
+                      <td className="px-4 py-4 text-zinc-700 dark:text-zinc-300">
                         <div className="flex items-center gap-2">
                           <span>{formatDateOnly(invoice.due_date)}</span>
                           {overdue && (invoice.status ?? 'draft') !== 'paid' && (
@@ -357,7 +357,7 @@ export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentP
                             // Paid invoice or no risk data
                             if (invoice.status === 'paid') {
                               return (
-                                <span className="text-xs text-zinc-500">—</span>
+                                <span className="text-xs text-zinc-600 dark:text-zinc-500">—</span>
                               );
                             }
                             return null;
@@ -397,7 +397,7 @@ export function InvoicesContent({ invoices, currency = 'USD' }: InvoicesContentP
                               showEdit && (
                                 <Link
                                   href={`/dashboard/invoices/${invoice.id}/edit`}
-                                  className="p-2 text-zinc-400 hover:text-teal-400 hover:bg-teal-500/10 rounded-md transition-colors"
+                                  className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-teal-500/10 rounded-md transition-colors"
                                   aria-label="Edit invoice"
                                   title="Edit invoice"
                                 >

@@ -126,8 +126,8 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-100">Transfers</h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Transfers</h1>
+          <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mt-1">
             Schedule recurring or one-time transfers between accounts
           </p>
         </div>
@@ -154,16 +154,16 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
 
       {/* Summary Card */}
       {activeTransfers.length > 0 && (
-        <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-lg p-4">
+        <div className="bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm text-zinc-400">Monthly Transfer Total</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">Monthly Transfer Total</p>
                 <InfoTooltip
                   content={
                     <div className="space-y-2">
                       <p className="font-medium">How this is calculated:</p>
-                      <ul className="text-xs text-zinc-300 space-y-1 list-disc list-inside">
+                      <ul className="text-xs text-zinc-700 dark:text-zinc-300 space-y-1 list-disc list-inside">
                         <li>Weekly transfers × 4.33</li>
                         <li>Bi-weekly transfers × 2.17</li>
                         <li>Semi-monthly transfers × 2</li>
@@ -171,19 +171,19 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
                         <li>Quarterly transfers ÷ 3</li>
                         <li>Annual transfers ÷ 12</li>
                       </ul>
-                      <p className="text-xs text-zinc-400 pt-1 border-t border-zinc-700">
+                      <p className="text-xs text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 pt-1 border-t border-zinc-700">
                         One-time transfers are not included in this total.
                       </p>
                     </div>
                   }
                 />
               </div>
-              <p className="text-2xl font-bold text-zinc-100">
+              <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                 {formatCurrency(monthlyTransferTotal, currency)}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-zinc-400">Active Transfers</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">Active Transfers</p>
               <p className="text-2xl font-bold text-teal-400">{activeTransfers.length}</p>
             </div>
           </div>
@@ -192,12 +192,12 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
 
       {/* Empty State */}
       {transfers.length === 0 && (
-        <div className="border border-zinc-700/50 bg-zinc-800/30 rounded-lg p-8 text-center">
-          <div className="w-16 h-16 bg-zinc-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ArrowRight className="w-8 h-8 text-zinc-500" />
+        <div className="border border-zinc-200 dark:border-zinc-700/50 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg p-8 text-center">
+          <div className="w-16 h-16 bg-zinc-200 dark:bg-zinc-200 dark:bg-zinc-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ArrowRight className="w-8 h-8 text-zinc-600 dark:text-zinc-500" />
           </div>
-          <h3 className="text-lg font-medium text-zinc-200 mb-2">No transfers yet</h3>
-          <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+          <h3 className="text-lg font-medium text-zinc-800 dark:text-zinc-200 mb-2">No transfers yet</h3>
+          <p className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mb-6 max-w-md mx-auto">
             Set up transfers between accounts to track money movement. Great for credit card payments,
             savings contributions, or moving funds between checking accounts.
           </p>
@@ -226,7 +226,7 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
       {/* Active Transfers */}
       {activeTransfers.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-lg font-medium text-zinc-200">Active Transfers</h2>
+          <h2 className="text-lg font-medium text-zinc-800 dark:text-zinc-200">Active Transfers</h2>
           <div className="grid gap-3">
             {activeTransfers.map((transfer) => (
               <TransferCard
@@ -246,7 +246,7 @@ export function TransfersContent({ transfers, accounts, currency }: TransfersCon
       {/* Paused Transfers */}
       {pausedTransfers.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-lg font-medium text-zinc-400">Paused Transfers</h2>
+          <h2 className="text-lg font-medium text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">Paused Transfers</h2>
           <div className="grid gap-3 opacity-60">
             {pausedTransfers.map((transfer) => (
               <TransferCard
@@ -287,15 +287,15 @@ function TransferCard({
   const isCCPayment = transfer.to_account?.account_type === 'credit_card';
 
   return (
-    <div className="border border-zinc-700/50 bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
+    <div className="border border-zinc-700/50 bg-zinc-800/50 rounded-lg p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors">
       <div className="flex items-start gap-4">
         {/* Transfer Visual */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-700/50">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-200 dark:bg-zinc-700/50">
             {getAccountIcon(transfer.from_account?.account_type)}
           </div>
-          <ArrowRight className="w-4 h-4 text-zinc-500" />
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-700/50">
+          <ArrowRight className="w-4 h-4 text-zinc-600 dark:text-zinc-500" />
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-200 dark:bg-zinc-700/50">
             {getAccountIcon(transfer.to_account?.account_type)}
           </div>
         </div>
@@ -304,27 +304,27 @@ function TransferCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="font-medium text-zinc-100">
+              <p className="font-medium text-zinc-900 dark:text-zinc-100">
                 {transfer.description || (isCCPayment ? 'Credit Card Payment' : 'Transfer')}
               </p>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
                 {transfer.from_account?.name || 'Unknown'} → {transfer.to_account?.name || 'Unknown'}
               </p>
             </div>
-            <p className="text-lg font-bold text-zinc-100 tabular-nums">
+            <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
               {formatCurrency(transfer.amount, currency)}
             </p>
           </div>
 
           {/* Meta info */}
           <div className="flex flex-wrap items-center gap-2 mt-2">
-            <span className="inline-flex items-center gap-1 text-xs text-zinc-400">
+            <span className="inline-flex items-center gap-1 text-xs text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
               <Calendar className="w-3 h-3" />
               {formatDateOnly(transfer.transfer_date)}
             </span>
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
               transfer.frequency === 'one-time'
-                ? 'bg-zinc-700 text-zinc-300'
+                ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'
                 : 'bg-teal-500/10 border border-teal-500/30 text-teal-300'
             }`}>
               {getFrequencyLabel(transfer.frequency)}
@@ -343,7 +343,7 @@ function TransferCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-zinc-400 hover:text-teal-400 hover:bg-zinc-700"
+                className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-200 dark:bg-zinc-700"
               >
                 <Pencil className="w-4 h-4 mr-1" />
                 Edit
@@ -354,7 +354,7 @@ function TransferCard({
               size="sm"
               onClick={() => onToggleActive(transfer.id, isActive)}
               disabled={isToggling}
-              className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700"
+              className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700"
             >
               {isActive ? (
                 <>
@@ -373,7 +373,7 @@ function TransferCard({
               size="sm"
               onClick={() => onDelete(transfer.id)}
               disabled={isDeleting}
-              className="text-zinc-400 hover:text-rose-400 hover:bg-zinc-700"
+              className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-rose-400 hover:bg-zinc-200 dark:bg-zinc-700"
             >
               <Trash2 className="w-4 h-4 mr-1" />
               Delete

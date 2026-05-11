@@ -79,10 +79,10 @@ export function AccountsContent({ accounts }: AccountsContentProps) {
       )}
 
       {showEmptyState ? (
-        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
+        <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-zinc-500"
+              className="w-8 h-8 text-zinc-600 dark:text-zinc-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -95,10 +95,10 @@ export function AccountsContent({ accounts }: AccountsContentProps) {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-zinc-300 mb-2">
+          <h3 className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">
             No accounts match your filters
           </h3>
-          <p className="text-sm text-zinc-500 mb-4">
+          <p className="text-sm text-zinc-600 dark:text-zinc-500 mb-4">
             Try adjusting your filters to see more results.
           </p>
           <button
