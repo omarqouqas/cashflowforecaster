@@ -58,26 +58,32 @@ export function SidebarNavItem({
   );
 
   if (isLocked) {
-    return (
-      <SidebarTooltip content={label} show={isCollapsed}>
-        <button
-          onClick={onClick}
-          className={`${baseClasses} ${stateClasses} w-full text-left`}
-        >
-          {content}
-        </button>
-      </SidebarTooltip>
-    );
-  }
-
-  return (
-    <SidebarTooltip content={label} show={isCollapsed}>
-      <Link
-        href={href}
-        className={`${baseClasses} ${stateClasses}`}
+    const button = (
+      <button
+        onClick={onClick}
+        className={`${baseClasses} ${stateClasses} w-full text-left`}
       >
         {content}
-      </Link>
-    </SidebarTooltip>
+      </button>
+    );
+
+    if (isCollapsed) {
+      return <SidebarTooltip content={label} show>{button}</SidebarTooltip>;
+    }
+    return button;
+  }
+
+  const link = (
+    <Link
+      href={href}
+      className={`${baseClasses} ${stateClasses}`}
+    >
+      {content}
+    </Link>
   );
+
+  if (isCollapsed) {
+    return <SidebarTooltip content={label} show>{link}</SidebarTooltip>;
+  }
+  return link;
 }

@@ -3,38 +3,11 @@ import { requireAuth } from '@/lib/auth/session';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
-import {
-  ArrowLeft,
-  User,
-  Shield,
-  Bell,
-  Sliders,
-  CreditCard,
-  Mail,
-  Calendar,
-  Lock,
-  Banknote,
-  Tag,
-} from 'lucide-react';
-import { SafetyBufferForm } from '@/components/settings/safety-buffer-form';
-import { TimezoneForm } from '@/components/settings/timezone-form';
-import { CurrencyForm } from '@/components/settings/currency-form';
-import { EmailDigestForm } from '@/components/settings/email-digest-form';
-import { LowBalanceAlertForm } from '@/components/settings/low-balance-alert-form';
-import { AutoRemindersForm } from '@/components/settings/auto-reminders-form';
-import { NotificationChannelsForm } from '@/components/settings/notification-channels-form';
-import { TaxSettingsForm } from '@/components/settings/tax-settings-form';
-import { EmergencyFundForm } from '@/components/settings/emergency-fund-form';
-import { SubscriptionStatus } from '@/components/subscription/subscription-status';
+import { ArrowLeft } from 'lucide-react';
+import { SettingsContent } from '@/components/settings/settings-content';
 import { LifetimeDealBanner } from '@/components/subscription/lifetime-deal-banner';
 import { getUserSubscription } from '@/lib/stripe/subscription';
-import { DeleteAccountSection } from '@/components/settings/delete-account-section';
-import { ChangePasswordButton } from '@/components/settings/change-password-button';
-import { StripeConnectForm } from '@/components/settings/stripe-connect-form';
 import { getConnectAccount } from '@/lib/stripe/connect';
-import { InvoiceBrandingForm } from '@/components/settings/invoice-branding-form';
-import { CategoryManagementForm } from '@/components/settings/category-management-form';
-import { FileImage } from 'lucide-react';
 
 export const metadata = {
   title: 'Settings | Cashcast',
@@ -71,52 +44,77 @@ export default async function SettingsPage() {
       .order('sort_order', { ascending: true }),
   ]);
 
-  const settingsData = settingsResult.data as any;
-  const accounts = (accountsResult.data || []) as any[];
-  const bills = (billsResult.data || []) as any[];
-  const categories = (categoriesResult.data || []) as any[];
+  const settingsData = settingsResult.data as Record<string, unknown> | null;
+  const accounts = (accountsResult.data || []) as Array<{
+    id: string;
+    name: string;
+    account_type: string;
+    current_balance: number;
+  }>;
+  const bills = (billsResult.data || []) as Array<{
+    amount: number;
+    frequency: string;
+    is_active: boolean;
+  }>;
+  const categories = (categoriesResult.data || []) as Array<{
+    id: string;
+    user_id: string;
+    name: string;
+    color: string;
+    icon: string;
+    sort_order: number;
+    created_at: string;
+  }>;
 
-  const currency = settingsData?.currency ?? 'USD';
-  const safetyBuffer = settingsData?.safety_buffer ?? 500;
-  const timezone = settingsData?.timezone ?? null;
-  const digestEnabled = settingsData?.email_digest_enabled ?? true;
-  const digestDay = settingsData?.email_digest_day ?? 1;
-  const lowBalanceAlertEnabled = settingsData?.low_balance_alert_enabled ?? true;
-  const autoRemindersEnabled = settingsData?.auto_reminders_enabled ?? true;
-  const taxRate = settingsData?.tax_rate ?? 25.0;
-  const taxTrackingEnabled = settingsData?.tax_tracking_enabled ?? true;
-  const taxYear = settingsData?.tax_year ?? new Date().getFullYear();
-  const estimatedTaxQ1Paid = settingsData?.estimated_tax_q1_paid ?? 0;
-  const estimatedTaxQ2Paid = settingsData?.estimated_tax_q2_paid ?? 0;
-  const estimatedTaxQ3Paid = settingsData?.estimated_tax_q3_paid ?? 0;
-  const estimatedTaxQ4Paid = settingsData?.estimated_tax_q4_paid ?? 0;
+  // Extract settings with defaults
+  const currency = (settingsData?.currency as string) ?? 'USD';
+  const safetyBuffer = (settingsData?.safety_buffer as number) ?? 500;
+  const timezone = (settingsData?.timezone as string | null) ?? null;
+  const digestEnabled = (settingsData?.email_digest_enabled as boolean) ?? true;
+  const digestDay = (settingsData?.email_digest_day as number) ?? 1;
+  const lowBalanceAlertEnabled = (settingsData?.low_balance_alert_enabled as boolean) ?? true;
+  const autoRemindersEnabled = (settingsData?.auto_reminders_enabled as boolean) ?? true;
+  const taxRate = (settingsData?.tax_rate as number) ?? 25.0;
+  const taxTrackingEnabled = (settingsData?.tax_tracking_enabled as boolean) ?? true;
+  const taxYear = (settingsData?.tax_year as number) ?? new Date().getFullYear();
+  const estimatedTaxQ1Paid = (settingsData?.estimated_tax_q1_paid as number) ?? 0;
+  const estimatedTaxQ2Paid = (settingsData?.estimated_tax_q2_paid as number) ?? 0;
+  const estimatedTaxQ3Paid = (settingsData?.estimated_tax_q3_paid as number) ?? 0;
+  const estimatedTaxQ4Paid = (settingsData?.estimated_tax_q4_paid as number) ?? 0;
 
   // Emergency fund settings
-  const emergencyFundEnabled = settingsData?.emergency_fund_enabled ?? false;
-  const emergencyFundGoalMonths = settingsData?.emergency_fund_goal_months ?? 3;
-  const emergencyFundAccountId = settingsData?.emergency_fund_account_id ?? null;
+  const emergencyFundEnabled = (settingsData?.emergency_fund_enabled as boolean) ?? false;
+  const emergencyFundGoalMonths = (settingsData?.emergency_fund_goal_months as number) ?? 3;
+  const emergencyFundAccountId = (settingsData?.emergency_fund_account_id as string | null) ?? null;
 
   // Invoice branding settings
-  const businessName = settingsData?.business_name ?? null;
-  const logoUrl = settingsData?.logo_url ?? null;
+  const businessName = (settingsData?.business_name as string | null) ?? null;
+  const logoUrl = (settingsData?.logo_url as string | null) ?? null;
 
   // Notification channel settings
-  const phoneNumber = settingsData?.phone_number ?? null;
-  const phoneVerified = settingsData?.phone_verified ?? false;
-  const smsEnabled = settingsData?.sms_alerts_enabled ?? false;
-  const pushEnabled = settingsData?.push_alerts_enabled ?? false;
+  const phoneNumber = (settingsData?.phone_number as string | null) ?? null;
+  const phoneVerified = (settingsData?.phone_verified as boolean) ?? false;
+  const smsEnabled = (settingsData?.sms_alerts_enabled as boolean) ?? false;
+  const pushEnabled = (settingsData?.push_alerts_enabled as boolean) ?? false;
   const pushSubscribed = settingsData?.push_subscription != null;
 
   // Calculate monthly expenses from bills
-  const monthlyExpenses = bills.reduce((total: number, bill: any) => {
+  const monthlyExpenses = bills.reduce((total: number, bill) => {
     switch (bill.frequency) {
-      case 'weekly': return total + (bill.amount * 52) / 12;
-      case 'biweekly': return total + (bill.amount * 26) / 12;
-      case 'semi-monthly': return total + bill.amount * 2;
-      case 'monthly': return total + bill.amount;
-      case 'quarterly': return total + bill.amount / 3;
-      case 'annually': return total + bill.amount / 12;
-      default: return total;
+      case 'weekly':
+        return total + (bill.amount * 52) / 12;
+      case 'biweekly':
+        return total + (bill.amount * 26) / 12;
+      case 'semi-monthly':
+        return total + bill.amount * 2;
+      case 'monthly':
+        return total + bill.amount;
+      case 'quarterly':
+        return total + bill.amount / 3;
+      case 'annually':
+        return total + bill.amount / 12;
+      default:
+        return total;
     }
   }, 0);
 
@@ -127,9 +125,7 @@ export default async function SettingsPage() {
   ]);
 
   // Format the created_at date
-  const accountCreatedDate = user.created_at
-    ? formatDate(new Date(user.created_at))
-    : 'N/A';
+  const accountCreatedDate = user.created_at ? formatDate(new Date(user.created_at)) : 'N/A';
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
@@ -146,204 +142,59 @@ export default async function SettingsPage() {
           Back to Dashboard
         </Link>
         <h1 className="text-2xl font-bold text-zinc-100">Settings</h1>
-        <p className="text-zinc-400 mt-1">
-          Manage your account, preferences, and subscription
-        </p>
+        <p className="text-zinc-400 mt-1">Manage your account, preferences, and subscription</p>
       </div>
 
-      <div className="space-y-8">
-        {/* ===== SUBSCRIPTION SECTION ===== */}
-        <section id="subscription" className="scroll-mt-20">
-          <SectionHeader icon={CreditCard} title="Subscription" />
-          <SubscriptionStatus
-            tier={subscription.tier}
-            status={subscription.status}
-            currentPeriodEnd={subscription.currentPeriodEnd}
-            cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
-          />
-        </section>
-
-        {/* ===== ACCOUNT SECTION ===== */}
-        <section id="account" className="scroll-mt-20">
-          <SectionHeader icon={User} title="Account" />
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 divide-y divide-zinc-800">
-            {/* Email */}
-            <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                  <Mail className="w-5 h-5 text-zinc-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-zinc-300">Email Address</p>
-                  <p className="text-zinc-100">{user.email || 'N/A'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Account Created */}
-            <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-zinc-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-zinc-300">Member Since</p>
-                  <p className="text-zinc-100">{accountCreatedDate}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                  <Lock className="w-5 h-5 text-zinc-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-zinc-300">Password</p>
-                  <p className="text-sm text-zinc-500">••••••••••••</p>
-                </div>
-              </div>
-              <ChangePasswordButton />
-            </div>
-          </div>
-        </section>
-
-        {/* ===== PREFERENCES SECTION ===== */}
-        <section id="preferences" className="scroll-mt-20">
-          <SectionHeader icon={Sliders} title="Preferences" />
-          <div className="space-y-4">
-            {/* Currency */}
-            <div id="currency" className="scroll-mt-20">
-              <CurrencyForm initialValue={currency} />
-            </div>
-
-            {/* Timezone */}
-            <div id="timezone" className="scroll-mt-20">
-              <TimezoneForm initialValue={timezone} />
-            </div>
-
-            {/* Safety Buffer */}
-            <div id="safety-buffer" className="scroll-mt-20">
-              <SafetyBufferForm initialValue={safetyBuffer} />
-            </div>
-          </div>
-        </section>
-
-        {/* ===== CATEGORIES SECTION ===== */}
-        <section id="categories" className="scroll-mt-20">
-          <SectionHeader icon={Tag} title="Bill Categories" />
-          <CategoryManagementForm initialCategories={categories} />
-        </section>
-
-        {/* ===== NOTIFICATIONS SECTION ===== */}
-        <section id="notifications" className="scroll-mt-20">
-          <SectionHeader icon={Bell} title="Notifications" />
-          <div className="space-y-4">
-            <EmailDigestForm initialEnabled={digestEnabled} initialDay={digestDay} />
-            <LowBalanceAlertForm initialEnabled={lowBalanceAlertEnabled} safetyBuffer={safetyBuffer} currency={currency} />
-            <NotificationChannelsForm
-              initialPhoneNumber={phoneNumber}
-              initialPhoneVerified={phoneVerified}
-              initialSmsEnabled={smsEnabled}
-              initialPushEnabled={pushEnabled}
-              initialPushSubscribed={pushSubscribed}
-              isPro={subscription.tier !== 'free'}
-            />
-            {subscription.tier !== 'free' && (
-              <AutoRemindersForm initialEnabled={autoRemindersEnabled} />
-            )}
-          </div>
-        </section>
-
-        {/* ===== STRIPE PAYMENTS SECTION (Pro Only) ===== */}
-        {subscription.tier !== 'free' && (
-          <section id="payments" className="scroll-mt-20">
-            <SectionHeader icon={Banknote} title="Invoice Payments" />
-            <StripeConnectForm
-              initialStatus={
-                connectAccount
-                  ? (connectAccount.accountStatus as 'pending' | 'active' | 'restricted')
-                  : 'not_connected'
-              }
-              chargesEnabled={connectAccount?.chargesEnabled}
-              payoutsEnabled={connectAccount?.payoutsEnabled}
-            />
-          </section>
-        )}
-
-        {/* ===== INVOICE BRANDING SECTION ===== */}
-        <section id="invoice-branding" className="scroll-mt-20">
-          <SectionHeader icon={FileImage} title="Invoice Branding" />
-          <InvoiceBrandingForm
-            initialBusinessName={businessName}
-            initialLogoUrl={logoUrl}
-            userEmail={user.email || 'your@email.com'}
-          />
-        </section>
-
-        {/* ===== TAX TRACKING SECTION ===== */}
-        <section id="tax-settings" className="scroll-mt-20">
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
-            <TaxSettingsForm
-              initialSettings={{
-                tax_rate: taxRate,
-                tax_tracking_enabled: taxTrackingEnabled,
-                tax_year: taxYear,
-                estimated_tax_q1_paid: estimatedTaxQ1Paid,
-                estimated_tax_q2_paid: estimatedTaxQ2Paid,
-                estimated_tax_q3_paid: estimatedTaxQ3Paid,
-                estimated_tax_q4_paid: estimatedTaxQ4Paid,
-              }}
-            />
-          </div>
-        </section>
-
-        {/* ===== EMERGENCY FUND SECTION ===== */}
-        <section id="emergency-fund" className="scroll-mt-20">
-          <EmergencyFundForm
-            initialEnabled={emergencyFundEnabled}
-            initialGoalMonths={emergencyFundGoalMonths}
-            initialAccountId={emergencyFundAccountId}
-            accounts={accounts}
-            monthlyExpenses={monthlyExpenses}
-          />
-        </section>
-
-        {/* ===== DANGER ZONE ===== */}
-        <section id="danger-zone" className="scroll-mt-20">
-          <SectionHeader icon={Shield} title="Danger Zone" variant="danger" />
-          <DeleteAccountSection />
-        </section>
-      </div>
-    </div>
-  );
-}
-
-// Section Header Component
-function SectionHeader({
-  icon: Icon,
-  title,
-  variant = 'default',
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  variant?: 'default' | 'danger';
-}) {
-  return (
-    <div className="flex items-center gap-2 mb-3">
-      <Icon
-        className={`w-5 h-5 ${
-          variant === 'danger' ? 'text-rose-400' : 'text-teal-400'
-        }`}
+      {/* Tabbed Settings Content */}
+      <SettingsContent
+        // User info
+        userEmail={user.email || 'N/A'}
+        accountCreatedDate={accountCreatedDate}
+        // Preferences
+        currency={currency}
+        timezone={timezone}
+        safetyBuffer={safetyBuffer}
+        categories={categories}
+        // Notifications
+        digestEnabled={digestEnabled}
+        digestDay={digestDay}
+        lowBalanceAlertEnabled={lowBalanceAlertEnabled}
+        autoRemindersEnabled={autoRemindersEnabled}
+        phoneNumber={phoneNumber}
+        phoneVerified={phoneVerified}
+        smsEnabled={smsEnabled}
+        pushEnabled={pushEnabled}
+        pushSubscribed={pushSubscribed}
+        // Invoicing
+        connectAccountStatus={
+          connectAccount
+            ? (connectAccount.accountStatus as 'pending' | 'active' | 'restricted')
+            : 'not_connected'
+        }
+        chargesEnabled={connectAccount?.chargesEnabled}
+        payoutsEnabled={connectAccount?.payoutsEnabled}
+        businessName={businessName}
+        logoUrl={logoUrl}
+        taxSettings={{
+          tax_rate: taxRate,
+          tax_tracking_enabled: taxTrackingEnabled,
+          tax_year: taxYear,
+          estimated_tax_q1_paid: estimatedTaxQ1Paid,
+          estimated_tax_q2_paid: estimatedTaxQ2Paid,
+          estimated_tax_q3_paid: estimatedTaxQ3Paid,
+          estimated_tax_q4_paid: estimatedTaxQ4Paid,
+        }}
+        emergencyFundEnabled={emergencyFundEnabled}
+        emergencyFundGoalMonths={emergencyFundGoalMonths}
+        emergencyFundAccountId={emergencyFundAccountId}
+        accounts={accounts}
+        monthlyExpenses={monthlyExpenses}
+        // Subscription
+        tier={subscription.tier}
+        status={subscription.status}
+        currentPeriodEnd={subscription.currentPeriodEnd}
+        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
       />
-      <h2
-        className={`text-lg font-semibold ${
-          variant === 'danger' ? 'text-rose-400' : 'text-zinc-100'
-        }`}
-      >
-        {title}
-      </h2>
     </div>
   );
 }

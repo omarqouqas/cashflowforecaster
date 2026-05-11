@@ -10,6 +10,7 @@ import { FeedbackButton } from '@/components/feedback/feedback-button'
 import { AskButton } from '@/components/ask'
 import { TimerProvider } from '@/components/time/timer-context'
 import { TimerWidget } from '@/components/time/timer-widget'
+import { ThemeProvider } from '@/components/theme/theme-provider'
 import Link from 'next/link'
 /* eslint-disable @next/next/no-img-element */
 
@@ -86,60 +87,62 @@ export default async function DashboardLayout({
   }
 
   return (
-    <TimerProvider>
-      <SidebarProvider>
-        <div className="min-h-screen bg-zinc-950">
-          <IdentifyUser />
-          <EmailVerificationBanner user={user} />
+    <ThemeProvider>
+      <TimerProvider>
+        <SidebarProvider>
+          <div className="min-h-screen bg-zinc-950 dark:bg-zinc-950">
+            <IdentifyUser />
+            <EmailVerificationBanner user={user} />
 
-          {/* Desktop Sidebar - Hidden on mobile */}
-          <div className="hidden md:block">
-            <Sidebar
-              userEmail={user.email ?? ''}
-              userName={userName}
-              userTier={userTier}
-            />
-          </div>
-
-          {/* Mobile Header - Visible only on mobile */}
-          <header className="md:hidden bg-zinc-900 border-b border-zinc-800 relative z-30">
-            <div className="px-4">
-              <div className="flex justify-between items-center h-16">
-                <Link href="/dashboard" className="flex-shrink-0">
-                  <img
-                    src="/cashcast-lockup.svg"
-                    alt="Cashcast"
-                    height={32}
-                    width={180}
-                    className="h-8 w-auto"
-                  />
-                </Link>
-                <MobileNav
-                  userEmail={user.email ?? ''}
-                  userName={userName}
-                  userTier={userTier}
-                />
-              </div>
+            {/* Desktop Sidebar - Hidden on mobile */}
+            <div className="hidden md:block">
+              <Sidebar
+                userEmail={user.email ?? ''}
+                userName={userName}
+                userTier={userTier}
+              />
             </div>
-          </header>
 
-          {/* Desktop Top Bar - Timer widget for Pro users */}
-          {canUseTimeTracking && (
-            <SidebarTopBar>
-              <TimerWidget defaultHourlyRate={defaultHourlyRate} />
-            </SidebarTopBar>
-          )}
+            {/* Mobile Header - Visible only on mobile */}
+            <header className="md:hidden bg-zinc-900 border-b border-zinc-800 relative z-30">
+              <div className="px-4">
+                <div className="flex justify-between items-center h-16">
+                  <Link href="/dashboard" className="flex-shrink-0">
+                    <img
+                      src="/cashcast-lockup.svg"
+                      alt="Cashcast"
+                      height={32}
+                      width={180}
+                      className="h-8 w-auto"
+                    />
+                  </Link>
+                  <MobileNav
+                    userEmail={user.email ?? ''}
+                    userName={userName}
+                    userTier={userTier}
+                  />
+                </div>
+              </div>
+            </header>
 
-          {/* Main content area */}
-          <SidebarContentWrapper hasTopBar={canUseTimeTracking}>
-            {children}
-          </SidebarContentWrapper>
+            {/* Desktop Top Bar - Timer widget for Pro users */}
+            {canUseTimeTracking && (
+              <SidebarTopBar>
+                <TimerWidget defaultHourlyRate={defaultHourlyRate} />
+              </SidebarTopBar>
+            )}
 
-          {/* Floating buttons */}
-          <AskButton variant="fab" />
-          <FeedbackButton />
-        </div>
-      </SidebarProvider>
-    </TimerProvider>
+            {/* Main content area */}
+            <SidebarContentWrapper hasTopBar={canUseTimeTracking}>
+              {children}
+            </SidebarContentWrapper>
+
+            {/* Floating buttons */}
+            <AskButton variant="fab" />
+            <FeedbackButton />
+          </div>
+        </SidebarProvider>
+      </TimerProvider>
+    </ThemeProvider>
   )
 }
