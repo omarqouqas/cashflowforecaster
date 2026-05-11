@@ -17,10 +17,8 @@ import {
   TrendingDown,
   ClipboardList,
   FileBarChart,
-  MessageSquare,
   PanelLeftClose,
   PanelLeft,
-  Settings,
   Calculator,
 } from 'lucide-react';
 import { useSidebar } from './sidebar-context';
@@ -105,7 +103,7 @@ export function Sidebar({ userEmail, userName, userTier }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-2 py-4">
+        <nav className="flex-1 overflow-y-auto scrollbar-hide px-2 py-3">
           {/* Main navigation */}
           <div className="space-y-1">
             <SidebarNavItem
@@ -165,7 +163,15 @@ export function Sidebar({ userEmail, userName, userTier }: SidebarProps) {
               isActive={isLinkActive('/dashboard/invoices')}
               isCollapsed={isCollapsed}
               isLocked={isFree}
-              isPro={!isFree}
+              onClick={() => handleLockedClick('invoices')}
+            />
+            <SidebarNavItem
+              href="/dashboard/quotes"
+              label="Quotes"
+              icon={ClipboardList}
+              isActive={isLinkActive('/dashboard/quotes')}
+              isCollapsed={isCollapsed}
+              isLocked={isFree}
               onClick={() => handleLockedClick('invoices')}
             />
             <SidebarNavItem
@@ -175,7 +181,33 @@ export function Sidebar({ userEmail, userName, userTier }: SidebarProps) {
               isActive={isLinkActive('/dashboard/time')}
               isCollapsed={isCollapsed}
               isLocked={isFree}
-              isPro={!isFree}
+              onClick={() => handleLockedClick('general')}
+            />
+            <SidebarNavItem
+              href="/dashboard/insights"
+              label="Insights"
+              icon={Sparkles}
+              isActive={isLinkActive('/dashboard/insights')}
+              isCollapsed={isCollapsed}
+              isLocked={isFree}
+              onClick={() => handleLockedClick('general')}
+            />
+            <SidebarNavItem
+              href="/dashboard/debt-payoff"
+              label="Debt Payoff"
+              icon={TrendingDown}
+              isActive={isLinkActive('/dashboard/debt-payoff')}
+              isCollapsed={isCollapsed}
+              isLocked={isFree}
+              onClick={() => handleLockedClick('general')}
+            />
+            <SidebarNavItem
+              href="/dashboard/reports"
+              label="Reports"
+              icon={FileBarChart}
+              isActive={isLinkActive('/dashboard/reports')}
+              isCollapsed={isCollapsed}
+              isLocked={isFree}
               onClick={() => handleLockedClick('general')}
             />
             <SidebarNavItem
@@ -186,91 +218,6 @@ export function Sidebar({ userEmail, userName, userTier }: SidebarProps) {
               isCollapsed={isCollapsed}
             />
           </SidebarSection>
-
-          {/* Pro section - only show for free users */}
-          {isFree && (
-            <SidebarSection title="Pro" isCollapsed={isCollapsed}>
-              <SidebarNavItem
-                href="/dashboard/insights"
-                label="Insights"
-                icon={Sparkles}
-                isActive={false}
-                isCollapsed={isCollapsed}
-                isLocked
-                onClick={() => handleLockedClick('general')}
-              />
-              <SidebarNavItem
-                href="/dashboard/debt-payoff"
-                label="Debt Payoff"
-                icon={TrendingDown}
-                isActive={false}
-                isCollapsed={isCollapsed}
-                isLocked
-                onClick={() => handleLockedClick('general')}
-              />
-              <SidebarNavItem
-                href="/dashboard/quotes"
-                label="Quotes"
-                icon={ClipboardList}
-                isActive={false}
-                isCollapsed={isCollapsed}
-                isLocked
-                onClick={() => handleLockedClick('invoices')}
-              />
-              <SidebarNavItem
-                href="/dashboard/reports"
-                label="Reports"
-                icon={FileBarChart}
-                isActive={false}
-                isCollapsed={isCollapsed}
-                isLocked
-                onClick={() => handleLockedClick('general')}
-              />
-              <SidebarNavItem
-                href="#"
-                label="Ask AI"
-                icon={MessageSquare}
-                isActive={false}
-                isCollapsed={isCollapsed}
-                isLocked
-                onClick={() => handleLockedClick('general')}
-              />
-            </SidebarSection>
-          )}
-
-          {/* Pro features for paid users - show as regular nav items */}
-          {!isFree && (
-            <SidebarSection title="Pro" isCollapsed={isCollapsed}>
-              <SidebarNavItem
-                href="/dashboard/insights"
-                label="Insights"
-                icon={Sparkles}
-                isActive={isLinkActive('/dashboard/insights')}
-                isCollapsed={isCollapsed}
-              />
-              <SidebarNavItem
-                href="/dashboard/debt-payoff"
-                label="Debt Payoff"
-                icon={TrendingDown}
-                isActive={isLinkActive('/dashboard/debt-payoff')}
-                isCollapsed={isCollapsed}
-              />
-              <SidebarNavItem
-                href="/dashboard/quotes"
-                label="Quotes"
-                icon={ClipboardList}
-                isActive={isLinkActive('/dashboard/quotes')}
-                isCollapsed={isCollapsed}
-              />
-              <SidebarNavItem
-                href="/dashboard/reports"
-                label="Reports"
-                icon={FileBarChart}
-                isActive={isLinkActive('/dashboard/reports')}
-                isCollapsed={isCollapsed}
-              />
-            </SidebarSection>
-          )}
 
           {/* Afford It? button */}
           <div className="mt-4 px-1">
@@ -296,17 +243,6 @@ export function Sidebar({ userEmail, userName, userTier }: SidebarProps) {
         <div className="mt-auto">
           {/* Upgrade CTA - only for free users */}
           {isFree && <SidebarUpgrade isCollapsed={isCollapsed} />}
-
-          {/* Settings */}
-          <div className="px-2 pb-1">
-            <SidebarNavItem
-              href="/dashboard/settings"
-              label="Settings"
-              icon={Settings}
-              isActive={isLinkActive('/dashboard/settings')}
-              isCollapsed={isCollapsed}
-            />
-          </div>
 
           {/* User */}
           <SidebarUser

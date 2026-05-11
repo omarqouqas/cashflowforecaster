@@ -19,7 +19,7 @@ export function SidebarContentWrapper({ children, hasTopBar = false }: SidebarCo
     >
       <main
         className={[
-          'max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8',
+          'px-4 sm:px-6 lg:px-8 py-8',
           'pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-8',
           hasTopBar ? 'md:pt-20' : 'md:pt-8',
         ].join(' ')}

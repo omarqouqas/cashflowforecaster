@@ -1,8 +1,8 @@
 # Cashcast - Complete Product Brief
 
-**Version:** 6.30
+**Version:** 6.31
 **Last Updated:** May 10, 2026
-**Status:** Live - Desktop Sidebar Navigation + Pro Feature Visibility
+**Status:** Live - Tabbed Settings + Full-Width Layout + Sidebar Optimizations
 **Product URL:** https://cashcast.money
 **Repository:** https://github.com/omarqouqas/cashcast
 

@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix + **Desktop Sidebar Navigation**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix + Desktop Sidebar Navigation + **Tabbed Settings Interface + Full-Width Layout + Theme Toggle**
 
 **Current Focus:**
 
@@ -30,9 +30,58 @@
 
 ## Recent Development (Days 60-77)
 
-### Day 77: Desktop Sidebar Navigation (May 10, 2026)
+### Day 77: Desktop Sidebar Navigation + Tabbed Settings + Layout Improvements (May 10, 2026)
 
 **Major UX Overhaul: Sidebar Navigation** - Replaced the horizontal top navigation with a collapsible left sidebar on desktop to better expose Pro features and improve navigation discoverability.
+
+**Tabbed Settings Interface** - Reorganized the Settings page from a long scrolling list into a clean tabbed interface.
+
+| Tab | Contents |
+|-----|----------|
+| **Profile** | Email, Member Since, Password |
+| **Preferences** | Theme toggle (Light/Dark/System), Currency, Timezone, Safety Buffer, Categories |
+| **Notifications** | Email Digest, Low Balance Alert, Notification Channels, Auto Reminders (Pro) |
+| **Invoicing** | Stripe Connect (Pro), Invoice Branding, Tax Settings, Emergency Fund |
+| **Billing** | Subscription Status, Danger Zone |
+
+**Theme Toggle** - Added Light/Dark/System theme support infrastructure with:
+- `ThemeProvider` context with localStorage persistence
+- Class-based dark mode in Tailwind config
+- Theme toggle buttons in Preferences tab
+
+**Full-Width Dashboard Layout** - Changed from centered content (`max-w-6xl mx-auto`) to full-width layout based on user testing. Content now fills available space instead of floating in the center.
+
+**Sidebar Optimizations** - Fixed scrollbar overflow on laptop screens:
+- Hidden scrollbar visually (CSS `scrollbar-hide`)
+- Reduced nav item padding (`py-2.5` → `py-2`)
+- Removed duplicate Settings link (already in user dropdown)
+- Merged PRO section into TOOLS for Pro users (no separate section needed)
+- All Pro features now show lock icons for free users within TOOLS section
+
+**Bug Fixes:**
+- Fixed Feedback FAB overlapping sidebar (now positioned dynamically based on sidebar width)
+- Fixed sidebar nav items not clickable when expanded (tooltip wrapper issue)
+
+**Files Created:**
+```
+components/settings/settings-tabs.tsx      # Tab navigation with URL state
+components/settings/settings-content.tsx   # Tab content wrapper
+components/settings/theme-form.tsx         # Light/Dark/System toggle
+components/theme/theme-provider.tsx        # Theme context + localStorage
+```
+
+**Files Modified:**
+- `app/dashboard/layout.tsx` - Added ThemeProvider
+- `app/dashboard/settings/page.tsx` - Uses new tabbed layout
+- `components/dashboard/sidebar/sidebar.tsx` - Optimized nav structure
+- `components/dashboard/sidebar/sidebar-nav-item.tsx` - Reduced padding, fixed click
+- `components/dashboard/sidebar/sidebar-content-wrapper.tsx` - Full-width layout
+- `components/feedback/feedback-button.tsx` - Dynamic positioning for sidebar
+- `tailwind.config.ts` - Added `darkMode: 'class'`
+
+---
+
+**Previous Day 77 Updates:**
 
 **User Value:**
 - All 14 navigation items visible at once (no more "More" dropdown hiding 7 items)
