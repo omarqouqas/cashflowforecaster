@@ -32,17 +32,17 @@ export function SidebarNavItem({
   ].join(' ');
 
   const stateClasses = isActive
-    ? 'bg-zinc-800 text-zinc-100'
+    ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
     : isLocked
-      ? 'text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-400 cursor-pointer'
-      : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-100';
+      ? 'text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-500 dark:hover:text-zinc-400 cursor-pointer'
+      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100';
 
   const content = (
     <>
       <div className="relative flex-shrink-0">
         <Icon className="w-5 h-5" />
         {isLocked && (
-          <Lock className="absolute -bottom-1 -right-1 w-3 h-3 text-zinc-500" />
+          <Lock className="absolute -bottom-1 -right-1 w-3 h-3 text-zinc-400 dark:text-zinc-500" />
         )}
       </div>
       {!isCollapsed && (

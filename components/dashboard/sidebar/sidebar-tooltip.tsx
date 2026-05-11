@@ -37,7 +37,7 @@ export function SidebarTooltip({ content, children, show }: SidebarTooltipProps)
       {children}
       {isVisible && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed z-[9999] px-2.5 py-1.5 text-sm font-medium bg-zinc-800 text-zinc-100 rounded-md shadow-lg border border-zinc-700 whitespace-nowrap"
+          className="fixed z-[9999] px-2.5 py-1.5 text-sm font-medium bg-zinc-900 dark:bg-zinc-800 text-zinc-100 rounded-md shadow-lg border border-zinc-700 whitespace-nowrap"
           style={{
             top: position.top,
             left: position.left,
@@ -47,7 +47,7 @@ export function SidebarTooltip({ content, children, show }: SidebarTooltipProps)
         >
           {content}
           {/* Arrow pointing left */}
-          <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-2 h-2 bg-zinc-800 border-l border-b border-zinc-700 rotate-45" />
+          <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-2 h-2 bg-zinc-900 dark:bg-zinc-800 border-l border-b border-zinc-700 rotate-45" />
         </div>,
         document.body
       )}

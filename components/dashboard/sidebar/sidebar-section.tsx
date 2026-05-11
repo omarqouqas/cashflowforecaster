@@ -12,9 +12,9 @@ export function SidebarSection({ title, isCollapsed, children }: SidebarSectionP
       {/* Section header */}
       <div className="px-3 mb-2">
         {isCollapsed ? (
-          <div className="border-t border-zinc-800" />
+          <div className="border-t border-zinc-200 dark:border-zinc-800" />
         ) : (
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-500 uppercase tracking-wider">
             {title}
           </span>
         )}

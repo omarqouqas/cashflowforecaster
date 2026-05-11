@@ -111,8 +111,8 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
         'flex items-center gap-3 w-full px-3 py-2 rounded-lg',
         'text-sm font-medium transition-colors',
         timer.isRunning
-          ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-          : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-100',
+          ? 'bg-teal-500/20 text-teal-600 dark:text-teal-300 border border-teal-500/30'
+          : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100',
         isCollapsed ? 'justify-center' : '',
       ].join(' ')}
     >
@@ -161,7 +161,7 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
 
           <div
             className={[
-              'absolute z-50 rounded-xl border border-zinc-700 bg-zinc-800 shadow-xl',
+              'absolute z-50 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow-xl',
               isCollapsed ? 'left-full ml-2 bottom-0 w-72' : 'left-2 right-2 bottom-full mb-2',
             ].join(' ')}
           >
@@ -171,13 +171,13 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
                   {/* Running timer view */}
                   <div className="text-center mb-4">
                     <p className="text-xs text-zinc-500 mb-1">Currently tracking</p>
-                    <p className="text-lg font-semibold text-white truncate">
+                    <p className="text-lg font-semibold text-zinc-900 dark:text-white truncate">
                       {timer.projectName}
                     </p>
                     {timer.clientName && (
-                      <p className="text-sm text-zinc-400">{timer.clientName}</p>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">{timer.clientName}</p>
                     )}
-                    <p className="text-3xl font-mono text-teal-400 mt-3">
+                    <p className="text-3xl font-mono text-teal-600 dark:text-teal-400 mt-3">
                       {formatTimerCompact(timer.elapsedSeconds)}
                     </p>
                   </div>
@@ -198,7 +198,7 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
                       resetTimer();
                       setIsExpanded(false);
                     }}
-                    className="w-full mt-2 text-xs text-zinc-500 hover:text-zinc-400"
+                    className="w-full mt-2 text-xs text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400"
                   >
                     Discard without saving
                   </button>
@@ -218,7 +218,7 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
                         onChange={(e) => setProjectName(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="What are you working on?"
-                        className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-teal-500"
+                        className="w-full px-3 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-teal-500"
                       />
                     </div>
 
@@ -232,7 +232,7 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
                         onChange={(e) => setClientName(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Client name"
-                        className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-teal-500"
+                        className="w-full px-3 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:border-teal-500"
                       />
                     </div>
 
@@ -246,11 +246,11 @@ export function SidebarTimer({ defaultHourlyRate, isCollapsed }: SidebarTimerPro
                     </button>
                   </div>
 
-                  <div className="mt-3 pt-3 border-t border-zinc-700">
+                  <div className="mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-700">
                     <Link
                       href="/dashboard/time"
                       onClick={() => setIsExpanded(false)}
-                      className="block text-center text-sm text-teal-400 hover:text-teal-300"
+                      className="block text-center text-sm text-teal-600 dark:text-teal-400 hover:text-teal-500 dark:hover:text-teal-300"
                     >
                       View all time entries
                     </Link>

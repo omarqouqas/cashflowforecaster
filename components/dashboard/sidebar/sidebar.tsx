@@ -246,7 +246,7 @@ export function Sidebar({ userEmail, userName, userTier, canUseTimeTracking = fa
         <div className="mt-auto">
           {/* Timer - only for Pro users */}
           {canUseTimeTracking && (
-            <div className="border-t border-zinc-800">
+            <div className="border-t border-zinc-200 dark:border-zinc-800">
               <SidebarTimer defaultHourlyRate={defaultHourlyRate} isCollapsed={isCollapsed} />
             </div>
           )}

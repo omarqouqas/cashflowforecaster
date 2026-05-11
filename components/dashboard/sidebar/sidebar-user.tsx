@@ -108,14 +108,14 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
   };
 
   return (
-    <div className="relative px-2 py-3 border-t border-zinc-800">
+    <div className="relative px-2 py-3 border-t border-zinc-200 dark:border-zinc-800">
       <SidebarTooltip content={userEmail} show={isCollapsed}>
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={[
             'flex items-center gap-3 w-full px-3 py-2.5 rounded-lg',
             'text-left transition-colors',
-            'hover:bg-zinc-800/50',
+            'hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
             isCollapsed ? 'justify-center' : '',
           ].join(' ')}
         >
@@ -123,15 +123,15 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
           {!isCollapsed && (
             <>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-zinc-100 truncate">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                   {userName || userEmail.split('@')[0]}
                 </p>
-                <p className={`text-xs ${userTier === 'free' ? 'text-zinc-500' : 'text-teal-400'}`}>
+                <p className={`text-xs ${userTier === 'free' ? 'text-zinc-500' : 'text-teal-600 dark:text-teal-400'}`}>
                   {getPlanLabel()}
                 </p>
               </div>
               <ChevronUp
-                className={`w-4 h-4 text-zinc-400 transition-transform ${isMenuOpen ? '' : 'rotate-180'}`}
+                className={`w-4 h-4 text-zinc-500 dark:text-zinc-400 transition-transform ${isMenuOpen ? '' : 'rotate-180'}`}
               />
             </>
           )}
@@ -146,14 +146,14 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
 
           {/* Menu - positioned above the button */}
           <div className={[
-            'absolute z-50 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl py-1',
+            'absolute z-50 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl py-1',
             isCollapsed ? 'left-full ml-2 bottom-0 w-56' : 'left-2 right-2 bottom-full mb-2',
           ].join(' ')}>
             {/* User info when collapsed */}
             {isCollapsed && (
-              <div className="px-3 py-2 border-b border-zinc-700">
-                <p className="text-sm font-medium text-zinc-100 truncate">{userEmail}</p>
-                <p className={`text-xs ${userTier === 'free' ? 'text-zinc-500' : 'text-teal-400'}`}>
+              <div className="px-3 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{userEmail}</p>
+                <p className={`text-xs ${userTier === 'free' ? 'text-zinc-500' : 'text-teal-600 dark:text-teal-400'}`}>
                   {getPlanLabel()} plan
                 </p>
               </div>
@@ -162,7 +162,7 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
             <Link
               href="/dashboard/settings"
               onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-700/50 hover:text-zinc-100 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
             >
               <Settings className="w-4 h-4" />
               Settings
@@ -171,7 +171,7 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
             <button
               onClick={handleBilling}
               disabled={isBillingLoading}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-700/50 hover:text-zinc-100 transition-colors disabled:opacity-50"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors disabled:opacity-50"
             >
               <CreditCard className="w-4 h-4" />
               {isBillingLoading ? 'Loading...' : 'Billing'}
@@ -180,7 +180,7 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
             <a
               href="mailto:support@cashcast.money"
               onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-700/50 hover:text-zinc-100 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
             >
               <HelpCircle className="w-4 h-4" />
               Help & Support
@@ -191,18 +191,18 @@ export function SidebarUser({ userEmail, userName, userTier, isCollapsed }: Side
                 setIsMenuOpen(false);
                 setIsFeedbackOpen(true);
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-700/50 hover:text-zinc-100 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               Send Feedback
             </button>
 
-            <div className="border-t border-zinc-700 my-1" />
+            <div className="border-t border-zinc-200 dark:border-zinc-700 my-1" />
 
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
             >
               <LogOut className="w-4 h-4" />
               {isLoggingOut ? 'Logging out...' : 'Log out'}
