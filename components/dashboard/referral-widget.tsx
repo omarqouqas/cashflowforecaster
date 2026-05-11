@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Gift, Copy, Check, Users, CreditCard, Award } from 'lucide-react';
 import type { ReferralStats } from '@/lib/referrals';
 
@@ -11,10 +11,14 @@ interface ReferralWidgetProps {
 
 export function ReferralWidget({ stats, isLoading = false }: ReferralWidgetProps) {
   const [copied, setCopied] = useState(false);
+  const [referralUrl, setReferralUrl] = useState(stats?.code ? `/r/${stats.code}` : '');
 
-  const referralUrl = stats?.code
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/r/${stats.code}`
-    : '';
+  // Update to full URL after hydration to avoid mismatch
+  useEffect(() => {
+    if (stats?.code) {
+      setReferralUrl(`${window.location.origin}/r/${stats.code}`);
+    }
+  }, [stats?.code]);
 
   const handleCopy = async () => {
     if (!referralUrl) return;
