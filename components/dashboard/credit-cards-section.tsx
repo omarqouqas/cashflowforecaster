@@ -67,21 +67,21 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
   // If no credit cards, show empty state with add button
   if (creditCards.length === 0) {
     return (
-      <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-6">
+      <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
               <CreditCard className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-zinc-100">Credit Cards</h3>
-              <p className="text-xs text-zinc-400 mt-0.5">Track your credit card balances</p>
+              <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Credit Cards</h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Track your credit card balances</p>
             </div>
           </div>
         </div>
 
-        <div className="text-center py-6 border-t border-zinc-700/50">
-          <p className="text-sm text-zinc-400 mb-4">
+        <div className="text-center py-6 border-t border-zinc-200 dark:border-zinc-700/50">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
             Add your credit cards to track balances and schedule payments
           </p>
           <Link
@@ -97,7 +97,7 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
   }
 
   return (
-    <div className="border border-zinc-800 bg-zinc-800 rounded-lg p-6">
+    <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 rounded-lg p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -105,15 +105,15 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
             <CreditCard className="w-5 h-5 text-amber-400" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-zinc-100">Credit Cards</h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Credit Cards</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
               {creditCards.length} card{creditCards.length === 1 ? '' : 's'} • {overallUtilization.toFixed(0)}% overall utilization
             </p>
           </div>
         </div>
         <Link
           href="/dashboard/accounts/new?type=credit_card"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-700 hover:border-amber-500/30 rounded text-xs font-medium text-zinc-300 hover:text-amber-400 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700hover:border-amber-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-amber-400 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Card
@@ -121,8 +121,8 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
       </div>
 
       {/* Total Debt */}
-      <div className="flex items-baseline justify-between py-3 border-t border-zinc-700/50 mb-4">
-        <p className="text-xs text-zinc-400">Total Balance Owed</p>
+      <div className="flex items-baseline justify-between py-3 border-t border-zinc-200 dark:border-zinc-700/50 mb-4">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Total Balance Owed</p>
         <p className={cn(
           "text-2xl font-bold tabular-nums",
           totalDebt > 0 ? "text-amber-400" : "text-emerald-400"
@@ -145,12 +145,12 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
           return (
             <div
               key={card.id}
-              className="bg-zinc-900 rounded-lg p-3 border border-zinc-800 hover:border-zinc-700 transition-colors"
+              className="bg-zinc-50 dark:bg-zinc-900rounded-lg p-3 border border-zinc-800 hover:border-zinc-300 dark:border-zinc-700transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
                 <Link
                   href={`/dashboard/accounts/${card.id}/edit`}
-                  className="text-sm font-medium text-zinc-100 hover:text-amber-400 transition-colors truncate flex-1 mr-2"
+                  className="text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-amber-400 transition-colors truncate flex-1 mr-2"
                 >
                   {card.name}
                 </Link>
@@ -165,7 +165,7 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
               </div>
 
               <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-zinc-400">
+                <span className="text-zinc-500 dark:text-zinc-400">
                   {hasCredit ? (
                     <span className="text-emerald-400">{formatCurrency(balance, currency)} credit</span>
                   ) : (
@@ -183,7 +183,7 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
               </div>
 
               {/* Utilization Bar */}
-              <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className={cn("h-full rounded-full transition-all", hasCredit ? 'bg-emerald-500' : getUtilizationBgColor(utilization))}
                   style={{ width: hasCredit ? '0%' : `${utilizationCapped}%` }}
@@ -206,10 +206,10 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
 
       {/* Next Payment Due */}
       {nextPayment && (
-        <div className="pt-3 border-t border-zinc-700/50">
+        <div className="pt-3 border-t border-zinc-200 dark:border-zinc-700/50">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-zinc-400">Next payment due:</span>
-            <span className="text-zinc-100 font-medium">
+            <span className="text-zinc-500 dark:text-zinc-400">Next payment due:</span>
+            <span className="text-zinc-900 dark:text-zinc-100 font-medium">
               {nextPayment.name} on the {nextPayment.payment_due_day}
               {(() => {
                 const day = nextPayment.payment_due_day!;
@@ -229,7 +229,7 @@ export function CreditCardsSection({ creditCards, currency = 'USD' }: CreditCard
       )}
 
       {/* View All Link */}
-      <div className="pt-4 mt-4 border-t border-zinc-700/50">
+      <div className="pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700/50">
         <Link
           href="/dashboard/accounts"
           className="inline-flex items-center text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"

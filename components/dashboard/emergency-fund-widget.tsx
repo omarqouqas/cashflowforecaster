@@ -68,21 +68,21 @@ export function EmergencyFundWidget({
   // Disabled state
   if (!enabled) {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-800">
-              <Shield className="h-5 w-5 text-zinc-500" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
+              <Shield className="h-5 w-5 text-zinc-500 dark:text-zinc-500" />
             </div>
             <div>
-              <h3 className="font-semibold text-zinc-300">Emergency Fund</h3>
-              <p className="text-sm text-zinc-500">Track your financial safety net</p>
+              <h3 className="font-semibold text-zinc-700 dark:text-zinc-300">Emergency Fund</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-500">Track your financial safety net</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 rounded-lg bg-zinc-800/50 p-4">
-          <p className="text-sm text-zinc-400">
+        <div className="mt-4 rounded-lg bg-zinc-100 dark:bg-zinc-800/50 p-4">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Set a savings goal and track how many months of expenses you have covered.
             Financial experts recommend saving 3-6 months of expenses.
           </p>
@@ -100,7 +100,7 @@ export function EmergencyFundWidget({
 
   // Enabled state
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
@@ -108,15 +108,15 @@ export function EmergencyFundWidget({
             <Shield className="h-5 w-5 text-teal-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-zinc-100">Emergency Fund</h3>
-            <p className="text-sm text-zinc-500">Your financial safety net</p>
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Emergency Fund</h3>
+            <p className="text-sm text-zinc-500 dark:text-zinc-500">Your financial safety net</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {getStatusBadge()}
           <Link
             href="/dashboard/settings#emergency-fund"
-            className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+            className="rounded-lg p-1.5 text-zinc-500 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:text-zinc-300"
             title="Configure"
           >
             <Settings className="h-4 w-4" />
@@ -126,10 +126,10 @@ export function EmergencyFundWidget({
 
       {/* Goal Info */}
       <div className="mt-4">
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Goal: {goalMonths} months of expenses ({formatCurrency(goalAmount, currency)})
           {accountName && (
-            <span className="text-zinc-500"> &middot; {accountName}</span>
+            <span className="text-zinc-500 dark:text-zinc-500"> &middot; {accountName}</span>
           )}
         </p>
       </div>
@@ -137,10 +137,10 @@ export function EmergencyFundWidget({
       {/* Progress Bar */}
       <div className="mt-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-zinc-100">{formatCurrency(currentBalance, currency)}</span>
-          <span className="text-zinc-500">{Math.round(progressPercent)}%</span>
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">{formatCurrency(currentBalance, currency)}</span>
+          <span className="text-zinc-500 dark:text-zinc-500">{Math.round(progressPercent)}%</span>
         </div>
-        <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-zinc-800">
+        <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
           <div
             className={`h-full transition-all duration-500 ${getProgressColor()}`}
             style={{ width: `${progressPercent}%` }}
@@ -150,19 +150,19 @@ export function EmergencyFundWidget({
 
       {/* Stats Grid */}
       <div className="mt-4 grid grid-cols-2 gap-4">
-        <div className="rounded-lg bg-zinc-800/50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+        <div className="rounded-lg bg-zinc-100 dark:bg-zinc-800/50 p-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
             Months Covered
           </p>
-          <p className="mt-1 text-xl font-semibold text-zinc-100">
+          <p className="mt-1 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
             {monthsCovered.toFixed(1)}
           </p>
         </div>
-        <div className="rounded-lg bg-zinc-800/50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+        <div className="rounded-lg bg-zinc-100 dark:bg-zinc-800/50 p-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
             To Go
           </p>
-          <p className="mt-1 text-xl font-semibold text-zinc-100">
+          <p className="mt-1 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
             {amountToGo > 0 ? formatCurrency(amountToGo, currency) : 'Done!'}
           </p>
         </div>
