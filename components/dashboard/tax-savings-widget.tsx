@@ -22,15 +22,15 @@ export function TaxSavingsWidget({
 }: TaxSavingsWidgetProps) {
   if (!enabled) {
     return (
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-zinc-100">Tax Savings Tracker</h3>
-            <p className="mt-1 text-sm text-zinc-400">
+            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Tax Savings Tracker</h3>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               Track tax savings on your freelance income
             </p>
           </div>
-          <DollarSign className="h-5 w-5 text-zinc-400" />
+          <DollarSign className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
         </div>
         <div className="mt-4">
           <Link
@@ -62,11 +62,11 @@ export function TaxSavingsWidget({
   )
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-zinc-100">Tax Savings Tracker</h3>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Tax Savings Tracker</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             {taxRate}% rate • Year-to-date
           </p>
         </div>
@@ -76,13 +76,13 @@ export function TaxSavingsWidget({
       {/* Main Stats */}
       <div className="mt-6 grid grid-cols-1 min-[375px]:grid-cols-2 gap-4">
         <div>
-          <p className="text-xs sm:text-sm text-zinc-400">Total Income</p>
-          <p className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-100">
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Total Income</p>
+          <p className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
             {formatCurrency(totalIncome, currency)}
           </p>
         </div>
         <div>
-          <p className="text-xs sm:text-sm text-zinc-400">After-Tax</p>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">After-Tax</p>
           <p className="mt-1 text-xl sm:text-2xl font-semibold text-emerald-400">
             {formatCurrency(afterTaxIncome, currency)}
           </p>
@@ -92,12 +92,12 @@ export function TaxSavingsWidget({
       {/* Tax Owed vs Saved */}
       <div className="mt-6">
         <div className="flex items-center justify-between text-xs sm:text-sm">
-          <span className="text-zinc-400">Tax Progress</span>
-          <span className="font-medium text-zinc-100">
+          <span className="text-zinc-500 dark:text-zinc-400">Tax Progress</span>
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">
             {formatCurrency(totalPaid, currency)} / {formatCurrency(totalTaxOwed, currency)}
           </span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-800">
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
           <div
             className={`h-full transition-all ${
               savedPercentage >= 100
@@ -111,7 +111,7 @@ export function TaxSavingsWidget({
             style={{ width: `${Math.min(savedPercentage, 100)}%` }}
           />
         </div>
-        <p className="mt-2 text-xs sm:text-sm text-zinc-400">
+        <p className="mt-2 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
           {savedPercentage >= 100 ? (
             <span className="text-teal-400 font-medium">✓ Fully saved</span>
           ) : (
