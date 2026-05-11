@@ -54,9 +54,9 @@ function accountTypeBadge(type: string | null | undefined) {
 
   return {
     label: titleCase(t),
-    className: 'bg-zinc-700 text-zinc-300 border border-zinc-600',
+    className: 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-600',
     icon: Wallet,
-    iconColor: 'text-zinc-400'
+    iconColor: 'text-zinc-500 dark:text-zinc-400'
   }
 }
 
@@ -86,7 +86,7 @@ export function AccountCard({ account }: { account: Account }) {
   const AccountIcon = badge.icon
 
   return (
-    <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
+    <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors">
       <div className="flex items-start gap-3">
         {/* Account Type Icon */}
         <div className={`w-10 h-10 ${badge.className.replace('text-', 'bg-').replace('/20', '/10')} rounded-full flex items-center justify-center flex-shrink-0`}>
@@ -97,9 +97,9 @@ export function AccountCard({ account }: { account: Account }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="min-w-0">
-              <p className="text-base font-semibold text-zinc-100 truncate">{account.name}</p>
+              <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">{account.name}</p>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
                   {account.updated_at ? `Updated ${formatRelativeTime(account.updated_at)}` : 'Never updated'}
                 </p>
                 {isStale && (
@@ -172,7 +172,7 @@ export function AccountCard({ account }: { account: Account }) {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-teal-500/50 text-zinc-100 hover:text-teal-400 transition-all"
+                className="w-full border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:border-teal-500/50 text-zinc-900 dark:text-zinc-100 hover:text-teal-400 transition-all"
                 aria-label="Edit account"
               >
                 <Edit className="w-4 h-4 mr-2" />
@@ -199,7 +199,7 @@ export function AccountCard({ account }: { account: Account }) {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowSimulator(true)}
-                  className="border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-amber-500/50 text-zinc-100 hover:text-amber-400 transition-all"
+                  className="border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:border-amber-500/50 text-zinc-900 dark:text-zinc-100 hover:text-amber-400 transition-all"
                   aria-label="Simulate payment"
                 >
                   <Calculator className="w-4 h-4" />

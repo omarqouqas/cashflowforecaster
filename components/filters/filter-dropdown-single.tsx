@@ -64,7 +64,7 @@ export function FilterDropdownSingle({
           type="button"
           className={cn(
             'inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg border transition-colors',
-            'bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-100',
+            'bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100',
             hasValue && 'border-teal-500/50 bg-teal-500/10 text-teal-300',
             className
           )}
@@ -72,7 +72,7 @@ export function FilterDropdownSingle({
           {displayText}
           <ChevronDown
             className={cn(
-              'w-4 h-4 text-zinc-400 transition-transform',
+              'w-4 h-4 text-zinc-500 dark:text-zinc-400 transition-transform',
               open && 'rotate-180'
             )}
           />
@@ -81,7 +81,7 @@ export function FilterDropdownSingle({
 
       <Popover.Portal>
         <Popover.Content
-          className="z-50 min-w-[160px] bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden"
+          className="z-50 min-w-[160px] bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl overflow-hidden"
           sideOffset={4}
           align="start"
           onCloseAutoFocus={(e) => e.preventDefault()}
@@ -96,25 +96,25 @@ export function FilterDropdownSingle({
                   onClick={() => handleSelect(option.value)}
                   className={cn(
                     'w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors text-left',
-                    'hover:bg-zinc-700',
+                    'hover:bg-zinc-100 dark:hover:bg-zinc-700',
                     isSelected && 'text-teal-300 bg-teal-500/10'
                   )}
                 >
                   {option.icon && (
-                    <span className="flex-shrink-0 text-zinc-400">{option.icon}</span>
+                    <span className="flex-shrink-0 text-zinc-500 dark:text-zinc-400">{option.icon}</span>
                   )}
-                  <span className="flex-1 truncate text-zinc-100">{option.label}</span>
+                  <span className="flex-1 truncate text-zinc-900 dark:text-zinc-100">{option.label}</span>
                   {isSelected && <Check className="w-4 h-4 text-teal-400 flex-shrink-0" />}
                 </button>
               );
             })}
           </div>
           {allowClear && hasValue && (
-            <div className="border-t border-zinc-700 p-1">
+            <div className="border-t border-zinc-200 dark:border-zinc-700 p-1">
               <button
                 type="button"
                 onClick={handleClear}
-                className="w-full px-2 py-1.5 text-sm text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 rounded-md transition-colors text-left"
+                className="w-full px-2 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-md transition-colors text-left"
               >
                 Clear
               </button>

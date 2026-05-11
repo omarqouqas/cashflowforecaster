@@ -102,7 +102,7 @@ function AlertCard({
             {alert.dismissible && onDismiss && (
               <button
                 onClick={() => onDismiss(alert.id)}
-                className={`p-0.5 rounded hover:bg-zinc-700/50 transition-colors ${styles.iconColor}`}
+                className={`p-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700/50 transition-colors ${styles.iconColor}`}
                 aria-label="Dismiss alert"
               >
                 <X className="w-4 h-4" />
@@ -165,11 +165,11 @@ export function AlertBanner({ alerts, className = '' }: AlertBannerProps) {
       {/* Header with collapse toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors mb-2"
+        className="w-full flex items-center justify-between p-3 bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors mb-2"
       >
         <div className="flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-amber-400" />
-          <span className="text-sm font-medium text-zinc-200">
+          <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
             {visibleAlerts.length} alert{visibleAlerts.length === 1 ? '' : 's'}
           </span>
           {criticalCount > 0 && (
@@ -184,9 +184,9 @@ export function AlertBanner({ alerts, className = '' }: AlertBannerProps) {
           )}
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-zinc-400" />
+          <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-zinc-400" />
+          <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
         )}
       </button>
 

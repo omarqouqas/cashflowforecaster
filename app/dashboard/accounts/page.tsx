@@ -57,7 +57,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
+          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Dashboard
@@ -68,7 +68,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Accounts</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Track your bank accounts and balances
           </p>
         </div>
@@ -204,7 +204,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center">
-                      <CreditCard className="w-5 h-5 text-zinc-600 dark:text-zinc-500 dark:text-zinc-400" />
+                      <CreditCard className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                     </div>
                     <div>
                       <p className="font-medium text-zinc-700 dark:text-zinc-300">Debt Payoff Planner</p>
@@ -232,7 +232,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
             <div className="text-center py-12">
               <Wallet className="w-10 h-10 mx-auto mb-3 text-zinc-600 dark:text-zinc-500" />
               <p className="text-zinc-800 dark:text-zinc-200 font-medium">No accounts yet</p>
-              <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mt-1 mb-6">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1 mb-6">
                 Add your checking account to start tracking your cash flow.
               </p>
               <Link href="/dashboard/accounts/new">

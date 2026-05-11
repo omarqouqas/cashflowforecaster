@@ -96,7 +96,7 @@ export function FilterDropdown({
           type="button"
           className={cn(
             'inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg border transition-colors',
-            'bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-100',
+            'bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100',
             hasSelection && 'border-teal-500/50 bg-teal-500/10 text-teal-300',
             className
           )}
@@ -104,7 +104,7 @@ export function FilterDropdown({
           {getButtonLabel()}
           <ChevronDown
             className={cn(
-              'w-4 h-4 text-zinc-400 transition-transform',
+              'w-4 h-4 text-zinc-500 dark:text-zinc-400 transition-transform',
               open && 'rotate-180'
             )}
           />
@@ -113,14 +113,14 @@ export function FilterDropdown({
 
       <Popover.Portal>
         <Popover.Content
-          className="z-50 min-w-[200px] max-w-[280px] bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden"
+          className="z-50 min-w-[200px] max-w-[280px] bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl overflow-hidden"
           sideOffset={4}
           align="start"
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
           {/* Search input */}
           {searchable && (
-            <div className="p-2 border-b border-zinc-700">
+            <div className="p-2 border-b border-zinc-200 dark:border-zinc-700">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <input
@@ -128,13 +128,13 @@ export function FilterDropdown({
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={searchPlaceholder}
-                  className="w-full pl-8 pr-3 py-1.5 text-sm bg-zinc-900 border border-zinc-700 rounded-md text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full pl-8 pr-3 py-1.5 text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
                 />
                 {search && (
                   <button
                     type="button"
                     onClick={() => setSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 hover:text-zinc-300"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -146,7 +146,7 @@ export function FilterDropdown({
           {/* Options list */}
           <div className="max-h-[280px] overflow-y-auto p-1">
             {filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-zinc-500">No options found</div>
+              <div className="px-3 py-2 text-sm text-zinc-500 dark:text-zinc-500">No options found</div>
             ) : (
               filteredOptions.map((option) => {
                 const isSelected = value.includes(option.value);
@@ -157,7 +157,7 @@ export function FilterDropdown({
                     onClick={() => handleToggle(option.value)}
                     className={cn(
                       'w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors text-left',
-                      'hover:bg-zinc-700',
+                      'hover:bg-zinc-100 dark:hover:bg-zinc-700',
                       isSelected && 'text-teal-300'
                     )}
                   >
@@ -166,15 +166,15 @@ export function FilterDropdown({
                         'w-4 h-4 rounded border flex items-center justify-center flex-shrink-0',
                         isSelected
                           ? 'bg-teal-500 border-teal-500'
-                          : 'border-zinc-600 bg-transparent'
+                          : 'border-zinc-300 dark:border-zinc-600 bg-transparent'
                       )}
                     >
                       {isSelected && <Check className="w-3 h-3 text-white" />}
                     </div>
                     {option.icon && (
-                      <span className="flex-shrink-0 text-zinc-400">{option.icon}</span>
+                      <span className="flex-shrink-0 text-zinc-500 dark:text-zinc-400">{option.icon}</span>
                     )}
-                    <span className="truncate text-zinc-100">{option.label}</span>
+                    <span className="truncate text-zinc-900 dark:text-zinc-100">{option.label}</span>
                   </button>
                 );
               })
@@ -182,11 +182,11 @@ export function FilterDropdown({
           </div>
 
           {/* Footer actions */}
-          <div className="flex items-center justify-between px-2 py-1.5 border-t border-zinc-700 text-xs">
+          <div className="flex items-center justify-between px-2 py-1.5 border-t border-zinc-200 dark:border-zinc-700 text-xs">
             <button
               type="button"
               onClick={handleSelectAll}
-              className="px-2 py-1 text-zinc-400 hover:text-zinc-100 transition-colors"
+              className="px-2 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
             >
               Select all
             </button>
@@ -194,7 +194,7 @@ export function FilterDropdown({
               <button
                 type="button"
                 onClick={handleClear}
-                className="px-2 py-1 text-zinc-400 hover:text-zinc-100 transition-colors"
+                className="px-2 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               >
                 Clear
               </button>

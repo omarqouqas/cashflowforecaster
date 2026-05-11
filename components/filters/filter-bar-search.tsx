@@ -74,7 +74,7 @@ export function FilterBarSearch({
         placeholder={placeholder}
         className={cn(
           'w-48 pl-9 pr-8 py-2 text-sm rounded-lg border transition-colors',
-          'bg-zinc-800 hover:bg-zinc-700/50 border-zinc-700 text-zinc-100 placeholder:text-zinc-500',
+          'bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500',
           'focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500'
         )}
       />
@@ -82,7 +82,7 @@ export function FilterBarSearch({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-zinc-300 rounded transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 rounded transition-colors"
         >
           <X className="w-3.5 h-3.5" />
         </button>

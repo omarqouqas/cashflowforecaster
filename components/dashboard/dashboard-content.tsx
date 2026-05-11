@@ -351,7 +351,7 @@ export function DashboardContent({
       {/* Lifetime Deal Banner */}
       <LifetimeDealBanner currentTier={subscriptionTier} />
 
-      <div className="bg-white dark:bg-zinc-50 dark:bg-zinc-900rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 sm:p-6">
+      <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 sm:p-6">
         {/* Checkout Success Messages */}
         {checkoutSuccess && (
           <div className="mb-6">
@@ -482,7 +482,7 @@ export function DashboardContent({
           </Link>
           <Link
             href="/dashboard/settings#safety-buffer"
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
           >
             Adjust Buffer
           </Link>
@@ -516,7 +516,7 @@ export function DashboardContent({
           </Link>
           <Link
             href="/dashboard/accounts/new"
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Account
@@ -552,7 +552,7 @@ export function DashboardContent({
           </Link>
           <Link
             href="/dashboard/income/new"
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Income
@@ -588,7 +588,7 @@ export function DashboardContent({
           </Link>
           <Link
             href="/dashboard/bills/new"
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/30 rounded text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-400 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Bill
@@ -607,7 +607,7 @@ export function DashboardContent({
       {forecastMetrics && (
         <div className="mb-6">
           <Link href="/dashboard/calendar">
-            <div className="bg-zinc-800 border border-zinc-800 rounded-lg p-6 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 hover:border-teal-500/30 transition-all duration-200 cursor-pointer">
+            <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 hover:border-teal-500/30 transition-all duration-200 cursor-pointer">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-teal-500/10 rounded-lg flex items-center justify-center">
@@ -776,7 +776,7 @@ export function DashboardContent({
                       <Link
                         key={invoice.id}
                         href={`/dashboard/invoices/${invoice.id}`}
-                        className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-900rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors border border-zinc-800 hover:border-teal-500/30"
+                        className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors border border-zinc-200 dark:border-zinc-800 hover:border-teal-500/30"
                       >
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
@@ -883,8 +883,8 @@ export function DashboardContent({
         <Link href="/dashboard/import" className="block">
           <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 rounded-lg p-5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Upload className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+              <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Upload className="w-5 h-5 text-zinc-500 dark:text-zinc-300" />
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
