@@ -23,7 +23,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What is Ask Cashcast?",
-    answer: "Ask Cashcast is our AI-powered natural language interface. Instead of navigating charts and numbers, just type a question like 'Can I afford a $2,000 laptop next week?' or 'When is my next low balance day?' and get an instant, personalized answer based on your actual bills, income, and projected balances. It understands context—ask follow-up questions like 'What if I wait until after rent?' and it adjusts. Free users get 5 queries per day; Pro users have unlimited access."
+    answer: "Ask Cashcast is our AI-powered natural language interface. Instead of navigating charts and numbers, just type a question like 'Can I afford a $2,000 laptop next week?' or 'When is my next low balance day?' and get an instant, personalized answer based on your actual bills, income, and projected balances. It understands context—ask follow-up questions like 'What if I wait until after rent?' and it adjusts. Ask Cashcast is available exclusively to Pro users with unlimited queries."
   },
   {
     question: "What can I ask Cashcast?",
@@ -63,7 +63,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between Free and Pro?",
-    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, 90-day forecast, AI risk analysis with confidence bands, 5 Ask Cashcast queries per day, auto-categorization for 10 transactions per import, CSV & Excel import, CSV export, and low balance alerts via email and push notifications. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), gives you unlimited Ask Cashcast queries, increases auto-categorization to 50 transactions per import, adds SMS alerts for critical cash crunch warnings, full Reports & Export with Excel and JSON formats, credit card tracking with debt payoff planner, and includes Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
+    answer: "The Free plan gives you the core experience: up to 10 bills, 10 income sources, 90-day forecast, AI risk analysis with confidence bands, auto-categorization for 10 transactions per import, CSV & Excel import, CSV export, and low balance alerts via email and push notifications. Pro ($7.99/month) unlocks unlimited bills and income sources, extends your forecast to a full year (365 days), gives you unlimited Ask Cashcast AI queries, increases auto-categorization to 50 transactions per import, adds SMS alerts for critical cash crunch warnings, full Reports & Export with Excel and JSON formats, credit card tracking with debt payoff planner, and includes Runway Collect—our professional invoicing feature with PDF generation and automated payment reminders."
   },
   {
     question: "Do you offer a lifetime deal?",

@@ -17,7 +17,7 @@ type SubscriptionTier = 'free' | 'pro' | 'premium' | 'lifetime';
  * AI Chat is a Pro-only feature - free users have no access.
  */
 export async function checkQueryUsage(
-  userId: string,
+  _userId: string,
   tier: SubscriptionTier
 ): Promise<QueryUsageResult> {
   // Pro, Premium, and Lifetime get unlimited queries
@@ -61,7 +61,7 @@ export async function incrementQueryUsage(userId: string): Promise<void> {
  * Note: AI Chat is Pro-only, so free users will always have 0 remaining.
  */
 export async function getQueryUsage(
-  userId: string,
+  _userId: string,
   tier: SubscriptionTier = 'free'
 ): Promise<{ count: number; limit: number | null; remaining: number }> {
   // Pro users have unlimited access

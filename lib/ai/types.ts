@@ -30,7 +30,7 @@ export interface QueryUsageResult {
   remaining: number;
   limit: number | null; // null = unlimited
   resetAt?: Date;
-  reason?: 'limit_reached' | 'unauthorized';
+  reason?: 'limit_reached' | 'unauthorized' | 'pro_required';
 }
 
 // ============================================

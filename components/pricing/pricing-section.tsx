@@ -62,7 +62,7 @@ const TIERS: TierConfig[] = [
     features: [
       { text: 'Everything in Free' },
       { text: '365-day forecast (12 months ahead)' },
-      { text: 'Ask Cashcast AI: Unlimited queries', highlight: true },
+      { text: 'Ask Cashcast AI: Unlimited queries' },
       { text: 'Auto-categorize imports (50/import)' },
       { text: 'SMS alerts for cash crunch warnings' },
       { text: 'Invoice → Forecast sync (unique feature)' },

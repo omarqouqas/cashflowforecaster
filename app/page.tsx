@@ -870,7 +870,7 @@ export default async function Home({ searchParams }: HomeProps) {
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 text-violet-300 mt-0.5 flex-shrink-0" />
-                          <span>5 free queries/day, unlimited on Pro</span>
+                          <span>Unlimited queries for Pro users</span>
                         </li>
                       </ul>
                     </div>
