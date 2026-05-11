@@ -166,23 +166,23 @@ export function BalanceTrendChartInteractive({
   };
 
   return (
-    <div className="bg-zinc-900/50 border border-zinc-800/60 rounded-xl p-6 mb-6 backdrop-blur-sm">
+    <div className="bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/60 rounded-xl p-6 mb-6 backdrop-blur-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-zinc-100 mb-1">
+          <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
             Balance Forecast
           </h3>
-          <p className="text-sm text-zinc-500">{days.length}-day projection</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-500">{days.length}-day projection</p>
         </div>
 
         {/* Trend indicator */}
-        <div className="flex items-center gap-3 bg-zinc-800/40 rounded-lg px-4 py-2 border border-zinc-700/50">
+        <div className="flex items-center gap-3 bg-zinc-100 dark:bg-zinc-800/40 rounded-lg px-4 py-2 border border-zinc-200 dark:border-zinc-700/50">
           {isPositiveTrend ? (
             <>
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
+              <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               <div className="text-right">
-                <p className="text-base font-bold text-emerald-400">
+                <p className="text-base font-bold text-emerald-600 dark:text-emerald-400">
                   +{formatCurrency(Math.abs(balanceChange), currency)}
                 </p>
                 <p className="text-xs text-zinc-500">Net change</p>
@@ -190,9 +190,9 @@ export function BalanceTrendChartInteractive({
             </>
           ) : (
             <>
-              <TrendingDown className="w-5 h-5 text-rose-400" />
+              <TrendingDown className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               <div className="text-right">
-                <p className="text-base font-bold text-rose-400">
+                <p className="text-base font-bold text-rose-600 dark:text-rose-400">
                   -{formatCurrency(Math.abs(balanceChange), currency)}
                 </p>
                 <p className="text-xs text-zinc-500">Net change</p>
@@ -203,8 +203,8 @@ export function BalanceTrendChartInteractive({
       </div>
 
       {/* Mobile fallback message */}
-      <div className="sm:hidden p-6 bg-zinc-800/40 border border-zinc-700/50 rounded-lg text-center">
-        <p className="text-sm text-zinc-400">
+      <div className="sm:hidden p-6 bg-zinc-100 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700/50 rounded-lg text-center">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Chart hidden on small screens. View daily details in the calendar below.
         </p>
       </div>
@@ -320,7 +320,7 @@ export function BalanceTrendChartInteractive({
       {/* Today indicator badge - below chart */}
       {todayIndex >= 0 && (
         <div className="max-sm:hidden flex items-center gap-2 mt-4 mb-2">
-          <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full text-xs font-medium">
+          <span className="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full text-xs font-medium">
             Today
           </span>
           <span className="text-xs text-zinc-500">
@@ -331,21 +331,21 @@ export function BalanceTrendChartInteractive({
 
       {/* Legend */}
       <div className="grid grid-cols-3 gap-3 mt-4 text-xs max-sm:hidden">
-        <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
+        <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-200 dark:border-zinc-700/30">
           <div className="w-8 h-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full" />
-          <span className="text-zinc-400">Balance trend</span>
+          <span className="text-zinc-600 dark:text-zinc-400">Balance trend</span>
         </div>
-        <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
+        <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-200 dark:border-zinc-700/30">
           <svg width="32" height="4" viewBox="0 0 32 4">
             <line x1="0" y1="2" x2="32" y2="2" stroke="rgb(251, 191, 36)" strokeWidth="2" strokeDasharray="4 2" />
           </svg>
-          <span className="text-zinc-400">Safety buffer</span>
+          <span className="text-zinc-600 dark:text-zinc-400">Safety buffer</span>
         </div>
-        <div className="flex items-center gap-2 bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-700/30">
+        <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/30 rounded-lg px-3 py-2 border border-zinc-200 dark:border-zinc-700/30">
           <svg width="32" height="4" viewBox="0 0 32 4">
             <line x1="0" y1="2" x2="32" y2="2" stroke="rgb(244, 63, 94)" strokeWidth="2" strokeDasharray="3 2" />
           </svg>
-          <span className="text-zinc-400">Zero line</span>
+          <span className="text-zinc-600 dark:text-zinc-400">Zero line</span>
         </div>
       </div>
     </div>

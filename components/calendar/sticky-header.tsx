@@ -64,15 +64,15 @@ export function StickyCalendarHeader({
   const currencySymbol = getCurrencySymbol(currency)
 
   return (
-    <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800 px-3 py-3 sm:px-4 sm:py-4">
+    <div className="sticky top-0 z-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800 px-3 py-3 sm:px-4 sm:py-4">
       <div className="max-w-full mx-auto">
         {/* Safe to Spend - Hero Card (Desktop) */}
         <div
           className={[
             'hidden sm:block relative overflow-hidden mb-4 p-6 border rounded-2xl',
             safeToSpendIsZero
-              ? 'bg-gradient-to-br from-amber-500/10 via-zinc-900 to-zinc-900 border-amber-500/20'
-              : 'bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-900 border-emerald-500/20',
+              ? 'bg-gradient-to-br from-amber-500/10 via-white dark:via-zinc-900 to-white dark:to-zinc-900 border-amber-500/20'
+              : 'bg-gradient-to-br from-emerald-500/10 via-white dark:via-zinc-900 to-white dark:to-zinc-900 border-emerald-500/20',
           ].join(' ')}
         >
           {/* Subtle glow effect */}
@@ -128,17 +128,17 @@ export function StickyCalendarHeader({
               <span
                 className={[
                   'text-5xl md:text-6xl font-bold tabular-nums tracking-tight',
-                  safeToSpendIsZero ? 'text-amber-100' : 'text-zinc-50',
+                  safeToSpendIsZero ? 'text-amber-700 dark:text-amber-100' : 'text-zinc-900 dark:text-zinc-50',
                 ].join(' ')}
               >
                 {currencySymbol}{wholePart}
               </span>
-              <span className="text-2xl font-semibold text-zinc-400 tabular-nums">
+              <span className="text-2xl font-semibold text-zinc-500 dark:text-zinc-400 tabular-nums">
                 .{decimal}
               </span>
             </div>
 
-            <p className={['text-sm mt-2', safeToSpendIsZero ? 'text-amber-300/80' : 'text-zinc-500'].join(' ')}>
+            <p className={['text-sm mt-2', safeToSpendIsZero ? 'text-amber-600 dark:text-amber-300/80' : 'text-zinc-500'].join(' ')}>
               {safeToSpendIsZero ? (
                 'No room for extra spending right now'
               ) : (
@@ -146,7 +146,7 @@ export function StickyCalendarHeader({
                   Without going below your{' '}
                   <Link
                     href="/dashboard/settings#safety-buffer"
-                    className="inline-flex items-center gap-1 text-zinc-400 hover:text-emerald-400 transition-colors"
+                    className="inline-flex items-center gap-1 text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                   >
                     {formatCurrency(safetyBuffer, currency)} buffer
                     <Pencil className="w-3 h-3" />
@@ -164,15 +164,15 @@ export function StickyCalendarHeader({
             className={[
               'sm:hidden relative overflow-hidden border rounded-xl p-4 min-w-0',
               safeToSpendIsZero
-                ? 'bg-gradient-to-br from-amber-500/10 via-zinc-900 to-zinc-900 border-amber-500/20'
-                : 'bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-900 border-emerald-500/20',
+                ? 'bg-gradient-to-br from-amber-500/10 via-white dark:via-zinc-900 to-white dark:to-zinc-900 border-amber-500/20'
+                : 'bg-gradient-to-br from-emerald-500/10 via-white dark:via-zinc-900 to-white dark:to-zinc-900 border-emerald-500/20',
             ].join(' ')}
           >
             <div className="flex items-center gap-1.5">
               <p
                 className={[
                   'text-xs font-semibold uppercase tracking-wide',
-                  safeToSpendIsZero ? 'text-amber-400' : 'text-emerald-400',
+                  safeToSpendIsZero ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400',
                 ].join(' ')}
               >
                 Safe to Spend
@@ -194,7 +194,7 @@ export function StickyCalendarHeader({
             <p
               className={[
                 'text-xl font-bold tabular-nums tracking-tight mt-1.5 whitespace-nowrap',
-                safeToSpendIsZero ? 'text-amber-100' : 'text-emerald-300',
+                safeToSpendIsZero ? 'text-amber-700 dark:text-amber-100' : 'text-emerald-600 dark:text-emerald-300',
               ].join(' ')}
             >
               {formatCurrency(safeToSpend, currency)}
@@ -202,17 +202,17 @@ export function StickyCalendarHeader({
           </div>
 
           {/* Starting - Desktop only */}
-          <div className="hidden sm:block border border-zinc-800 bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">STARTING</p>
-            <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-100 mt-1.5 whitespace-nowrap">
+          <div className="hidden sm:block border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 rounded-xl px-4 py-5 min-w-0 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-900 transition-all">
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">STARTING</p>
+            <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-900 dark:text-zinc-100 mt-1.5 whitespace-nowrap">
               {formatCurrency(startingBalance, currency)}
             </p>
             <p className="text-xs text-zinc-500 mt-1">Today</p>
           </div>
 
           {/* Lowest - Always visible */}
-          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">LOWEST</p>
+          <div className="border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-900 transition-all">
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">LOWEST</p>
             <p className={`text-lg sm:text-xl font-bold tabular-nums tracking-tight mt-1.5 whitespace-nowrap ${lowestBalanceColor}`}>
               {formatCurrency(lowestBalance, currency)}
             </p>
@@ -220,18 +220,18 @@ export function StickyCalendarHeader({
           </div>
 
           {/* Income - Always visible */}
-          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">INCOME</p>
-            <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-emerald-400 mt-1.5 whitespace-nowrap">
+          <div className="border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-900 transition-all">
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">INCOME</p>
+            <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400 mt-1.5 whitespace-nowrap">
               {formatCurrency(totalIncome, currency)}
             </p>
             <p className="text-xs text-zinc-500 mt-1 truncate">{forecastPeriodLabel}</p>
           </div>
 
           {/* Bills - Always visible */}
-          <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-700 hover:bg-zinc-900 transition-all">
-            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">BILLS</p>
-            <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-rose-400 mt-1.5 whitespace-nowrap">
+          <div className="border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 rounded-xl p-4 sm:px-4 sm:py-5 min-w-0 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-900 transition-all">
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">BILLS</p>
+            <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-rose-600 dark:text-rose-400 mt-1.5 whitespace-nowrap">
               {formatCurrency(totalBills, currency)}
             </p>
             <p className="text-xs text-zinc-500 mt-1 truncate">End: {formatCurrency(endingBalance, currency)}</p>

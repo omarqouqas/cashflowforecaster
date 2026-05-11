@@ -39,19 +39,19 @@ function statusBadge(status: string | null | undefined) {
   const s = status ?? 'draft';
   switch (s) {
     case 'draft':
-      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+      return 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700';
     case 'sent':
-      return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+      return 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30';
     case 'viewed':
-      return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      return 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30';
     case 'accepted':
-      return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      return 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30';
     case 'rejected':
-      return 'bg-rose-500/20 text-rose-400 border border-rose-500/30';
+      return 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30';
     case 'expired':
-      return 'bg-zinc-600/20 text-zinc-400 border border-zinc-600/30';
+      return 'bg-zinc-100 dark:bg-zinc-600/20 text-zinc-600 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600/30';
     default:
-      return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+      return 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700';
   }
 }
 
@@ -155,17 +155,17 @@ export function QuotesContent({ quotes }: QuotesContentProps) {
       {/* Expiring Soon Banner */}
       {expiringSoonQuotes.length > 0 && (
         <div className="mb-4">
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+          <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-start gap-2">
                 <div className="mt-0.5">
-                  <Clock className="w-4 h-4 text-amber-400" />
+                  <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-amber-100">
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-100">
                     {expiringSoonQuotes.length} quote{expiringSoonQuotes.length === 1 ? '' : 's'} expiring soon
                   </p>
-                  <p className="text-xs text-amber-300/80 mt-0.5">
+                  <p className="text-xs text-amber-600 dark:text-amber-300/80 mt-0.5">
                     Valid for 7 days or less.
                   </p>
                 </div>
@@ -176,8 +176,8 @@ export function QuotesContent({ quotes }: QuotesContentProps) {
       )}
 
       {showEmptyState ? (
-        <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
+        <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
             <svg
               className="w-8 h-8 text-zinc-500"
               fill="none"
@@ -192,7 +192,7 @@ export function QuotesContent({ quotes }: QuotesContentProps) {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-zinc-300 mb-2">
+          <h3 className="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">
             No quotes match your filters
           </h3>
           <p className="text-sm text-zinc-500 mb-4">
@@ -206,27 +206,27 @@ export function QuotesContent({ quotes }: QuotesContentProps) {
           </button>
         </div>
       ) : (
-        <div className="border border-zinc-800 bg-zinc-900 rounded-lg overflow-hidden">
+        <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-zinc-800 border-b border-zinc-700">
+              <thead className="bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
                 <tr>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Quote</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Client</th>
-                  <th className="text-right font-medium text-zinc-300 px-4 py-4">Amount</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Valid until</th>
-                  <th className="text-left font-medium text-zinc-300 px-4 py-4">Status</th>
-                  <th className="text-right font-medium text-zinc-300 px-4 py-4">Actions</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Quote</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Client</th>
+                  <th className="text-right font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Amount</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Valid until</th>
+                  <th className="text-left font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Status</th>
+                  <th className="text-right font-medium text-zinc-700 dark:text-zinc-300 px-4 py-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800">
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                 {filteredQuotes.map((quote) => {
                   const showExpiringSoonIndicator = isExpiringSoon(quote.valid_until, quote.status);
                   const expired = isExpired(quote.valid_until);
                   const status = quote.status ?? 'draft';
 
                   return (
-                    <tr key={quote.id} className="hover:bg-zinc-800/50 transition-colors">
+                    <tr key={quote.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           {showExpiringSoonIndicator && (
@@ -238,13 +238,13 @@ export function QuotesContent({ quotes }: QuotesContentProps) {
                           )}
                           <Link
                             href={`/dashboard/quotes/${quote.id}`}
-                            className="text-zinc-100 font-medium hover:text-teal-400 transition-colors"
+                            className="text-zinc-900 dark:text-zinc-100 font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                           >
                             {quote.quote_number}
                           </Link>
                           {quote.converted_invoice_id && (
                             <span
-                              className="text-xs text-teal-400"
+                              className="text-xs text-teal-600 dark:text-teal-400"
                               title="Converted to invoice"
                             >
                               (invoiced)
@@ -252,11 +252,11 @@ export function QuotesContent({ quotes }: QuotesContentProps) {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-zinc-300">{quote.client_name}</td>
-                      <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-100 text-base">
+                      <td className="px-4 py-4 text-zinc-700 dark:text-zinc-300">{quote.client_name}</td>
+                      <td className="px-4 py-4 text-right tabular-nums font-semibold text-zinc-900 dark:text-zinc-100 text-base">
                         {formatCurrency(quote.amount, quote.currency)}
                       </td>
-                      <td className="px-4 py-4 text-zinc-300">
+                      <td className="px-4 py-4 text-zinc-700 dark:text-zinc-300">
                         <div className="flex items-center gap-2">
                           <span>{formatDateOnly(quote.valid_until)}</span>
                           {expired && !['accepted', 'rejected', 'expired'].includes(status) && (
