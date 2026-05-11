@@ -249,55 +249,55 @@ function getFrequencyBadge(frequency: string | null | undefined) {
   if (freq === 'monthly') {
     return {
       label: 'Monthly',
-      className: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+      className: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30'
     }
   }
 
   if (freq === 'biweekly') {
     return {
       label: 'Biweekly',
-      className: 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+      className: 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30'
     }
   }
 
   if (freq === 'semi-monthly') {
     return {
       label: 'Semi-monthly',
-      className: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+      className: 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30'
     }
   }
 
   if (freq === 'weekly') {
     return {
       label: 'Weekly',
-      className: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+      className: 'bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30'
     }
   }
 
   if (freq === 'quarterly') {
     return {
       label: 'Quarterly',
-      className: 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+      className: 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30'
     }
   }
 
   if (freq === 'annually') {
     return {
       label: 'Annually',
-      className: 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+      className: 'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30'
     }
   }
 
   if (freq === 'one-time') {
     return {
       label: 'One-time',
-      className: 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+      className: 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30'
     }
   }
 
   return {
     label: frequency || 'Unknown',
-    className: 'bg-zinc-700 text-zinc-300 border border-zinc-600'
+    className: 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-600'
   }
 }
 
@@ -323,7 +323,7 @@ export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) 
   const dateLabel = isOneTime && actualDueDate && actualDueDate < today ? 'Date' : 'Due'
 
   return (
-    <div className="border border-zinc-800 bg-zinc-900 rounded-lg p-4 hover:bg-zinc-800/80 transition-colors">
+    <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors">
       <div className="flex items-start gap-3">
         {/* Category Icon */}
         <div className={`w-10 h-10 ${categoryIcon.className} rounded-full flex items-center justify-center flex-shrink-0`}>
@@ -334,15 +334,15 @@ export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="min-w-0">
-              <p className="text-base font-semibold text-zinc-100 truncate">{bill.name}</p>
+              <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">{bill.name}</p>
               {showDueDate && (
-                <p className="text-sm text-zinc-400 mt-1">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                   {dateLabel}: {formatDateOnly(dueDateString)}
                 </p>
               )}
             </div>
 
-            <p className="text-xl font-bold tabular-nums text-rose-400">
+            <p className="text-xl font-bold tabular-nums text-rose-600 dark:text-rose-400">
               {formatCurrency(bill.amount, currency)}
             </p>
           </div>
@@ -367,7 +367,7 @@ export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) 
             </span>
 
             {isActive && (
-              <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-full px-2.5 py-1 text-xs font-medium">
+              <span className="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-full px-2.5 py-1 text-xs font-medium">
                 ✓ Active
               </span>
             )}
@@ -379,7 +379,7 @@ export function BillCard({ bill, categories, currency = 'USD' }: BillCardProps) 
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full border-zinc-700 bg-zinc-800 hover:bg-zinc-700 hover:border-teal-500/50 text-zinc-100 hover:text-teal-400 transition-all"
+                className="w-full border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:border-teal-500/50 text-zinc-900 dark:text-zinc-100 hover:text-teal-600 dark:hover:text-teal-400 transition-all"
                 aria-label="Edit bill"
               >
                 <Edit className="w-4 h-4 mr-2" />

@@ -94,7 +94,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
+          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Dashboard
@@ -105,7 +105,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Income Sources</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Track your regular and one-time income
           </p>
         </div>
@@ -198,35 +198,35 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             {/* Monthly Income */}
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+            <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-                <p className="text-xs font-medium text-emerald-300 uppercase tracking-wide">
+                <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">
                   Monthly Income
                 </p>
                 <InfoTooltip content="Estimated average monthly income. Weekly and biweekly payments are converted to monthly equivalents (e.g., 26 biweekly payments ÷ 12 months)." />
               </div>
-              <p className="text-2xl font-bold text-emerald-300 tabular-nums">
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-300 tabular-nums">
                 {formatCurrency(monthlyTotal, currency)}
               </p>
-              <p className="text-xs text-emerald-300/80 mt-0.5">
+              <p className="text-xs text-emerald-600 dark:text-emerald-300/80 mt-0.5">
                 From {activeIncomes.length} active source{activeIncomes.length !== 1 ? 's' : ''}
               </p>
             </div>
 
             {/* Total Sources */}
-            <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4">
+            <div className="bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <DollarSign className="w-4 h-4 text-teal-400" />
-                <p className="text-xs font-medium text-teal-300 uppercase tracking-wide">
+                <DollarSign className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <p className="text-xs font-medium text-teal-700 dark:text-teal-300 uppercase tracking-wide">
                   Income Sources
                 </p>
                 <InfoTooltip content="Total number of income sources you're tracking. Only active sources are included in forecasts." />
               </div>
-              <p className="text-2xl font-bold text-teal-300 tabular-nums">
+              <p className="text-2xl font-bold text-teal-700 dark:text-teal-300 tabular-nums">
                 {incomesList.length}
               </p>
-              <p className="text-xs text-teal-300/80 mt-0.5">
+              <p className="text-xs text-teal-600 dark:text-teal-300/80 mt-0.5">
                 {activeIncomes.length} active • {incomesList.length - activeIncomes.length} inactive
               </p>
             </div>
@@ -264,10 +264,10 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
             const dateString = `${year}-${month}-${day}`
 
             return (
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-blue-400" />
-                  <p className="text-sm text-blue-300 font-medium">
+                  <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
                     Next payment: {nextIncome.name} on {formatDateOnly(dateString)}
                   </p>
                 </div>
@@ -289,7 +289,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
                 </div>
 
                 <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Track your income</h2>
-                <p className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mb-8 max-w-xs">
+                <p className="text-zinc-600 dark:text-zinc-400 mb-8 max-w-xs">
                   Add your salary, freelance work, or other income sources to see how they impact your cash flow forecast.
                 </p>
 

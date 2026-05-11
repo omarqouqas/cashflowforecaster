@@ -274,7 +274,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
+          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Dashboard
@@ -285,7 +285,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Bills</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Track your recurring and one-time bills
           </p>
         </div>
@@ -378,35 +378,35 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             {/* Monthly Bills */}
-            <div className="bg-rose-500/10 border border-rose-500/30 rounded-lg p-4">
+            <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Receipt className="w-4 h-4 text-rose-400" />
-                <p className="text-xs font-medium text-rose-300 uppercase tracking-wide">
+                <Receipt className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                <p className="text-xs font-medium text-rose-700 dark:text-rose-300 uppercase tracking-wide">
                   Monthly Bills
                 </p>
                 <InfoTooltip content="Estimated average monthly expenses. Weekly (×52÷12), biweekly (×26÷12), quarterly (÷3), and annual (÷12) bills are converted to monthly equivalents." />
               </div>
-              <p className="text-2xl font-bold text-rose-300 tabular-nums">
+              <p className="text-2xl font-bold text-rose-600 dark:text-rose-300 tabular-nums">
                 {formatCurrency(monthlyTotal, currency)}
               </p>
-              <p className="text-xs text-rose-300/80 mt-0.5">
+              <p className="text-xs text-rose-600 dark:text-rose-300/80 mt-0.5">
                 From {activeBills.length} active bill{activeBills.length !== 1 ? 's' : ''}
               </p>
             </div>
 
             {/* Total Bills */}
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+            <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <DollarSign className="w-4 h-4 text-amber-400" />
-                <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">
+                <DollarSign className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <p className="text-xs font-medium text-amber-700 dark:text-amber-300 uppercase tracking-wide">
                   Total Bills
                 </p>
                 <InfoTooltip content="Total number of bills you're tracking. Only active bills are included in forecasts." />
               </div>
-              <p className="text-2xl font-bold text-amber-300 tabular-nums">
+              <p className="text-2xl font-bold text-amber-700 dark:text-amber-300 tabular-nums">
                 {billsList.length}
               </p>
-              <p className="text-xs text-amber-300/80 mt-0.5">
+              <p className="text-xs text-amber-600 dark:text-amber-300/80 mt-0.5">
                 {activeBills.length} active • {billsList.length - activeBills.length} inactive
               </p>
             </div>
@@ -414,10 +414,10 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
           {/* Next Due */}
           {nextBill && nextBillDueDate && (
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+            <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-3">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-400" />
-                <p className="text-sm text-blue-300 font-medium">
+                <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
                   Next due: {nextBill.name} on {formatDateOnly(nextBillDueDate)}
                 </p>
               </div>
@@ -438,7 +438,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
                 </div>
 
                 <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Track your bills</h2>
-                <p className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mb-8 max-w-xs">
+                <p className="text-zinc-600 dark:text-zinc-400 mb-8 max-w-xs">
                   Add your recurring and one-time bills to stay on top of your expenses and improve your cash flow.
                 </p>
 

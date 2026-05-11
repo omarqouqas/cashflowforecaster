@@ -25,7 +25,7 @@ const DATA_QUALITY_CONFIG: Record<
     description: 'Less than 3 months of payment history',
     features: ['Basic forecasting using default estimates'],
     nextLevel: 'Track more invoices to reach Moderate (3+ months)',
-    color: 'text-zinc-600 dark:text-zinc-500 dark:text-zinc-400',
+    color: 'text-zinc-700 dark:text-zinc-400',
     bg: 'bg-zinc-200 dark:bg-zinc-700',
   },
   moderate: {
@@ -33,24 +33,24 @@ const DATA_QUALITY_CONFIG: Record<
     description: '3-6 months of payment history',
     features: ['Basic pattern detection', 'Simple trend analysis'],
     nextLevel: 'Continue tracking to reach Good (6+ months)',
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/20',
+    color: 'text-amber-700 dark:text-amber-400',
+    bg: 'bg-amber-100 dark:bg-amber-500/20',
   },
   good: {
     label: 'Good',
     description: '6-12 months of payment history',
     features: ['Seasonality detection', 'Trend analysis', 'Improved forecasting accuracy'],
     nextLevel: 'Reach Excellent (12+ months) for full analysis',
-    color: 'text-teal-400',
-    bg: 'bg-teal-500/20',
+    color: 'text-teal-700 dark:text-teal-400',
+    bg: 'bg-teal-100 dark:bg-teal-500/20',
   },
   excellent: {
     label: 'Excellent',
     description: '12+ months of payment history',
     features: ['Full pattern analysis', 'High-confidence forecasts', 'Detailed seasonal insights', 'Reliable trend detection'],
     nextLevel: null,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/20',
+    color: 'text-emerald-700 dark:text-emerald-400',
+    bg: 'bg-emerald-100 dark:bg-emerald-500/20',
   },
 };
 
@@ -63,19 +63,19 @@ const TREND_CONFIG: Record<
 > = {
   growing: {
     icon: TrendingUp,
-    color: 'text-emerald-400',
+    color: 'text-emerald-600 dark:text-emerald-400',
     label: 'Growing',
     description: 'Income is trending upward',
   },
   stable: {
     icon: Minus,
-    color: 'text-zinc-600 dark:text-zinc-500 dark:text-zinc-400',
+    color: 'text-zinc-700 dark:text-zinc-400',
     label: 'Stable',
     description: 'Income is relatively consistent',
   },
   declining: {
     icon: TrendingDown,
-    color: 'text-rose-400',
+    color: 'text-rose-600 dark:text-rose-400',
     label: 'Declining',
     description: 'Income is trending downward',
   },
@@ -92,7 +92,7 @@ function EmptyState() {
         <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
           No Income Data Yet
         </h2>
-        <p className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mb-6">
+        <p className="text-zinc-600 dark:text-zinc-400 mb-6">
           Start tracking invoices and income to see AI-powered insights about your earning patterns.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -129,7 +129,7 @@ export function InsightsContent({
           <div className="mb-6">
             <Link
               href="/dashboard"
-              className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group mb-4"
+              className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group mb-4"
             >
               <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to Dashboard
@@ -153,7 +153,7 @@ export function InsightsContent({
         <div className="mb-6">
           <Link
             href="/dashboard"
-            className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group mb-4"
+            className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Dashboard
@@ -161,7 +161,7 @@ export function InsightsContent({
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Income Insights</h1>
-              <p className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mt-1">
+              <p className="text-zinc-600 dark:text-zinc-400 mt-1">
                 AI-powered analysis of your income patterns
               </p>
             </div>
@@ -177,9 +177,9 @@ export function InsightsContent({
         </div>
 
         {/* Data Quality Explanation */}
-        <div className="mb-6 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-4">
+        <div className="mb-6 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-teal-400 flex-shrink-0 mt-0.5" />
+            <Info className="h-5 w-5 text-teal-600 dark:text-teal-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
@@ -189,7 +189,7 @@ export function InsightsContent({
                   ({analysis.monthsOfData} month{analysis.monthsOfData !== 1 ? 's' : ''} of data)
                 </span>
               </div>
-              <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mb-2">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
                 {qualityConfig.description}
               </p>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -203,7 +203,7 @@ export function InsightsContent({
                 ))}
               </div>
               {qualityConfig.nextLevel && (
-                <p className="text-xs text-teal-400">
+                <p className="text-xs text-teal-600 dark:text-teal-400">
                   {qualityConfig.nextLevel}
                 </p>
               )}
@@ -215,7 +215,7 @@ export function InsightsContent({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {/* 90-Day Forecast */}
           <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-4">
-            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
               90-Day Forecast
             </p>
             <p className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mt-1">
@@ -229,7 +229,7 @@ export function InsightsContent({
 
           {/* Overall Trend */}
           <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-4">
-            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
               Overall Trend
             </p>
             <div className="flex items-center gap-2 mt-1">
@@ -245,7 +245,7 @@ export function InsightsContent({
 
           {/* Income Sources */}
           <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-4">
-            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
               Income Sources
             </p>
             <div className="flex items-center gap-2 mt-1">
@@ -261,7 +261,7 @@ export function InsightsContent({
 
           {/* Data History */}
           <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg p-4">
-            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
               Data History
             </p>
             <div className="flex items-center gap-2 mt-1">
@@ -315,7 +315,7 @@ export function InsightsContent({
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-4">
-              <p className="text-xs text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 uppercase tracking-wide mb-1">
                 From Recurring Income
               </p>
               <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
@@ -326,7 +326,7 @@ export function InsightsContent({
               </p>
             </div>
             <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-4">
-              <p className="text-xs text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 uppercase tracking-wide mb-1">
                 From Invoice History
               </p>
               <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
@@ -348,7 +348,7 @@ export function InsightsContent({
               </p>
             </div>
           </div>
-          <div className="mt-4 p-3 bg-zinc-800/30 rounded text-xs text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
+          <div className="mt-4 p-3 bg-zinc-800/30 rounded text-xs text-zinc-600 dark:text-zinc-400">
             <p className="mb-1">
               <strong>Expected 90-day forecast:</strong>{' '}
               {formatCurrency(analysis.debugBaselineMonthly * 3, currency)} (baseline × 3 months)
@@ -368,7 +368,7 @@ export function InsightsContent({
                 .map(source => (
                   <div key={source.sourceId} className="p-3 bg-zinc-100 dark:bg-zinc-800/50 rounded text-xs">
                     <p className="font-medium text-zinc-800 dark:text-zinc-200">{source.name}</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 text-zinc-600 dark:text-zinc-400">
                       <div>
                         <span className="text-zinc-600 dark:text-zinc-500">Payments:</span> {source.paymentCount}
                       </div>

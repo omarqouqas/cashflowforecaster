@@ -88,7 +88,7 @@ export default async function CalendarPage() {
         <div className="mb-6">
           <Link
             href="/dashboard"
-            className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
+            className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Dashboard
@@ -99,7 +99,7 @@ export default async function CalendarPage() {
           {/* Page Header - inside card for consistency */}
           <div className="px-4 py-4 border-b border-zinc-200 dark:border-zinc-800">
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">{forecastDays}-day projection</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">{forecastDays}-day projection</p>
           </div>
 
           <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center py-10">
@@ -108,7 +108,7 @@ export default async function CalendarPage() {
             </div>
 
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Your forecast starts here</h2>
-            <p className="text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 mb-8 max-w-xs">
+            <p className="text-zinc-600 dark:text-zinc-400 mb-8 max-w-xs">
               Add a bank account with your current balance to see your cash flow {forecastDays} days into the future.
             </p>
 
@@ -142,7 +142,7 @@ export default async function CalendarPage() {
         <div className="mb-6">
           <Link
             href="/dashboard"
-            className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
+            className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Dashboard
@@ -153,7 +153,7 @@ export default async function CalendarPage() {
           {/* Page Header - inside card for consistency */}
           <div className="px-4 py-4 border-b border-zinc-200 dark:border-zinc-800">
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">{forecastDays}-day projection</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">{forecastDays}-day projection</p>
           </div>
 
           <div className="p-4">
@@ -200,7 +200,7 @@ export default async function CalendarPage() {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
+          className="inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-teal-400 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Dashboard
@@ -211,7 +211,7 @@ export default async function CalendarPage() {
         {/* Page Header */}
         <div className="px-4 py-4 border-b border-zinc-200 dark:border-zinc-800">
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Cash Flow Calendar</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">{forecastDays}-day projection</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">{forecastDays}-day projection</p>
         </div>
 
         {fetchErrors.length > 0 && (

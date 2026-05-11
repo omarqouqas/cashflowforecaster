@@ -111,35 +111,35 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
           {/* Balance Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             {/* Total Balance */}
-            <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4">
+            <div className="bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Wallet className="w-4 h-4 text-teal-400" />
-                <p className="text-xs font-medium text-teal-300 uppercase tracking-wide">
+                <Wallet className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <p className="text-xs font-medium text-teal-700 dark:text-teal-300 uppercase tracking-wide">
                   Total Balance
                 </p>
                 <InfoTooltip content="Sum of current balances across all accounts." />
               </div>
-              <p className="text-2xl font-bold text-teal-300 tabular-nums">
+              <p className="text-2xl font-bold text-teal-700 dark:text-teal-300 tabular-nums">
                 {formatCurrency(totalBalance, currency)}
               </p>
-              <p className="text-xs text-teal-300/80 mt-0.5">
+              <p className="text-xs text-teal-600 dark:text-teal-300/80 mt-0.5">
                 Across {accountList.length} account{accountList.length !== 1 ? 's' : ''}
               </p>
             </div>
 
             {/* Spendable */}
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+            <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-                <p className="text-xs font-medium text-emerald-300 uppercase tracking-wide">
+                <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">
                   Spendable
                 </p>
                 <InfoTooltip content="Total balance from accounts marked as spendable. These are used in your cash flow forecast." />
               </div>
-              <p className="text-2xl font-bold text-emerald-400 tabular-nums">
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
                 {formatCurrency(spendableTotal, currency)}
               </p>
-              <p className="text-xs text-emerald-300/80 mt-0.5">
+              <p className="text-xs text-emerald-600 dark:text-emerald-300/80 mt-0.5">
                 {spendableCount} spendable account{spendableCount !== 1 ? 's' : ''}
               </p>
             </div>
@@ -148,22 +148,22 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
           {/* Account Health Status */}
           <div className="grid grid-cols-1 gap-3">
             {staleAccounts.length > 0 ? (
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+              <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <AlertCircle className="w-4 h-4 text-amber-400" />
-                  <p className="text-xs font-medium text-amber-300 uppercase tracking-wide">
+                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <p className="text-xs font-medium text-amber-700 dark:text-amber-300 uppercase tracking-wide">
                     Needs Update
                   </p>
                 </div>
-                <p className="text-sm text-amber-300">
+                <p className="text-sm text-amber-700 dark:text-amber-300">
                   {staleAccounts.length} account{staleAccounts.length !== 1 ? 's' : ''} not updated in 7+ days
                 </p>
               </div>
             ) : (
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+              <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-lg p-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
-                  <p className="text-sm text-emerald-300 font-medium">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
                     All accounts current (updated within 7 days)
                   </p>
                 </div>
