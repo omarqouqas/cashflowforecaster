@@ -43,7 +43,7 @@ export function SettingsTabs({ children, defaultTab = 'profile' }: SettingsTabsP
   return (
     <div>
       {/* Tab Navigation */}
-      <div className="border-b border-zinc-800 mb-6">
+      <div className="border-b border-zinc-200 dark:border-zinc-800 mb-6">
         <nav className="-mb-px flex space-x-1 overflow-x-auto scrollbar-hide" aria-label="Settings tabs">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -56,8 +56,8 @@ export function SettingsTabs({ children, defaultTab = 'profile' }: SettingsTabsP
                   'flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap',
                   'border-b-2 transition-colors duration-150',
                   isActive
-                    ? 'border-teal-500 text-teal-400'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:border-zinc-600',
+                    ? 'border-teal-500 text-teal-600 dark:text-teal-400'
+                    : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600',
                 ].join(' ')}
                 aria-current={isActive ? 'page' : undefined}
               >

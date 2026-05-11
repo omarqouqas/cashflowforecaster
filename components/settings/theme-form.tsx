@@ -13,11 +13,11 @@ export function ThemeForm() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="bg-zinc-900 dark:bg-zinc-900 rounded-xl border border-zinc-800 p-5">
+    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-sm font-medium text-zinc-100">Appearance</h3>
-          <p className="text-sm text-zinc-400 mt-1">
+          <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Appearance</h3>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             Choose how Cashcast looks to you
           </p>
         </div>
@@ -34,8 +34,8 @@ export function ThemeForm() {
                   'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium',
                   'border transition-colors duration-150',
                   isActive
-                    ? 'bg-teal-500/10 border-teal-500 text-teal-400'
-                    : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300',
+                    ? 'bg-teal-500/10 border-teal-500 text-teal-600 dark:text-teal-400'
+                    : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-700 dark:hover:text-zinc-300',
                 ].join(' ')}
               >
                 <Icon className="w-4 h-4" />

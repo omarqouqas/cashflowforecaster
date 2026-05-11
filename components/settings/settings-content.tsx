@@ -112,16 +112,16 @@ function SettingsContentInner(props: SettingsContentProps) {
       {activeTab === 'profile' && (
         <div className="space-y-6">
           <SectionHeader icon={User} title="Account Information" />
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 divide-y divide-zinc-800">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-800">
             {/* Email */}
             <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                  <Mail className="w-5 h-5 text-zinc-400" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-zinc-300">Email Address</p>
-                  <p className="text-zinc-100">{props.userEmail}</p>
+                  <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Email Address</p>
+                  <p className="text-zinc-900 dark:text-zinc-100">{props.userEmail}</p>
                 </div>
               </div>
             </div>
@@ -129,12 +129,12 @@ function SettingsContentInner(props: SettingsContentProps) {
             {/* Account Created */}
             <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-zinc-400" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-zinc-300">Member Since</p>
-                  <p className="text-zinc-100">{props.accountCreatedDate}</p>
+                  <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Member Since</p>
+                  <p className="text-zinc-900 dark:text-zinc-100">{props.accountCreatedDate}</p>
                 </div>
               </div>
             </div>
@@ -142,11 +142,11 @@ function SettingsContentInner(props: SettingsContentProps) {
             {/* Password */}
             <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                  <Lock className="w-5 h-5 text-zinc-400" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-zinc-300">Password</p>
+                  <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Password</p>
                   <p className="text-sm text-zinc-500">••••••••••••</p>
                 </div>
               </div>
@@ -234,7 +234,7 @@ function SettingsContentInner(props: SettingsContentProps) {
 
           {/* Tax Settings */}
           <section>
-            <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
+            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
               <TaxSettingsForm initialSettings={props.taxSettings} />
             </div>
           </section>
@@ -289,8 +289,8 @@ export function SettingsContent(props: SettingsContentProps) {
 function SettingsLoadingSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="h-12 bg-zinc-800 rounded-lg animate-pulse" />
-      <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse" />
+      <div className="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-lg animate-pulse" />
+      <div className="h-64 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl animate-pulse" />
     </div>
   );
 }
@@ -308,10 +308,10 @@ function SectionHeader({
   return (
     <div className="flex items-center gap-2 mb-3">
       <Icon
-        className={`w-5 h-5 ${variant === 'danger' ? 'text-rose-400' : 'text-teal-400'}`}
+        className={`w-5 h-5 ${variant === 'danger' ? 'text-rose-500 dark:text-rose-400' : 'text-teal-600 dark:text-teal-400'}`}
       />
       <h2
-        className={`text-lg font-semibold ${variant === 'danger' ? 'text-rose-400' : 'text-zinc-100'}`}
+        className={`text-lg font-semibold ${variant === 'danger' ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-100'}`}
       >
         {title}
       </h2>

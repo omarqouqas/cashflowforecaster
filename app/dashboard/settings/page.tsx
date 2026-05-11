@@ -136,13 +136,13 @@ export default async function SettingsPage() {
       <div className="mb-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center text-sm text-zinc-400 hover:text-teal-400 transition-colors group mb-4"
+          className="inline-flex items-center text-sm text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors group mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Dashboard
         </Link>
-        <h1 className="text-2xl font-bold text-zinc-100">Settings</h1>
-        <p className="text-zinc-400 mt-1">Manage your account, preferences, and subscription</p>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Settings</h1>
+        <p className="text-zinc-500 dark:text-zinc-400 mt-1">Manage your account, preferences, and subscription</p>
       </div>
 
       {/* Tabbed Settings Content */}
