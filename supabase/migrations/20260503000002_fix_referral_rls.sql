@@ -7,5 +7,6 @@
 --   referee_id = themselves
 
 -- Add policy to allow users to claim referrals (insert with themselves as referee)
+DROP POLICY IF EXISTS "Users can claim referral as referee" ON referrals;
 CREATE POLICY "Users can claim referral as referee" ON referrals
   FOR INSERT WITH CHECK (auth.uid() = referee_id);

@@ -35,18 +35,22 @@ CREATE INDEX IF NOT EXISTS idx_time_entries_start_time ON time_entries(user_id, 
 -- RLS for time_entries
 ALTER TABLE time_entries ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own time entries" ON time_entries;
 CREATE POLICY "Users can view own time entries"
   ON time_entries FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own time entries" ON time_entries;
 CREATE POLICY "Users can insert own time entries"
   ON time_entries FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own time entries" ON time_entries;
 CREATE POLICY "Users can update own time entries"
   ON time_entries FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own time entries" ON time_entries;
 CREATE POLICY "Users can delete own time entries"
   ON time_entries FOR DELETE
   USING (auth.uid() = user_id);
@@ -79,6 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_invoice_items_time_entry ON invoice_items(time_en
 -- RLS for invoice_items (inherits from invoice ownership)
 ALTER TABLE invoice_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own invoice items" ON invoice_items;
 CREATE POLICY "Users can view own invoice items"
   ON invoice_items FOR SELECT
   USING (
@@ -89,6 +94,7 @@ CREATE POLICY "Users can view own invoice items"
     )
   );
 
+DROP POLICY IF EXISTS "Users can insert own invoice items" ON invoice_items;
 CREATE POLICY "Users can insert own invoice items"
   ON invoice_items FOR INSERT
   WITH CHECK (
@@ -99,6 +105,7 @@ CREATE POLICY "Users can insert own invoice items"
     )
   );
 
+DROP POLICY IF EXISTS "Users can update own invoice items" ON invoice_items;
 CREATE POLICY "Users can update own invoice items"
   ON invoice_items FOR UPDATE
   USING (
@@ -109,6 +116,7 @@ CREATE POLICY "Users can update own invoice items"
     )
   );
 
+DROP POLICY IF EXISTS "Users can delete own invoice items" ON invoice_items;
 CREATE POLICY "Users can delete own invoice items"
   ON invoice_items FOR DELETE
   USING (
@@ -137,19 +145,24 @@ COMMENT ON COLUMN user_time_settings.default_billable IS 'Default billable statu
 
 -- Check constraint for valid rounding values
 ALTER TABLE user_time_settings
+DROP CONSTRAINT IF EXISTS user_time_settings_round_check;
+ALTER TABLE user_time_settings
 ADD CONSTRAINT user_time_settings_round_check CHECK (round_to_minutes IN (1, 5, 15, 30));
 
 -- RLS for user_time_settings
 ALTER TABLE user_time_settings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own time settings" ON user_time_settings;
 CREATE POLICY "Users can view own time settings"
   ON user_time_settings FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own time settings" ON user_time_settings;
 CREATE POLICY "Users can insert own time settings"
   ON user_time_settings FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own time settings" ON user_time_settings;
 CREATE POLICY "Users can update own time settings"
   ON user_time_settings FOR UPDATE
   USING (auth.uid() = user_id);

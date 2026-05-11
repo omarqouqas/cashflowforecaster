@@ -6,6 +6,7 @@
 -- This policy allows users to claim unclaimed referral codes.
 
 -- Allow users to claim an unclaimed referral (update referee_id to themselves)
+DROP POLICY IF EXISTS "Users can claim unclaimed referral" ON referrals;
 CREATE POLICY "Users can claim unclaimed referral" ON referrals
   FOR UPDATE
   USING (referee_id IS NULL)

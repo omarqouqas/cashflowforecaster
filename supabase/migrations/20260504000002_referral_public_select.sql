@@ -6,6 +6,7 @@
 -- This caused /r/[code] to redirect without the ?ref= parameter.
 
 -- Allow anyone to view unclaimed referral codes (needed for validation)
+DROP POLICY IF EXISTS "Anyone can view unclaimed referral codes" ON referrals;
 CREATE POLICY "Anyone can view unclaimed referral codes" ON referrals
   FOR SELECT
   USING (referee_id IS NULL);
