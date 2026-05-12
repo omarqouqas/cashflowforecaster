@@ -439,6 +439,7 @@ export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
                     saved.slice(0, 6).map((s) => {
                       const r = (s.result as any) || {};
                       const canAfford = Boolean(r?.canAfford ?? r?.result?.canAfford);
+                      const savedIsRecurring = Boolean(r?.isRecurring);
                       return (
                         <div
                           key={s.id}
@@ -447,7 +448,7 @@ export function ScenarioModal({ open, onClose, source }: ScenarioModalProps) {
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-zinc-200 truncate">{s.name}</p>
                             <p className="text-xs text-zinc-500 mt-0.5">
-                              {s.date} · {isRecurring ? 'Monthly' : 'One-time'}
+                              {s.date} · {savedIsRecurring ? 'Monthly' : 'One-time'}
                             </p>
                           </div>
                           <span

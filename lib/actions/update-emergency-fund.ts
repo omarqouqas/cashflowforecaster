@@ -19,16 +19,21 @@ export async function setAccountAsEmergencyFund(accountId: string) {
       return { success: false, error: 'Not authenticated' };
     }
 
-    // Verify the account belongs to the user
+    // Verify the account belongs to the user and is not a credit card
     const { data: account, error: accountError } = await supabase
       .from('accounts')
-      .select('id, name')
+      .select('id, name, account_type')
       .eq('id', accountId)
       .eq('user_id', user.id)
       .single();
 
     if (accountError || !account) {
       return { success: false, error: 'Invalid account' };
+    }
+
+    // Credit cards cannot be emergency funds
+    if (account.account_type === 'credit_card') {
+      return { success: false, error: 'Credit cards cannot be set as emergency fund' };
     }
 
     // Get current settings to preserve goal_months if already set

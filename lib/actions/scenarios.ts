@@ -161,23 +161,16 @@ export async function calculateScenario(
     });
 
     // Find the first date after the chosen date when this purchase would be affordable.
-    // Check every day (not just income days) to find the earliest possible date.
+    // Check every day to find the earliest possible date.
     const nextAffordableDate = (() => {
       // Only search if the purchase isn't already affordable
       if (result.canAfford) return null;
 
       const futureDays = calendarData.days.filter((d) => d.date > chosenDate);
 
-      // For efficiency, sample days: check every day for the first 14 days,
-      // then every 3rd day after that, then every 7th day after 30 days
-      const daysToCheck: typeof futureDays = [];
-      for (let i = 0; i < futureDays.length; i++) {
-        if (i < 14 || i % 3 === 0 || (i > 30 && i % 7 === 0)) {
-          daysToCheck.push(futureDays[i]!);
-        }
-      }
-
-      for (const d of daysToCheck) {
+      // Check every day - accuracy is more important than performance here
+      // since we return on first match
+      for (const d of futureDays) {
         const test = calculateScenarioImpact(calendarData, {
           name: cleanedName,
           amount,
