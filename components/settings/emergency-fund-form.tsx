@@ -50,7 +50,8 @@ export function EmergencyFundForm({
 
   const [enabled, setEnabled] = useState(initialEnabled);
   const [goalMonths, setGoalMonths] = useState(initialGoalMonths);
-  const [accountId, setAccountId] = useState<string | null>(initialAccountId);
+  // Account ID is read-only here - users change it from Accounts page
+  const accountId = initialAccountId;
 
   const goalAmount = monthlyExpenses * goalMonths;
   // Allow any non-credit-card account to be designated as emergency fund
@@ -169,29 +170,45 @@ export function EmergencyFundForm({
               </p>
             </div>
 
-            {/* Emergency Fund Account Selection (Optional) */}
-            {eligibleAccounts.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-zinc-200 mb-2">
-                  Designated Account (Optional)
-                </label>
-                <select
-                  value={accountId ?? ''}
-                  onChange={(e) => setAccountId(e.target.value || null)}
-                  className="w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2.5 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                >
-                  <option value="">Use total balance (all accounts)</option>
-                  {eligibleAccounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} ({formatCurrency(account.current_balance)})
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-zinc-500 mt-1.5">
-                  If selected, this account will be excluded from &quot;Available to Spend&quot; and tracked separately as your emergency fund.
-                </p>
-              </div>
-            )}
+            {/* Current Emergency Fund Account (Read-only) */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-200 mb-2">
+                Designated Account
+              </label>
+              {accountId ? (
+                <div className="rounded-lg bg-zinc-800/50 border border-zinc-700 px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-zinc-100 font-medium">
+                        {eligibleAccounts.find(a => a.id === accountId)?.name || 'Selected account'}
+                      </p>
+                      <p className="text-sm text-zinc-500">
+                        {formatCurrency(eligibleAccounts.find(a => a.id === accountId)?.current_balance || 0)}
+                      </p>
+                    </div>
+                    <a
+                      href="/dashboard/accounts"
+                      className="text-sm text-teal-400 hover:text-teal-300 transition-colors"
+                    >
+                      Change
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-lg bg-zinc-800/50 border border-dashed border-zinc-600 px-4 py-3">
+                  <p className="text-zinc-400 text-sm">No account designated</p>
+                  <a
+                    href="/dashboard/accounts"
+                    className="text-sm text-teal-400 hover:text-teal-300 transition-colors"
+                  >
+                    Go to Accounts to set one →
+                  </a>
+                </div>
+              )}
+              <p className="text-xs text-zinc-500 mt-1.5">
+                Set your emergency fund account from the Accounts page using the &quot;Emergency Fund&quot; button.
+              </p>
+            </div>
 
             {/* Info Box */}
             <div className="text-sm text-zinc-500 bg-zinc-800/50 rounded-lg p-3">
