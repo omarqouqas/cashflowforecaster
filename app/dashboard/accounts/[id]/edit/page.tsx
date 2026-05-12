@@ -548,54 +548,64 @@ export default function EditAccountPage() {
               </div>
 
               {/* Emergency Fund Toggle */}
-              <div className={`flex items-start gap-3 p-3 rounded-md border ${isEmergencyFund ? 'bg-teal-500/10 border-teal-500/30' : 'bg-zinc-800/50 border-zinc-700'}`}>
-                <input
-                  type="checkbox"
-                  id="is_emergency_fund"
-                  checked={isEmergencyFund}
-                  disabled={isTogglingEmergencyFund}
-                  onChange={async (e) => {
-                    const newValue = e.target.checked;
-                    setIsTogglingEmergencyFund(true);
+              {(() => {
+                // If original account was credit card but user changed type, need to save first
+                const wasOriginallyCC = account?.account_type === 'credit_card';
+                const needsSaveFirst = wasOriginallyCC && !isCreditCard;
 
-                    if (newValue) {
-                      const result = await setAccountAsEmergencyFund(accountId);
-                      if (result.success) {
-                        setIsEmergencyFund(true);
-                        showSuccess('Set as emergency fund');
-                      } else {
-                        showError(result.error || 'Failed to set emergency fund');
-                      }
-                    } else {
-                      const result = await clearEmergencyFund();
-                      if (result.success) {
-                        setIsEmergencyFund(false);
-                        showSuccess('Removed emergency fund designation');
-                      } else {
-                        showError(result.error || 'Failed to remove emergency fund');
-                      }
-                    }
+                return (
+                  <div className={`flex items-start gap-3 p-3 rounded-md border ${isEmergencyFund ? 'bg-teal-500/10 border-teal-500/30' : 'bg-zinc-800/50 border-zinc-700'}`}>
+                    <input
+                      type="checkbox"
+                      id="is_emergency_fund"
+                      checked={isEmergencyFund}
+                      disabled={isTogglingEmergencyFund || needsSaveFirst}
+                      onChange={async (e) => {
+                        const newValue = e.target.checked;
+                        setIsTogglingEmergencyFund(true);
 
-                    setIsTogglingEmergencyFund(false);
-                  }}
-                  className="h-4 w-4 mt-0.5 rounded border-teal-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 cursor-pointer disabled:opacity-50"
-                />
-                <div>
-                  <Label htmlFor="is_emergency_fund" className="text-zinc-300 font-normal cursor-pointer flex items-center gap-2">
-                    {isEmergencyFund ? (
-                      <Shield className="w-4 h-4 text-teal-400" />
-                    ) : (
-                      <ShieldOff className="w-4 h-4 text-zinc-500" />
-                    )}
-                    {isEmergencyFund ? 'Emergency Fund Account' : 'Set as Emergency Fund'}
-                  </Label>
-                  <p className="text-xs text-zinc-500 mt-1">
-                    {isEmergencyFund
-                      ? 'This account is excluded from "Available to Spend"'
-                      : 'Exclude this account from "Available to Spend"'}
-                  </p>
-                </div>
-              </div>
+                        if (newValue) {
+                          const result = await setAccountAsEmergencyFund(accountId);
+                          if (result.success) {
+                            setIsEmergencyFund(true);
+                            showSuccess('Set as emergency fund');
+                          } else {
+                            showError(result.error || 'Failed to set emergency fund');
+                          }
+                        } else {
+                          const result = await clearEmergencyFund();
+                          if (result.success) {
+                            setIsEmergencyFund(false);
+                            showSuccess('Removed emergency fund designation');
+                          } else {
+                            showError(result.error || 'Failed to remove emergency fund');
+                          }
+                        }
+
+                        setIsTogglingEmergencyFund(false);
+                      }}
+                      className="h-4 w-4 mt-0.5 rounded border-teal-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 cursor-pointer disabled:opacity-50"
+                    />
+                    <div>
+                      <Label htmlFor="is_emergency_fund" className={`font-normal flex items-center gap-2 ${needsSaveFirst ? 'text-zinc-500' : 'text-zinc-300 cursor-pointer'}`}>
+                        {isEmergencyFund ? (
+                          <Shield className="w-4 h-4 text-teal-400" />
+                        ) : (
+                          <ShieldOff className={`w-4 h-4 ${needsSaveFirst ? 'text-zinc-600' : 'text-zinc-500'}`} />
+                        )}
+                        {isEmergencyFund ? 'Emergency Fund Account' : 'Set as Emergency Fund'}
+                      </Label>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        {needsSaveFirst
+                          ? 'Save changes first to enable this option'
+                          : isEmergencyFund
+                            ? 'This account is excluded from "Available to Spend"'
+                            : 'Exclude this account from "Available to Spend"'}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
