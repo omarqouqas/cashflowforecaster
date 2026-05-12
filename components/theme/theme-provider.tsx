@@ -33,31 +33,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  // Update resolved theme and apply to document
+  // Force dark mode - light mode temporarily disabled
   useEffect(() => {
     if (!mounted) return;
 
-    const updateResolvedTheme = () => {
-      const resolved = theme === 'system' ? getSystemTheme() : theme;
-      setResolvedTheme(resolved);
-
-      // Apply theme to document
-      const root = document.documentElement;
-      root.classList.remove('light', 'dark');
-      root.classList.add(resolved);
-    };
-
-    updateResolvedTheme();
-
-    // Listen for system theme changes
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = () => updateResolvedTheme();
-      mediaQuery.addEventListener('change', handler);
-      return () => mediaQuery.removeEventListener('change', handler);
-    }
-    return undefined;
-  }, [theme, mounted]);
+    // Always use dark mode regardless of stored preference
+    setResolvedTheme('dark');
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add('dark');
+  }, [mounted]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
