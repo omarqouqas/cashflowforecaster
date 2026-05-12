@@ -48,6 +48,7 @@ export interface UserSettings {
   timezone: string | null;
   tax_rate: number | null;
   tax_tracking_enabled: boolean | null;
+  emergency_fund_account_id: string | null;
 }
 
 export interface UserFinancialData {

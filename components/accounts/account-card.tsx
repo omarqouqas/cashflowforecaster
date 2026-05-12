@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { Tables } from '@/types/supabase'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp, Calculator, DollarSign } from 'lucide-react'
+import { Edit, Wallet, PiggyBank, CreditCard, AlertCircle, TrendingUp, Calculator, DollarSign, Shield } from 'lucide-react'
 import { formatCurrency, formatRelativeTime } from '@/lib/utils/format'
 import { DeleteAccountButton } from '@/components/accounts/delete-account-button'
 import { SpendableToggleButton } from '@/components/accounts/spendable-toggle-button'
@@ -60,7 +60,7 @@ function accountTypeBadge(type: string | null | undefined) {
   }
 }
 
-export function AccountCard({ account }: { account: Account }) {
+export function AccountCard({ account, isEmergencyFund = false }: { account: Account; isEmergencyFund?: boolean }) {
   const [showSimulator, setShowSimulator] = useState(false)
 
   const badge = accountTypeBadge(account.account_type)
@@ -159,7 +159,14 @@ export function AccountCard({ account }: { account: Account }) {
               </span>
             )}
 
-            {isSpendable && !isCreditCard && (
+            {isEmergencyFund && (
+              <span className="inline-flex items-center gap-1 bg-teal-500/10 border border-teal-500/30 text-teal-300 rounded-full px-2.5 py-1 text-xs font-medium">
+                <Shield className="w-3 h-3" />
+                Emergency Fund
+              </span>
+            )}
+
+            {isSpendable && !isCreditCard && !isEmergencyFund && (
               <span className="inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-full px-2.5 py-1 text-xs font-medium">
                 ✓ Spendable
               </span>

@@ -37,7 +37,7 @@ export async function fetchUserFinancialData(
         .in('status', ['draft', 'sent', 'viewed', 'overdue']),
       supabase
         .from('user_settings')
-        .select('currency, safety_buffer, timezone, tax_rate, tax_tracking_enabled')
+        .select('currency, safety_buffer, timezone, tax_rate, tax_tracking_enabled, emergency_fund_account_id')
         .eq('user_id', userId)
         .single(),
     ]);
@@ -52,6 +52,7 @@ export async function fetchUserFinancialData(
     timezone: null,
     tax_rate: null,
     tax_tracking_enabled: null,
+    emergency_fund_account_id: null,
   };
 
   return {
@@ -65,6 +66,7 @@ export async function fetchUserFinancialData(
       timezone: settings.timezone ?? null,
       tax_rate: settings.tax_rate ?? null,
       tax_tracking_enabled: settings.tax_tracking_enabled ?? null,
+      emergency_fund_account_id: settings.emergency_fund_account_id ?? null,
     },
   };
 }
@@ -79,8 +81,11 @@ export function buildFinancialContext(
   const { accounts, income, bills, invoices, settings } = data;
   const currency = settings.currency;
 
-  // Calculate spendable balance
-  const spendableAccounts = accounts.filter((a) => a.is_spendable !== false);
+  // Calculate spendable balance (excluding emergency fund account)
+  const emergencyFundAccountId = settings.emergency_fund_account_id;
+  const spendableAccounts = accounts.filter(
+    (a) => a.is_spendable !== false && (!emergencyFundAccountId || a.id !== emergencyFundAccountId)
+  );
   const spendableBalance = spendableAccounts.reduce(
     (sum, a) => sum + a.current_balance,
     0
@@ -100,7 +105,9 @@ export function buildFinancialContext(
       bills,
       settings.safety_buffer,
       settings.timezone ?? undefined,
-      60
+      60,
+      [], // transfers
+      emergencyFundAccountId
     );
     safeToSpend = calendar.safeToSpend;
     lowestBalanceAmount = calendar.lowestBalance;

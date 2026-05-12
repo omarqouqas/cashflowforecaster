@@ -16,11 +16,21 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
   const user = await requireAuth();
   const supabase = await createClient();
 
-  const { data: accounts, error } = await supabase
-    .from('accounts')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+  const [accountsResult, settingsResult] = await Promise.all([
+    supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('user_settings')
+      .select('emergency_fund_account_id')
+      .eq('user_id', user.id)
+      .single(),
+  ]);
+
+  const { data: accounts, error } = accountsResult;
+  const emergencyFundAccountId = settingsResult.data?.emergency_fund_account_id ?? null;
 
   // Handle error
   if (error) {
@@ -33,7 +43,8 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
   const totalBalance = accountList.reduce((sum, a) => sum + (a.current_balance || 0), 0);
   const spendableTotal = accountList.reduce((sum, a) => {
     const spendable = a.is_spendable ?? true;
-    return spendable ? sum + (a.current_balance || 0) : sum;
+    const isEmergencyFund = emergencyFundAccountId && a.id === emergencyFundAccountId;
+    return spendable && !isEmergencyFund ? sum + (a.current_balance || 0) : sum;
   }, 0);
 
   // Calculate account health metrics
@@ -44,7 +55,11 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
     return daysSinceUpdate > 7;
   });
 
-  const spendableCount = accountList.filter(a => a.is_spendable ?? true).length;
+  const spendableCount = accountList.filter(a => {
+    const spendable = a.is_spendable ?? true;
+    const isEmergencyFund = emergencyFundAccountId && a.id === emergencyFundAccountId;
+    return spendable && !isEmergencyFund;
+  }).length;
 
   // Count credit cards with debt for debt payoff planner
   const creditCardsWithDebt = accountList.filter(
@@ -241,7 +256,7 @@ export default async function AccountsPage({ searchParams }: AccountsPageProps) 
             </div>
           ) : (
             /* Accounts List with Filters */
-            <AccountsContent accounts={accountList} />
+            <AccountsContent accounts={accountList} emergencyFundAccountId={emergencyFundAccountId} />
           )}
         </>
       )}

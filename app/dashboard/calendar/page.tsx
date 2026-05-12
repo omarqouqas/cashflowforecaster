@@ -49,7 +49,7 @@ export default async function CalendarPage() {
       .order('transfer_date', { ascending: true }),
     supabase
       .from('user_settings')
-      .select('safety_buffer, timezone, currency')
+      .select('safety_buffer, timezone, currency, emergency_fund_account_id')
       .eq('user_id', user.id)
       .single(),
   ])
@@ -76,6 +76,7 @@ export default async function CalendarPage() {
   const safetyBuffer = settings?.safety_buffer ?? 500
   const timezone = settings?.timezone ?? null
   const currency = settings?.currency ?? 'USD'
+  const emergencyFundAccountId = settings?.emergency_fund_account_id ?? null
 
   const fetchErrors = [accountsResult.error, incomeResult.error, billsResult.error, transfersResult.error].filter(
     Boolean
@@ -130,7 +131,7 @@ export default async function CalendarPage() {
   let calendarError: string | null = null
 
   try {
-    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays, transfers)
+    calendarData = generateCalendar(accounts, income, bills, safetyBuffer, timezone ?? undefined, forecastDays, transfers, emergencyFundAccountId)
   } catch (e) {
     calendarError = e instanceof Error ? e.message : 'Failed to generate calendar'
   }

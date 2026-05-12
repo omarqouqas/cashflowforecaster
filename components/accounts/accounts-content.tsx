@@ -16,6 +16,7 @@ type Account = Tables<'accounts'>;
 
 interface AccountsContentProps {
   accounts: Account[];
+  emergencyFundAccountId?: string | null;
 }
 
 /**
@@ -53,7 +54,7 @@ function filterAccounts(accounts: Account[], filters: AccountsFilters): Account[
 /**
  * AccountsContent - Client component for Accounts page with filtering
  */
-export function AccountsContent({ accounts }: AccountsContentProps) {
+export function AccountsContent({ accounts, emergencyFundAccountId }: AccountsContentProps) {
   const { filters, setFilters } = useAccountsFilters();
 
   // Apply filters to accounts
@@ -111,7 +112,11 @@ export function AccountsContent({ accounts }: AccountsContentProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {filteredAccounts.map((account) => (
-            <AccountCard key={account.id} account={account} />
+            <AccountCard
+              key={account.id}
+              account={account}
+              isEmergencyFund={emergencyFundAccountId === account.id}
+            />
           ))}
         </div>
       )}

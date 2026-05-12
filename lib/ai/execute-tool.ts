@@ -39,7 +39,9 @@ export async function executeTool(
           userData.bills,
           userData.settings.safety_buffer ?? 500,
           userData.settings.timezone ?? undefined,
-          90
+          90,
+          [], // transfers
+          userData.settings.emergency_fund_account_id
         );
 
         // Get upcoming bills from calendar data
@@ -220,7 +222,9 @@ export async function executeTool(
           userData.bills,
           userData.settings.safety_buffer ?? 500,
           userData.settings.timezone ?? undefined,
-          daysAhead
+          daysAhead,
+          [], // transfers
+          userData.settings.emergency_fund_account_id
         );
 
         // Find days below safety buffer

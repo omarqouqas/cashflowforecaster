@@ -131,7 +131,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   if (accounts.length > 0) {
     try {
-      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined, forecastDays, transfers);
+      calendarData = generateCalendar(accounts, incomes, bills, safetyBuffer, timezone ?? undefined, forecastDays, transfers, emergencyFundAccountId);
 
       // Run Monte Carlo simulation for probabilistic forecasting
       if (calendarData) {

@@ -79,7 +79,7 @@ function getTodayAtNoonForTimezone(timezone?: string): Date {
  * Generates a 60-day cash flow calendar projection.
  *
  * This function:
- * 1. Calculates the starting balance from all active accounts
+ * 1. Calculates the starting balance from all active accounts (excluding emergency fund)
  * 2. Generates a 60-day date array starting from today
  * 3. Calculates all income occurrences within the date range
  * 4. Calculates all bill occurrences within the date range
@@ -95,6 +95,7 @@ function getTodayAtNoonForTimezone(timezone?: string): Date {
  * @param timezone - Optional user timezone for date calculations
  * @param forecastDays - Number of days to forecast (default: 60)
  * @param transfers - Optional array of transfer records for inter-account transfers
+ * @param emergencyFundAccountId - Optional account ID to exclude from spendable balance (emergency fund)
  * @returns CalendarData object containing forecast days of projected cash flow
  *
  * @throws {Error} If accounts array is empty or invalid
@@ -107,15 +108,18 @@ export default function generateCalendar(
   safetyBuffer: number = 500,
   timezone?: string,
   forecastDays: number = 60,
-  transfers: TransferRecord[] = []
+  transfers: TransferRecord[] = [],
+  emergencyFundAccountId?: string | null
 ): CalendarData {
   try {
     // Step 1: Calculate starting balance
-    // Sum all active account balances
+    // Sum all active account balances, excluding emergency fund account
     // Note: Database schema uses is_spendable (not is_active) and current_balance (not balance)
     // Filtering to include accounts where is_spendable is true or null (treating null as active)
+    // Emergency fund account is excluded from spendable balance even if is_spendable is true
     const startingBalance = accounts
       .filter((a) => a.is_spendable !== false)
+      .filter((a) => !emergencyFundAccountId || a.id !== emergencyFundAccountId)
       .reduce((sum, a) => sum + a.current_balance, 0);
 
     // Step 2: Generate forecast date array
@@ -155,9 +159,12 @@ export default function generateCalendar(
 
     // Step 4c: Calculate transfer occurrences
     // Build a map of account IDs to their spendable status for efficient lookup
+    // Emergency fund account is treated as non-spendable for transfer calculations
     const accountSpendableMap = new Map<string, boolean>();
     accounts.forEach(a => {
-      accountSpendableMap.set(a.id, a.is_spendable !== false);
+      // Emergency fund account is treated as non-spendable even if is_spendable is true
+      const isEmergencyFund = emergencyFundAccountId && a.id === emergencyFundAccountId;
+      accountSpendableMap.set(a.id, a.is_spendable !== false && !isEmergencyFund);
     });
 
     const allTransferOccurrences = transfers
