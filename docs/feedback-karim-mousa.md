@@ -15,7 +15,11 @@
 ### Suggested Improvement
 > "Maybe have the tile showing only the money available to spend, once the user hovers over the tile or presses on the tile, it flips and shows the details of money in/out"
 
-**Status:** Not implemented - `day-card.tsx` still uses background colors + status dots. No flip-card functionality exists.
+**Status:** Implemented - Calendar cards redesigned with cleaner visual hierarchy:
+- Removed background color variations (now neutral zinc-800)
+- Left border indicates status (green/yellow/orange/red)
+- Transaction details shown only on active days
+- Clean, consistent styling with reduced visual clutter
 
 ---
 
@@ -123,7 +127,7 @@
 
 | Area | Issue | Suggested Fix | Status |
 |------|-------|---------------|--------|
-| Calendar | Visual clutter, hard to distinguish colors | Show only balance, flip card for details on hover | Not implemented |
+| Calendar | Visual clutter, hard to distinguish colors | Left border status indicator, clean hierarchy | Implemented |
 | Settings | Mixed settings types, too many saves | Separate app/profile settings, combine related toggles | Implemented (Safety Buffer + Low Balance Alert combined) |
 | Emergency Fund | Treats all account money as emergency fund | Make it a separate reserve excluded from spending | Implemented (excluded from spendable, quick set/edit, tooltip updated) |
 | AI Chat | "AI not configured" error | Made Pro-only feature | Resolved |
@@ -145,7 +149,7 @@ User provided screenshot showing calendar view with red/orange color scheme issu
 1. ~~**High:** Fix AI chat configuration issue (bug)~~ **DONE** - Made Pro-only
 2. ~~**High:** Simplify navigation and highlight premium features~~ **DONE** - Sidebar with sections, lock icons, upgrade CTA
 3. ~~**High:** Emergency fund exclusion from spendable balance~~ **DONE** - Full implementation with quick action button
-4. **Medium:** Redesign calendar tiles to reduce visual clutter (flip cards)
+4. ~~**Medium:** Redesign calendar tiles to reduce visual clutter (flip cards)~~ **DONE** - Left border status indicator, clean visual hierarchy
 5. ~~**Medium:** Combine safety buffer + low balance alert settings (currently in different tabs)~~ **DONE** - Combined into single form
 6. ~~**Medium:** Add "When can I afford it?" feature~~ **DONE** - Context-aware messaging + first affordable date
 7. ~~**Low:** Tax calculation in onboarding (income type detection)~~ **DONE** - Per-income tax toggle with Safe to Spend adjustment
