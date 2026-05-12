@@ -11,10 +11,11 @@ import { Input } from '@/components/ui/input';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { ArrowLeft, ChevronDown, CreditCard, Info } from 'lucide-react';
+import { ArrowLeft, ChevronDown, CreditCard, Info, Shield } from 'lucide-react';
 import { showError, showSuccess } from '@/lib/toast';
 import { getCurrencySymbol } from '@/lib/utils/format';
 import { trackAccountCreated } from '@/lib/posthog/events';
+import { setAccountAsEmergencyFund } from '@/lib/actions/update-emergency-fund';
 
 /**
  * Get ordinal suffix for a day number (1st, 2nd, 3rd, 4th, etc.)
@@ -39,6 +40,7 @@ const accountSchema = z.object({
   }),
   currency: z.string().default('USD'),
   is_spendable: z.boolean().default(true),
+  is_emergency_fund: z.boolean().default(false),
   // Credit card specific fields
   credit_limit: z.coerce.number().positive('Credit limit must be positive').optional().nullable(),
   apr: z.coerce.number().min(0, 'APR cannot be negative').max(100, 'APR cannot exceed 100%').optional().nullable(),
@@ -73,6 +75,7 @@ export default function NewAccountPage() {
       account_type: defaultAccountType,
       currency: 'USD',
       is_spendable: defaultAccountType === 'credit_card' ? false : true,
+      is_emergency_fund: false,
       credit_limit: null,
       apr: null,
       statement_close_day: null,
@@ -124,17 +127,31 @@ export default function NewAccountPage() {
       accountData.minimum_payment_percent = data.minimum_payment_percent ?? 2;
     }
 
-    const { error: insertError } = await supabase.from('accounts').insert(accountData);
+    const { data: insertedAccount, error: insertError } = await supabase
+      .from('accounts')
+      .insert(accountData)
+      .select('id')
+      .single();
 
     if (insertError) {
       showError(insertError.message);
       setError(insertError.message);
-    } else {
-      trackAccountCreated(data.account_type);
-      showSuccess('Account created');
-      router.push('/dashboard/accounts');
+      setIsLoading(false);
+      return;
     }
 
+    // If marked as emergency fund, set it after account creation
+    if (data.is_emergency_fund && insertedAccount?.id) {
+      const efResult = await setAccountAsEmergencyFund(insertedAccount.id);
+      if (!efResult.success) {
+        // Account created but emergency fund setting failed - still proceed
+        console.warn('Failed to set as emergency fund:', efResult.error);
+      }
+    }
+
+    trackAccountCreated(data.account_type);
+    showSuccess('Account created');
+    router.push('/dashboard/accounts');
     setIsLoading(false);
   };
 
@@ -398,18 +415,38 @@ export default function NewAccountPage() {
             </div>
           </div>
 
-          {/* Is Spendable Checkbox - hidden for credit cards since they're never "spendable" */}
+          {/* Account Options - hidden for credit cards */}
           {!isCreditCard && (
-            <div className="flex items-center gap-3 p-3 rounded-md bg-zinc-900/50 border border-zinc-700/50">
-              <input
-                type="checkbox"
-                id="is_spendable"
-                {...register('is_spendable')}
-                className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
-              />
-              <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
-                Use this account for expenses
-              </Label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-md bg-zinc-900/50 border border-zinc-700/50">
+                <input
+                  type="checkbox"
+                  id="is_spendable"
+                  {...register('is_spendable')}
+                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
+                />
+                <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
+                  Use this account for expenses
+                </Label>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-md bg-teal-500/5 border border-teal-500/20">
+                <input
+                  type="checkbox"
+                  id="is_emergency_fund"
+                  {...register('is_emergency_fund')}
+                  className="h-4 w-4 mt-0.5 rounded border-teal-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:ring-offset-0 cursor-pointer"
+                />
+                <div>
+                  <Label htmlFor="is_emergency_fund" className="text-zinc-300 font-normal cursor-pointer flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-teal-400" />
+                    Set as Emergency Fund
+                  </Label>
+                  <p className="text-xs text-zinc-500 mt-1">
+                    This account will be excluded from &quot;Available to Spend&quot; and tracked separately
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
