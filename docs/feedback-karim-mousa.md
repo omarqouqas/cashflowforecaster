@@ -29,7 +29,7 @@
 1. Separate app settings from profile/feature toggles
 2. Combine "minimum balance" with "low limit warning toggle" under one feature to streamline saving
 
-**Status:** Partially implemented - Settings now uses tabbed interface (`settings-tabs.tsx`: Profile, Preferences, Notifications, Invoicing, Billing). However, Safety Buffer is in Preferences tab while Low Balance Alert is in Notifications tab - still separated.
+**Status:** Implemented - Settings uses tabbed interface. Safety Buffer and Low Balance Alert are now combined into a single `SafetyBufferAlertForm` component in the Preferences tab with a single save action.
 
 ---
 
@@ -121,7 +121,7 @@
 | Area | Issue | Suggested Fix | Status |
 |------|-------|---------------|--------|
 | Calendar | Visual clutter, hard to distinguish colors | Show only balance, flip card for details on hover | Not implemented |
-| Settings | Mixed settings types, too many saves | Separate app/profile settings, combine related toggles | Partially done (tabs exist, related settings still separate) |
+| Settings | Mixed settings types, too many saves | Separate app/profile settings, combine related toggles | Implemented (Safety Buffer + Low Balance Alert combined) |
 | Emergency Fund | Treats all account money as emergency fund | Make it a separate reserve excluded from spending | Implemented (excluded from spendable, quick set/edit, tooltip updated) |
 | AI Chat | "AI not configured" error | Made Pro-only feature | Resolved |
 | Navigation | Too many items, paid tools hidden | Simplify menu, highlight premium features | Resolved |
@@ -143,6 +143,6 @@ User provided screenshot showing calendar view with red/orange color scheme issu
 2. ~~**High:** Simplify navigation and highlight premium features~~ **DONE** - Sidebar with sections, lock icons, upgrade CTA
 3. ~~**High:** Emergency fund exclusion from spendable balance~~ **DONE** - Full implementation with quick action button
 4. **Medium:** Redesign calendar tiles to reduce visual clutter (flip cards)
-5. **Medium:** Combine safety buffer + low balance alert settings (currently in different tabs)
+5. ~~**Medium:** Combine safety buffer + low balance alert settings (currently in different tabs)~~ **DONE** - Combined into single form
 6. ~~**Medium:** Add "When can I afford it?" feature~~ **DONE** - Context-aware messaging + first affordable date
 7. **Low:** Tax calculation in onboarding (income type detection)
