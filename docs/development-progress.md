@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix + Desktop Sidebar Navigation + Tabbed Settings Interface + Full-Width Layout + Theme Toggle + **Dark Mode Only (Light Mode Disabled) + Combined Settings Forms + Calendar Redesign Demo**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix + Desktop Sidebar Navigation + Tabbed Settings Interface + Full-Width Layout + Theme Toggle + **Dark Mode Only (Light Mode Disabled) + Combined Settings Forms + Calendar Redesign (Left Border Status) + Per-Income Tax Withholding**
 
 **Current Focus:**
 
@@ -30,7 +30,7 @@
 
 ## Recent Development (Days 60-79)
 
-### Day 79: Light Mode Disabled + Settings UX Improvements + Calendar Redesign Demo (May 12, 2026)
+### Day 79: Light Mode Disabled + Settings UX + Calendar Redesign + Per-Income Tax Toggle (May 12, 2026)
 
 **Light Mode Temporarily Disabled** - User testing revealed light mode had poor contrast, inconsistent styling, and readability issues. Disabled until properly fixed.
 
@@ -47,27 +47,50 @@
 - Single save action for both settings
 - Removed separate LowBalanceAlertForm from Notifications tab
 
-**Calendar Redesign Demo Page** - Created comparison page at `/dashboard/calendar-demo` showing two design approaches for reducing visual clutter (per Karim Mousa feedback).
+**Calendar Redesign (Option 1 Implemented)** - Reduced visual clutter per Karim Mousa feedback. Selected Option 1 (left border status indicator) over Option 4 (minimal two-line cards).
 
-| Option | Description |
-|--------|-------------|
-| **Option 1** | Left border status indicator, transaction details on active days only |
-| **Option 4** | Minimal two-line cards (balance + net change), click for details |
+**Changes:**
+- Removed background color variations (now neutral zinc-800 for all cards)
+- Left border (4px) indicates status: green/yellow/orange/red
+- Transaction details shown only on active days
+- Clean, consistent styling reduces cognitive load
+- Removed demo page after decision
 
-**Recommendation:** Option 1 - solves visual clutter without hiding important transaction context.
+**Per-Income Tax Withholding Toggle** - Instead of slowing onboarding with tax questions, added per-income source toggle.
+
+**Changes:**
+- New `taxes_withheld` column in income table
+- "Taxes already withheld" toggle in new/edit income forms
+- W-2/salary income: User checks toggle (taxes already deducted by employer)
+- Freelance/contractor income: Leave unchecked
+- Safe to Spend calculation reserves estimated tax for pre-tax income
+- Tax amount = pre-tax income in next 14 days × user's tax rate from Settings
+
+**Database Migration:**
+- `20260512000001_add_income_taxes_withheld.sql` - Adds `taxes_withheld` boolean column
 
 **Files Created:**
 - `components/settings/safety-buffer-alert-form.tsx` - Combined settings form
-- `app/dashboard/calendar-demo/page.tsx` - Design comparison demo
+- `supabase/migrations/20260512000001_add_income_taxes_withheld.sql` - Tax toggle migration
 
 **Files Modified:**
 - `components/settings/theme-form.tsx` - Simplified to dark-only indicator
 - `components/theme/theme-provider.tsx` - Force dark mode
 - `components/settings/settings-content.tsx` - Use combined form, remove LowBalanceAlertForm
+- `components/calendar/day-card.tsx` - Option 1 redesign (left border status)
+- `app/dashboard/income/new/page.tsx` - Added taxes_withheld toggle
+- `app/dashboard/income/[id]/edit/page.tsx` - Added taxes_withheld toggle
+- `app/dashboard/page.tsx` - Pass taxRate to generateCalendar
+- `lib/calendar/generate.ts` - Accept taxRate param, reserve tax in Safe to Spend
+- `lib/calendar/calculate-income.ts` - Include taxes_withheld in occurrences
+- `lib/calendar/types.ts` - Added taxes_withheld to Transaction interface
+- `types/supabase.ts` - Added taxes_withheld to income types
+
+**Files Removed:**
+- `app/dashboard/calendar-demo/page.tsx` - Demo no longer needed
 
 **Feedback Doc Updated:**
-- Settings organization: Partially done → **Implemented**
-- Calendar flip cards: Not implemented → **Demo created, pending decision**
+- All 7 items from Karim Mousa feedback now marked as **DONE**
 
 ---
 
@@ -1976,6 +1999,9 @@ Comparison terms:
 - 30-day Pro trial for referred signups
 - 1-month Pro credit when referral converts
 - Handles OAuth flow via sessionStorage
+- **Calendar redesign** - Left border status indicator, neutral background, reduced visual clutter
+- **Per-income tax withholding** - Toggle for W-2 vs contractor income, Safe to Spend reserves taxes for pre-tax income
+- **All Karim Mousa feedback items implemented** - Calendar, Settings, Emergency Fund, AI Chat, Navigation, Scenarios, Tax
 
 ## What's Next
 
