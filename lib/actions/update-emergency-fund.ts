@@ -81,6 +81,45 @@ export async function setAccountAsEmergencyFund(accountId: string) {
   }
 }
 
+/**
+ * Clear the emergency fund designation (remove the account as emergency fund).
+ */
+export async function clearEmergencyFund() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const { error: dbError } = await supabase
+      .from('user_settings')
+      .update({ emergency_fund_account_id: null })
+      .eq('user_id', user.id);
+
+    if (dbError) {
+      console.error('Failed to clear emergency fund:', dbError);
+      return { success: false, error: 'Failed to clear emergency fund' };
+    }
+
+    await captureServerEvent('emergency_fund_cleared', {
+      distinctId: user.id,
+    });
+
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/accounts');
+    revalidatePath('/dashboard/settings');
+
+    return { success: true };
+  } catch (err) {
+    console.error('clearEmergencyFund error:', err);
+    return { success: false, error: 'An unexpected error occurred' };
+  }
+}
+
 type EmergencyFundSettings = {
   enabled: boolean;
   goalMonths: number;

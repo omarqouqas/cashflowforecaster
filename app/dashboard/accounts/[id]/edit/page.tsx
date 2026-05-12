@@ -11,10 +11,11 @@ import { Label } from '@/components/ui/label';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { DeleteAccountButton } from '@/components/accounts/delete-account-button';
 import Link from 'next/link';
-import { ArrowLeft, ChevronDown, CreditCard, Info } from 'lucide-react';
+import { ArrowLeft, ChevronDown, CreditCard, Info, Shield, ShieldOff } from 'lucide-react';
 import { Tables } from '@/types/supabase';
 import { showError, showSuccess } from '@/lib/toast';
 import { getCurrencySymbol } from '@/lib/utils/format';
+import { setAccountAsEmergencyFund, clearEmergencyFund } from '@/lib/actions/update-emergency-fund';
 
 /**
  * Get ordinal suffix for a day number (1st, 2nd, 3rd, 4th, etc.)
@@ -60,6 +61,8 @@ export default function EditAccountPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEmergencyFund, setIsEmergencyFund] = useState(false);
+  const [isTogglingEmergencyFund, setIsTogglingEmergencyFund] = useState(false);
 
   const {
     register,
@@ -83,16 +86,16 @@ export default function EditAccountPage() {
     async function fetchAccount() {
       const supabase = createClient();
 
-      const { data, error: fetchError } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('id', accountId)
-        .single();
+      // Fetch account and emergency fund setting in parallel
+      const [accountResult, settingsResult] = await Promise.all([
+        supabase.from('accounts').select('*').eq('id', accountId).single(),
+        supabase.from('user_settings').select('emergency_fund_account_id').single(),
+      ]);
 
       if (!isMounted) return;
 
-      if (fetchError) {
-        console.error('Error fetching account:', fetchError);
+      if (accountResult.error) {
+        console.error('Error fetching account:', accountResult.error);
         const message = 'Account not found';
         showError(message);
         setError(message);
@@ -106,9 +109,14 @@ export default function EditAccountPage() {
         return;
       }
 
-      if (data) {
-        const accountData = data as any;
-        setAccount(data);
+      if (accountResult.data) {
+        const accountData = accountResult.data as any;
+        setAccount(accountResult.data);
+
+        // Check if this account is the emergency fund
+        const emergencyFundAccountId = settingsResult.data?.emergency_fund_account_id;
+        setIsEmergencyFund(emergencyFundAccountId === accountId);
+
         // Pre-fill form with existing data
         reset({
           name: accountData.name,
@@ -524,18 +532,70 @@ export default function EditAccountPage() {
             </div>
           </div>
 
-          {/* Is Spendable Checkbox - hidden for credit cards since they're never "spendable" */}
+          {/* Account Options - hidden for credit cards */}
           {!isCreditCard && (
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="is_spendable"
-                {...register('is_spendable')}
-                className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 checked:bg-teal-500"
-              />
-              <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
-                Use this account for expenses
-              </Label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="is_spendable"
+                  {...register('is_spendable')}
+                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 checked:bg-teal-500"
+                />
+                <Label htmlFor="is_spendable" className="text-zinc-300 font-normal cursor-pointer">
+                  Use this account for expenses
+                </Label>
+              </div>
+
+              {/* Emergency Fund Toggle */}
+              <div className={`flex items-start gap-3 p-3 rounded-md border ${isEmergencyFund ? 'bg-teal-500/10 border-teal-500/30' : 'bg-zinc-800/50 border-zinc-700'}`}>
+                <input
+                  type="checkbox"
+                  id="is_emergency_fund"
+                  checked={isEmergencyFund}
+                  disabled={isTogglingEmergencyFund}
+                  onChange={async (e) => {
+                    const newValue = e.target.checked;
+                    setIsTogglingEmergencyFund(true);
+
+                    if (newValue) {
+                      const result = await setAccountAsEmergencyFund(accountId);
+                      if (result.success) {
+                        setIsEmergencyFund(true);
+                        showSuccess('Set as emergency fund');
+                      } else {
+                        showError(result.error || 'Failed to set emergency fund');
+                      }
+                    } else {
+                      const result = await clearEmergencyFund();
+                      if (result.success) {
+                        setIsEmergencyFund(false);
+                        showSuccess('Removed emergency fund designation');
+                      } else {
+                        showError(result.error || 'Failed to remove emergency fund');
+                      }
+                    }
+
+                    setIsTogglingEmergencyFund(false);
+                  }}
+                  className="h-4 w-4 mt-0.5 rounded border-teal-600 bg-zinc-800 text-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 cursor-pointer disabled:opacity-50"
+                />
+                <div>
+                  <Label htmlFor="is_emergency_fund" className="text-zinc-300 font-normal cursor-pointer flex items-center gap-2">
+                    {isEmergencyFund ? (
+                      <Shield className="w-4 h-4 text-teal-400" />
+                    ) : (
+                      <ShieldOff className="w-4 h-4 text-zinc-500" />
+                    )}
+                    {isEmergencyFund ? 'Emergency Fund Account' : 'Set as Emergency Fund'}
+                  </Label>
+                  <p className="text-xs text-zinc-500 mt-1">
+                    {isEmergencyFund
+                      ? 'This account is excluded from "Available to Spend"'
+                      : 'Exclude this account from "Available to Spend"'}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
