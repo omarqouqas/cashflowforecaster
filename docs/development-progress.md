@@ -30,30 +30,51 @@
 
 ## Recent Development (Days 60-78)
 
-### Day 78: User Feedback Review - Karim Mousa (May 11, 2026)
+### Day 78: User Feedback Review & Implementation - Karim Mousa (May 11, 2026)
 
-**Codebase audit against user feedback** - Reviewed all feedback items from Karim Mousa's user testing session and verified implementation status against actual codebase.
+**Codebase audit against user feedback** - Reviewed all feedback items from Karim Mousa's user testing session and implemented fixes.
 
 **Feedback Status Summary:**
 
-| Item | Feedback Status | Actual Status |
-|------|-----------------|---------------|
+| Item | Initial Status | Final Status |
+|------|----------------|--------------|
 | AI Chat Pro-only | Resolved | **Confirmed** - Lock icon + upgrade prompt for free users |
 | Navigation simplification | In progress | **Resolved** - Sidebar with sections, lock icons, upgrade CTA |
 | Dashboard via logo click | In progress | **Resolved** - Logo links to `/dashboard` |
-| Settings organization | Not implemented | **Partially done** - Tabs exist but related settings (safety buffer + low balance alert) still in different tabs |
-| Emergency fund exclusion | Not implemented | **Partially done** - Widget exists, calendar logic does NOT exclude from spendable balance |
-| Calendar flip cards | Not implemented | **Confirmed** - `day-card.tsx` still uses background colors + dots |
-| "When can I afford it?" | Not implemented | **Confirmed** - Calculator only answers "Can I", not "When can I" |
-| Tax in onboarding | Not implemented | **Confirmed** - No income type (salary vs contractor) question |
+| Settings organization | Not implemented | **Partially done** - Tabs exist but related settings still in different tabs |
+| Emergency fund exclusion | Not implemented | **Implemented** - Full exclusion from spendable balance + UI improvements |
+| Calendar flip cards | Not implemented | **Not implemented** - `day-card.tsx` still uses background colors + dots |
+| "When can I afford it?" | Not implemented | **Implemented** - Context-aware messaging + first affordable date |
+| Tax in onboarding | Not implemented | **Not implemented** - No income type (salary vs contractor) question |
 
-**Priority Updates:**
-- Navigation/Dashboard items moved from "In Progress" to "Resolved"
-- Emergency fund exclusion elevated to High priority (widget exists, needs calendar integration)
-- Settings combination (safety buffer + low balance) added as Medium priority
+**Emergency Fund Feature - Full Implementation:**
+- Emergency fund account excluded from `startingBalance` in calendar generation
+- "Safe to Spend" tooltip updated to mention emergency fund exclusion (desktop + mobile)
+- Quick "Set as Emergency Fund" button shows on all non-credit-card accounts (not just savings)
+- Edit Account page now has toggle to add/remove emergency fund designation
+- Settings page shows read-only emergency fund account with link to Accounts page
+- Server-side validation prevents credit cards from being set as emergency fund
 
-**Files Updated:**
-- `docs/feedback-karim-mousa.md` - Corrected all status fields with implementation details
+**"Can I Afford It?" Improvements:**
+- Context-aware messaging (different text for already-negative vs would-go-negative)
+- "When can I afford it?" shows first affordable date with prominent teal highlight
+- Impact preview only shows expense dates (not empty/unchanged days)
+- Fixed sampling bug that skipped days 14-29 when checking future dates
+- Fixed saved scenarios showing wrong recurring status (used form state instead of saved data)
+
+**Files Created:**
+- None
+
+**Files Modified:**
+- `components/calendar/sticky-header.tsx` - Added emergency fund note to Safe to Spend tooltips
+- `components/accounts/account-card.tsx` - Show button on all non-credit-card accounts
+- `components/settings/emergency-fund-form.tsx` - Made account dropdown read-only
+- `app/dashboard/accounts/[id]/edit/page.tsx` - Added emergency fund toggle
+- `lib/actions/update-emergency-fund.ts` - Added clearEmergencyFund, credit card validation
+- `components/scenarios/scenario-result.tsx` - Context-aware messaging
+- `components/scenarios/scenario-modal.tsx` - Fixed saved scenarios recurring display
+- `lib/actions/scenarios.ts` - Fixed sampling logic for "When can I afford it?"
+- `docs/feedback-karim-mousa.md` - Updated all status fields
 
 ---
 

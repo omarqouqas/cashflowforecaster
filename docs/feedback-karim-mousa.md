@@ -43,8 +43,11 @@
 **Status:** Implemented - Emergency fund account is now:
 - Excluded from spendable balance in calendar calculations
 - Excluded from "Available to Spend" dashboard metrics
-- Quick "Set as Emergency Fund" button on savings account cards
+- Quick "Set as Emergency Fund" button on all non-credit-card account cards
 - Shield badge shows on designated emergency fund account
+- Toggle in Edit Account page to add/remove emergency fund designation
+- "Safe to Spend" tooltip mentions emergency fund exclusion
+- Settings page shows read-only designation with link to Accounts page
 
 ---
 
@@ -118,7 +121,7 @@
 |------|-------|---------------|--------|
 | Calendar | Visual clutter, hard to distinguish colors | Show only balance, flip card for details on hover | Not implemented |
 | Settings | Mixed settings types, too many saves | Separate app/profile settings, combine related toggles | Partially done (tabs exist, related settings still separate) |
-| Emergency Fund | Treats all account money as emergency fund | Make it a separate reserve excluded from spending | Implemented (excluded from spendable, quick set button) |
+| Emergency Fund | Treats all account money as emergency fund | Make it a separate reserve excluded from spending | Implemented (excluded from spendable, quick set/edit, tooltip updated) |
 | AI Chat | "AI not configured" error | Made Pro-only feature | Resolved |
 | Navigation | Too many items, paid tools hidden | Simplify menu, highlight premium features | Resolved |
 | Dashboard | Needs own menu item | Access via logo click | Resolved |

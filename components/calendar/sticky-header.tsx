@@ -119,6 +119,9 @@ export function StickyCalendarHeader({
                         </span>
                       </div>
                     </div>
+                    <p className="text-zinc-500 text-xs pt-2 border-t border-zinc-700">
+                      Emergency fund accounts are excluded from this calculation.
+                    </p>
                   </div>
                 }
               />
@@ -186,6 +189,9 @@ export function StickyCalendarHeader({
                     <p className="text-zinc-300 text-sm">
                       This is how much you can spend today without your balance ever dropping below your
                       safety buffer in the next 14 days.
+                    </p>
+                    <p className="text-zinc-500 text-xs pt-2 border-t border-zinc-700">
+                      Emergency fund accounts are excluded.
                     </p>
                   </div>
                 }

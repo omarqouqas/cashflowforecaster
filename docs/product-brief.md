@@ -350,10 +350,12 @@ By automatically subtracting tax reserves, upcoming bills, and debt payments fro
 - **Empty state handling** with clear filter option
 
 **7. Scenario Testing ✅**
-- "Can I afford it?" calculator
-- Test hypothetical expenses
-- See impact on future balance
-- Save scenarios for reference
+- "Can I afford it?" calculator with context-aware messaging
+- Test hypothetical expenses (one-time or recurring)
+- See impact on future balance with meaningful preview (expense dates only)
+- "When can I afford it?" shows first affordable date when purchase isn't feasible
+- Context-aware results: different messaging for already-negative vs would-go-negative
+- Save scenarios for reference with correct recurring status display
 
 **7b. Free Tools (No Login) ✅**
 - `/tools/can-i-afford-it` — quick cash flow projection
@@ -627,12 +629,16 @@ By automatically subtracting tax reserves, upcoming bills, and debt payments fro
 **15. Emergency Fund Tracker ✅**
 - Dashboard widget showing progress toward financial safety net
 - Configurable goal: 3, 6, or 12 months of expenses
-- Optional designated savings account (or uses total balance)
+- Designated account excluded from "Safe to Spend" and spendable balance calculations
+- Quick "Set as Emergency Fund" button on all non-credit-card account cards
+- Edit Account page toggle to add/remove emergency fund designation
+- Settings page shows read-only designation with link to Accounts page
+- "Safe to Spend" tooltip mentions emergency fund exclusion
 - Progress bar with color-coded status (rose/amber/teal)
 - Displays months covered and amount remaining
-- Settings form in Settings page
 - Calculates goal from actual monthly bill expenses
-- PostHog event: `emergency_fund_settings_updated`
+- Server-side validation prevents credit cards as emergency fund
+- PostHog events: `emergency_fund_settings_updated`, `emergency_fund_account_set`, `emergency_fund_cleared`
 
 **16. Reports & Export ✅**
 - **Reports Page** (`/dashboard/reports`) with quick reports and custom export builder
