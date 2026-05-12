@@ -15,7 +15,7 @@
 ### Suggested Improvement
 > "Maybe have the tile showing only the money available to spend, once the user hovers over the tile or presses on the tile, it flips and shows the details of money in/out"
 
-**Status:** Not implemented - requires design consideration
+**Status:** Not implemented - `day-card.tsx` still uses background colors + status dots. No flip-card functionality exists.
 
 ---
 
@@ -29,7 +29,7 @@
 1. Separate app settings from profile/feature toggles
 2. Combine "minimum balance" with "low limit warning toggle" under one feature to streamline saving
 
-**Status:** Not implemented
+**Status:** Partially implemented - Settings now uses tabbed interface (`settings-tabs.tsx`: Profile, Preferences, Notifications, Invoicing, Billing). However, Safety Buffer is in Preferences tab while Low Balance Alert is in Notifications tab - still separated.
 
 ---
 
@@ -40,7 +40,7 @@
 - Should be a separate reserve that's "not available to spend"
 - Emergency fund should be excluded from spendable balance calculations
 
-**Status:** Not implemented - feature enhancement needed
+**Status:** Partially implemented - Widget exists (`emergency-fund-widget.tsx`) with account designation option, but calendar logic (`lib/calendar/`) does NOT exclude emergency fund account from spendable balance calculations.
 
 ---
 
@@ -70,7 +70,7 @@
 - Make paid tools more prominent/visible
 - Dashboard accessible by clicking on CashCast logo (remove separate menu item)
 
-**Status:** Partially addressed - sidebar navigation implementation in progress
+**Status:** Resolved - Sidebar navigation implemented with clear sections (Main, Money, Tools), collapsible functionality, Pro features have lock icons, upgrade CTA for free users. Dashboard accessible via logo click AND first menu item.
 
 ---
 
@@ -105,11 +105,11 @@
 | Area | Issue | Suggested Fix | Status |
 |------|-------|---------------|--------|
 | Calendar | Visual clutter, hard to distinguish colors | Show only balance, flip card for details on hover | Not implemented |
-| Settings | Mixed settings types, too many saves | Separate app/profile settings, combine related toggles | Not implemented |
-| Emergency Fund | Treats all account money as emergency fund | Make it a separate reserve excluded from spending | Not implemented |
+| Settings | Mixed settings types, too many saves | Separate app/profile settings, combine related toggles | Partially done (tabs exist, related settings still separate) |
+| Emergency Fund | Treats all account money as emergency fund | Make it a separate reserve excluded from spending | Partially done (widget exists, not excluded from balance) |
 | AI Chat | "AI not configured" error | Made Pro-only feature | Resolved |
-| Navigation | Too many items, paid tools hidden | Simplify menu, highlight premium features | In progress |
-| Dashboard | Needs own menu item | Access via logo click | In progress |
+| Navigation | Too many items, paid tools hidden | Simplify menu, highlight premium features | Resolved |
+| Dashboard | Needs own menu item | Access via logo click | Resolved |
 | Can I Afford It? | Confusing display | Add "When can I afford it?" | Not implemented |
 | Tax Calculation | Taxes in available to spend | Exclude taxes based on income type | Not implemented |
 
@@ -124,9 +124,9 @@ User provided screenshot showing calendar view with red/orange color scheme issu
 ## Priority Recommendations
 
 1. ~~**High:** Fix AI chat configuration issue (bug)~~ **DONE** - Made Pro-only
-2. **High:** Simplify navigation and highlight premium features (in progress)
-3. **Medium:** Redesign calendar tiles to reduce visual clutter
-4. **Medium:** Reorganize settings page
-5. **Low:** Add "When can I afford it?" feature
-6. **Low:** Implement proper emergency fund handling
-7. **Low:** Tax calculation in onboarding
+2. ~~**High:** Simplify navigation and highlight premium features~~ **DONE** - Sidebar with sections, lock icons, upgrade CTA
+3. **High:** Emergency fund exclusion from spendable balance (widget exists, calendar logic needed)
+4. **Medium:** Redesign calendar tiles to reduce visual clutter (flip cards)
+5. **Medium:** Combine safety buffer + low balance alert settings (currently in different tabs)
+6. **Medium:** Add "When can I afford it?" feature
+7. **Low:** Tax calculation in onboarding (income type detection)
