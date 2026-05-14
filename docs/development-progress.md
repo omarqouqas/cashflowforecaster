@@ -71,6 +71,7 @@
 - Verified RSS feed already properly implemented
 - Verified breadcrumbs already on all tool pages
 - Auth pages (`/auth/login`, `/auth/signup`) correctly set to `noindex`
+- Improved image alt text across 4 files (logo images, scenario screenshot)
 
 ---
 
