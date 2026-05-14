@@ -5,6 +5,9 @@ import Link from "next/link";
 export const metadata = {
   title: "Privacy Policy | Cashcast",
   description: "Privacy Policy for Cashcast",
+  alternates: {
+    canonical: 'https://cashcast.money/privacy',
+  },
 };
 
 export default function PrivacyPage() {

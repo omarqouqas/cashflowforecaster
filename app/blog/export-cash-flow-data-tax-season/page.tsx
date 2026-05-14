@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: post.description,
   keywords: post.keywords,
   authors: [{ name: post.author.name }],
+  alternates: {
+    canonical: `https://cashcast.money/blog/${post.slug}`,
+  },
   openGraph: {
     title: post.title,
     description: post.description,

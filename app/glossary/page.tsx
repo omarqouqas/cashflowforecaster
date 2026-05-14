@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     'invoice terms glossary',
     'solopreneur finance dictionary',
   ],
+  alternates: {
+    canonical: 'https://cashcast.money/glossary',
+  },
   openGraph: {
     title: 'Freelance Finance Glossary | Cashcast',
     description:

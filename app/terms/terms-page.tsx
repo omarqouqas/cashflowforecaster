@@ -5,6 +5,9 @@ import Link from "next/link";
 export const metadata = {
   title: "Terms of Service | Cashcast",
   description: "Terms of Service for Cashcast",
+  alternates: {
+    canonical: 'https://cashcast.money/terms',
+  },
 };
 
 export default function TermsPage() {
