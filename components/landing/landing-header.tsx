@@ -23,7 +23,7 @@ export default function LandingHeader() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/cashcast-lockup.svg"
-            alt="Cashcast"
+            alt="Cashcast logo"
             height={32}
             width={180}
             className="h-8 w-auto"

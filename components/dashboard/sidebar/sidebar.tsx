@@ -83,7 +83,7 @@ export function Sidebar({ userEmail, userName, userTier, canUseTimeTracking = fa
             <Link href="/dashboard" className="flex-shrink-0">
               <img
                 src="/cashcast-lockup.svg"
-                alt="Cashcast"
+                alt="Cashcast logo"
                 height={28}
                 width={140}
                 className="h-7 w-auto"

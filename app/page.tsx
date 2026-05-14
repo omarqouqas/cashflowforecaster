@@ -758,7 +758,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
                       <Image
                         src="/screenshot-scenario.png"
-                        alt="Can I Afford It scenario tester"
+                        alt="Can I Afford It calculator showing purchase impact on cash flow balance over time"
                         width={882}
                         height={902}
                         sizes="(max-width: 768px) 100vw, 400px"

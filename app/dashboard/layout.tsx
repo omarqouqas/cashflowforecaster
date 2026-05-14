@@ -110,7 +110,7 @@ export default async function DashboardLayout({
                   <Link href="/dashboard" className="flex-shrink-0">
                     <img
                       src="/cashcast-lockup.svg"
-                      alt="Cashcast"
+                      alt="Cashcast logo"
                       height={32}
                       width={180}
                       className="h-8 w-auto"
