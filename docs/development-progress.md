@@ -17,7 +17,7 @@
 
 ## Current Status Summary
 
-**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (16 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix + Desktop Sidebar Navigation + Tabbed Settings Interface + Full-Width Layout + Theme Toggle + **Dark Mode Only (Light Mode Disabled) + Combined Settings Forms + Calendar Redesign (Left Border Status) + Per-Income Tax Withholding**
+**Overall Progress:** MVP Complete + Feature Gating + Analytics + Stripe Live + YNAB-Inspired Calendar + Comprehensive Filters + Low Balance Alerts + Simpler Onboarding + Emergency Fund Tracker + Stripe Payment Links + Landing Page Hero Dashboard + Calendar Visual Polish + User Profile Dropdown Redesign + Invoice Branding + Form UX Polish + SEO/AEO Audit + Content Expansion (26 Blog Posts + Glossary) + Dashboard/Calendar Mobile UX Polish + Semi-Monthly Frequency Bug Fixes + Reports & Export Feature + Custom Bill Categories + Credit Card Cash Flow Forecasting + Debt Payoff Planner + User Settings Currency Support + Quotes Feature + Lifetime Deal + Pricing Updates + Comparison Pages + YNAB Import + Import Recurring Entries + Quarterly/Annually Income Frequencies + Excel Import + 6 SEO Blog Posts + Landing Page Repositioning (Sacred Seven PM Review) + Gemini Market Research Integration (Docs + Marketing Content) + Gemini Pivot Analysis & Roadmap + Tax Reserve Calculator Tool + Float Comparison Page + Pulse Comparison Page + Landing Page Niche Messaging + AI-Powered Probabilistic Forecasting (Monte Carlo) + Simplified Navigation + AI Natural Language Queries ("Ask Cashcast") + Smart Categorization for Imports + Branding Refresh + Proactive AI Alerts + Income Pattern Forecasting + AI Recurring Pattern Detection for PDF Import + Automated Payment Reminders + Time Tracking + Invoicing + Referral Program + SMS/Push Low Balance Alerts + PocketSmith Comparison Page + Competitive Analysis Update + CurrencyInput Bug Fix + Desktop Sidebar Navigation + Tabbed Settings Interface + Full-Width Layout + Theme Toggle + **Dark Mode Only (Light Mode Disabled) + Combined Settings Forms + Calendar Redesign (Left Border Status) + Per-Income Tax Withholding**
 
 **Current Focus:**
 
@@ -34,7 +34,7 @@
 
 **SEO Analysis & Content Creation** - Analyzed Google Search Console data showing 743 impressions but 0 clicks for `/tools/freelance-rate-calculator` (avg position 68.7). Created comprehensive content to improve rankings.
 
-**New Blog Posts Created (6):**
+**New Blog Posts Created (10 total):**
 
 | Page | Target Keywords | Word Count |
 |------|-----------------|------------|
@@ -44,6 +44,10 @@
 | `/blog/graphic-designer-hourly-rate` | "graphic designer hourly rate", "logo design pricing" | ~2,000 words |
 | `/blog/software-engineer-hourly-rate` | "software engineer hourly rate", "freelance developer rates" | ~2,000 words |
 | `/blog/ml-consultant-hourly-rate` | "ml consultant hourly rate", "ai consultant rates" | ~2,000 words |
+| `/blog/copywriter-hourly-rate` | "copywriter hourly rate", "freelance copywriter rates", "content writer rates" | ~2,000 words |
+| `/blog/data-analyst-hourly-rate` | "data analyst hourly rate", "sql analyst rates", "tableau consultant rates" | ~2,000 words |
+| `/blog/video-editor-hourly-rate` | "video editor hourly rate", "youtube editor rates", "motion graphics rates" | ~2,000 words |
+| `/blog/photographer-hourly-rate` | "photographer hourly rate", "wedding photographer rates", "commercial photography rates" | ~2,000 words |
 
 **SEO Elements per Page:**
 - FAQ schemas (5 questions each)
@@ -53,6 +57,11 @@
 - Project pricing guides
 - CTAs linking to rate calculator tool
 
+**Internal Linking Strategy:**
+- Added cross-links between all 10 rate guide posts
+- Each guide links to 4-6 related rate guides in Related Resources section
+- Strengthens topical authority for freelance rate keywords
+
 **Files Created:**
 - `app/blog/how-to-calculate-freelance-rate/page.tsx`
 - `app/blog/ux-designer-hourly-rate/page.tsx`
@@ -60,15 +69,26 @@
 - `app/blog/graphic-designer-hourly-rate/page.tsx`
 - `app/blog/software-engineer-hourly-rate/page.tsx`
 - `app/blog/ml-consultant-hourly-rate/page.tsx`
+- `app/blog/copywriter-hourly-rate/page.tsx`
+- `app/blog/data-analyst-hourly-rate/page.tsx`
+- `app/blog/video-editor-hourly-rate/page.tsx`
+- `app/blog/photographer-hourly-rate/page.tsx`
 
 **Files Modified:**
-- `lib/blog/posts.ts` - Added 3 new blog post entries
+- `lib/blog/posts.ts` - Added 10 new blog post entries
 - `app/sitemap.ts` - Increased rate calculator priority (0.6 → 0.9)
+- All rate guide pages updated with internal cross-links
+
+**Core Web Vitals & Schema Audit:**
+- Images already optimized with Next.js Image (lazy loading, WebP, responsive sizes)
+- HowTo schema already on 7 how-to blog posts
+- FAQ schema on all 6 tool pages
 
 **Expected Impact:**
-- More entry points for "freelance rate" related keywords
+- 10 entry points for "freelance rate" related keywords
 - Build topical authority around freelance pricing
 - Internal links to boost tool page rankings
+- Target long-tail keywords for each profession
 
 **Medium Priority SEO Fixes (same day):**
 - Added canonical URLs to 7 pages missing them:
