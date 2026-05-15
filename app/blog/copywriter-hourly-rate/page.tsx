@@ -682,6 +682,34 @@ export default function CopywriterHourlyRatePage() {
               View rates <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>
+          <Link
+            href="/blog/video-editor-hourly-rate"
+            className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+          >
+            <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+              Video Editor Hourly Rates (2026)
+            </p>
+            <p className="mt-1 text-sm text-zinc-400">
+              Rates for YouTube, commercial, and motion graphics.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+              View rates <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
+          <Link
+            href="/blog/web-developer-hourly-rate"
+            className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+          >
+            <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+              Web Developer Hourly Rates (2026)
+            </p>
+            <p className="mt-1 text-sm text-zinc-400">
+              Compare rates by tech stack and specialization.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+              View rates <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
         </div>
       </section>
     </article>

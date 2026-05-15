@@ -683,6 +683,34 @@ export default function VideoEditorHourlyRatePage() {
               Read guide <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>
+          <Link
+            href="/blog/copywriter-hourly-rate"
+            className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+          >
+            <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+              Copywriter Hourly Rates (2026)
+            </p>
+            <p className="mt-1 text-sm text-zinc-400">
+              Rates for content and marketing copy.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+              View rates <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
+          <Link
+            href="/blog/ux-designer-hourly-rate"
+            className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 hover:border-zinc-700 transition-colors group"
+          >
+            <p className="font-medium text-white group-hover:text-teal-300 transition-colors">
+              UX Designer Hourly Rates (2026)
+            </p>
+            <p className="mt-1 text-sm text-zinc-400">
+              Compare rates for UX and product design.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm text-teal-400 group-hover:gap-2 transition-all">
+              View rates <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
         </div>
       </section>
     </article>
